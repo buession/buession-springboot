@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.buession.springboot.velocity.autoconfigure.VelocityConfiguration
+# Template availability providers
+org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+  com.buession.springboot.velocity.VelocityTemplateAvailabilityProvider

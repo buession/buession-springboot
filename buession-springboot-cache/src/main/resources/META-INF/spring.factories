@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.buession.springboot.cache.redis.autoconfigure.RedisConfiguration
