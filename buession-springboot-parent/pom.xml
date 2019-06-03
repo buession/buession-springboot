@@ -48,6 +48,7 @@
 		<module>../buession-springboot-captcha</module>
 		<module>../buession-springboot-cas</module>
 		<module>../buession-springboot-cli</module>
+		<module>../buession-springboot-geoip</module>
 		<module>../buession-springboot-httpclient</module>
 		<module>../buession-springboot-mongodb</module>
 		<module>../buession-springboot-mybatis</module>
