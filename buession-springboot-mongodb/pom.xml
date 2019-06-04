@@ -40,26 +40,11 @@
 		<url>https://github.com/buession/buession-springboot</url>
 	</scm>
 
-	<properties>
-		<mongodb.version>3.10.2</mongodb.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.buession.springboot</groupId>
 			<artifactId>buession-springboot-boot</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>${mongodb.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>${mongodb.version}</version>
 		</dependency>
 
 		<dependency>
@@ -83,6 +68,12 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<version>${springframework.data.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>3.9.1</version>
 		</dependency>
 
 		<dependency>
