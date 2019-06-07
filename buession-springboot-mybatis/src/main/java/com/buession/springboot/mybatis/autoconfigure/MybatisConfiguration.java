@@ -27,6 +27,7 @@
 package com.buession.springboot.mybatis.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
 import com.buession.springboot.mybatis.ConfigurationCustomizer;
 import com.buession.springboot.mybatis.SpringBootVFS;
 import org.apache.ibatis.annotations.Mapper;
@@ -120,7 +121,7 @@ public class MybatisConfiguration {
         if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
             Resource resource = resourceLoader.getResource(properties.getConfigLocation());
             Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
-                    "autoconfigure file " + "or check your Mybatis configuration)");
+                    "autoconfigure file or check your Mybatis configuration)");
         }
     }
 

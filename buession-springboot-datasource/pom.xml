@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<name>Buession Springboot Cas</name>
+	<name>Buession Springboot DataSource</name>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.buession.springboot</groupId>
@@ -9,9 +9,9 @@
 		<relativePath>../buession-springboot-parent</relativePath>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>buession-springboot-cas</artifactId>
+	<artifactId>buession-springboot-datasource</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
-	<description>Buession Framework Springboot Cas Client</description>
+	<description>Buession Framework Springboot For DataSource</description>
 	<packaging>jar</packaging>
 
 	<organization>
@@ -48,16 +48,25 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.buession.cas</groupId>
-			<artifactId>buession-cas-client</artifactId>
-			<version>1.0.0</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
 		</dependency>
 
+		<!-- springframework boot start -->
 		<dependency>
-			<groupId>com.buession.security</groupId>
-			<artifactId>buession-security-pac4j</artifactId>
-			<version>${buession.security.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<version>${springframework.boot.version}</version>
 		</dependency>
+		<!-- springframework boot end -->
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -71,7 +80,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>buession-springboot-cas</finalName>
+		<finalName>buession-springboot-datasource</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
