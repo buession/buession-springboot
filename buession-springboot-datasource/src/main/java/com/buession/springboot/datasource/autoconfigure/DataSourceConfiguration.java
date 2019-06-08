@@ -122,7 +122,8 @@ public class DataSourceConfiguration implements BeanClassLoaderAware, Environmen
         return dataSources;
     }
 
-    protected static DataSource createDataSource(DataSourceProperties properties, Class<? extends DataSource> type){
+    protected final static DataSource createDataSource(DataSourceProperties properties, Class<? extends DataSource>
+            type){
         return properties.initializeDataSourceBuilder().type(type).build();
     }
 

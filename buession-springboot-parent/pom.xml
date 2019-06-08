@@ -76,21 +76,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>redis.clients</groupId>
-				<artifactId>jedis</artifactId>
-				<version>3.0.0</version>
-			</dependency>
-
-			<!-- log start -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-				<scope>compile</scope>
-			</dependency>
-			<!-- log end -->
-
-			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.12</version>
