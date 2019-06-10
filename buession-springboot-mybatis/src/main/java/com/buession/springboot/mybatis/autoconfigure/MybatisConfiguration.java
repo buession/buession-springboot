@@ -28,6 +28,7 @@ package com.buession.springboot.mybatis.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
+import com.buession.springboot.datasource.core.DataSource;
 import com.buession.springboot.mybatis.ConfigurationCustomizer;
 import com.buession.springboot.mybatis.SpringBootVFS;
 import org.apache.ibatis.annotations.Mapper;
@@ -66,7 +67,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -86,13 +86,10 @@ public class MybatisConfiguration {
     private MybatisProperties properties;
 
     @Autowired
-    private DataSource masterDataSource;
+    private DataSource dataSource;
 
     @Autowired
     private SqlSessionFactory masterSqlSessionFactory;
-
-    @Autowired
-    private List<DataSource> slaveDataSources;
 
     @Autowired
     private List<SqlSessionFactory> slaveSqlSessionFactories;
@@ -128,7 +125,7 @@ public class MybatisConfiguration {
     @Bean(name = "masterSqlSessionFactory")
     @ConditionalOnMissingBean
     public SqlSessionFactory masterSqlSessionFactory() throws Exception{
-        return createSqlSessionFactory(masterDataSource);
+        return createSqlSessionFactory(dataSource.getMaster());
     }
 
     @Bean(name = "masterSqlSessionTemplate")
@@ -140,13 +137,13 @@ public class MybatisConfiguration {
     @Bean(name = "slaveSqlSessionFactories")
     @ConditionalOnMissingBean
     public List<SqlSessionFactory> slaveSqlSessionFactories() throws Exception{
-        if(Validate.isEmpty(slaveDataSources)){
+        if(Validate.isEmpty(dataSource.getSlaves())){
             throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
         }
 
-        List<SqlSessionFactory> slaveSqlSessionFactories = new ArrayList<>(slaveDataSources.size());
+        List<SqlSessionFactory> slaveSqlSessionFactories = new ArrayList<>(dataSource.getSlaves().size());
 
-        for(DataSource dataSource : slaveDataSources){
+        for(javax.sql.DataSource dataSource : dataSource.getSlaves()){
             slaveSqlSessionFactories.add(createSqlSessionFactory(dataSource));
         }
 
@@ -170,7 +167,7 @@ public class MybatisConfiguration {
         return slaveSqlSessionTemplates;
     }
 
-    private SqlSessionFactory createSqlSessionFactory(DataSource dataSource) throws Exception{
+    private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
 
         factory.setDataSource(dataSource);

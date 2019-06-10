@@ -84,6 +84,7 @@ public class RedisConfiguration {
     public RedisTemplate redisTemplate(){
         RedisTemplate template = new RedisTemplate(redisConnection);
 
+        template.afterPropertiesSet();
         logger.info("RedisTemplate bean init success.");
 
         return template;
