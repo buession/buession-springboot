@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.velocity")
+@ConfigurationProperties(prefix = "velocity")
 public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
     private String dateToolAttribute;

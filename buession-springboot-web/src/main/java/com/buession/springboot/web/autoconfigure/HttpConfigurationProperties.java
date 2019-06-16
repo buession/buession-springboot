@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "buession.http")
+@ConfigurationProperties(prefix = "server")
 public class HttpConfigurationProperties {
 
     @NestedConfigurationProperty

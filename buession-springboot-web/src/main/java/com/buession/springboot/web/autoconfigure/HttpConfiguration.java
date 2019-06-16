@@ -66,16 +66,14 @@ public class HttpConfiguration {
 
     @Bean(name = "poweredByHeaderFilter")
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "buession.http", name = "send-poweredby", havingValue = "true", matchIfMissing =
-            true)
+    @ConditionalOnProperty(prefix = "server", name = "send-poweredby", havingValue = "true", matchIfMissing = true)
     public PoweredByHeaderFilter poweredByHeaderFilter(){
         return new PoweredByHeaderFilter();
     }
 
     @Bean(name = "serverInfoFilter")
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "buession.http", name = "send-server-info", havingValue = "true", matchIfMissing
-            = true)
+    @ConditionalOnProperty(prefix = "server", name = "send-server-info", havingValue = "true", matchIfMissing = true)
     public ServerInfoFilter serverInfoFilter(){
         ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 

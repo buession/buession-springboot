@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "buession.oss")
+@ConfigurationProperties(prefix = "oss")
 public class OssProperties {
 
     private String endpoint;
