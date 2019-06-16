@@ -22,7 +22,15 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.httpclient.autoconfigure;
+
+import com.buession.httpclient.core.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.httpclient.httpcomponents.autoconfigure;
+@ConfigurationProperties(prefix = "httpclient")
+public class HttpClientProperties extends Configuration {
+
+}

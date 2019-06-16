@@ -48,12 +48,29 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.buession</groupId>
+			<artifactId>buession-httpclient</artifactId>
+			<version>${buession.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
