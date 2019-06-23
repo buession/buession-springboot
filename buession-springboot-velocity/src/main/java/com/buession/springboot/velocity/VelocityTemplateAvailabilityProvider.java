@@ -24,42 +24,28 @@
  */
 package com.buession.springboot.velocity;
 
-import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.buession.springboot.velocity.autoconfigure.VelocityProperties;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ClassUtils;
 
 /**
  * @author Yong.Teng
  */
-public class VelocityTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
+public class VelocityTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
-    public VelocityTemplateAvailabilityProvider(){
-        super(Constant.CLASS_NAME, VelocityTemplateAvailabilityProperties.class, "spring.velocity");
-    }
+    private final static String CLASS_NAME = "org.apache.velocity.app.VelocityEngine";
 
-    static class VelocityTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
-
-        private List<String> resourceLoaderPath = new ArrayList<>(Arrays.asList(Constant.DEFAULT_RESOURCE_LOADER_PATH));
-
-        VelocityTemplateAvailabilityProperties(){
-            super(Constant.DEFAULT_PREFIX, Constant.DEFAULT_SUFFIX);
+    @Override
+    public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader
+            resourceLoader){
+        if(ClassUtils.isPresent(CLASS_NAME, classLoader)){
+            String prefix = environment.getProperty("velocity.prefix", VelocityProperties.DEFAULT_PREFIX);
+            String suffix = environment.getProperty("velocity.suffix", VelocityProperties.DEFAULT_SUFFIX);
+            return resourceLoader.getResource(prefix + view + suffix).exists();
         }
-
-        @Override
-        protected List<String> getLoaderPath(){
-            return this.resourceLoaderPath;
-        }
-
-        public List<String> getResourceLoaderPath(){
-            return this.resourceLoaderPath;
-        }
-
-        public void setResourceLoaderPath(List<String> resourceLoaderPath){
-            this.resourceLoaderPath = resourceLoaderPath;
-        }
-
+        return false;
     }
 
 }

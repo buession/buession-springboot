@@ -22,25 +22,20 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.velocity;
+package com.buession.springboot.velocity.autoconfigure;
 
 /**
  * @author Yong.Teng
  */
-public class Constant {
+public class VelocityMacroProperties {
 
-    public final static String CLASSPATH = "classpath:";
+    private String library;
 
-    public final static String DEFAULT_RESOURCE_LOADER_PATH = CLASSPATH + "/Templates/";
+    public String getLibrary(){
+        return library;
+    }
 
-    public final static String DEFAULT_PREFIX = "";
-
-    public final static String DEFAULT_SUFFIX = ".html";
-
-    public final static String CLASS_NAME = "org.apache.velocity.app.VelocityEngine";
-
-    public final static String VELOCITY_MACRO_LIBRARY = "velocitymacro.library";
-
-    public final static String PATH_SEPARATOR = "/";
-
+    public void setLibrary(String library){
+        this.library = library;
+    }
 }

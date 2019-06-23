@@ -24,8 +24,6 @@
  */
 package com.buession.springboot.velocity.autoconfigure;
 
-import com.buession.springboot.velocity.Constant;
-import com.buession.velocity.view.VelocityViewResolver;
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -39,23 +37,53 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "velocity")
 public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
+    public final static String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/Templates/";
+
+    public final static String DEFAULT_PREFIX = "";
+
+    public final static String DEFAULT_SUFFIX = ".vm";
+
+    private String prefix = DEFAULT_PREFIX;
+
+    private String suffix = DEFAULT_SUFFIX;
+
     private String dateToolAttribute;
 
     private String numberToolAttribute;
 
     private Map<String, String> properties = new HashMap<>();
 
-    private String resourceLoaderPath = Constant.DEFAULT_RESOURCE_LOADER_PATH;
+    private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
 
     private String toolboxConfigLocation;
 
     @NestedConfigurationProperty
-    private VelocimacroProperties velocimacro = new VelocimacroProperties();
+    private VelocityMacroProperties velocityMacro = new VelocityMacroProperties();
 
     private boolean preferFileSystemAccess = true;
 
     public VelocityProperties(){
-        super(Constant.DEFAULT_PREFIX, Constant.DEFAULT_SUFFIX);
+        super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+    }
+
+    @Override
+    public String getPrefix(){
+        return prefix;
+    }
+
+    @Override
+    public void setPrefix(String prefix){
+        this.prefix = prefix;
+    }
+
+    @Override
+    public String getSuffix(){
+        return suffix;
+    }
+
+    @Override
+    public void setSuffix(String suffix){
+        this.suffix = suffix;
     }
 
     public String getDateToolAttribute(){
@@ -98,12 +126,12 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
         this.toolboxConfigLocation = toolboxConfigLocation;
     }
 
-    public VelocimacroProperties getVelocimacro(){
-        return velocimacro;
+    public VelocityMacroProperties getVelocityMacro(){
+        return velocityMacro;
     }
 
-    public void setVelocimacro(VelocimacroProperties velocimacro){
-        this.velocimacro = velocimacro;
+    public void setVelocityMacro(VelocityMacroProperties velocityMacro){
+        this.velocityMacro = velocityMacro;
     }
 
     public boolean isPreferFileSystemAccess(){
@@ -112,18 +140,6 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
     public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
         this.preferFileSystemAccess = preferFileSystemAccess;
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void applyToMvcViewResolver(Object viewResolver){
-        super.applyToMvcViewResolver(viewResolver);
-
-        VelocityViewResolver resolver = (VelocityViewResolver) viewResolver;
-
-        resolver.setToolboxConfigLocation(getToolboxConfigLocation());
-        resolver.setDateToolAttribute(getDateToolAttribute());
-        resolver.setNumberToolAttribute(getNumberToolAttribute());
     }
 
 }
