@@ -28,6 +28,7 @@ import com.buession.velocity.spring.VelocityConfigurer;
 import com.buession.velocity.spring.VelocityEngineFactory;
 import com.buession.velocity.spring.VelocityEngineFactoryBean;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,12 +90,8 @@ public class VelocityConfiguration {
 
     static abstract class AbstractVelocityConfiguration {
 
-        protected final static int ORDERED = Ordered.LOWEST_PRECEDENCE - 5;
-
         @Autowired
         protected VelocityProperties properties;
-
-        private final static Logger logger = LoggerFactory.getLogger(AbstractVelocityConfiguration.class);
 
         protected VelocityConfigurer velocityConfigurer(){
             VelocityConfigurer configurer = new VelocityConfigurer();
@@ -107,9 +104,9 @@ public class VelocityConfiguration {
         protected void applyProperties(VelocityEngineFactory factory){
             Properties velocityProperties = new Properties();
 
-            velocityProperties.setProperty("input.encoding", properties.getCharsetName());
-            velocityProperties.setProperty("input.encoding", properties.getCharsetName());
-            velocityProperties.setProperty("velocitymacro.library", properties.getVelocityMacro().getLibrary());
+            velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName());
+            // velocityProperties.setProperty("output.encoding", properties.getCharsetName());
+            velocityProperties.setProperty(RuntimeConstants.VM_LIBRARY, properties.getVelocityMacro().getLibrary());
             velocityProperties.putAll(properties.getProperties());
 
             factory.setResourceLoaderPath(properties.getResourceLoaderPath());
@@ -142,13 +139,8 @@ public class VelocityConfiguration {
             resolver.setToolboxConfigLocation(properties.getToolboxConfigLocation());
             resolver.setDateToolAttribute(properties.getDateToolAttribute());
             resolver.setNumberToolAttribute(properties.getNumberToolAttribute());
-            resolver.setPrefix(properties.getPrefix());
-            resolver.setSuffix(properties.getSuffix());
-            resolver.setViewNames(properties.getViewNames());
-            resolver.setCache(properties.isCache());
-            resolver.setOrder(ORDERED);
 
-            // resolver.setTemplateEngine(templateEngine);
+            properties.applyToMvcViewResolver(resolver);
 
             return resolver;
         }
