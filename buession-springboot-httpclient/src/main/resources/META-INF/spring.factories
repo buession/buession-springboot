@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-    com.buession.springboot.httpclient.autoconfigure.SSLConfiguration,\
     com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
