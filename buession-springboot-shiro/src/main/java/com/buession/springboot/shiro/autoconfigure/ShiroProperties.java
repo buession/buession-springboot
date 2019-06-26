@@ -47,6 +47,8 @@ public class ShiroProperties {
 
     private Set<String> clients;
 
+    private boolean multiProfile;
+
     private LinkedHashMap<String, String> filterChainDefinitions;
 
     public String getLoginUrl(){
@@ -95,6 +97,18 @@ public class ShiroProperties {
 
     public void setClients(Set<String> clients){
         this.clients = clients;
+    }
+
+    public boolean isMultiProfile(){
+        return getMultiProfile();
+    }
+
+    public boolean getMultiProfile(){
+        return multiProfile;
+    }
+
+    public void setMultiProfile(boolean multiProfile){
+        this.multiProfile = multiProfile;
     }
 
     public LinkedHashMap<String, String> getFilterChainDefinitions(){

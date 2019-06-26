@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,19 +43,20 @@ import java.util.Map;
  * @author Yong.Teng
  */
 @Configuration
+@EnableConfigurationProperties({HttpProperties.class})
 @ConditionalOnWebApplication
 public class HttpConfiguration {
 
     @Autowired(required = false)
-    private HttpConfigurationProperties httpConfigurationProperties;
+    private HttpProperties httpProperties;
 
     @Bean(name = "responseHeadersFilter")
     @ConditionalOnMissingBean
     public ResponseHeadersFilter responseHeadersFilter(){
         final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
 
-        if(httpConfigurationProperties != null){
-            Map<String, String> responseHeaders = httpConfigurationProperties.getResponse().getHeaders();
+        if(httpProperties != null){
+            Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
 
             if(responseHeaders != null){
                 responseHeadersFilter.setHeaders(responseHeaders);
@@ -77,10 +79,8 @@ public class HttpConfiguration {
     public ServerInfoFilter serverInfoFilter(){
         ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 
-        if(httpConfigurationProperties != null){
-            if(Validate.hasText(httpConfigurationProperties.getServerInfoName())){
-                serverInfoFilter.setHeaderName(httpConfigurationProperties.getServerInfoName());
-            }
+        if(Validate.hasText(httpProperties.getServerInfoName())){
+            serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
         }
 
         return serverInfoFilter;

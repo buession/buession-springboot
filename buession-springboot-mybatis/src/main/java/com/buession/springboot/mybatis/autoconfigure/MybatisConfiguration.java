@@ -85,15 +85,6 @@ public class MybatisConfiguration {
     @Autowired
     private MybatisProperties properties;
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private SqlSessionFactory masterSqlSessionFactory;
-
-    @Autowired
-    private List<SqlSessionFactory> slaveSqlSessionFactories;
-
     private final Interceptor[] interceptors;
 
     private final ResourceLoader resourceLoader;
@@ -124,27 +115,27 @@ public class MybatisConfiguration {
 
     @Bean(name = "masterSqlSessionFactory")
     @ConditionalOnMissingBean
-    public SqlSessionFactory masterSqlSessionFactory() throws Exception{
+    public SqlSessionFactory masterSqlSessionFactory(DataSource dataSource) throws Exception{
         return createSqlSessionFactory(dataSource.getMaster());
     }
 
     @Bean(name = "masterSqlSessionTemplate")
     @ConditionalOnMissingBean
-    public SqlSessionTemplate masterSqlSessionTemplate(){
+    public SqlSessionTemplate masterSqlSessionTemplate(SqlSessionFactory masterSqlSessionFactory){
         return createSqlSessionTemplate(masterSqlSessionFactory);
     }
 
     @Bean(name = "slaveSqlSessionFactories")
     @ConditionalOnMissingBean
-    public List<SqlSessionFactory> slaveSqlSessionFactories() throws Exception{
+    public List<SqlSessionFactory> slaveSqlSessionFactories(DataSource dataSource) throws Exception{
         if(Validate.isEmpty(dataSource.getSlaves())){
             throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
         }
 
         List<SqlSessionFactory> slaveSqlSessionFactories = new ArrayList<>(dataSource.getSlaves().size());
 
-        for(javax.sql.DataSource dataSource : dataSource.getSlaves()){
-            slaveSqlSessionFactories.add(createSqlSessionFactory(dataSource));
+        for(javax.sql.DataSource ds : dataSource.getSlaves()){
+            slaveSqlSessionFactories.add(createSqlSessionFactory(ds));
         }
 
         return slaveSqlSessionFactories;
@@ -152,7 +143,7 @@ public class MybatisConfiguration {
 
     @Bean(name = "slaveSqlSessionTemplates")
     @ConditionalOnMissingBean
-    public List<SqlSessionTemplate> slaveSqlSessionTemplates(){
+    public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories){
         if(Validate.isEmpty(slaveSqlSessionFactories)){
             throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or " +
                     "empty");

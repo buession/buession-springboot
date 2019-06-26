@@ -19,10 +19,10 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2018 Buession.com Inc.														       |
+ * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.autoconfigure;
+package com.buession.springboot.cache.redis.core;
 
 import org.apache.commons.pool2.impl.BaseObjectPoolConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -30,7 +30,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 /**
  * @author Yong.Teng
  */
-public class JedisPoolConfig {
+public class PoolConfig {
 
     private boolean lifo = BaseObjectPoolConfig.DEFAULT_LIFO;
 

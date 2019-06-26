@@ -29,6 +29,7 @@ import com.buession.redis.RedisClientTemplate;
 import com.buession.redis.RedisTemplate;
 import com.buession.redis.client.connection.RedisConnection;
 import com.buession.redis.spring.JedisRedisConnectionFactoryBean;
+import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * @author Yong.Teng
@@ -50,9 +52,6 @@ public class RedisConfiguration {
     @Autowired
     private RedisConfigProperties redisConfigProperties;
 
-    @Autowired
-    private RedisConnection redisConnection;
-
     private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
     @Bean(name = "jedisConnection")
@@ -61,7 +60,7 @@ public class RedisConfiguration {
     public RedisConnection jedisConnection() throws Exception{
         JedisRedisConnectionFactoryBean connectionFactory = new JedisRedisConnectionFactoryBean();
 
-        connectionFactory.setPoolConfig(jedisPoolConfig());
+        connectionFactory.setPoolConfig(jedisPoolConfig(redisConfigProperties));
         connectionFactory.setHost(redisConfigProperties.getHost());
         connectionFactory.setPort(redisConfigProperties.getPort());
         connectionFactory.setDatabase(redisConfigProperties.getDatabase());
@@ -81,7 +80,7 @@ public class RedisConfiguration {
 
     @Bean(name = "redisTemplate")
     @ConditionalOnMissingBean
-    public RedisTemplate redisTemplate(){
+    public RedisTemplate redisTemplate(RedisConnection redisConnection){
         RedisTemplate template = new RedisTemplate(redisConnection);
 
         template.afterPropertiesSet();
@@ -90,26 +89,27 @@ public class RedisConfiguration {
         return template;
     }
 
-    private redis.clients.jedis.JedisPoolConfig jedisPoolConfig(){
-        JedisPoolConfig jedisPoolConfig = redisConfigProperties.getPool();
-        redis.clients.jedis.JedisPoolConfig config = new redis.clients.jedis.JedisPoolConfig();
+    private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties
+                                                                                     redisConfigProperties){
+        PoolConfig poolConfig = redisConfigProperties.getPool();
+        JedisPoolConfig config = new JedisPoolConfig();
 
-        config.setLifo(jedisPoolConfig.getLifo());
-        config.setMaxWaitMillis(jedisPoolConfig.getMaxWaitMillis());
-        config.setMinEvictableIdleTimeMillis(jedisPoolConfig.getMinEvictableIdleTimeMillis());
-        config.setSoftMinEvictableIdleTimeMillis(jedisPoolConfig.getSoftMinEvictableIdleTimeMillis());
-        config.setNumTestsPerEvictionRun(jedisPoolConfig.getNumTestsPerEvictionRun());
-        config.setEvictionPolicyClassName(jedisPoolConfig.getEvictionPolicyClassName());
-        config.setTestOnBorrow(jedisPoolConfig.getTestOnBorrow());
-        config.setTestOnReturn(jedisPoolConfig.getTestOnReturn());
-        config.setTestWhileIdle(jedisPoolConfig.getTestWhileIdle());
-        config.setTimeBetweenEvictionRunsMillis(jedisPoolConfig.getTimeBetweenEvictionRunsMillis());
-        config.setBlockWhenExhausted(jedisPoolConfig.getBlockWhenExhausted());
-        config.setJmxEnabled(jedisPoolConfig.getJmxEnabled());
-        config.setJmxNamePrefix(jedisPoolConfig.getJmxNamePrefix());
-        config.setMaxTotal(jedisPoolConfig.getMaxTotal());
-        config.setMinIdle(jedisPoolConfig.getMinIdle());
-        config.setMaxIdle(jedisPoolConfig.getMaxIdle());
+        config.setLifo(poolConfig.getLifo());
+        config.setMaxWaitMillis(poolConfig.getMaxWaitMillis());
+        config.setMinEvictableIdleTimeMillis(poolConfig.getMinEvictableIdleTimeMillis());
+        config.setSoftMinEvictableIdleTimeMillis(poolConfig.getSoftMinEvictableIdleTimeMillis());
+        config.setNumTestsPerEvictionRun(poolConfig.getNumTestsPerEvictionRun());
+        config.setEvictionPolicyClassName(poolConfig.getEvictionPolicyClassName());
+        config.setTestOnBorrow(poolConfig.getTestOnBorrow());
+        config.setTestOnReturn(poolConfig.getTestOnReturn());
+        config.setTestWhileIdle(poolConfig.getTestWhileIdle());
+        config.setTimeBetweenEvictionRunsMillis(poolConfig.getTimeBetweenEvictionRunsMillis());
+        config.setBlockWhenExhausted(poolConfig.getBlockWhenExhausted());
+        config.setJmxEnabled(poolConfig.getJmxEnabled());
+        config.setJmxNamePrefix(poolConfig.getJmxNamePrefix());
+        config.setMaxTotal(poolConfig.getMaxTotal());
+        config.setMinIdle(poolConfig.getMinIdle());
+        config.setMaxIdle(poolConfig.getMaxIdle());
 
         logger.info("JedisPoolConfig bean init success.");
 

@@ -73,7 +73,7 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
         }
 
         filter.setConfig(pac4jConfig);
-        filter.setMultiProfile(false);
+        filter.setMultiProfile(shiroProperties.isMultiProfile());
 
         return filter;
     }

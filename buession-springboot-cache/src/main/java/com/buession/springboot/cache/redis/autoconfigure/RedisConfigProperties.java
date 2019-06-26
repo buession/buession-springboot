@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -44,7 +45,7 @@ public class RedisConfigProperties {
     private int database;
 
     @NestedConfigurationProperty
-    private JedisPoolConfig pool = new JedisPoolConfig();
+    private PoolConfig pool = new PoolConfig();
 
     public String getHost(){
         return host;
@@ -86,11 +87,11 @@ public class RedisConfigProperties {
         this.database = database;
     }
 
-    public JedisPoolConfig getPool(){
+    public PoolConfig getPool(){
         return pool;
     }
 
-    public void setPool(JedisPoolConfig pool){
+    public void setPool(PoolConfig pool){
         this.pool = pool;
     }
 }

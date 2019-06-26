@@ -47,7 +47,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -67,13 +66,13 @@ public class VelocityConfiguration {
 
     private final ApplicationContext applicationContext;
 
-    private final VelocityProperties properties;
+    @Autowired
+    private VelocityProperties properties;
 
     private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
 
-    public VelocityConfiguration(ApplicationContext applicationContext, VelocityProperties properties){
+    public VelocityConfiguration(ApplicationContext applicationContext){
         this.applicationContext = applicationContext;
-        this.properties = properties;
     }
 
     @PostConstruct

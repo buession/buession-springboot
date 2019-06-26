@@ -52,30 +52,24 @@ import org.springframework.context.annotation.Import;
 public class CacheConfiguration {
 
     @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Autowired
     private ShiroProperties shiroProperties;
-
-    @Autowired
-    private RedisManager shiroRedisManager;
 
     @Bean(name = "shiroRedisManager")
     @ConditionalOnMissingBean
-    public RedisManager shiroRedisManager(){
+    public RedisManager shiroRedisManager(RedisTemplate redisTemplate){
         return new DefaultRedisManager(redisTemplate);
     }
 
     @Bean(name = "shiroCacheManager")
     @ConditionalOnMissingBean
-    public CacheManager cacheManager(){
+    public CacheManager cacheManager(RedisManager shiroRedisManager){
         return new RedisCacheManager(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
                 .getSessionExpire());
     }
 
     @Bean(name = "sessionDAO")
     @ConditionalOnMissingBean
-    public SessionDAO sessionDAO(){
+    public SessionDAO sessionDAO(RedisManager shiroRedisManager){
         return new RedisSessionDAO(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
                 .getSessionExpire());
     }

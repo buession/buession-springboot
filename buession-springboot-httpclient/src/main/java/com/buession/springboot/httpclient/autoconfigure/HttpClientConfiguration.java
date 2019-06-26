@@ -25,7 +25,6 @@
 package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.ApacheHttpClient;
-import com.buession.httpclient.HttpClient;
 import com.buession.httpclient.OkHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import com.buession.httpclient.conn.ConnectionManager;
@@ -47,9 +46,6 @@ public class HttpClientConfiguration {
     @Autowired
     private HttpClientProperties httpClientProperties;
 
-    @Autowired
-    private ConnectionManager connectionManager;
-
     /**
      * 实例化 ApacheClientConnectionManager 连接池管理器
      *
@@ -65,7 +61,7 @@ public class HttpClientConfiguration {
     @Bean(name = "httpClient")
     @ConditionalOnMissingBean
     @ConditionalOnClass({org.apache.http.client.HttpClient.class})
-    public ApacheHttpClient apacheHttpClient(){
+    public ApacheHttpClient apacheHttpClient(ConnectionManager connectionManager){
         return new ApacheHttpClient(connectionManager);
     }
 
@@ -84,7 +80,7 @@ public class HttpClientConfiguration {
     @Bean(name = "httpClient")
     @ConditionalOnMissingBean
     @ConditionalOnClass({okhttp3.OkHttpClient.class})
-    public OkHttpClient okHttpHttpClient(){
+    public OkHttpClient okHttpHttpClient(ConnectionManager connectionManager){
         return new OkHttpClient(connectionManager);
     }
 

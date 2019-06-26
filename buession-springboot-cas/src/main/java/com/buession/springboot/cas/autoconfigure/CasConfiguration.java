@@ -50,9 +50,6 @@ public class CasConfiguration {
     @Autowired
     private CasProperties casProperties;
 
-    @Autowired
-    private org.pac4j.cas.config.CasConfiguration casConfiguration;
-
     @Bean(name = "casConfiguration")
     @ConditionalOnMissingBean
     public org.pac4j.cas.config.CasConfiguration casConfiguration(){
@@ -67,7 +64,7 @@ public class CasConfiguration {
     @Bean(name = "casClient")
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "pac4j.client.cas", havingValue = "on")
-    public CasClient casClient(){
+    public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasClient casClient = new CasClient();
 
         casClient.setConfiguration(casConfiguration);
@@ -81,7 +78,7 @@ public class CasConfiguration {
     @Bean(name = "casRestFormClient")
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "pac4j.client.rest", havingValue = "on")
-    public CasRestFormClient casRestFormClient(){
+    public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasRestFormClient casRestFormClient = new CasRestFormClient();
 
         casRestFormClient.setConfiguration(casConfiguration);

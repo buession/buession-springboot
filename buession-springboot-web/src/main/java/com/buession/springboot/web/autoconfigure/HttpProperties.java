@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "server")
-public class HttpConfigurationProperties {
+public class HttpProperties {
 
     @NestedConfigurationProperty
     private ResponseProperties response = new ResponseProperties();

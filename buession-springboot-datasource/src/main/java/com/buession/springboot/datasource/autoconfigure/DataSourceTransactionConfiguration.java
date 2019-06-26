@@ -25,7 +25,6 @@
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.springboot.datasource.core.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -46,24 +45,21 @@ import java.util.List;
 @EnableTransactionManagement
 public class DataSourceTransactionConfiguration {
 
-    @Autowired
-    private DataSource dataSource;
-
     @Bean(name = "masterTransactionManager")
     @ConditionalOnBean(name = "masterDataSource")
     @ConditionalOnMissingBean
-    public DataSourceTransactionManager masterTransactionManager(){
+    public DataSourceTransactionManager masterTransactionManager(DataSource dataSource){
         return new DataSourceTransactionManager(dataSource.getMaster());
     }
 
     @Bean(name = "slaveTransactionManagers")
     @ConditionalOnBean(name = "slaveDataSources")
     @ConditionalOnMissingBean
-    public List<DataSourceTransactionManager> slaveTransactionManagers(){
+    public List<DataSourceTransactionManager> slaveTransactionManagers(DataSource dataSource){
         List<DataSourceTransactionManager> slaveTransactionManagers = new ArrayList<>(dataSource.getSlaves().size());
 
-        for(javax.sql.DataSource dataSource : dataSource.getSlaves()){
-            slaveTransactionManagers.add(new DataSourceTransactionManager(dataSource));
+        for(javax.sql.DataSource ds : dataSource.getSlaves()){
+            slaveTransactionManagers.add(new DataSourceTransactionManager(ds));
         }
 
         return slaveTransactionManagers;
