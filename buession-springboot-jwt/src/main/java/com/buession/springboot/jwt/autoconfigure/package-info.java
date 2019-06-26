@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.security.pac4j;
+package com.buession.springboot.jwt.autoconfigure;

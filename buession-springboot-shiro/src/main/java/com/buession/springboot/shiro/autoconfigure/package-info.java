@@ -22,15 +22,7 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.security;
-
 /**
  * @author Yong.Teng
  */
-public class Constant {
-
-    public final static String CAS_CLIENT = "cas";
-
-    public final static String REST_CLIENT = "rest";
-
-}
+package com.buession.springboot.shiro.autoconfigure;

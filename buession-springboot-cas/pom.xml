@@ -57,6 +57,20 @@
 			<groupId>com.buession.security</groupId>
 			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-oauth</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-jwt</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>spring-webmvc-pac4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

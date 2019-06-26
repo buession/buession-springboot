@@ -22,15 +22,45 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.security;
+package com.buession.springboot.jwt.autoconfigure;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author Yong.Teng
  */
-public class Constant {
+@ConfigurationProperties(prefix = "jwt")
+public class JwtProperties {
 
-    public final static String CAS_CLIENT = "cas";
+    private String parameterName;
 
-    public final static String REST_CLIENT = "rest";
+    private String prefixHeader;
+
+    private String encryptionKey;
+
+    public String getParameterName(){
+        return parameterName;
+    }
+
+    public void setParameterName(String parameterName){
+        this.parameterName = parameterName;
+    }
+
+    public String getPrefixHeader(){
+        return prefixHeader;
+    }
+
+    public void setPrefixHeader(String prefixHeader){
+        this.prefixHeader = prefixHeader;
+    }
+
+    public String getEncryptionKey(){
+        return encryptionKey;
+    }
+
+    public void setEncryptionKey(String encryptionKey){
+        this.encryptionKey = encryptionKey;
+    }
+
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<name>Buession Springboot Captcha</name>
+	<name>Buession Springboot Jwt</name>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.buession.springboot</groupId>
@@ -9,9 +9,9 @@
 		<relativePath>../buession-springboot-parent</relativePath>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>buession-springboot-captcha</artifactId>
+	<artifactId>buession-springboot-jwt</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
-	<description>Buession Framework Springboot Captcha</description>
+	<description>Buession Framework Springboot JWT Client</description>
 	<packaging>jar</packaging>
 
 	<organization>
@@ -46,16 +46,25 @@
 			<artifactId>buession-springboot-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.buession.springboot</groupId>
-			<artifactId>buession-springboot-httpclient</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>com.buession.security</groupId>
-			<artifactId>buession-security-geetest</artifactId>
+			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-cas</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-oauth</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>spring-webmvc-pac4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -70,7 +79,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>buession-springboot-captcha</finalName>
+		<finalName>buession-springboot-jwt</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

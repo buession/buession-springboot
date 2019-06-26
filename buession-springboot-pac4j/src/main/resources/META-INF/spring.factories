@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration,\
+  com.buession.springboot.pac4j.autoconfigure.RealmConfiguration

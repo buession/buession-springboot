@@ -27,16 +27,12 @@ package com.buession.springboot.datasource.autoconfigure;
 import com.buession.springboot.datasource.core.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.util.ArrayList;
@@ -46,76 +42,52 @@ import java.util.List;
  * @author Yong.Teng
  */
 @Configuration
-@EnableConfigurationProperties(DataSourceConfigurationProperties.class)
+@EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({javax.sql.DataSource.class, EmbeddedDatabaseType.class})
-public class DataSourceConfiguration implements BeanClassLoaderAware, EnvironmentAware {
-
-    private ClassLoader classLoader;
-
-    private Environment environment;
+public class DataSourceConfiguration {
 
     @Autowired
-    private DataSourceConfigurationProperties dataSourceConfigurationProperties;
+    private DataSourceProperties dataSourceProperties;
 
     private final static Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
-
-    public ClassLoader getClassLoader(){
-        return classLoader;
-    }
-
-    public void setClassLoader(ClassLoader classLoader){
-        this.classLoader = classLoader;
-    }
-
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader){
-        setClassLoader(classLoader);
-    }
-
-    public Environment getEnvironment(){
-        return environment;
-    }
-
-    @Override
-    public void setEnvironment(Environment environment){
-        this.environment = environment;
-    }
 
     @Bean(name = "dataSource")
     @ConditionalOnMissingBean
     public DataSource dataSource(){
-        logger.info("Create master datasource: by driver {}, type {}", dataSourceConfigurationProperties
-                .getDriverClassName(), dataSourceConfigurationProperties.getType().getName());
-        javax.sql.DataSource masterDataSource = createDataSource(dataSourceConfigurationProperties.getMaster(),
-                dataSourceConfigurationProperties.getType());
+        logger.info("Create master datasource: by driver {}, type {}", dataSourceProperties.getDriverClassName(),
+                dataSourceProperties.getType().getName());
+        javax.sql.DataSource masterDataSource = createDataSource(dataSourceProperties.getMaster(),
+                dataSourceProperties.getType());
 
-        List<DataSourceProperties> slavesDatasourceProperties = dataSourceConfigurationProperties.getSlaves();
+        List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slavesDatasourceProperties =
+                dataSourceProperties.getSlaves();
         List<javax.sql.DataSource> slavesDtaSources = new ArrayList<>(slavesDatasourceProperties == null ? 1 :
                 slavesDatasourceProperties.size());
 
         if(slavesDatasourceProperties == null){
-            javax.sql.DataSource slaveDataSource = createDataSource(dataSourceConfigurationProperties.getMaster(),
-                    dataSourceConfigurationProperties.getType());
+            javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties.getMaster(),
+                    dataSourceProperties.getType());
 
             slavesDtaSources.add(slaveDataSource);
         }else{
-            for(DataSourceProperties dataSourceProperties : slavesDatasourceProperties){
-                javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties,
-                        dataSourceConfigurationProperties.getType());
+            for(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties dataSourceProperties :
+                    slavesDatasourceProperties){
+                javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties, dataSourceProperties
+                        .getType());
 
                 slavesDtaSources.add(slaveDataSource);
             }
         }
 
         logger.info("Create {} size slave datasource: by driver {}, type {}", slavesDtaSources.size(),
-                dataSourceConfigurationProperties.getDriverClassName(), dataSourceConfigurationProperties.getType()
-                        .getName());
+                dataSourceProperties.getDriverClassName(), dataSourceProperties.getType().getName());
 
         return new DataSource(masterDataSource, slavesDtaSources);
     }
 
-    protected final static javax.sql.DataSource createDataSource(DataSourceProperties properties, Class<? extends
-            javax.sql.DataSource> type){
+    protected final static javax.sql.DataSource createDataSource(org.springframework.boot.autoconfigure.jdbc
+                                                                         .DataSourceProperties properties, Class<?
+            extends javax.sql.DataSource> type){
         return properties.initializeDataSourceBuilder().type(type).build();
     }
 

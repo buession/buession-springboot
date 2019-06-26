@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.cas.autoconfigure.CasConfiguration
+  com.buession.springboot.shiro.autoconfigure.CacheConfiguration

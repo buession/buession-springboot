@@ -22,53 +22,62 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.security.pac4j.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
 
-import org.pac4j.cas.client.CasClient;
-import org.pac4j.cas.client.rest.CasRestFormClient;
-import org.pac4j.core.client.Client;
-import org.pac4j.core.client.Clients;
-import org.pac4j.core.config.Config;
+import com.buession.redis.RedisTemplate;
+import com.buession.security.shiro.cache.DefaultRedisManager;
+import com.buession.security.shiro.cache.RedisCacheManager;
+import com.buession.security.shiro.cache.RedisManager;
+import com.buession.security.shiro.cache.RedisSessionDAO;
+import com.buession.springboot.cache.redis.autoconfigure.RedisConfiguration;
+import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.context.annotation.Import;
 
 /**
  * @author Yong.Teng
  */
 @Configuration
-@ConditionalOnClass({CasClient.class, CasRestFormClient.class})
-public class Pac4jConfiguration {
+@EnableConfigurationProperties(ShiroProperties.class)
+@Import(RedisConfiguration.class)
+@AutoConfigureAfter(RedisConfiguration.class)
+@ConditionalOnBean(RedisTemplate.class)
+public class CacheConfiguration {
 
-    @Autowired(required = false)
-    private CasClient casClient;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
-    @Autowired(required = false)
-    private CasRestFormClient casRestFormClient;
+    @Autowired
+    private ShiroProperties shiroProperties;
 
-    @Bean(name = "pac4jConfig")
+    @Autowired
+    private RedisManager shiroRedisManager;
+
+    @Bean(name = "shiroRedisManager")
     @ConditionalOnMissingBean
-    public Config pac4jConfig(){
-        List<Client> clients = new ArrayList<>(2);
+    public RedisManager shiroRedisManager(){
+        return new DefaultRedisManager(redisTemplate);
+    }
 
-        if(casClient != null){
-            clients.add(casClient);
-        }
+    @Bean(name = "shiroCacheManager")
+    @ConditionalOnMissingBean
+    public CacheManager cacheManager(){
+        return new RedisCacheManager(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
+                .getSessionExpire());
+    }
 
-        if(casRestFormClient != null){
-            clients.add(casRestFormClient);
-        }
-
-        Config config = new Config();
-
-        config.setClients(new Clients(clients.toArray(new Client[]{})));
-
-        return config;
+    @Bean(name = "sessionDAO")
+    @ConditionalOnMissingBean
+    public SessionDAO sessionDAO(){
+        return new RedisSessionDAO(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
+                .getSessionExpire());
     }
 
 }

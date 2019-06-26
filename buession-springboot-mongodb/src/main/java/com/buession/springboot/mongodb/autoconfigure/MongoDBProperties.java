@@ -19,48 +19,48 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2018 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cas.autoconfigure;
+package com.buession.springboot.mongodb.autoconfigure;
 
+import com.mongodb.ReadPreference;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "jwt")
-public class JwtProperties {
+@ConfigurationProperties(prefix = "spring.data.mongodb")
+public class MongoDBProperties {
 
-    private String parameterName;
+    private Class<? extends MongoTypeMapper> typeMapper;
 
-    private String prefixHeader;
+    private String typeKey;
 
-    private String encryptionKey;
+    private Class<ReadPreference> readPreference;
 
-    public String getParameterName(){
-        return parameterName;
+    public Class<? extends MongoTypeMapper> getTypeMapper(){
+        return typeMapper;
     }
 
-    public void setParameterName(String parameterName){
-        this.parameterName = parameterName;
+    public void setTypeMapper(Class<? extends MongoTypeMapper> typeMapper){
+        this.typeMapper = typeMapper;
     }
 
-    public String getPrefixHeader(){
-        return prefixHeader;
+    public String getTypeKey(){
+        return typeKey;
     }
 
-    public void setPrefixHeader(String prefixHeader){
-        this.prefixHeader = prefixHeader;
+    public void setTypeKey(String typeKey){
+        this.typeKey = typeKey;
     }
 
-    public String getEncryptionKey(){
-        return encryptionKey;
+    public Class<ReadPreference> getReadPreference(){
+        return readPreference;
     }
 
-    public void setEncryptionKey(String encryptionKey){
-        this.encryptionKey = encryptionKey;
+    public void setReadPreference(Class<ReadPreference> readPreference){
+        this.readPreference = readPreference;
     }
-
-
 }

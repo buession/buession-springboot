@@ -24,20 +24,15 @@
  */
 package com.buession.springboot.mongodb.autoconfigure;
 
-import com.buession.core.validator.Validate;
-import com.mongodb.MongoClientOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
@@ -49,78 +44,37 @@ import javax.annotation.PostConstruct;
  * @author Yong.Teng
  */
 @Configuration
-@EnableConfigurationProperties(MongoDBConfigurationProperties.class)
+@EnableConfigurationProperties(MongoDBProperties.class)
 @AutoConfigureAfter(MongoDataAutoConfiguration.class)
 @Import({MongoDataAutoConfiguration.class})
-public class MongoDBConfiguration implements EnvironmentAware {
-
-    protected final ApplicationContext applicationContext;
-
-    protected final MongoClientOptions options;
-
-    protected Environment environment;
+public class MongoDBConfiguration {
 
     @Autowired
-    protected MongoDBConfigurationProperties mongoDBConfigurationProperties;
+    private MongoDBProperties mongoDBProperties;
 
     @Autowired
-    protected MongoMappingContext mongoMappingContext;
+    private MongoMappingContext mongoMappingContext;
 
     @Autowired
-    protected MappingMongoConverter mappingMongoConverter;
+    private MappingMongoConverter mappingMongoConverter;
 
     private final static Logger logger = LoggerFactory.getLogger(MongoDBConfiguration.class);
-
-    public MongoDBConfiguration(ApplicationContext applicationContext, ObjectProvider<MongoClientOptions> options,
-                                Environment environment){
-        this.applicationContext = applicationContext;
-        this.options = options.getIfAvailable();
-        this.environment = environment;
-    }
 
     @PostConstruct
     public void initialize(){
         setTypeMapper();
     }
 
-    public ApplicationContext getApplicationContext(){
-        return applicationContext;
-    }
-
-    public MongoClientOptions getOptions(){
-        return options;
-    }
-
-    public Environment getEnvironment(){
-        return environment;
-    }
-
-    @Override
-    public void setEnvironment(Environment environment){
-        this.environment = environment;
-    }
-
     protected void setTypeMapper(){
-        if(mongoDBConfigurationProperties.getTypeMapper() != null){
-            try{
-                MongoTypeMapper mongoTypeMapper = mongoDBConfigurationProperties.getTypeMapper().newInstance();
+        MongoTypeMapper mongoTypeMapper;
 
-                mappingMongoConverter.setTypeMapper(mongoTypeMapper);
-            }catch(InstantiationException e){
-                logger.error("Set MongoTypeMapper failure: {}", e);
-            }catch(IllegalAccessException e){
-                logger.error("Set MongoTypeMapper failure: {}", e);
-            }
-        }else if(Validate.hasText(mongoDBConfigurationProperties.getTypeKey())){
-            MongoTypeMapper mongoTypeMapper;
-
-            if(mongoDBConfigurationProperties.getTypeKey() == null){
-                mongoTypeMapper = new DefaultMongoTypeMapper(null, mongoMappingContext);
-            }else{
-                mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBConfigurationProperties.getTypeKey(),
-                        mongoMappingContext);
-            }
-            mappingMongoConverter.setTypeMapper(mongoTypeMapper);
+        if(mongoDBProperties.getTypeMapper() != null){
+            mongoTypeMapper = BeanUtils.instantiateClass(mongoDBProperties.getTypeMapper());
+        }else{
+            mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(), mongoMappingContext);
         }
+
+        mappingMongoConverter.setTypeMapper(mongoTypeMapper);
     }
+
 }

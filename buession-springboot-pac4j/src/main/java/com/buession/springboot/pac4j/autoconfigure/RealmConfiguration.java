@@ -22,7 +22,24 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.pac4j.autoconfigure;
+
+import io.buji.pac4j.realm.Pac4jRealm;
+import org.apache.shiro.realm.Realm;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.security.pac4j.autoconfigure;
+@Configuration
+@ConditionalOnClass({Realm.class})
+public class RealmConfiguration {
+
+    @Bean
+    public Realm pac4jRealm(){
+        return new Pac4jRealm();
+    }
+
+}

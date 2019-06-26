@@ -1,4 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.security.pac4j.autoconfigure.Pac4jConfiguration,\
-  com.buession.springboot.security.pac4j.autoconfigure.RealmConfiguration,\
   com.buession.springboot.security.shiro.autoconfigure.CacheConfiguration

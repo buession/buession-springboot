@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.springboot.datasource.core.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,7 +34,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,31 +41,28 @@ import java.util.List;
  * @author Yong.Teng
  */
 @Configuration
-@ConditionalOnBean({DataSourceConfiguration.class, DataSource.class})
+@ConditionalOnBean({DataSourceConfiguration.class, javax.sql.DataSource.class})
 @Import({DataSourceConfiguration.class})
 @EnableTransactionManagement
 public class DataSourceTransactionConfiguration {
 
     @Autowired
-    private DataSource masterDataSource;
-
-    @Autowired(required = false)
-    private List<DataSource> slaveDataSources;
+    private DataSource dataSource;
 
     @Bean(name = "masterTransactionManager")
     @ConditionalOnBean(name = "masterDataSource")
     @ConditionalOnMissingBean
     public DataSourceTransactionManager masterTransactionManager(){
-        return new DataSourceTransactionManager(masterDataSource);
+        return new DataSourceTransactionManager(dataSource.getMaster());
     }
 
     @Bean(name = "slaveTransactionManagers")
     @ConditionalOnBean(name = "slaveDataSources")
     @ConditionalOnMissingBean
     public List<DataSourceTransactionManager> slaveTransactionManagers(){
-        List<DataSourceTransactionManager> slaveTransactionManagers = new ArrayList<>(slaveDataSources.size());
+        List<DataSourceTransactionManager> slaveTransactionManagers = new ArrayList<>(dataSource.getSlaves().size());
 
-        for(DataSource dataSource : slaveDataSources){
+        for(javax.sql.DataSource dataSource : dataSource.getSlaves()){
             slaveTransactionManagers.add(new DataSourceTransactionManager(dataSource));
         }
 

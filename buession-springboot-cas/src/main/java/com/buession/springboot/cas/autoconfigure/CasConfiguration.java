@@ -24,11 +24,11 @@
  */
 package com.buession.springboot.cas.autoconfigure;
 
-import com.buession.springboot.cas.Constant;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
 import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,7 +40,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(CasProperties.class)
+@ConditionalOnClass({org.pac4j.cas.config.CasConfiguration.class})
 public class CasConfiguration {
+
+    public final static String CAS_CLIENT = "cas";
+
+    public final static String REST_CLIENT = "rest";
 
     @Autowired
     private CasProperties casProperties;
@@ -68,7 +73,7 @@ public class CasConfiguration {
         casClient.setConfiguration(casConfiguration);
         casClient.setCallbackUrl(casProperties.getCallbackUrl());
         casClient.setProfileCreator(new AuthenticatorProfileCreator<>());
-        casClient.setName(Constant.CAS_CLIENT);
+        casClient.setName(CAS_CLIENT);
 
         return casClient;
     }
@@ -78,9 +83,11 @@ public class CasConfiguration {
     @ConditionalOnProperty(name = "pac4j.client.rest", havingValue = "on")
     public CasRestFormClient casRestFormClient(){
         CasRestFormClient casRestFormClient = new CasRestFormClient();
+
         casRestFormClient.setConfiguration(casConfiguration);
-        casRestFormClient.setName(Constant.REST_CLIENT);
+        casRestFormClient.setName(REST_CLIENT);
         casRestFormClient.setProfileCreator(new AuthenticatorProfileCreator<>());
+
         return casRestFormClient;
     }
 

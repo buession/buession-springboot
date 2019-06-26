@@ -22,17 +22,7 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cas;
-
 /**
  * @author Yong.Teng
  */
-public class Constant {
-
-    public final static String CAS_CLIENT = "cas";
-
-    public final static String REST_CLIENT = "rest";
-
-    public final static String JWT_CLIENT = "jwt";
-
-}
+package com.buession.springboot.pac4j.autoconfigure;

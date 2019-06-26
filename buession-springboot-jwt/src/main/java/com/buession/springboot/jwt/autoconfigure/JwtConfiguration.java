@@ -22,10 +22,9 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cas.autoconfigure;
+package com.buession.springboot.jwt.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
-import com.buession.springboot.cas.Constant;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -52,8 +51,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(JwtProperties.class)
-@ConditionalOnClass(JwtAuthenticator.class)
+@ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
 public class JwtConfiguration {
+
+    public final static String NAME = "jwt";
 
     private final static int PAD_SIZE = 32;
 
@@ -74,16 +75,17 @@ public class JwtConfiguration {
     @ConditionalOnMissingBean
     public ParameterClient jwtClient(){
         ParameterClient parameterClient = new ParameterClient(jwtProperties.getParameterName(), jwtAuthenticator());
+        HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
+                .getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader());
 
         parameterClient.setSupportGetRequest(true);
-        parameterClient.setCredentialsExtractor(new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
-                .getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader()));
+        parameterClient.setCredentialsExtractor(headerExtractor);
         parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
-        parameterClient.setName(Constant.JWT_CLIENT);
+        parameterClient.setName(NAME);
 
         logger.debug("initialize {} name => {}, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, "
-                + "headerName => {}", ParameterClient.class.getName(), Constant.JWT_CLIENT, jwtProperties
-                .getEncryptionKey(), jwtProperties.getParameterName(), jwtProperties.getPrefixHeader());
+                + "headerName => {}", ParameterClient.class.getName(), NAME, jwtProperties.getEncryptionKey(),
+                jwtProperties.getParameterName(), jwtProperties.getPrefixHeader());
 
         return parameterClient;
     }

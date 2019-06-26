@@ -22,24 +22,48 @@
  * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.security.pac4j.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
 
-import io.buji.pac4j.realm.Pac4jRealm;
-import org.apache.shiro.realm.Realm;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import com.buession.core.validator.Validate;
+import org.apache.shiro.config.Ini;
+import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
+import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  */
-@Configuration
-@ConditionalOnClass({Realm.class})
-public class RealmConfiguration {
+public abstract class AbstractShiroWebConfiguration extends org.apache.shiro.spring.web.config
+        .AbstractShiroWebConfiguration {
 
-    @Bean
-    public Realm pac4jRealm(){
-        return new Pac4jRealm();
+    @Autowired
+    protected ShiroProperties shiroProperties;
+
+    @Bean(name = "shiroFilterChainDefinition")
+    @ConditionalOnResource(resources = {"classpath:shiro.conf"})
+    @Override
+    public ShiroFilterChainDefinition shiroFilterChainDefinition(){
+        Ini ini = Ini.fromResourcePath("classpath:shiro.conf");
+
+        Ini.Section urls = ini.getSection("urls");
+
+        DefaultShiroFilterChainDefinition shiroFilterChainDefinition = new DefaultShiroFilterChainDefinition();
+
+        if(Validate.isEmpty(shiroProperties.getFilterChainDefinitions()) == false){
+            shiroProperties.getFilterChainDefinitions().forEach((antPath, definition)->{
+                shiroFilterChainDefinition.addPathDefinition(antPath, definition);
+            });
+        }
+
+        if(Validate.isEmpty(urls) == false){
+            urls.forEach((antPath, definition)->{
+                shiroFilterChainDefinition.addPathDefinition(antPath, definition);
+            });
+        }
+
+        return shiroFilterChainDefinition;
     }
 
 }

@@ -19,49 +19,51 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2018 Buession.com Inc.														       |
+ * | Copyright @ 2013-2019 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.mongodb.autoconfigure;
+package com.buession.springboot.pac4j.autoconfigure;
 
-import com.mongodb.ReadPreference;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
+import org.pac4j.cas.client.CasClient;
+import org.pac4j.cas.client.rest.CasRestFormClient;
+import org.pac4j.core.client.Client;
+import org.pac4j.core.config.Config;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.data.mongodb")
-public class MongoDBConfigurationProperties {
+@Configuration
+@ConditionalOnClass({CasClient.class, CasRestFormClient.class})
+public class Pac4jConfiguration {
 
-    private Class<? extends MongoTypeMapper> typeMapper;
+    @Autowired(required = false)
+    private CasClient casClient;
 
-    private String typeKey;
+    @Autowired(required = false)
+    private CasRestFormClient casRestFormClient;
 
-    private Class<ReadPreference> readPreference;
+    @Bean(name = "pac4jConfig")
+    @ConditionalOnMissingBean
+    public Config pac4jConfig(){
+        List<Client> clients = new ArrayList<>(2);
 
-    public Class<? extends MongoTypeMapper> getTypeMapper(){
-        return typeMapper;
-    }
+        if(casClient != null){
+            clients.add(casClient);
+        }
 
-    public void setTypeMapper(Class<? extends MongoTypeMapper> typeMapper){
-        this.typeMapper = typeMapper;
-    }
+        if(casRestFormClient != null){
+            clients.add(casRestFormClient);
+        }
 
-    public String getTypeKey(){
-        return typeKey;
-    }
-
-    public void setTypeKey(String typeKey){
-        this.typeKey = typeKey;
-    }
-
-    public Class<ReadPreference> getReadPreference(){
-        return readPreference;
-    }
-
-    public void setReadPreference(Class<ReadPreference> readPreference){
-        this.readPreference = readPreference;
+        return new Config(clients);
     }
 
 }
