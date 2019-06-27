@@ -34,6 +34,7 @@ import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.pac4j.http.client.direct.ParameterClient;
 import org.pac4j.jwt.config.encryption.SecretEncryptionConfiguration;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
+import org.pac4j.jwt.config.signature.SignatureConfiguration;
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Yong.Teng
@@ -58,49 +61,54 @@ public class JwtConfiguration {
 
     private final static int PAD_SIZE = 32;
 
+    private SignatureConfiguration signatureConfiguration;
+
+    private SecretEncryptionConfiguration secretEncryptionConfiguration;
+
     @Autowired
     private JwtProperties jwtProperties;
 
     private final static Logger logger = LoggerFactory.getLogger(JwtConfiguration.class);
 
+    @PostConstruct
+    private void initialize(){
+        String jwtSecret = StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties
+                .getEncryptionKey());
+        String jwtEncryptionKey = StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties
+                .getEncryptionKey());
+
+        signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
+        secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR,
+                EncryptionMethod.A128CBC_HS256);
+    }
+
     @Bean(name = "jwtGenerator")
     @ConditionalOnMissingBean
     public JwtGenerator<CommonProfile> jwtGenerator(){
-        return new JwtGenerator<>(new SecretSignatureConfiguration(getJwtSecret(), JWSAlgorithm.HS256), new
-                SecretEncryptionConfiguration(getJwtEncryptionKey(), JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256));
+        return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
     }
 
     @Bean(name = "jwtClient")
     @ConditionalOnProperty(name = "pac4j.client.jwt", havingValue = "on")
     @ConditionalOnMissingBean
     public ParameterClient jwtClient(){
-        ParameterClient parameterClient = new ParameterClient(jwtProperties.getParameterName(), jwtAuthenticator());
+        ParameterClient parameterClient = new ParameterClient();
         HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
                 .getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader());
+        JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
 
-        parameterClient.setSupportGetRequest(true);
-        parameterClient.setCredentialsExtractor(headerExtractor);
-        parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
         parameterClient.setName(NAME);
+        parameterClient.setParameterName(jwtProperties.getParameterName());
+        parameterClient.setSupportGetRequest(true);
+        parameterClient.setAuthenticator(jwtAuthenticator);
+        parameterClient.setCredentialsExtractor(headerExtractor);
+        //parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
         logger.debug("initialize {} name => {}, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, "
                 + "headerName => {}", ParameterClient.class.getName(), NAME, jwtProperties.getEncryptionKey(),
                 jwtProperties.getParameterName(), jwtProperties.getPrefixHeader());
 
         return parameterClient;
-    }
-
-    private String getJwtSecret(){
-        return StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties.getEncryptionKey());
-    }
-
-    private String getJwtEncryptionKey(){
-        return StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties.getEncryptionKey());
-    }
-
-    public JwtAuthenticator jwtAuthenticator(){
-        return new JwtAuthenticator(new SecretSignatureConfiguration(getJwtSecret(), JWSAlgorithm.HS256), new
-                SecretEncryptionConfiguration(getJwtEncryptionKey(), JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256));
     }
 
 }

@@ -67,10 +67,10 @@ public class CasConfiguration {
     public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasClient casClient = new CasClient();
 
+        casClient.setName(CAS_CLIENT);
         casClient.setConfiguration(casConfiguration);
         casClient.setCallbackUrl(casProperties.getCallbackUrl());
-        casClient.setProfileCreator(new AuthenticatorProfileCreator<>());
-        casClient.setName(CAS_CLIENT);
+        // casClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
         return casClient;
     }
@@ -81,9 +81,9 @@ public class CasConfiguration {
     public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasRestFormClient casRestFormClient = new CasRestFormClient();
 
-        casRestFormClient.setConfiguration(casConfiguration);
         casRestFormClient.setName(REST_CLIENT);
-        casRestFormClient.setProfileCreator(new AuthenticatorProfileCreator<>());
+        casRestFormClient.setConfiguration(casConfiguration);
+        //casRestFormClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
         return casRestFormClient;
     }
