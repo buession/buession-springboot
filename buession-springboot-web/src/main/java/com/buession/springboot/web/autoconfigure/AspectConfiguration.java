@@ -26,7 +26,7 @@
  */
 package com.buession.springboot.web.autoconfigure;
 
-import com.buession.web.mvc.view.document.DocumentMeteDataProcessor;
+import com.buession.web.mvc.view.document.DocumentMetaDataProcessor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,10 +42,10 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
 public class AspectConfiguration {
 
-    @Bean(name = "documentMeteDataProcessor")
+    @Bean(name = "documentMetaDataProcessor")
     @ConditionalOnMissingBean
-    public DocumentMeteDataProcessor documentMeteDataProcessor(){
-        return new DocumentMeteDataProcessor();
+    public DocumentMetaDataProcessor documentMetaDataProcessor(){
+        return new DocumentMetaDataProcessor();
     }
 
 }
