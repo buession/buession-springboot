@@ -28,16 +28,11 @@ package com.buession.springboot.boot.application;
 
 import com.buession.springboot.boot.config.RuntimeProperties;
 import org.springframework.boot.Banner;
-import org.springframework.boot.WebApplicationType;
 
 /**
  * @author Yong.Teng
  */
 public abstract class AbstractApplication implements Application {
-
-    protected WebApplicationType getWebApplicationType(){
-        return WebApplicationType.SERVLET;
-    }
 
     /**
      * 获取 Banner

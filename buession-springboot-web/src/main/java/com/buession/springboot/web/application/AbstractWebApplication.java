@@ -27,6 +27,7 @@
 package com.buession.springboot.web.application;
 
 import com.buession.springboot.boot.application.AbstractApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
@@ -34,8 +35,18 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 public abstract class AbstractWebApplication extends AbstractApplication {
 
+    private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
+
     protected AbstractWebApplication(){
 
+    }
+
+    protected AbstractWebApplication(WebApplicationType webApplicationType){
+        this.webApplicationType = webApplicationType;
+    }
+
+    protected WebApplicationType getWebApplicationType(){
+        return webApplicationType;
     }
 
     @Override
