@@ -25,10 +25,6 @@
 package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.filter.PoweredByHeaderFilter;
-import com.buession.web.filter.ResponseHeadersFilter;
-import com.buession.web.filter.ServerInfoFilter;
-import com.buession.web.http.response.ResponseHeaderProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,52 +40,110 @@ import java.util.Map;
  */
 @Configuration
 @EnableConfigurationProperties({HttpProperties.class})
-@ConditionalOnWebApplication
 public class HttpConfiguration {
 
     @Autowired(required = false)
-    private HttpProperties httpProperties;
+    protected HttpProperties httpProperties;
 
-    @Bean(name = "responseHeadersFilter")
-    @ConditionalOnMissingBean
-    public ResponseHeadersFilter responseHeadersFilter(){
-        final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
+    @Configuration
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    public static class ServletHttpConfiguration extends HttpConfiguration {
 
-        if(httpProperties != null){
-            Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
+        @Bean(name = "responseHeadersFilter")
+        @ConditionalOnMissingBean
+        public com.buession.web.servlet.filter.ResponseHeadersFilter responseHeadersFilter(){
+            final com.buession.web.servlet.filter.ResponseHeadersFilter responseHeadersFilter = new com.buession.web
+                    .servlet.filter.ResponseHeadersFilter();
 
-            if(responseHeaders != null){
-                responseHeadersFilter.setHeaders(responseHeaders);
+            if(httpProperties != null){
+                Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
+
+                if(responseHeaders != null){
+                    responseHeadersFilter.setHeaders(responseHeaders);
+                }
             }
+
+            return responseHeadersFilter;
         }
 
-        return responseHeadersFilter;
-    }
-
-    @Bean(name = "poweredByHeaderFilter")
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "server", name = "send-poweredby", havingValue = "true", matchIfMissing = true)
-    public PoweredByHeaderFilter poweredByHeaderFilter(){
-        return new PoweredByHeaderFilter();
-    }
-
-    @Bean(name = "serverInfoFilter")
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "server", name = "send-server-info", havingValue = "true", matchIfMissing = true)
-    public ServerInfoFilter serverInfoFilter(){
-        ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
-
-        if(Validate.hasText(httpProperties.getServerInfoName())){
-            serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
+        @Bean(name = "poweredByHeaderFilter")
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "server", name = "send-poweredby", havingValue = "true", matchIfMissing = true)
+        public com.buession.springboot.web.servlet.filter.PoweredByHeaderFilter poweredByHeaderFilter(){
+            return new com.buession.springboot.web.servlet.filter.PoweredByHeaderFilter();
         }
 
-        return serverInfoFilter;
+        @Bean(name = "serverInfoFilter")
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "server", name = "send-server-info", havingValue = "true", matchIfMissing =
+                true)
+        public com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter(){
+            final com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter = new com.buession.web.servlet
+                    .filter.ServerInfoFilter();
+
+            if(Validate.hasText(httpProperties.getServerInfoName())){
+                serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
+            }
+
+            return serverInfoFilter;
+        }
+
+        @Bean(name = "responseHeaderProcessor")
+        @ConditionalOnMissingBean
+        public com.buession.web.servlet.http.response.ResponseHeaderProcessor responseHeaderProcessor(){
+            return new com.buession.web.servlet.http.response.ResponseHeaderProcessor();
+        }
+
     }
 
-    @Bean(name = "responseHeaderProcessor")
-    @ConditionalOnMissingBean
-    public ResponseHeaderProcessor responseHeaderProcessor(){
-        return new ResponseHeaderProcessor();
+    @Configuration
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+    public static class ReactiveHttpConfiguration extends HttpConfiguration {
+
+        @Bean(name = "responseHeadersFilter")
+        @ConditionalOnMissingBean
+        public com.buession.web.reactive.filter.ResponseHeadersFilter responseHeadersFilter(){
+            final com.buession.web.reactive.filter.ResponseHeadersFilter responseHeadersFilter = new com.buession.web
+                    .reactive.filter.ResponseHeadersFilter();
+
+            if(httpProperties != null){
+                Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
+
+                if(responseHeaders != null){
+                    responseHeadersFilter.setHeaders(responseHeaders);
+                }
+            }
+
+            return responseHeadersFilter;
+        }
+
+        @Bean(name = "poweredByHeaderFilter")
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "server", name = "send-poweredby", havingValue = "true", matchIfMissing = true)
+        public com.buession.springboot.web.reactive.filter.PoweredByHeaderFilter poweredByHeaderFilter(){
+            return new com.buession.springboot.web.reactive.filter.PoweredByHeaderFilter();
+        }
+
+        @Bean(name = "serverInfoFilter")
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "server", name = "send-server-info", havingValue = "true", matchIfMissing =
+                true)
+        public com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter(){
+            final com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter = new com.buession.web.reactive
+                    .filter.ServerInfoFilter();
+
+            if(Validate.hasText(httpProperties.getServerInfoName())){
+                serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
+            }
+
+            return serverInfoFilter;
+        }
+
+        @Bean(name = "responseHeaderProcessor")
+        @ConditionalOnMissingBean
+        public com.buession.web.reactive.http.response.ResponseHeaderProcessor responseHeaderProcessor(){
+            return new com.buession.web.reactive.http.response.ResponseHeaderProcessor();
+        }
     }
 
 }

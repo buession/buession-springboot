@@ -24,25 +24,7 @@
  * | Copyright @ 2013-2018 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.filter;
-
-import com.buession.core.Framework;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * @author Yong.Teng
  */
-public class PoweredByHeaderFilter extends com.buession.web.filter.ResponseHeadersFilter {
-
-    @Override
-    public Map<String, String> getHeaders(){
-        Map<String, String> headers = new LinkedHashMap<>();
-
-        headers.put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
-
-        return headers;
-    }
-
-}
+package com.buession.springboot.web.servlet.filter;
