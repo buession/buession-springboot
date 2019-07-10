@@ -32,6 +32,7 @@ import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,16 +52,20 @@ public class HttpClientConfiguration {
      *
      * @return ApacheClientConnectionManager 连接池管理器
      */
-    @Bean(name = "httpConnectionManager")
-    @ConditionalOnMissingBean
+    @Bean
     @ConditionalOnClass({org.apache.http.conn.HttpClientConnectionManager.class})
+    @ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing
+            = true)
+    @ConditionalOnMissingBean
     public ApacheClientConnectionManager apacheClientConnectionManager(){
         return new ApacheClientConnectionManager(httpClientProperties);
     }
 
-    @Bean(name = "httpClient")
-    @ConditionalOnMissingBean
+    @Bean
     @ConditionalOnClass({org.apache.http.client.HttpClient.class})
+    @ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing
+            = true)
+    @ConditionalOnMissingBean
     public ApacheHttpClient apacheHttpClient(ConnectionManager connectionManager){
         return new ApacheHttpClient(connectionManager);
     }
@@ -70,16 +75,18 @@ public class HttpClientConfiguration {
      *
      * @return OkHttpClientConnectionManager 连接池管理器
      */
-    @Bean(name = "httpConnectionManager")
-    @ConditionalOnMissingBean
+    @Bean
     @ConditionalOnClass({okhttp3.ConnectionPool.class})
+    @ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnMissingBean
     public OkHttpClientConnectionManager okHttpClientConnectionManager(){
         return new OkHttpClientConnectionManager(httpClientProperties);
     }
 
-    @Bean(name = "httpClient")
-    @ConditionalOnMissingBean
+    @Bean
     @ConditionalOnClass({okhttp3.OkHttpClient.class})
+    @ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnMissingBean
     public OkHttpClient okHttpHttpClient(ConnectionManager connectionManager){
         return new OkHttpClient(connectionManager);
     }
