@@ -45,15 +45,15 @@ import java.util.List;
 @EnableTransactionManagement
 public class DataSourceTransactionConfiguration {
 
-    @Bean(name = "masterTransactionManager")
-    @ConditionalOnBean(name = "masterDataSource")
+    @Bean
+    @ConditionalOnBean({DataSource.class})
     @ConditionalOnMissingBean
     public DataSourceTransactionManager masterTransactionManager(DataSource dataSource){
         return new DataSourceTransactionManager(dataSource.getMaster());
     }
 
-    @Bean(name = "slaveTransactionManagers")
-    @ConditionalOnBean(name = "slaveDataSources")
+    @Bean
+    @ConditionalOnBean({DataSource.class})
     @ConditionalOnMissingBean
     public List<DataSourceTransactionManager> slaveTransactionManagers(DataSource dataSource){
         List<DataSourceTransactionManager> slaveTransactionManagers = new ArrayList<>(dataSource.getSlaves().size());

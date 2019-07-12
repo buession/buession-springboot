@@ -50,7 +50,7 @@ public class Pac4jConfiguration {
     @Autowired(required = false)
     private CasRestFormClient casRestFormClient;
 
-    @Bean(name = "pac4jConfig")
+    @Bean
     @ConditionalOnMissingBean
     public Config pac4jConfig(){
         List<Client> clients = new ArrayList<>(2);

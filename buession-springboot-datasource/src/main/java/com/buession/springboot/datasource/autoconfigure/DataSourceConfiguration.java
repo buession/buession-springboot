@@ -51,7 +51,7 @@ public class DataSourceConfiguration {
 
     private final static Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
 
-    @Bean(name = "dataSource")
+    @Bean
     @ConditionalOnMissingBean
     public DataSource dataSource(){
         logger.info("Create master datasource: by driver {}, type {}", dataSourceProperties.getDriverClassName(),

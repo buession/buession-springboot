@@ -82,13 +82,13 @@ public class JwtConfiguration {
                 EncryptionMethod.A128CBC_HS256);
     }
 
-    @Bean(name = "jwtGenerator")
+    @Bean
     @ConditionalOnMissingBean
     public JwtGenerator<CommonProfile> jwtGenerator(){
         return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
     }
 
-    @Bean(name = "jwtClient")
+    @Bean
     @ConditionalOnProperty(name = "pac4j.client.jwt", havingValue = "on")
     @ConditionalOnMissingBean
     public ParameterClient jwtClient(){

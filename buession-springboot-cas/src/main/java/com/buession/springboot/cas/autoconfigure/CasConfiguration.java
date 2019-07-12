@@ -50,7 +50,7 @@ public class CasConfiguration {
     @Autowired
     private CasProperties casProperties;
 
-    @Bean(name = "casConfiguration")
+    @Bean
     @ConditionalOnMissingBean
     public org.pac4j.cas.config.CasConfiguration casConfiguration(){
         org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration
@@ -61,29 +61,27 @@ public class CasConfiguration {
         return casConfiguration;
     }
 
-    @Bean(name = "casClient")
+    @Bean
+    @ConditionalOnProperty(prefix = "pac4j.client", name = CAS_CLIENT, havingValue = "on")
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "pac4j.client.cas", havingValue = "on")
     public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasClient casClient = new CasClient();
 
         casClient.setName(CAS_CLIENT);
         casClient.setConfiguration(casConfiguration);
         casClient.setCallbackUrl(casProperties.getCallbackUrl());
-        // casClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
         return casClient;
     }
 
-    @Bean(name = "casRestFormClient")
+    @Bean
+    @ConditionalOnProperty(prefix = "pac4j.client", name = REST_CLIENT, havingValue = "on")
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "pac4j.client.rest", havingValue = "on")
     public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
         CasRestFormClient casRestFormClient = new CasRestFormClient();
 
         casRestFormClient.setName(REST_CLIENT);
         casRestFormClient.setConfiguration(casConfiguration);
-        //casRestFormClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
         return casRestFormClient;
     }

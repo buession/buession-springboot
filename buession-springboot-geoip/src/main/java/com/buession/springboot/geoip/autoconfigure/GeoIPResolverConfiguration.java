@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({DatabaseReader.class})
 public class GeoIPResolverConfiguration {
 
-    @Bean(name = "geoIPResolver")
+    @Bean
     @ConditionalOnMissingBean
     public Resolver geoIPResolver() throws Exception{
         GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();

@@ -25,6 +25,7 @@
 package com.buession.springboot.boot.autoconfigure;
 
 import com.buession.core.codec.MessagePropertyBeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,8 @@ public class MessagePropertyConfiguration {
         this.applicationContext = applicationContext;
     }
 
-    @Bean(name = "messagePropertyBeanPostProcessor")
+    @Bean
+    @ConditionalOnMissingBean
     public MessagePropertyBeanPostProcessor messagePropertyBeanPostProcessor(){
         return new MessagePropertyBeanPostProcessor(applicationContext.getEnvironment());
     }

@@ -47,7 +47,7 @@ public class CaptchaConfiguration {
     @Autowired
     private CaptchaProperties captchaProperties;
 
-    @Bean(name = "geetestClient")
+    @Bean
     @ConditionalOnClass({GeetestClient.class})
     @ConditionalOnMissingBean
     public GeetestClient geetestClient(HttpClient httpClient){

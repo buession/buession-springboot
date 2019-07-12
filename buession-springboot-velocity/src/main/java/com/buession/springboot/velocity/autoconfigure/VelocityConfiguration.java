@@ -121,7 +121,7 @@ public class VelocityConfiguration {
     @AutoConfigureAfter(WebMvcAutoConfiguration.class)
     public class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
 
-        @Bean(name = "velocityConfigurer")
+        @Bean
         @ConditionalOnMissingBean
         @Override
         public VelocityConfigurer velocityConfigurer(){
@@ -144,7 +144,7 @@ public class VelocityConfiguration {
             return resolver;
         }
 
-        @Bean(name = "resourceUrlEncodingFilter")
+        @Bean
         @ConditionalOnEnabledResourceChain
         @ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
         public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter(){
@@ -174,7 +174,7 @@ public class VelocityConfiguration {
     @ConditionalOnNotWebApplication
     public class VelocityNonWebConfiguration extends AbstractVelocityConfiguration {
 
-        @Bean(name = "velocityConfiguration")
+        @Bean
         @ConditionalOnMissingBean
         public VelocityEngineFactoryBean velocityConfiguration(){
             VelocityEngineFactoryBean velocityEngineFactoryBean = new VelocityEngineFactoryBean();

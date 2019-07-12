@@ -113,19 +113,19 @@ public class MybatisConfiguration {
         }
     }
 
-    @Bean(name = "masterSqlSessionFactory")
+    @Bean
     @ConditionalOnMissingBean
     public SqlSessionFactory masterSqlSessionFactory(DataSource dataSource) throws Exception{
         return createSqlSessionFactory(dataSource.getMaster());
     }
 
-    @Bean(name = "masterSqlSessionTemplate")
+    @Bean
     @ConditionalOnMissingBean
     public SqlSessionTemplate masterSqlSessionTemplate(SqlSessionFactory masterSqlSessionFactory){
         return createSqlSessionTemplate(masterSqlSessionFactory);
     }
 
-    @Bean(name = "slaveSqlSessionFactories")
+    @Bean
     @ConditionalOnMissingBean
     public List<SqlSessionFactory> slaveSqlSessionFactories(DataSource dataSource) throws Exception{
         if(Validate.isEmpty(dataSource.getSlaves())){
@@ -141,7 +141,7 @@ public class MybatisConfiguration {
         return slaveSqlSessionFactories;
     }
 
-    @Bean(name = "slaveSqlSessionTemplates")
+    @Bean
     @ConditionalOnMissingBean
     public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories){
         if(Validate.isEmpty(slaveSqlSessionFactories)){

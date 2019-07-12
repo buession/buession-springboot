@@ -48,7 +48,7 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
     @Autowired
     protected Config pac4jConfig;
 
-    @Bean(name = "shiroFilterFactoryBean")
+    @Bean
     @Override
     public ShiroFilterFactoryBean shiroFilterFactoryBean(){
         // 把 subject 对象设为 subjectFactory

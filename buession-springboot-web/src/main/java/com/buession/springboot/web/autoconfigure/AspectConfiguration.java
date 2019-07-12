@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
 public class AspectConfiguration {
 
-    @Bean(name = "documentMetaDataProcessor")
+    @Bean
     @ConditionalOnMissingBean
     public DocumentMetaDataProcessor documentMetaDataProcessor(){
         return new DocumentMetaDataProcessor();

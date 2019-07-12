@@ -54,20 +54,20 @@ public class CacheConfiguration {
     @Autowired
     private ShiroProperties shiroProperties;
 
-    @Bean(name = "shiroRedisManager")
+    @Bean
     @ConditionalOnMissingBean
     public RedisManager shiroRedisManager(RedisTemplate redisTemplate){
         return new DefaultRedisManager(redisTemplate);
     }
 
-    @Bean(name = "shiroCacheManager")
+    @Bean
     @ConditionalOnMissingBean
     public CacheManager cacheManager(RedisManager shiroRedisManager){
         return new RedisCacheManager(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
                 .getSessionExpire());
     }
 
-    @Bean(name = "sessionDAO")
+    @Bean
     @ConditionalOnMissingBean
     public SessionDAO sessionDAO(RedisManager shiroRedisManager){
         return new RedisSessionDAO(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties

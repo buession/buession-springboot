@@ -45,9 +45,9 @@ public class OssConfiguration {
     @Autowired
     private OssProperties ossProperties;
 
-    @Bean(name = "ossClient")
-    @ConditionalOnMissingBean
+    @Bean
     @ConditionalOnClass({OSS.class})
+    @ConditionalOnMissingBean
     public OSSClient aliCloudOSSClient(){
         AbstractOSSClient ossClient = new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getAccessKeyId
                 (), ossProperties.getSecretAccessKey());
