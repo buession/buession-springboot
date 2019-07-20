@@ -3,8 +3,8 @@
 基于 Spring Boot 2 的扩展。
 
 [![Build Status](https://travis-ci.org/buession/buession-springboot.svg?branch=master)](https://travis-ci.org/buession/buession-springboot)
-[![Coverage Status](https://img.shields.io/codecov/c/github/buession/buession-springboot/master.svg)](https://codecov.io/github/buession/buession-springboot?branch=master&view=all#sort=coverage&dir=asc)  
-[![Maven Central](https://img.shields.io/maven-central/v/com.buession.springboot/buession-springboot-boot.svg)](https://search.maven.org/search?q=g:%22com.buession.springboot)
+[![Coverage Status](https://img.shields.io/codecov/c/github/buession/buession-springboot/master.svg)](https://codecov.io/github/buession/buession-springboot?branch=master&view=all#sort=coverage&dir=asc)
+[![Maven Central](https://img.shields.io/maven-central/v/com.buession.springboot/buession-springboot-boot.svg)](https://search.maven.org/search?q=g:com.buession.springboot)
 [![GitHub release](https://img.shields.io/github/release/buession/buession-springboot.svg)](https://github.com/buession/buession-springboot/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -19,7 +19,7 @@
 
 ## Maven
 
-- https://oss.sonatype.org/#nexus-search;quick~com.buession.springboot
+- https://search.maven.org/search?q=g:com.buession.springboot
 
 ## Documentation
 ---
