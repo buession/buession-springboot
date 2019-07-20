@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/buession/buession-springboot.svg?branch=master)](https://travis-ci.org/buession/buession-springboot)
 [![Coverage Status](https://img.shields.io/codecov/c/github/buession/buession-springboot/master.svg)](https://codecov.io/github/buession/buession-springboot?branch=master&view=all#sort=coverage&dir=asc)  
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.buession.springboot/buession-springboot-boot/badge.svg)](https://oss.sonatype.org/#nexus-search;quick~com.buession.springboot)
+[![Maven Central](https://img.shields.io/maven-central/v/com.buession.springboot/buession-springboot-boot.svg)](https://search.maven.org/search?q=g:%22com.buession.springboot)
 [![GitHub release](https://img.shields.io/github/release/buession/buession-springboot.svg)](https://github.com/buession/buession-springboot/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
