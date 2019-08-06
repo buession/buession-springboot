@@ -24,40 +24,31 @@
  */
 package com.buession.springboot.geoip.autoconfigure;
 
-import com.buession.core.validator.Validate;
-import com.buession.geoip.Resolver;
-import com.buession.geoip.spring.GeoIPResolverFactoryBean;
-import com.maxmind.geoip2.DatabaseReader;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.io.File;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author Yong.Teng
  */
-@Configuration
-@ConditionalOnClass({DatabaseReader.class})
-@EnableConfigurationProperties(GeoIPProperties.class)
-public class GeoIPResolverConfiguration {
+@ConfigurationProperties(prefix = "geoip")
+public class GeoIPProperties {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public Resolver geoIPResolver(GeoIPProperties geoIPProperties) throws Exception{
-        GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
+    private String dbPath;
 
-        if(Validate.hasText(geoIPProperties.getDbPath())){
-            factory.setDbPath(new File(geoIPProperties.getDbPath()));
-        }
+    private boolean enableCache = true;
 
-        factory.setEnableCache(geoIPProperties.isEnableCache());
-
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
+    public String getDbPath(){
+        return dbPath;
     }
 
+    public void setDbPath(String dbPath){
+        this.dbPath = dbPath;
+    }
+
+    public boolean isEnableCache(){
+        return enableCache;
+    }
+
+    public void setEnableCache(boolean enableCache){
+        this.enableCache = enableCache;
+    }
 }
