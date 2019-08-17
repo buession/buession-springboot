@@ -26,11 +26,11 @@
  */
 package com.buession.springboot.web.autoconfigure;
 
-import com.buession.web.mvc.view.document.DocumentMetaDataProcessor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,9 +43,17 @@ import org.springframework.context.annotation.Configuration;
 public class AspectConfiguration {
 
     @Bean
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     @ConditionalOnMissingBean
-    public DocumentMetaDataProcessor documentMetaDataProcessor(){
-        return new DocumentMetaDataProcessor();
+    public com.buession.web.servlet.mvc.view.DocumentMetaDataProcessorImpl servletDocumentMetaDataProcessor(){
+        return new com.buession.web.servlet.mvc.view.DocumentMetaDataProcessorImpl();
+    }
+
+    @Bean
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+    @ConditionalOnMissingBean
+    public com.buession.web.reactive.mvc.view.DocumentMetaDataProcessorImpl reactiveDocumentMetaDataProcessor(){
+        return new com.buession.web.reactive.mvc.view.DocumentMetaDataProcessorImpl();
     }
 
 }
