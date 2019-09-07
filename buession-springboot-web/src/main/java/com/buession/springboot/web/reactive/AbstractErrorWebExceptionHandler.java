@@ -130,6 +130,10 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
         return null;
     }
 
+    protected Map<String, Object> doDefaultResolveException(final ServerRequest request, final Throwable throwable){
+        return null;
+    }
+
     protected Map<String, Object> doResolveException(final ServerRequest request, final ServerResponse response,
                                                      final Throwable throwable){
         try{
@@ -178,7 +182,7 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
             }
         }
 
-        return null;
+        return doDefaultResolveException(request, throwable);
     }
 
     protected Map<String, Object> handleHttpRequestMethodNotSupported(final ServerRequest request, final
