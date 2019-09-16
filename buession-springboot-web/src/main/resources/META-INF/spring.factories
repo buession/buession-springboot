@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.web.autoconfigure.AspectConfiguration,\
   com.buession.springboot.web.autoconfigure.HttpConfiguration
