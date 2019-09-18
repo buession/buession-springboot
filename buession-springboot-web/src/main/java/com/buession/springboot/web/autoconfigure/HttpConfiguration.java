@@ -25,8 +25,8 @@
 package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.web.reactive.aop.interceptor.aopalliance.ReactiveAopAllianceAnnotationsMethodInterceptor;
-import com.buession.web.servlet.aop.interceptor.aopalliance.ServletAopAllianceAnnotationsMethodInterceptor;
+import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSourcePointcutAdvisor;
+import com.buession.web.servlet.aop.advice.aopalliance.ServletHttpAttributeSourcePointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -93,8 +93,8 @@ public class HttpConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public ServletAopAllianceAnnotationsMethodInterceptor servletAopAllianceAnnotationsMethodInterceptor(){
-            return new ServletAopAllianceAnnotationsMethodInterceptor();
+        public ServletHttpAttributeSourcePointcutAdvisor servletHttpAttributeSourcePointcutAdvisor(){
+            return new ServletHttpAttributeSourcePointcutAdvisor();
         }
 
     }
@@ -145,8 +145,8 @@ public class HttpConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public ReactiveAopAllianceAnnotationsMethodInterceptor reactiveAopAllianceAnnotationsMethodInterceptor(){
-            return new ReactiveAopAllianceAnnotationsMethodInterceptor();
+        public ReactiveHttpAttributeSourcePointcutAdvisor reactiveHttpAttributeSourcePointcutAdvisor(){
+            return new ReactiveHttpAttributeSourcePointcutAdvisor();
         }
     }
 
