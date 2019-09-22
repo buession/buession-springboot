@@ -59,7 +59,6 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -170,8 +169,8 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
                         (MissingServletRequestPartException) throwable);
             }else if(throwable instanceof BindException){
                 return handleBindException(request, response, (BindException) throwable);
-            }else if(throwable instanceof NoHandlerFoundException){
-                return handleNoHandlerFoundException(request, response, (NoHandlerFoundException) throwable);
+            /*}else if(throwable instanceof NoHandlerFoundException){
+                return handleNoHandlerFoundException(request, response, (NoHandlerFoundException) throwable);*/
             }else if(throwable instanceof AsyncRequestTimeoutException){
                 return handleAsyncRequestTimeoutException(request, response, (AsyncRequestTimeoutException) throwable);
             }
@@ -275,12 +274,12 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
         return doResolve(request, ex);
     }
 
-    protected Map<String, Object> handleNoHandlerFoundException(final ServerRequest request, final ServerResponse
+    /*protected Map<String, Object> handleNoHandlerFoundException(final ServerRequest request, final ServerResponse
             response, final NoHandlerFoundException ex){
         pageNotFoundLogger.warn(ex.getMessage());
         //response.setStatusCode(HttpStatus.NOT_FOUND);
         return doResolve(request, ex);
-    }
+    }*/
 
     protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request, final
     ServerResponse response, final AsyncRequestTimeoutException ex){
@@ -440,11 +439,11 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
         return ServerResponse.status(httpStatus).contentType(contentType);
     }
 
-    private Throwable determineException(final ServerRequest request){
+    protected Throwable determineException(final ServerRequest request){
         return determineException(getError(request));
     }
 
-    private Throwable determineException(final Throwable throwable){
+    protected Throwable determineException(final Throwable throwable){
         if(throwable instanceof ResponseStatusException){
             return (throwable.getCause() != null) ? throwable.getCause() : throwable;
         }else{
