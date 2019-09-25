@@ -75,15 +75,17 @@ import java.util.Set;
 public abstract class AbstractErrorWebExceptionHandler extends org.springframework.boot.autoconfigure.web.reactive
         .error.AbstractErrorWebExceptionHandler implements ExceptionHandlerResolver {
 
-    private final ErrorProperties errorProperties;
+    protected final ErrorProperties errorProperties;
 
-    private String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
+    protected final ErrorAttributes errorAttributes;
 
-    private String cacheControl = CACHE_CONTROL;
+    protected String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
 
-    private Map<HttpStatus, String> errorViews;
+    protected String cacheControl = CACHE_CONTROL;
 
-    private Map<Exception, String> exceptionViews;
+    protected Map<HttpStatus, String> errorViews;
+
+    protected Map<Exception, String> exceptionViews;
 
     private final static Logger logger = LoggerFactory.getLogger(AbstractErrorWebExceptionHandler.class);
 
@@ -93,6 +95,7 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
                                             ErrorProperties errorProperties, ApplicationContext applicationContext){
         super(errorAttributes, resourceProperties, applicationContext);
         this.errorProperties = errorProperties;
+        this.errorAttributes = errorAttributes;
     }
 
     public String getCacheControl(){
@@ -121,7 +124,7 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
     @Override
     protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes){
-        return RouterFunctions.route(acceptJson(), this::renderErrorJsonView).andRoute(RequestPredicates.all(),
+        return RouterFunctions.route(this.acceptJson(), this::renderErrorJsonView).andRoute(RequestPredicates.all(),
                 this::renderErrorHtmlView);
     }
 
@@ -169,8 +172,8 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
                         (MissingServletRequestPartException) throwable);
             }else if(throwable instanceof BindException){
                 return handleBindException(request, response, (BindException) throwable);
-            /*}else if(throwable instanceof NoHandlerFoundException){
-                return handleNoHandlerFoundException(request, response, (NoHandlerFoundException) throwable);*/
+            }else if(throwable instanceof ResponseStatusException){
+                return handleResponseStatusException(request, response, (ResponseStatusException) throwable);
             }else if(throwable instanceof AsyncRequestTimeoutException){
                 return handleAsyncRequestTimeoutException(request, response, (AsyncRequestTimeoutException) throwable);
             }
@@ -274,12 +277,14 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
         return doResolve(request, ex);
     }
 
-    /*protected Map<String, Object> handleNoHandlerFoundException(final ServerRequest request, final ServerResponse
-            response, final NoHandlerFoundException ex){
-        pageNotFoundLogger.warn(ex.getMessage());
-        //response.setStatusCode(HttpStatus.NOT_FOUND);
+    protected Map<String, Object> handleResponseStatusException(final ServerRequest request, final ServerResponse
+            response, final ResponseStatusException ex){
+        if(ex.getStatus() == HttpStatus.NOT_FOUND){
+            pageNotFoundLogger.warn(ex.getMessage());
+        }
+        //response.setStatusCode(ex.getStatus());
         return doResolve(request, ex);
-    }*/
+    }
 
     protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request, final
     ServerResponse response, final AsyncRequestTimeoutException ex){
@@ -342,9 +347,15 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
     protected HttpStatus getHttpStatus(final ServerRequest request){
         boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
         Map<String, Object> errorAttributes = getErrorAttributes(request, includeStackTrace);
-        HttpStatus statusCode = (HttpStatus) errorAttributes.get("status");
+        Object status = errorAttributes.get("status");
 
-        return statusCode;
+        if(status instanceof HttpStatus){
+            return (HttpStatus) status;
+        }else if(status instanceof Integer){
+            return HttpStatus.resolve((Integer) status);
+        }
+
+        return null;
     }
 
     protected String[] determineViewName(final ServerRequest request, final Throwable throwable, final HttpStatus

@@ -25,6 +25,8 @@
 package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import com.buession.springboot.web.reactive.filter.ReactivePoweredByHeaderFilter;
+import com.buession.springboot.web.servlet.filter.ServletPoweredByHeaderFilter;
 import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSourcePointcutAdvisor;
 import com.buession.web.servlet.aop.advice.aopalliance.ServletHttpAttributeSourcePointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +74,8 @@ public class HttpConfiguration {
         @ConditionalOnMissingBean
         @ConditionalOnProperty(prefix = "server.poweredby", name = "enable", havingValue = "true", matchIfMissing =
                 true)
-        public com.buession.springboot.web.servlet.filter.PoweredByHeaderFilter poweredByHeaderFilter(){
-            return new com.buession.springboot.web.servlet.filter.PoweredByHeaderFilter();
+        public ServletPoweredByHeaderFilter poweredByHeaderFilter(){
+            return new ServletPoweredByHeaderFilter();
         }
 
         @Bean
@@ -124,8 +126,8 @@ public class HttpConfiguration {
         @ConditionalOnMissingBean
         @ConditionalOnProperty(prefix = "server.poweredby", name = "enable", havingValue = "true", matchIfMissing =
                 true)
-        public com.buession.springboot.web.reactive.filter.PoweredByHeaderFilter poweredByHeaderFilter(){
-            return new com.buession.springboot.web.reactive.filter.PoweredByHeaderFilter();
+        public ReactivePoweredByHeaderFilter poweredByHeaderFilter(){
+            return new ReactivePoweredByHeaderFilter();
         }
 
         @Bean
