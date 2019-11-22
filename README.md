@@ -1,4 +1,4 @@
-# Buession Security
+# Buession Spring Boot
 
 基于 Spring Boot 2 的扩展。
 
@@ -20,7 +20,6 @@
 ## Maven
 
 - https://search.maven.org/search?q=g:com.buession.springboot
-
 - https://mvnrepository.com/search?q=com.buession.springboot
 
 ## Documentation
