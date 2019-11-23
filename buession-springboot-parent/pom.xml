@@ -56,6 +56,7 @@
 		<module>../buession-springboot-mybatis</module>
 		<module>../buession-springboot-oss</module>
 		<module>../buession-springboot-pac4j</module>
+		<module>../buession-springboot-security</module>
 		<module>../buession-springboot-session</module>
 		<module>../buession-springboot-shiro</module>
 		<module>../buession-springboot-velocity</module>
