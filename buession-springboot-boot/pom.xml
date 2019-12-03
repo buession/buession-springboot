@@ -107,17 +107,14 @@
 		<!-- springframework boot end -->
 
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -143,20 +140,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-parameter-names</artifactId>
-			<version>${fasterxml.jackson.module.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.github.lalyos</groupId>
 			<artifactId>jfiglet</artifactId>
 			<version>0.0.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-core</artifactId>
 		</dependency>
 
 		<dependency>

@@ -29,7 +29,6 @@ package com.buession.springboot.boot.banner;
 import com.buession.core.Framework;
 import com.buession.core.utils.StringUtils;
 import com.github.lalyos.jfiglet.FigletFont;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootVersion;
@@ -100,7 +99,7 @@ public abstract class AbstractBanner implements Banner {
                 formatter.format("Spring Boot Framework Version: %s%n", new Object[]{SpringBootVersion.getVersion()});
                 formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
                 formatter.format("System Date/Time: %s%n", new Object[]{LocalDateTime.now()});
-                formatter.format("System Temp Directory: %s%n", new Object[]{FileUtils.getTempDirectoryPath()});
+                formatter.format("System Temp Directory: %s%n", new Object[]{properties.get("java.io.tmpdir")});
                 formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
                 formatter.format("Java Home: %s%n", new Object[]{properties.get("java.home")});
                 formatter.format("Java Vendor: %s%n", new Object[]{properties.get("java.vendor")});
