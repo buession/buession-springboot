@@ -27,7 +27,9 @@
 package com.buession.springboot.web.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yong.Teng
@@ -35,17 +37,24 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "server")
 public class HttpProperties {
 
-    @NestedConfigurationProperty
-    private ResponseProperties response = new ResponseProperties();
+    private Map<String, String> responseHeaders = new HashMap<>(0);
 
     private String serverInfoName;
 
-    public ResponseProperties getResponse(){
-        return response;
+    private String serverInfoPrefix;
+
+    private String serverInfoSuffix;
+
+    private String stripServerInfoPrefix;
+
+    private String stripServerInfoSuffix;
+
+    public Map<String, String> getResponseHeaders(){
+        return responseHeaders;
     }
 
-    public void setResponse(ResponseProperties response){
-        this.response = response;
+    public void setResponseHeaders(Map<String, String> responseHeaders){
+        this.responseHeaders = responseHeaders;
     }
 
     public String getServerInfoName(){
@@ -54,5 +63,37 @@ public class HttpProperties {
 
     public void setServerInfoName(String serverInfoName){
         this.serverInfoName = serverInfoName;
+    }
+
+    public String getServerInfoPrefix(){
+        return serverInfoPrefix;
+    }
+
+    public void setServerInfoPrefix(String serverInfoPrefix){
+        this.serverInfoPrefix = serverInfoPrefix;
+    }
+
+    public String getServerInfoSuffix(){
+        return serverInfoSuffix;
+    }
+
+    public void setServerInfoSuffix(String serverInfoSuffix){
+        this.serverInfoSuffix = serverInfoSuffix;
+    }
+
+    public String getStripServerInfoPrefix(){
+        return stripServerInfoPrefix;
+    }
+
+    public void setStripServerInfoPrefix(String stripServerInfoPrefix){
+        this.stripServerInfoPrefix = stripServerInfoPrefix;
+    }
+
+    public String getStripServerInfoSuffix(){
+        return stripServerInfoSuffix;
+    }
+
+    public void setStripServerInfoSuffix(String stripServerInfoSuffix){
+        this.stripServerInfoSuffix = stripServerInfoSuffix;
     }
 }

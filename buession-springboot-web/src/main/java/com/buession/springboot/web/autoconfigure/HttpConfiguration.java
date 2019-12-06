@@ -37,6 +37,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,6 +46,8 @@ import java.util.Map;
 @Configuration
 @EnableConfigurationProperties({HttpProperties.class})
 public class HttpConfiguration {
+
+    private final static String HEADER_VARIABLE_IDENTIFIER = "$";
 
     @Autowired(required = false)
     protected HttpProperties httpProperties;
@@ -59,12 +62,8 @@ public class HttpConfiguration {
             final com.buession.web.servlet.filter.ResponseHeadersFilter responseHeadersFilter = new com.buession.web
                     .servlet.filter.ResponseHeadersFilter();
 
-            if(httpProperties != null){
-                Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
-
-                if(responseHeaders != null){
-                    responseHeadersFilter.setHeaders(responseHeaders);
-                }
+            if(httpProperties != null && Validate.isEmpty(httpProperties.getResponseHeaders()) == false){
+                responseHeadersFilter.setHeaders(buildHeaders(httpProperties.getResponseHeaders()));
             }
 
             return responseHeadersFilter;
@@ -83,8 +82,7 @@ public class HttpConfiguration {
         @ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing =
                 true)
         public com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter(){
-            final com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter = new com.buession.web.servlet
-                    .filter.ServerInfoFilter();
+            final com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 
             if(Validate.hasText(httpProperties.getServerInfoName())){
                 serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
@@ -99,6 +97,15 @@ public class HttpConfiguration {
             return new ServletHttpAttributeSourcePointcutAdvisor();
         }
 
+        private final class ServerInfoFilter extends com.buession.web.servlet.filter.ServerInfoFilter {
+
+            @Override
+            protected String format(String computerName){
+                return buildServerInfo(httpProperties, computerName);
+            }
+
+        }
+
     }
 
     @Configuration
@@ -111,12 +118,8 @@ public class HttpConfiguration {
             final com.buession.web.reactive.filter.ResponseHeadersFilter responseHeadersFilter = new com.buession.web
                     .reactive.filter.ResponseHeadersFilter();
 
-            if(httpProperties != null){
-                Map<String, String> responseHeaders = httpProperties.getResponse().getHeaders();
-
-                if(responseHeaders != null){
-                    responseHeadersFilter.setHeaders(responseHeaders);
-                }
+            if(httpProperties != null && Validate.isEmpty(httpProperties.getResponseHeaders()) == false){
+                responseHeadersFilter.setHeaders(buildHeaders(httpProperties.getResponseHeaders()));
             }
 
             return responseHeadersFilter;
@@ -135,8 +138,7 @@ public class HttpConfiguration {
         @ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing =
                 true)
         public com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter(){
-            final com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter = new com.buession.web.reactive
-                    .filter.ServerInfoFilter();
+            final com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 
             if(Validate.hasText(httpProperties.getServerInfoName())){
                 serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
@@ -150,6 +152,66 @@ public class HttpConfiguration {
         public ReactiveHttpAttributeSourcePointcutAdvisor reactiveHttpAttributeSourcePointcutAdvisor(){
             return new ReactiveHttpAttributeSourcePointcutAdvisor();
         }
+
+        private final class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInfoFilter {
+
+            @Override
+            protected String format(String computerName){
+                return buildServerInfo(httpProperties, computerName);
+            }
+
+        }
+
+    }
+
+    private final static Map<String, String> buildHeaders(final Map<String, String> headers){
+        final Map<String, String> result = new HashMap<>(headers.size());
+
+        headers.forEach((key, value)->{
+            if(value.startsWith(HEADER_VARIABLE_IDENTIFIER)){
+                String propertyName = value.substring(1);
+                String propertyValue = System.getProperty(propertyName);
+
+                if(Validate.hasText(propertyValue) == false){
+                    propertyValue = System.getenv(propertyName);
+                }
+
+                if(Validate.hasText(propertyValue)){
+                    result.put(key, propertyValue);
+                }
+            }else{
+                result.put(key, value);
+            }
+        });
+
+        return result;
+    }
+
+    private final static String buildServerInfo(final HttpProperties httpProperties, final String serverName){
+        String s = serverName;
+        StringBuffer sb = new StringBuffer();
+
+        if(Validate.hasText(httpProperties.getServerInfoPrefix())){
+            sb.append(httpProperties.getServerInfoPrefix());
+        }
+
+        if(Validate.hasText(httpProperties.getStripServerInfoPrefix()) && s.startsWith(httpProperties
+                .getStripServerInfoPrefix())){
+            s = s.substring(httpProperties.getStripServerInfoPrefix().length());
+        }
+
+        if(Validate.hasText(httpProperties.getStripServerInfoSuffix()) && s.endsWith(httpProperties
+                .getStripServerInfoSuffix())){
+            s = s.substring(0, s.length() - httpProperties.getStripServerInfoSuffix().length());
+        }
+
+        sb.append(s);
+
+        if(Validate.hasText(httpProperties.getServerInfoSuffix())){
+            sb.append(httpProperties.getServerInfoSuffix());
+        }
+
+        return sb.toString();
     }
 
 }
