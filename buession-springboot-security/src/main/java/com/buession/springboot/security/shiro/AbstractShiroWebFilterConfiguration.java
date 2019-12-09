@@ -25,10 +25,10 @@
 package com.buession.springboot.security.shiro;
 
 import com.buession.core.utils.ArrayUtils;
+import com.buession.security.pac4j.filter.SecurityFilter;
+import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
 import com.buession.springboot.security.Constant;
 import com.buession.springboot.security.shiro.autoconfigure.ShiroProperties;
-import io.buji.pac4j.filter.SecurityFilter;
-import io.buji.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.pac4j.cas.client.CasClient;
@@ -78,7 +78,7 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
     }
 
     protected SecurityFilter securityFilter(){
-        SecurityFilter filter = new SecurityFilter();
+        SecurityFilter filter = new SecurityFilter(pac4jConfig);
 
         Set<String> clients = new LinkedHashSet<>(2);
 
@@ -91,7 +91,6 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
         }
 
         filter.setClients(ArrayUtils.toString(clients.toArray(new String[]{}), ","));
-        filter.setConfig(pac4jConfig);
         filter.setMultiProfile(false);
 
         return filter;

@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import io.buji.pac4j.realm.Pac4jRealm;
+import com.buession.security.pac4j.realm.Pac4jRealm;
 import org.apache.shiro.realm.Realm;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;

@@ -25,8 +25,8 @@
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.utils.ArrayUtils;
-import io.buji.pac4j.filter.SecurityFilter;
-import io.buji.pac4j.subject.Pac4jSubjectFactory;
+import com.buession.security.pac4j.filter.SecurityFilter;
+import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.pac4j.core.config.Config;
@@ -66,13 +66,12 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
     }
 
     protected SecurityFilter securityFilter(){
-        SecurityFilter filter = new SecurityFilter();
+        SecurityFilter filter = new SecurityFilter(pac4jConfig);
 
         if(shiroProperties.getClients() != null){
             filter.setClients(ArrayUtils.toString(shiroProperties.getClients().toArray(new String[]{}), ","));
         }
 
-        filter.setConfig(pac4jConfig);
         filter.setMultiProfile(shiroProperties.isMultiProfile());
 
         return filter;
