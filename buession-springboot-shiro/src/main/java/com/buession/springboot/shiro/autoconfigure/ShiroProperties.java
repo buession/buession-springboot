@@ -49,6 +49,8 @@ public class ShiroProperties {
 
     private boolean multiProfile;
 
+    private String[] authorizers;
+
     private LinkedHashMap<String, String> filterChainDefinitions;
 
     public String getLoginUrl(){
@@ -109,6 +111,14 @@ public class ShiroProperties {
 
     public void setMultiProfile(boolean multiProfile){
         this.multiProfile = multiProfile;
+    }
+
+    public String[] getAuthorizers(){
+        return authorizers;
+    }
+
+    public void setAuthorizers(String[] authorizers){
+        this.authorizers = authorizers;
     }
 
     public LinkedHashMap<String, String> getFilterChainDefinitions(){

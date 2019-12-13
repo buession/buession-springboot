@@ -25,11 +25,13 @@
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.utils.ArrayUtils;
+import com.buession.core.validator.Validate;
 import com.buession.security.pac4j.filter.SecurityFilter;
 import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.Pac4jConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
@@ -73,6 +75,11 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
         }
 
         filter.setMultiProfile(shiroProperties.isMultiProfile());
+
+        if(Validate.isEmpty(shiroProperties.getAuthorizers()) == false){
+            filter.setAuthorizers(ArrayUtils.toString(shiroProperties.getAuthorizers(), Pac4jConstants
+                    .ELEMENT_SEPARATOR));
+        }
 
         return filter;
     }
