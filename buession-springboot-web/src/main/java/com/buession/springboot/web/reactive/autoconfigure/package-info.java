@@ -22,11 +22,7 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.autoconfigure;
-
 /**
  * @author Yong.Teng
  */
-public interface HttpConfiguration {
-
-}
+package com.buession.springboot.web.reactive.autoconfigure;

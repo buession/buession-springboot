@@ -21,10 +21,10 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2018 Buession.com Inc.														|
+ * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.autoconfigure;
+package com.buession.springboot.web.web;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -37,7 +37,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "server")
 public class HttpProperties {
 
-    private Map<String, String> responseHeaders = new HashMap<>(0);
+    private Map<String, String> responseHeaders = new HashMap<>(16);
 
     private String serverInfoName;
 
@@ -96,4 +96,5 @@ public class HttpProperties {
     public void setStripServerInfoSuffix(String stripServerInfoSuffix){
         this.stripServerInfoSuffix = stripServerInfoSuffix;
     }
+
 }

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -37,6 +37,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Yong.Teng
@@ -61,22 +62,17 @@ public class DataSourceConfiguration {
 
         List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slavesDatasourceProperties =
                 dataSourceProperties.getSlaves();
-        List<javax.sql.DataSource> slavesDtaSources = new ArrayList<>(slavesDatasourceProperties == null ? 1 :
-                slavesDatasourceProperties.size());
+        List<javax.sql.DataSource> slavesDtaSources;
 
         if(slavesDatasourceProperties == null){
             javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties.getMaster(),
                     dataSourceProperties.getType());
 
+            slavesDtaSources = new ArrayList<>(1);
             slavesDtaSources.add(slaveDataSource);
         }else{
-            for(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties dataSourceProperties :
-                    slavesDatasourceProperties){
-                javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties, dataSourceProperties
-                        .getType());
-
-                slavesDtaSources.add(slaveDataSource);
-            }
+            slavesDtaSources = slavesDatasourceProperties.stream().map(properties->createDataSource(properties,
+                    dataSourceProperties.getType())).collect(Collectors.toList());
         }
 
         logger.info("Create {} size slave datasource: by driver {}, type {}", slavesDtaSources.size(),

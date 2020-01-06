@@ -19,35 +19,52 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web;
+package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.web.HttpProperties;
-import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yong.Teng
  */
-public class StringUtils {
+public abstract class AbstractHttpConfiguration implements HttpConfiguration {
 
-    @Test
-    public void substr(){
-        HttpProperties httpProperties = new HttpProperties();
-        String str = "liangvi-web-s-6fb77bc686-qsnj4";
+    protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
 
-        // httpProperties.setServerInfoPrefix("test-");
-        //httpProperties.setServerInfoSuffix("-aaa");
+    @Autowired(required = false)
+    protected HttpProperties httpProperties;
 
-        httpProperties.setStripServerInfoPrefix("liangvi-web-s-");
-        httpProperties.setStripServerInfoSuffix("j4");
+    protected final static Map<String, String> buildHeaders(final Map<String, String> headers){
+        final Map<String, String> result = new HashMap<>(headers.size());
 
-        System.out.println(buildServerInfo(httpProperties, str));
+        headers.forEach((key, value)->{
+            if(value.startsWith(HEADER_VARIABLE_IDENTIFIER)){
+                String propertyName = value.substring(1);
+                String propertyValue = System.getProperty(propertyName);
+
+                if(Validate.hasText(propertyValue) == false){
+                    propertyValue = System.getenv(propertyName);
+                }
+
+                if(Validate.hasText(propertyValue)){
+                    result.put(key, propertyValue);
+                }
+            }else{
+                result.put(key, value);
+            }
+        });
+
+        return result;
     }
 
-    private final static String buildServerInfo(final HttpProperties httpProperties, final String serverName){
+    protected final static String buildServerInfo(final HttpProperties httpProperties, final String serverName){
         String s = serverName;
         StringBuffer sb = new StringBuffer();
 
@@ -73,6 +90,5 @@ public class StringUtils {
 
         return sb.toString();
     }
-
 
 }

@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.web.autoconfigure.HttpConfiguration
+  com.buession.springboot.web.servlet.autoconfigure.ServletHttpConfiguration,\
+  com.buession.springboot.web.servlet.autoconfigure.ServletWebMvcConfiguration,\
+  com.buession.springboot.web.reactive.autoconfigure.ReactiveHttpConfiguration

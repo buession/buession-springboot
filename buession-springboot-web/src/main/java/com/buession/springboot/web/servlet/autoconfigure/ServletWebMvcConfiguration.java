@@ -22,11 +22,17 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.autoconfigure;
+package com.buession.springboot.web.servlet.autoconfigure;
+
+import com.buession.web.servlet.config.WebMvcConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  */
-public interface HttpConfiguration {
+@Configuration
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class ServletWebMvcConfiguration extends WebMvcConfiguration {
 
 }
