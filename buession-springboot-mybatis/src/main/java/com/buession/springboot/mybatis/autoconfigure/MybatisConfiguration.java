@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2018 Buession.com Inc.														|
+ * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -76,200 +76,204 @@ import java.util.List;
  */
 @Configuration
 @EnableConfigurationProperties(MybatisProperties.class)
-@ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
+@ConditionalOnClass({
+		SqlSessionFactory.class,
+		SqlSessionFactoryBean.class
+})
 @ConditionalOnBean({DataSource.class})
 @Import({DataSourceConfiguration.class})
 @AutoConfigureAfter({DataSourceConfiguration.class})
 public class MybatisConfiguration {
 
-    @Autowired
-    private MybatisProperties properties;
+	@Autowired
+	private MybatisProperties properties;
 
-    private final Interceptor[] interceptors;
+	private final Interceptor[] interceptors;
 
-    private final ResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
 
-    private final DatabaseIdProvider databaseIdProvider;
+	private final DatabaseIdProvider databaseIdProvider;
 
-    private final List<ConfigurationCustomizer> configurationCustomizers;
+	private final List<ConfigurationCustomizer> configurationCustomizers;
 
-    private static final Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
-    public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-                                ObjectProvider<DatabaseIdProvider> databaseIdProvider,
-                                ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
-        this.interceptors = interceptorsProvider.getIfAvailable();
-        this.resourceLoader = resourceLoader;
-        this.databaseIdProvider = databaseIdProvider.getIfAvailable();
-        this.configurationCustomizers = configurationCustomizersProvider.getIfAvailable();
-    }
+	public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
+								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+								ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+		this.interceptors = interceptorsProvider.getIfAvailable();
+		this.resourceLoader = resourceLoader;
+		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
+		this.configurationCustomizers = configurationCustomizersProvider.getIfAvailable();
+	}
 
-    @PostConstruct
-    public void checkConfigFileExists(){
-        if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
-            Resource resource = resourceLoader.getResource(properties.getConfigLocation());
-            Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
-                    "autoconfigure file or check your Mybatis configuration)");
-        }
-    }
+	@PostConstruct
+	public void checkConfigFileExists(){
+		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
+			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
+			Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
+					"autoconfigure file or check your Mybatis configuration)");
+		}
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public SqlSessionFactory masterSqlSessionFactory(DataSource dataSource) throws Exception{
-        return createSqlSessionFactory(dataSource.getMaster());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public SqlSessionFactory masterSqlSessionFactory(DataSource dataSource) throws Exception{
+		return createSqlSessionFactory(dataSource.getMaster());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public SqlSessionTemplate masterSqlSessionTemplate(SqlSessionFactory masterSqlSessionFactory){
-        return createSqlSessionTemplate(masterSqlSessionFactory);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public SqlSessionTemplate masterSqlSessionTemplate(SqlSessionFactory masterSqlSessionFactory){
+		return createSqlSessionTemplate(masterSqlSessionFactory);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public List<SqlSessionFactory> slaveSqlSessionFactories(DataSource dataSource) throws Exception{
-        if(Validate.isEmpty(dataSource.getSlaves())){
-            throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
-        }
+	@Bean
+	@ConditionalOnMissingBean
+	public List<SqlSessionFactory> slaveSqlSessionFactories(DataSource dataSource) throws Exception{
+		if(Validate.isEmpty(dataSource.getSlaves())){
+			throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
+		}
 
-        List<SqlSessionFactory> slaveSqlSessionFactories = new ArrayList<>(dataSource.getSlaves().size());
+		List<SqlSessionFactory> slaveSqlSessionFactories = new ArrayList<>(dataSource.getSlaves().size());
 
-        for(javax.sql.DataSource ds : dataSource.getSlaves()){
-            slaveSqlSessionFactories.add(createSqlSessionFactory(ds));
-        }
+		for(javax.sql.DataSource ds : dataSource.getSlaves()){
+			slaveSqlSessionFactories.add(createSqlSessionFactory(ds));
+		}
 
-        return slaveSqlSessionFactories;
-    }
+		return slaveSqlSessionFactories;
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories){
-        if(Validate.isEmpty(slaveSqlSessionFactories)){
-            throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or " +
-                    "empty");
-        }
+	@Bean
+	@ConditionalOnMissingBean
+	public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories){
+		if(Validate.isEmpty(slaveSqlSessionFactories)){
+			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or " +
+					"empty");
+		}
 
-        List<SqlSessionTemplate> slaveSqlSessionTemplates = new ArrayList<>(slaveSqlSessionFactories.size());
+		List<SqlSessionTemplate> slaveSqlSessionTemplates = new ArrayList<>(slaveSqlSessionFactories.size());
 
-        for(SqlSessionFactory sqlSessionFactory : slaveSqlSessionFactories){
-            slaveSqlSessionTemplates.add(createSqlSessionTemplate(sqlSessionFactory));
-        }
+		for(SqlSessionFactory sqlSessionFactory : slaveSqlSessionFactories){
+			slaveSqlSessionTemplates.add(createSqlSessionTemplate(sqlSessionFactory));
+		}
 
-        return slaveSqlSessionTemplates;
-    }
+		return slaveSqlSessionTemplates;
+	}
 
-    private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
-        SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
+	private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
+		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
 
-        factory.setDataSource(dataSource);
-        factory.setVfs(SpringBootVFS.class);
+		factory.setDataSource(dataSource);
+		factory.setVfs(SpringBootVFS.class);
 
-        if(Validate.hasText(properties.getConfigLocation())){
-            factory.setConfigLocation(resourceLoader.getResource(properties.getConfigLocation()));
-        }
+		if(Validate.hasText(properties.getConfigLocation())){
+			factory.setConfigLocation(resourceLoader.getResource(properties.getConfigLocation()));
+		}
 
-        org.apache.ibatis.session.Configuration configuration = properties.getConfiguration();
-        if(configuration == null && Validate.hasText(properties.getConfigLocation()) == false){
-            configuration = new org.apache.ibatis.session.Configuration();
-        }
+		org.apache.ibatis.session.Configuration configuration = properties.getConfiguration();
+		if(configuration == null && Validate.hasText(properties.getConfigLocation()) == false){
+			configuration = new org.apache.ibatis.session.Configuration();
+		}
 
-        if(configuration != null && Validate.isEmpty(configurationCustomizers) == false){
-            Iterator<ConfigurationCustomizer> iterator = configurationCustomizers.iterator();
+		if(configuration != null && Validate.isEmpty(configurationCustomizers) == false){
+			Iterator<ConfigurationCustomizer> iterator = configurationCustomizers.iterator();
 
-            while(iterator.hasNext()){
-                iterator.next().customize(configuration);
-            }
-        }
+			while(iterator.hasNext()){
+				iterator.next().customize(configuration);
+			}
+		}
 
-        factory.setConfiguration(configuration);
-        if(properties.getConfigurationProperties() != null){
-            factory.setConfigurationProperties(properties.getConfigurationProperties());
-        }
+		factory.setConfiguration(configuration);
+		if(properties.getConfigurationProperties() != null){
+			factory.setConfigurationProperties(properties.getConfigurationProperties());
+		}
 
-        if(Validate.isEmpty(interceptors) == false){
-            factory.setPlugins(interceptors);
-        }
+		if(Validate.isEmpty(interceptors) == false){
+			factory.setPlugins(interceptors);
+		}
 
-        if(databaseIdProvider != null){
-            factory.setDatabaseIdProvider(databaseIdProvider);
-        }
+		if(databaseIdProvider != null){
+			factory.setDatabaseIdProvider(databaseIdProvider);
+		}
 
-        if(Validate.hasText(properties.getTypeAliasesPackage())){
-            factory.setTypeAliasesPackage(properties.getTypeAliasesPackage());
-        }
+		if(Validate.hasText(properties.getTypeAliasesPackage())){
+			factory.setTypeAliasesPackage(properties.getTypeAliasesPackage());
+		}
 
-        if(Validate.hasText(properties.getTypeHandlersPackage())){
-            factory.setTypeHandlersPackage(properties.getTypeHandlersPackage());
-        }
+		if(Validate.hasText(properties.getTypeHandlersPackage())){
+			factory.setTypeHandlersPackage(properties.getTypeHandlersPackage());
+		}
 
-        if(Validate.isEmpty(properties.resolveMapperLocations()) == false){
-            factory.setMapperLocations(properties.resolveMapperLocations());
-        }
+		if(Validate.isEmpty(properties.resolveMapperLocations()) == false){
+			factory.setMapperLocations(properties.resolveMapperLocations());
+		}
 
-        return factory.getObject();
-    }
+		return factory.getObject();
+	}
 
-    private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
-        ExecutorType executorType = properties.getExecutorType();
-        return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new
-                SqlSessionTemplate(sqlSessionFactory);
-    }
+	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
+		ExecutorType executorType = properties.getExecutorType();
+		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate
+				(sqlSessionFactory);
+	}
 
-    @Configuration
-    @Import({MapperScannerRegistrarAutoConfigured.class})
-    @ConditionalOnMissingBean({MapperFactoryBean.class})
-    public static class MapperScannerRegistrarNotFoundConfiguration {
+	@Configuration
+	@Import({MapperScannerRegistrarAutoConfigured.class})
+	@ConditionalOnMissingBean({MapperFactoryBean.class})
+	public static class MapperScannerRegistrarNotFoundConfiguration {
 
-        @PostConstruct
-        public void afterPropertiesSet(){
-            logger.debug("No {} found.", MapperFactoryBean.class.getName());
-        }
+		@PostConstruct
+		public void afterPropertiesSet(){
+			logger.debug("No {} found.", MapperFactoryBean.class.getName());
+		}
 
-    }
+	}
 
-    public static class MapperScannerRegistrarAutoConfigured implements BeanFactoryAware,
-            ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+	public static class MapperScannerRegistrarAutoConfigured implements BeanFactoryAware,
+			ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
-        private BeanFactory beanFactory;
+		private BeanFactory beanFactory;
 
-        private ResourceLoader resourceLoader;
+		private ResourceLoader resourceLoader;
 
-        @Override
-        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry){
-            logger.debug("Searching for mappers annotated with @Mapper");
-            ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry
+				registry){
+			logger.debug("Searching for mappers annotated with @Mapper");
+			ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
 
-            if(resourceLoader != null){
-                scanner.setResourceLoader(resourceLoader);
-            }
+			if(resourceLoader != null){
+				scanner.setResourceLoader(resourceLoader);
+			}
 
-            try{
-                List<String> ex = AutoConfigurationPackages.get(beanFactory);
-                if(logger.isDebugEnabled()){
-                    Iterator<String> iterator = ex.iterator();
+			try{
+				List<String> ex = AutoConfigurationPackages.get(beanFactory);
+				if(logger.isDebugEnabled()){
+					Iterator<String> iterator = ex.iterator();
 
-                    while(iterator.hasNext()){
-                        logger.debug("Using auto-configuration base package \'{}\'", iterator.next());
-                    }
-                }
+					while(iterator.hasNext()){
+						logger.debug("Using auto-configuration base package \'{}\'", iterator.next());
+					}
+				}
 
-                scanner.setAnnotationClass(Mapper.class);
-                scanner.registerFilters();
-                scanner.doScan(StringUtils.toStringArray(ex));
-            }catch(IllegalStateException e){
-                logger.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.", e);
-            }
-        }
+				scanner.setAnnotationClass(Mapper.class);
+				scanner.registerFilters();
+				scanner.doScan(StringUtils.toStringArray(ex));
+			}catch(IllegalStateException e){
+				logger.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.", e);
+			}
+		}
 
-        @Override
-        public void setBeanFactory(BeanFactory beanFactory) throws BeansException{
-            this.beanFactory = beanFactory;
-        }
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException{
+			this.beanFactory = beanFactory;
+		}
 
-        @Override
-        public void setResourceLoader(ResourceLoader resourceLoader){
-            this.resourceLoader = resourceLoader;
-        }
-    }
+		@Override
+		public void setResourceLoader(ResourceLoader resourceLoader){
+			this.resourceLoader = resourceLoader;
+		}
+	}
 
 }
