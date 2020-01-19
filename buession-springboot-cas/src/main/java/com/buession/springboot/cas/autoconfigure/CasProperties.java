@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cas.autoconfigure;
@@ -33,43 +33,44 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "cas")
 public class CasProperties {
 
-    private CasProtocol protocol = CasProtocol.CAS30;
+	private CasProtocol protocol = CasProtocol.CAS30;
 
-    private String loginUrl;
+	private String loginUrl;
 
-    private String prefixUrl;
+	private String prefixUrl;
 
-    private String callbackUrl;
+	private String callbackUrl;
 
-    public CasProtocol getProtocol(){
-        return protocol;
-    }
+	public CasProtocol getProtocol(){
+		return protocol;
+	}
 
-    public void setProtocol(final CasProtocol protocol){
-        this.protocol = protocol;
-    }
+	public void setProtocol(final CasProtocol protocol){
+		this.protocol = protocol;
+	}
 
-    public String getLoginUrl(){
-        return loginUrl;
-    }
+	public String getLoginUrl(){
+		return loginUrl;
+	}
 
-    public void setLoginUrl(String loginUrl){
-        this.loginUrl = loginUrl;
-    }
+	public void setLoginUrl(String loginUrl){
+		this.loginUrl = loginUrl;
+	}
 
-    public String getPrefixUrl(){
-        return prefixUrl;
-    }
+	public String getPrefixUrl(){
+		return prefixUrl;
+	}
 
-    public void setPrefixUrl(String prefixUrl){
-        this.prefixUrl = prefixUrl;
-    }
+	public void setPrefixUrl(String prefixUrl){
+		this.prefixUrl = prefixUrl;
+	}
 
-    public String getCallbackUrl(){
-        return callbackUrl;
-    }
+	public String getCallbackUrl(){
+		return callbackUrl;
+	}
 
-    public void setCallbackUrl(String callbackUrl){
-        this.callbackUrl = callbackUrl;
-    }
+	public void setCallbackUrl(String callbackUrl){
+		this.callbackUrl = callbackUrl;
+	}
+
 }

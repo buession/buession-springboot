@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cli.application;
 
 import com.buession.springboot.boot.application.AbstractApplication;
+import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -34,20 +35,27 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
 
-    protected AbstractCliApplication(){
+	protected AbstractCliApplication(){
 
-    }
+	}
 
-    public static void run(final AbstractCliApplication instance, final String[] args){
-        new SpringApplicationBuilder(instance.getClass()).banner(instance.getBanner()).web(WebApplicationType.NONE)
-                .properties(instance.createRuntimeProperties()).logStartupInfo(true).run(args);
-    }
+	public static void run(final AbstractCliApplication instance, final String[] args){
+		final Banner banner = instance.getBanner();
+		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(instance.getClass());
 
-    @Override
-    public void run(final String[] args){
-        run(false, args);
-    }
+		if(banner != null){
+			springApplicationBuilder.banner(banner);
+		}
 
-    protected abstract void run(final boolean logStartupInfo, final String[] args);
+		springApplicationBuilder.web(WebApplicationType.NONE).properties(instance.createRuntimeProperties())
+				.logStartupInfo(true).run(args);
+	}
+
+	@Override
+	public void run(final String[] args){
+		run(false, args);
+	}
+
+	protected abstract void run(final boolean logStartupInfo, final String[] args);
 
 }

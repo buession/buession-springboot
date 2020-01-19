@@ -70,16 +70,14 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Yong.Teng
  */
 @Configuration
 @EnableConfigurationProperties(MybatisProperties.class)
-@ConditionalOnClass({
-		SqlSessionFactory.class,
-		SqlSessionFactoryBean.class
-})
+@ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @ConditionalOnBean({DataSource.class})
 @Import({DataSourceConfiguration.class})
 @AutoConfigureAfter({DataSourceConfiguration.class})
@@ -148,17 +146,11 @@ public class MybatisConfiguration {
 	@ConditionalOnMissingBean
 	public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories){
 		if(Validate.isEmpty(slaveSqlSessionFactories)){
-			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or " +
-					"empty");
+			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
 		}
 
-		List<SqlSessionTemplate> slaveSqlSessionTemplates = new ArrayList<>(slaveSqlSessionFactories.size());
-
-		for(SqlSessionFactory sqlSessionFactory : slaveSqlSessionFactories){
-			slaveSqlSessionTemplates.add(createSqlSessionTemplate(sqlSessionFactory));
-		}
-
-		return slaveSqlSessionTemplates;
+		return slaveSqlSessionFactories.stream().map(sqlSessionFactory->createSqlSessionTemplate(sqlSessionFactory))
+				.collect(Collectors.toList());
 	}
 
 	private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{

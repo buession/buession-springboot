@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cas.autoconfigure;
@@ -43,47 +43,43 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({org.pac4j.cas.config.CasConfiguration.class})
 public class CasConfiguration {
 
-    public final static String CAS_CLIENT = "cas";
+	@Autowired
+	private CasProperties casProperties;
 
-    public final static String REST_CLIENT = "rest";
+	@Bean
+	@ConditionalOnMissingBean
+	public org.pac4j.cas.config.CasConfiguration casConfiguration(){
+		org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration
+				(casProperties.getLoginUrl(), casProperties.getPrefixUrl());
 
-    @Autowired
-    private CasProperties casProperties;
+		casConfiguration.setProtocol(casProperties.getProtocol());
 
-    @Bean
-    @ConditionalOnMissingBean
-    public org.pac4j.cas.config.CasConfiguration casConfiguration(){
-        org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration
-                (casProperties.getLoginUrl(), casProperties.getPrefixUrl());
+		return casConfiguration;
+	}
 
-        casConfiguration.setProtocol(casProperties.getProtocol());
+	@Bean
+	@ConditionalOnProperty(prefix = "pac4j.client", name = "cas", havingValue = "on")
+	@ConditionalOnMissingBean
+	public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+		CasClient casClient = new CasClient();
 
-        return casConfiguration;
-    }
+		casClient.setName("cas");
+		casClient.setConfiguration(casConfiguration);
+		casClient.setCallbackUrl(casProperties.getCallbackUrl());
 
-    @Bean
-    @ConditionalOnProperty(prefix = "pac4j.client", name = CAS_CLIENT, havingValue = "on")
-    @ConditionalOnMissingBean
-    public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
-        CasClient casClient = new CasClient();
+		return casClient;
+	}
 
-        casClient.setName(CAS_CLIENT);
-        casClient.setConfiguration(casConfiguration);
-        casClient.setCallbackUrl(casProperties.getCallbackUrl());
+	@Bean
+	@ConditionalOnProperty(prefix = "pac4j.client", name = "rest", havingValue = "on")
+	@ConditionalOnMissingBean
+	public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+		CasRestFormClient casRestFormClient = new CasRestFormClient();
 
-        return casClient;
-    }
+		casRestFormClient.setName("rest");
+		casRestFormClient.setConfiguration(casConfiguration);
 
-    @Bean
-    @ConditionalOnProperty(prefix = "pac4j.client", name = REST_CLIENT, havingValue = "on")
-    @ConditionalOnMissingBean
-    public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
-        CasRestFormClient casRestFormClient = new CasRestFormClient();
-
-        casRestFormClient.setName(REST_CLIENT);
-        casRestFormClient.setConfiguration(casConfiguration);
-
-        return casRestFormClient;
-    }
+		return casRestFormClient;
+	}
 
 }

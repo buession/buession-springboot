@@ -56,7 +56,6 @@
 		<module>../buession-springboot-mybatis</module>
 		<module>../buession-springboot-oss</module>
 		<module>../buession-springboot-pac4j</module>
-		<module>../buession-springboot-security</module>
 		<module>../buession-springboot-session</module>
 		<module>../buession-springboot-shiro</module>
 		<module>../buession-springboot-velocity</module>
@@ -69,18 +68,6 @@
 				<groupId>com.buession</groupId>
 				<artifactId>buession-core</artifactId>
 				<version>${buession.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.shiro</groupId>
-				<artifactId>shiro-spring-boot-web-starter</artifactId>
-				<version>1.4.2</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>*</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

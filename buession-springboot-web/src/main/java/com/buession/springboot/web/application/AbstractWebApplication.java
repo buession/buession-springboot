@@ -21,12 +21,13 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2019 Buession.com Inc.														|
+ * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.application;
 
 import com.buession.springboot.boot.application.AbstractApplication;
+import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -35,24 +36,31 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 public abstract class AbstractWebApplication extends AbstractApplication {
 
-    private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
+	private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
 
-    protected AbstractWebApplication(){
+	protected AbstractWebApplication(){
 
-    }
+	}
 
-    protected AbstractWebApplication(WebApplicationType webApplicationType){
-        this.webApplicationType = webApplicationType;
-    }
+	protected AbstractWebApplication(WebApplicationType webApplicationType){
+		this.webApplicationType = webApplicationType;
+	}
 
-    protected WebApplicationType getWebApplicationType(){
-        return webApplicationType;
-    }
+	protected WebApplicationType getWebApplicationType(){
+		return webApplicationType;
+	}
 
-    @Override
-    public void run(final String[] args){
-        new SpringApplicationBuilder(getClass()).banner(getBanner()).web(getWebApplicationType()).properties
-                (createRuntimeProperties()).logStartupInfo(true).run(args);
-    }
+	@Override
+	public void run(final String[] args){
+		final Banner banner = getBanner();
+		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(getClass());
+
+		if(banner != null){
+			springApplicationBuilder.banner(banner);
+		}
+
+		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo
+				(true).run(args);
+	}
 
 }

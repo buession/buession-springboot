@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.jwt.autoconfigure;
@@ -30,7 +30,6 @@ import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import org.pac4j.core.credentials.extractor.HeaderExtractor;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.pac4j.http.client.direct.ParameterClient;
 import org.pac4j.jwt.config.encryption.SecretEncryptionConfiguration;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
@@ -57,58 +56,57 @@ import javax.annotation.PostConstruct;
 @ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
 public class JwtConfiguration {
 
-    public final static String NAME = "jwt";
+	private SignatureConfiguration signatureConfiguration;
 
-    private final static int PAD_SIZE = 32;
+	private SecretEncryptionConfiguration secretEncryptionConfiguration;
 
-    private SignatureConfiguration signatureConfiguration;
+	@Autowired
+	private JwtProperties jwtProperties;
 
-    private SecretEncryptionConfiguration secretEncryptionConfiguration;
+	private final static Logger logger = LoggerFactory.getLogger(JwtConfiguration.class);
 
-    @Autowired
-    private JwtProperties jwtProperties;
+	@PostConstruct
+	private void initialize(){
+		int padSize = 32;
 
-    private final static Logger logger = LoggerFactory.getLogger(JwtConfiguration.class);
+		String jwtSecret = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize, jwtProperties
+				.getEncryptionKey());
+		String jwtEncryptionKey = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize, jwtProperties
+				.getEncryptionKey());
 
-    @PostConstruct
-    private void initialize(){
-        String jwtSecret = StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties
-                .getEncryptionKey());
-        String jwtEncryptionKey = StringUtils.leftPad(jwtProperties.getEncryptionKey(), PAD_SIZE, jwtProperties
-                .getEncryptionKey());
+		signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
+		secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR,
+				EncryptionMethod.A128CBC_HS256);
+	}
 
-        signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
-        secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR,
-                EncryptionMethod.A128CBC_HS256);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public JwtGenerator<CommonProfile> jwtGenerator(){
+		return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JwtGenerator<CommonProfile> jwtGenerator(){
-        return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
-    }
+	@Bean
+	@ConditionalOnProperty(prefix = "pac4j.client", name = "jwt", havingValue = "on")
+	@ConditionalOnMissingBean
+	public ParameterClient jwtClient(){
+		ParameterClient parameterClient = new ParameterClient();
+		HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
+				.getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader());
+		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration,
+				secretEncryptionConfiguration);
 
-    @Bean
-    @ConditionalOnProperty(name = "pac4j.client.jwt", havingValue = "on")
-    @ConditionalOnMissingBean
-    public ParameterClient jwtClient(){
-        ParameterClient parameterClient = new ParameterClient();
-        HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
-                .getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader());
-        JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
+		parameterClient.setName("jwt");
+		parameterClient.setParameterName(jwtProperties.getParameterName());
+		parameterClient.setSupportGetRequest(true);
+		parameterClient.setAuthenticator(jwtAuthenticator);
+		parameterClient.setCredentialsExtractor(headerExtractor);
+		//parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
-        parameterClient.setName(NAME);
-        parameterClient.setParameterName(jwtProperties.getParameterName());
-        parameterClient.setSupportGetRequest(true);
-        parameterClient.setAuthenticator(jwtAuthenticator);
-        parameterClient.setCredentialsExtractor(headerExtractor);
-        //parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
+		logger.debug("initialize {} name => jwt, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, "
+				+ "headerName => {}", ParameterClient.class.getName(), jwtProperties.getEncryptionKey(), jwtProperties
+				.getParameterName(), jwtProperties.getPrefixHeader());
 
-        logger.debug("initialize {} name => {}, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, "
-                + "headerName => {}", ParameterClient.class.getName(), NAME, jwtProperties.getEncryptionKey(),
-                jwtProperties.getParameterName(), jwtProperties.getPrefixHeader());
-
-        return parameterClient;
-    }
+		return parameterClient;
+	}
 
 }
