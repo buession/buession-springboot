@@ -26,29 +26,39 @@ package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.utils.ArrayUtils;
 import com.buession.core.validator.Validate;
+import com.buession.security.pac4j.filter.CallbackFilter;
+import com.buession.security.pac4j.filter.LogoutFilter;
 import com.buession.security.pac4j.filter.SecurityFilter;
 import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
+import com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.Pac4jConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Yong.Teng
  */
-public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shiro.spring.web.config
-		.AbstractShiroWebFilterConfiguration {
+@Configuration
+@Import({Pac4jConfiguration.class})
+@EnableConfigurationProperties(ShiroProperties.class)
+@ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	@Autowired
 	protected ShiroProperties shiroProperties;
@@ -57,6 +67,7 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
 	protected Config pac4jConfig;
 
 	@Bean
+	@ConditionalOnMissingBean
 	@Override
 	public ShiroFilterFactoryBean shiroFilterFactoryBean(){
 		// 把 subject 对象设为 subjectFactory
@@ -104,6 +115,20 @@ public abstract class AbstractShiroWebFilterConfiguration extends org.apache.shi
 		return filter;
 	}
 
-	protected abstract Map<String, Filter> shiroFilters();
+	protected Map<String, Filter> shiroFilters(){
+		Map<String, Filter> filters = new HashMap<>(3);
+
+		filters.put("securityFilter", securityFilter());
+
+		CallbackFilter callbackFilter = new CallbackFilter(pac4jConfig);
+		filters.put("callbackFilter", callbackFilter);
+
+		LogoutFilter logoutFilter = new LogoutFilter(pac4jConfig);
+		logoutFilter.setCentralLogout(true);
+		logoutFilter.setDefaultUrl(successUrl);
+		filters.put("logoutFilter", logoutFilter);
+
+		return filters;
+	}
 
 }

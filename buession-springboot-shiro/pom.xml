@@ -51,15 +51,15 @@
 			<artifactId>buession-springboot-cache</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.buession.springboot</groupId>
+			<artifactId>buession-springboot-pac4j</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.buession.security</groupId>
 			<artifactId>buession-security-shiro</artifactId>
-			<version>${buession.security.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.buession.security</groupId>
-			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
 		</dependency>
 
