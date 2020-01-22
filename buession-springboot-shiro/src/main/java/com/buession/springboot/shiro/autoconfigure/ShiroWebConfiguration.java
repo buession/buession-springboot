@@ -25,9 +25,11 @@
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import com.buession.security.shiro.Cookie;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authz.Authorizer;
+import org.apache.shiro.config.Ini;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.mgt.SessionsSecurityManager;
@@ -41,23 +43,23 @@ import org.apache.shiro.spring.boot.autoconfigure.ShiroAutoConfiguration;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
-import org.apache.shiro.web.servlet.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Yong.Teng
  */
 @Configuration
-@AutoConfigureBefore(ShiroAutoConfiguration.class)
+@AutoConfigureBefore({ShiroAutoConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
@@ -65,9 +67,35 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Autowired
 	protected ShiroProperties shiroProperties;
 
+	@PostConstruct
+	public void initialize(){
+		ShiroProperties.Session session = shiroProperties.getSession();
+
+		useNativeSessionManager = session.isUserNativeSessionManager();
+		sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
+		sessionIdUrlRewritingEnabled = session.isSessionIdUrlRewritingEnabled();
+
+		// Session Cookie info
+		Cookie cookie = session.getCookie();
+		sessionIdCookieName = cookie.getName();
+		sessionIdCookieDomain = cookie.getDomain();
+		sessionIdCookiePath = cookie.getPath();
+		sessionIdCookieMaxAge = cookie.getMaxAge();
+		sessionIdCookieSecure = cookie.isSecure();
+
+		// RememberMe Cookie info
+		Cookie rememberMeCookie = shiroProperties.getRememberMe().getCookie();
+		rememberMeCookieName = rememberMeCookie.getName();
+		rememberMeCookieDomain = rememberMeCookie.getDomain();
+		rememberMeCookiePath = rememberMeCookie.getPath();
+		rememberMeCookieMaxAge = rememberMeCookie.getMaxAge();
+		rememberMeCookieSecure = rememberMeCookie.isSecure();
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
+
 	protected AuthenticationStrategy authenticationStrategy(){
 		return super.authenticationStrategy();
 	}
@@ -138,7 +166,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
 	@Override
-	protected Cookie sessionCookieTemplate(){
+	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
 		return super.sessionCookieTemplate();
 	}
 
@@ -152,33 +180,33 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
 	@Override
-	protected Cookie rememberMeCookieTemplate(){
+	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
 		return super.rememberMeCookieTemplate();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnResource(resources = "classpath:chainDefinition.ini")
 	@Override
 	protected ShiroFilterChainDefinition shiroFilterChainDefinition(){
-		if(Validate.isEmpty(shiroProperties.getFilterChainDefinitions()) == false){
+		Ini ini = Ini.fromResourcePath("classpath:chainDefinition.ini");
+
+		if(Validate.isEmpty(ini)){
 			return super.shiroFilterChainDefinition();
-		}else{
-			DefaultShiroFilterChainDefinition shiroFilterChainDefinition = new DefaultShiroFilterChainDefinition();
-
-			if(Validate.isEmpty(shiroProperties.getFilterChainDefinitions()) == false){
-				shiroProperties.getFilterChainDefinitions().forEach((antPath, definition)->{
-					shiroFilterChainDefinition.addPathDefinition(antPath, definition);
-				});
-			}
-
-			/*if(Validate.isEmpty(urls) == false){
-				urls.forEach((antPath, definition)->{
-					shiroFilterChainDefinition.addPathDefinition(antPath, definition);
-				});
-			}*/
-
-			return shiroFilterChainDefinition;
 		}
+
+		Ini.Section section = ini.get("filterChainDefinitions");
+		if(Validate.isEmpty(section)){
+			return super.shiroFilterChainDefinition();
+		}
+
+		DefaultShiroFilterChainDefinition shiroFilterChainDefinition = new DefaultShiroFilterChainDefinition();
+
+		section.forEach((antPath, definition)->{
+			shiroFilterChainDefinition.addPathDefinition(antPath, definition);
+		});
+
+		return shiroFilterChainDefinition;
 	}
 
 }

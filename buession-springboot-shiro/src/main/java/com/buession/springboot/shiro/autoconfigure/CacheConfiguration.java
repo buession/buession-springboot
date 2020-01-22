@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -51,27 +51,28 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnBean(RedisTemplate.class)
 public class CacheConfiguration {
 
-    @Autowired
-    private ShiroProperties shiroProperties;
+	@Autowired
+	private ShiroProperties shiroProperties;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RedisManager shiroRedisManager(RedisTemplate redisTemplate){
-        return new DefaultRedisManager(redisTemplate);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public RedisManager shiroRedisManager(RedisTemplate redisTemplate){
+		return new DefaultRedisManager(redisTemplate);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CacheManager cacheManager(RedisManager shiroRedisManager){
-        return new RedisCacheManager(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
-                .getSessionExpire());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public CacheManager cacheManager(RedisManager shiroRedisManager){
+		ShiroProperties.Session session = shiroProperties.getSession();
+		return new RedisCacheManager(shiroRedisManager, session.getPrefix(), session.getExpire());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public SessionDAO sessionDAO(RedisManager shiroRedisManager){
-        return new RedisSessionDAO(shiroRedisManager, shiroProperties.getSessionPrefix(), shiroProperties
-                .getSessionExpire());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public SessionDAO sessionDAO(RedisManager shiroRedisManager){
+		ShiroProperties.Session session = shiroProperties.getSession();
+		return new RedisSessionDAO(shiroRedisManager, session.getPrefix(), session.getExpire(), session.getTimeout() *
+				1000);
+	}
 
 }
