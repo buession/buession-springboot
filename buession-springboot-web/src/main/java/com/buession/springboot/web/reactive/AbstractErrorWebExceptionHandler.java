@@ -42,15 +42,9 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingPathVariableException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RequestPredicates;
@@ -58,7 +52,12 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.MediaTypeNotSupportedStatusException;
+import org.springframework.web.server.MethodNotAllowedException;
+import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebInputException;
+import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -139,39 +138,36 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 	protected Map<String, Object> doResolveException(final ServerRequest request, final ServerResponse response, final
 	Throwable throwable){
 		try{
-			if(throwable instanceof HttpRequestMethodNotSupportedException){
-				return handleHttpRequestMethodNotSupported(request, response, (HttpRequestMethodNotSupportedException)
-						throwable);
-			}else if(throwable instanceof HttpMediaTypeNotSupportedException){
-				return handleHttpMediaTypeNotSupported(request, response, (HttpMediaTypeNotSupportedException)
-						throwable);
-			}else if(throwable instanceof HttpMediaTypeNotAcceptableException){
-				return handleHttpMediaTypeNotAcceptable(request, response, (HttpMediaTypeNotAcceptableException)
-						throwable);
-			}else if(throwable instanceof MissingPathVariableException){
-				return handleMissingPathVariable(request, response, (MissingPathVariableException) throwable);
-			}else if(throwable instanceof MissingServletRequestParameterException){
-				return handleMissingServletRequestParameter(request, response,
-						(MissingServletRequestParameterException) throwable);
-			}else if(throwable instanceof ServletRequestBindingException){
-				return handleServletRequestBindingException(request, response, (ServletRequestBindingException)
-						throwable);
-			}else if(throwable instanceof ConversionNotSupportedException){
-				return handleConversionNotSupported(request, response, (ConversionNotSupportedException) throwable);
-			}else if(throwable instanceof TypeMismatchException){
-				return handleTypeMismatch(request, response, (TypeMismatchException) throwable);
-			}else if(throwable instanceof HttpMessageNotReadableException){
-				return handleHttpMessageNotReadable(request, response, (HttpMessageNotReadableException) throwable);
-			}else if(throwable instanceof HttpMessageNotWritableException){
-				return handleHttpMessageNotWritable(request, response, (HttpMessageNotWritableException) throwable);
-			}else if(throwable instanceof MethodArgumentNotValidException){
+			if(throwable instanceof MethodArgumentNotValidException){
 				return handleMethodArgumentNotValidException(request, response, (MethodArgumentNotValidException)
 						throwable);
-			}else if(throwable instanceof MissingServletRequestPartException){
-				return handleMissingServletRequestPartException(request, response,
-						(MissingServletRequestPartException) throwable);
 			}else if(throwable instanceof BindException){
 				return handleBindException(request, response, (BindException) throwable);
+			}else if(throwable instanceof WebExchangeBindException){
+				return handleWebExchangeBindException(request, response, (WebExchangeBindException) throwable);
+			}else if(throwable instanceof ServerWebInputException){
+				return handleServerWebInputException(request, response, (ServerWebInputException) throwable);
+			}else if(throwable instanceof TypeMismatchException){
+				return handleTypeMismatchException(request, response, (TypeMismatchException) throwable);
+			}else if(throwable instanceof HttpMessageNotReadableException){
+				return handleHttpMessageNotReadableException(request, response, (HttpMessageNotReadableException)
+						throwable);
+			}else if(throwable instanceof MethodNotAllowedException){
+				return handleMethodNotAllowedException(request, response, (MethodNotAllowedException) throwable);
+			}else if(throwable instanceof NotAcceptableStatusException){
+				return handleNotAcceptableException(request, response, (NotAcceptableStatusException) throwable);
+			}else if(throwable instanceof MediaTypeNotSupportedStatusException){
+				return handleMediaTypeNotSupportedException(request, response, (MediaTypeNotSupportedStatusException)
+						throwable);
+			}else if(throwable instanceof UnsupportedMediaTypeStatusException){
+				return handleUnsupportedMediaTypeException(request, response, (UnsupportedMediaTypeStatusException)
+						throwable);
+			}else if(throwable instanceof ConversionNotSupportedException){
+				return handleConversionNotSupportedException(request, response, (ConversionNotSupportedException)
+						throwable);
+			}else if(throwable instanceof HttpMessageNotWritableException){
+				return handleHttpMessageNotWritableException(request, response, (HttpMessageNotWritableException)
+						throwable);
 			}else if(throwable instanceof ResponseStatusException){
 				return handleResponseStatusException(request, response, (ResponseStatusException) throwable);
 			}else if(throwable instanceof AsyncRequestTimeoutException){
@@ -187,11 +183,69 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		return doDefaultResolveException(request, throwable);
 	}
 
-	protected Map<String, Object> handleHttpRequestMethodNotSupported(final ServerRequest request, final
-	ServerResponse response, final HttpRequestMethodNotSupportedException ex){
-		//response.setStatusCode(HttpStatus.METHOD_NOT_ALLOWED);
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request, final
+	ServerResponse response, final MethodArgumentNotValidException ex){
+		return doResolve(request, ex);
+	}
 
-		Set<HttpMethod> supportedMethods = ex.getSupportedHttpMethods();
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
+													  final BindException ex){
+		return doResolve(request, ex);
+	}
+
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request, final ServerResponse
+			response, final WebExchangeBindException ex){
+		return doResolve(request, ex);
+	}
+
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleServerWebInputException(final ServerRequest request, final ServerResponse
+			response, final ServerWebInputException ex){
+		return doResolve(request, ex);
+	}
+
+	/**
+	 * Status code: 400
+	 */
+	/*protected Map<String, Object> handleServletRequestBindingException(final ServerRequest request, final
+	ServerResponse response, final ServletRequestBindingException ex){
+		// response.setStatusCode(HttpStatus.BAD_REQUEST);
+		return doResolve(request, ex);
+	}*/
+
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request, final ServerResponse
+			response, final TypeMismatchException ex){
+		return doResolve(request, ex);
+	}
+
+	/**
+	 * Status code: 400
+	 */
+	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request, final
+	ServerResponse response, final HttpMessageNotReadableException ex){
+		return doResolve(request, ex);
+	}
+
+	/**
+	 * Status code: 405
+	 */
+	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request, final ServerResponse
+			response, final MethodNotAllowedException ex){
+		Set<HttpMethod> supportedMethods = ex.getSupportedMethods();
 		if(supportedMethods != null){
 			response.headers().setAllow(supportedMethods);
 		}
@@ -199,10 +253,19 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		return doResolve(request, ex);
 	}
 
-	protected Map<String, Object> handleHttpMediaTypeNotSupported(final ServerRequest request, final ServerResponse
-			response, final HttpMediaTypeNotSupportedException ex){
-		// response.setStatusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+	/**
+	 * Status code: 406
+	 */
+	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request, final ServerResponse
+			response, final NotAcceptableStatusException ex){
+		return doResolve(request, ex);
+	}
 
+	/**
+	 * Status code: 415
+	 */
+	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request, final
+	ServerResponse response, final MediaTypeNotSupportedStatusException ex){
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
 		if(!CollectionUtils.isEmpty(mediaTypes)){
 			response.headers().setAccept(mediaTypes);
@@ -211,81 +274,57 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		return doResolve(request, ex);
 	}
 
-	protected Map<String, Object> handleHttpMediaTypeNotAcceptable(final ServerRequest request, final ServerResponse
-			response, final HttpMediaTypeNotAcceptableException ex){
-		// response.setStatusCode(HttpStatus.NOT_ACCEPTABLE);
+	/**
+	 * Status code: 415
+	 */
+	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request, final
+	ServerResponse response, final UnsupportedMediaTypeStatusException ex){
+		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
+		if(!CollectionUtils.isEmpty(mediaTypes)){
+			response.headers().setAccept(mediaTypes);
+		}
+
 		return doResolve(request, ex);
 	}
 
-	protected Map<String, Object> handleMissingPathVariable(final ServerRequest request, final ServerResponse
+	/**
+	 * Status code: 500
+	 */
+	/*protected Map<String, Object> handleMissingPathVariable(final ServerRequest request, final ServerResponse
 			response, final MissingPathVariableException ex){
-		//  response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		return doResolve(request, ex);
+	}*/
+
+	/**
+	 * Status code: 500
+	 */
+	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request, final
+	ServerResponse response, final ConversionNotSupportedException ex){
 		return doResolve(request, ex);
 	}
 
-	protected Map<String, Object> handleMissingServletRequestParameter(final ServerRequest request, final
-	ServerResponse response, final MissingServletRequestParameterException ex){
-		//  response.setStatusCode(HttpStatus.BAD_REQUEST);
+	/**
+	 * Status code: 500
+	 */
+	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request, final
+	ServerResponse response, final HttpMessageNotWritableException ex){
 		return doResolve(request, ex);
 	}
 
-	protected Map<String, Object> handleServletRequestBindingException(final ServerRequest request, final
-	ServerResponse response, final ServletRequestBindingException ex){
-		// response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleConversionNotSupported(final ServerRequest request, final ServerResponse
-			response, final ConversionNotSupportedException ex){
-		//response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleTypeMismatch(final ServerRequest request, final ServerResponse response, final
-	TypeMismatchException ex){
-		//response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleHttpMessageNotReadable(final ServerRequest request, final ServerResponse
-			response, final HttpMessageNotReadableException ex){
-		//response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleHttpMessageNotWritable(final ServerRequest request, final ServerResponse
-			response, final HttpMessageNotWritableException ex){
-		//response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request, final
-	ServerResponse response, final MethodArgumentNotValidException ex){
-		//response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleMissingServletRequestPartException(final ServerRequest request, final
-	ServerResponse response, final MissingServletRequestPartException ex){
-		//response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
-	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
-													  final BindException ex){
-		//response.setStatusCode(HttpStatus.BAD_REQUEST);
-		return doResolve(request, ex);
-	}
-
+	/**
+	 * Status code: 404
+	 */
 	protected Map<String, Object> handleResponseStatusException(final ServerRequest request, final ServerResponse
 			response, final ResponseStatusException ex){
 		if(ex.getStatus() == HttpStatus.NOT_FOUND){
 			pageNotFoundLogger.warn(ex.getMessage());
 		}
-		//response.setStatusCode(ex.getStatus());
 		return doResolve(request, ex);
 	}
 
+	/**
+	 * Status code: 503
+	 */
 	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request, final ServerResponse
 			response, final AsyncRequestTimeoutException ex){
 		if(request.exchange().getResponse().isCommitted() == false){
