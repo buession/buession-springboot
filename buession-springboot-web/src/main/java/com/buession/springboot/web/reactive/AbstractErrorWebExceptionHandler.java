@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.web.reactive;
 
-import com.buession.web.http.ExceptionHandlerResolver;
+import com.buession.web.reactive.ErrorWebExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -72,7 +72,7 @@ import java.util.Set;
  * @author Yong.Teng
  */
 public abstract class AbstractErrorWebExceptionHandler extends org.springframework.boot.autoconfigure.web.reactive
-		.error.AbstractErrorWebExceptionHandler implements ExceptionHandlerResolver {
+		.error.AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler {
 
 	protected final ErrorProperties errorProperties;
 
