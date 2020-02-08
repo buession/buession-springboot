@@ -27,6 +27,7 @@
 package com.buession.springboot.web.application;
 
 import com.buession.springboot.boot.application.AbstractApplication;
+import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -52,8 +53,13 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 
 	@Override
 	public void run(final String[] args){
+		run(getClass(), args);
+	}
+
+	@Override
+	public void run(final Class<? extends Application> clazz, final String[] args){
 		final Banner banner = getBanner();
-		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(getClass());
+		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
 		if(banner != null){
 			springApplicationBuilder.banner(banner);
@@ -62,5 +68,4 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo
 				(true).run(args);
 	}
-
 }

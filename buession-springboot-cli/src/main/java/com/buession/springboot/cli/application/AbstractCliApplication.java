@@ -25,37 +25,45 @@
 package com.buession.springboot.cli.application;
 
 import com.buession.springboot.boot.application.AbstractApplication;
+import com.buession.springboot.boot.application.Application;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Date;
 
 /**
  * @author Yong.Teng
  */
 public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
 
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	protected AbstractCliApplication(){
 
 	}
 
-	public static void run(final AbstractCliApplication instance, final String[] args){
-		final Banner banner = instance.getBanner();
-		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(instance.getClass());
+	@Override
+	public void run(final String[] args){
+		run(getClass(), args);
+	}
+
+	@Override
+	public void run(final Class<? extends Application> clazz, final String[] args){
+		final Banner banner = getBanner();
+		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
 		if(banner != null){
 			springApplicationBuilder.banner(banner);
 		}
 
-		springApplicationBuilder.web(WebApplicationType.NONE).properties(instance.createRuntimeProperties())
-				.logStartupInfo(true).run(args);
+		springApplicationBuilder.web(WebApplicationType.NONE).properties(createRuntimeProperties()).logStartupInfo
+				(true).run(args);
+		logger.info("Application startup at {}", new Date());
 	}
-
-	@Override
-	public void run(final String[] args){
-		run(false, args);
-	}
-
-	protected abstract void run(final boolean logStartupInfo, final String[] args);
 
 }
