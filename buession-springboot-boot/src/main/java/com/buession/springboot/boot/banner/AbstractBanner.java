@@ -30,9 +30,10 @@ import com.buession.core.Framework;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.utils.VersionUtils;
 import com.github.lalyos.jfiglet.FigletFont;
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.io.FileUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.core.SpringVersion;
 import org.springframework.core.env.Environment;
 
 import javax.crypto.Cipher;
@@ -75,38 +76,50 @@ public abstract class AbstractBanner implements Banner {
 	}
 
 	protected String getVersion(){
-		return getVersion(AbstractBanner.class);
+		return getVersion(getClass());
 	}
 
 	protected <T> String getVersion(Class<T> clazz){
 		return clazz == null ? null : VersionUtils.determineClassVersion(clazz);
 	}
 
-	private String collectEnvironmentInfo(Environment environment, Class<?> sourceClass){
+	private String collectEnvironmentInfo(final Environment environment, final Class<?> sourceClass){
 		Properties properties = System.getProperties();
 		Throwable throwable = null;
 
 		Formatter formatter = new Formatter();
 
-		formatter.format("Project Version: %s%n", new Object[]{getVersion()});
-		formatter.format("Buession Framework Version: %s%n", new Object[]{getVersion(Framework.class)});
+		formatter.format("%n");
+		formatter.format("Project Version: %s%n", getVersion());
+		formatter.format("%s%n", LINE_SEPARATOR);
 
 		try{
 			if(properties.containsKey("BANNER_SKIP") == false){
-				formatter.format("Spring Boot Framework Version: %s%n", new Object[]{SpringBootVersion.getVersion()});
-				formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
-				formatter.format("System Date/Time: %s%n", new Object[]{LocalDateTime.now()});
-				formatter.format("System Temp Directory: %s%n", new Object[]{properties.get("java.io.tmpdir")});
-				formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
-				formatter.format("Java Home: %s%n", new Object[]{properties.get("java.home")});
-				formatter.format("Java Vendor: %s%n", new Object[]{properties.get("java.vendor")});
-				formatter.format("Java Version: %s%n", new Object[]{properties.get("java.version")});
-				formatter.format("JCE Installed: %s%n", new Object[]{BooleanUtils.toStringYesNo(isJceInstalled())});
-				formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
-				formatter.format("OS Architecture: %s%n", new Object[]{properties.get("os.arch")});
-				formatter.format("OS Name: %s%n", new Object[]{properties.get("os.name")});
-				formatter.format("OS Version: %s%n", new Object[]{properties.get("os.version")});
-				formatter.format("%s%n", new Object[]{LINE_SEPARATOR});
+				formatter.format("Buession Framework Version: %s%n", Framework.VERSION);
+				formatter.format("Buession Spring Boot Version: %s%n", getVersion(Banner.class));
+				formatter.format("%s%n", LINE_SEPARATOR);
+
+				formatter.format("Spring Framework Version: %s%n", SpringVersion.getVersion());
+				formatter.format("Spring Boot Framework Version: %s%n", SpringBootVersion.getVersion());
+				formatter.format("%s%n", LINE_SEPARATOR);
+
+				formatter.format("OS Architecture: %s%n", properties.get("os.arch"));
+				formatter.format("OS Name: %s%n", properties.get("os.name"));
+				formatter.format("OS Version: %s%n", properties.get("os.version"));
+				formatter.format("System Date Time: %s%n", LocalDateTime.now());
+				formatter.format("System Temp Directory: %s%n", properties.get("java.io.tmpdir"));
+				formatter.format("%s%n", LINE_SEPARATOR);
+
+				Runtime runtime = Runtime.getRuntime();
+
+				formatter.format("Java Home: %s%n", properties.get("java.home"));
+				formatter.format("Java Vendor: %s%n", properties.get("java.vendor"));
+				formatter.format("Java Version: %s%n", properties.get("java.version"));
+				formatter.format("JVM Total Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.totalMemory()));
+				formatter.format("JVM Maximum Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.maxMemory()));
+				formatter.format("JVM Free Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.freeMemory()));
+				formatter.format("JCE Installed: %s%n", isJceInstalled() ? "Yes" : "No");
+				formatter.format("%s%n", LINE_SEPARATOR);
 
 				injectEnvironmentInfoIntoBanner(formatter, environment, sourceClass);
 			}
@@ -120,7 +133,8 @@ public abstract class AbstractBanner implements Banner {
 		}
 	}
 
-	protected void injectEnvironmentInfoIntoBanner(Formatter formatter, Environment environment, Class<?> sourceClass){
+	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment, final
+	Class<?> sourceClass){
 	}
 
 	private final static boolean isJceInstalled(){

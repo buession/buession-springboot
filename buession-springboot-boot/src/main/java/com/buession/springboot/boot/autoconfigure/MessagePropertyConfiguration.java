@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.autoconfigure;
@@ -36,16 +36,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessagePropertyConfiguration {
 
-    private final ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-    MessagePropertyConfiguration(ApplicationContext applicationContext){
-        this.applicationContext = applicationContext;
-    }
+	public MessagePropertyConfiguration(ApplicationContext applicationContext){
+		this.applicationContext = applicationContext;
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public MessagePropertyBeanPostProcessor messagePropertyBeanPostProcessor(){
-        return new MessagePropertyBeanPostProcessor(applicationContext.getEnvironment());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public MessagePropertyBeanPostProcessor messagePropertyBeanPostProcessor(){
+		return new MessagePropertyBeanPostProcessor(applicationContext.getEnvironment());
+	}
 
 }

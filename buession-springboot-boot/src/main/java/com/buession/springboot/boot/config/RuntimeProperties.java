@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2017 Buession.com Inc.														|
+ * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.config;
@@ -36,19 +36,19 @@ import java.util.Map;
  */
 public class RuntimeProperties extends HashMap<String, Object> {
 
-    private final static Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>();
+	private final static Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(16, 0.8F);
 
-    static{
-        DEFAULT_PROPERTIES.put("EmbeddedContainerConfigurationActive", true);
-        DEFAULT_PROPERTIES.put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
-    }
+	static{
+		DEFAULT_PROPERTIES.put("EmbeddedContainerConfigurationActive", true);
+		DEFAULT_PROPERTIES.put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
+	}
 
-    public RuntimeProperties(Map<String, Object> m){
-        super(m);
-    }
+	public RuntimeProperties(Map<String, Object> m){
+		super(m);
+	}
 
-    public RuntimeProperties(){
-        super(DEFAULT_PROPERTIES);
-    }
+	public RuntimeProperties(){
+		super(DEFAULT_PROPERTIES);
+	}
 
 }
