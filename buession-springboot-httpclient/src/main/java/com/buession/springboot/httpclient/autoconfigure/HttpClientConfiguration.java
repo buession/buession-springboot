@@ -27,7 +27,6 @@ package com.buession.springboot.httpclient.autoconfigure;
 import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.OkHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
-import com.buession.httpclient.conn.ConnectionManager;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

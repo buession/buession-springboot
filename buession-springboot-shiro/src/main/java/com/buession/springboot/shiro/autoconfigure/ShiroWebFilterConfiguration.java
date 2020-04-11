@@ -30,22 +30,23 @@ import com.buession.security.pac4j.filter.CallbackFilter;
 import com.buession.security.pac4j.filter.LogoutFilter;
 import com.buession.security.pac4j.filter.SecurityFilter;
 import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
-import com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.Pac4jConstants;
+import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -55,50 +56,64 @@ import java.util.Map;
  * @author Yong.Teng
  */
 @Configuration
-@Import({Pac4jConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+@ConditionalOnWebApplication
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	@Autowired
 	protected ShiroProperties shiroProperties;
 
-	@Autowired
-	protected Config pac4jConfig;
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	public ShiroFilterFactoryBean shiroFilterFactoryBean(){
-		// 把 subject 对象设为 subjectFactory
-		// 由于 cas 代理了用户，所以必须通过 ca 进行创建对象
-		((DefaultSecurityManager) securityManager).setSubjectFactory(new Pac4jSubjectFactory());
-
-		ShiroFilterFactoryBean filterFactoryBean = super.shiroFilterFactoryBean();
-
-		filterFactoryBean.setLoginUrl(shiroProperties.getLoginUrl());
-		filterFactoryBean.setSuccessUrl(shiroProperties.getSuccessUrl());
-		filterFactoryBean.setUnauthorizedUrl(shiroProperties.getUnauthorizedUrl());
-		filterFactoryBean.setFilters(shiroFilters());
-
-		return filterFactoryBean;
+	@PostConstruct
+	public void initialize(){
+		loginUrl = shiroProperties.getLoginUrl();
+		successUrl = shiroProperties.getSuccessUrl();
+		unauthorizedUrl = shiroProperties.getUnauthorizedUrl();
 	}
 
 	@Bean(name = "shiroFilterRegistrationBean")
+	@ConditionalOnBean({Config.class})
 	@ConditionalOnMissingBean
-	public FilterRegistrationBean shiroFilterRegistrationBean(ShiroFilterFactoryBean shiroFilterFactoryBean) throws
-			Exception{
-		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+	public FilterRegistrationBean shiroFilterRegistrationBean(Config pac4jConfig) throws Exception{
+		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType
 				.INCLUDE, DispatcherType.ERROR);
-		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean.getObject());
+		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean(pac4jConfig).getObject());
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;
 	}
 
-	protected SecurityFilter securityFilter(){
+	@Bean(name = "shiroFilterRegistrationBean")
+	@ConditionalOnMissingBean
+	public FilterRegistrationBean shiroFilterRegistrationBean() throws Exception{
+		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+
+		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType
+				.INCLUDE, DispatcherType.ERROR);
+		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
+		filterRegistrationBean.setOrder(1);
+
+		return filterRegistrationBean;
+	}
+
+	protected ShiroFilterFactoryBean shiroFilterFactoryBean(Config pac4jConfig){
+		((DefaultSecurityManager) securityManager).setSubjectFactory(new Pac4jSubjectFactory());
+
+		ShiroFilterFactoryBean filterFactoryBean = super.shiroFilterFactoryBean();
+
+		filterFactoryBean.setFilters(shiroFilters(pac4jConfig));
+
+		return filterFactoryBean;
+	}
+
+	@Override
+	protected ShiroFilterFactoryBean shiroFilterFactoryBean(){
+		return super.shiroFilterFactoryBean();
+	}
+
+	protected SecurityFilter securityFilter(final Config pac4jConfig){
 		SecurityFilter filter = new SecurityFilter(pac4jConfig);
 
 		if(shiroProperties.getClients() != null){
@@ -115,10 +130,10 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		return filter;
 	}
 
-	protected Map<String, Filter> shiroFilters(){
+	protected Map<String, Filter> shiroFilters(final Config pac4jConfig){
 		Map<String, Filter> filters = new HashMap<>(3);
 
-		filters.put("securityFilter", securityFilter());
+		filters.put("securityFilter", securityFilter(pac4jConfig));
 
 		CallbackFilter callbackFilter = new CallbackFilter(pac4jConfig);
 		filters.put("callbackFilter", callbackFilter);

@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>1.1.0</version>
+		<version>1.1.2</version>
 	</parent>
 	<artifactId>buession-springboot-captcha</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
@@ -51,7 +51,7 @@
 			<artifactId>buession-springboot-httpclient</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.buession.security</groupId>
 			<artifactId>buession-security-geetest</artifactId>

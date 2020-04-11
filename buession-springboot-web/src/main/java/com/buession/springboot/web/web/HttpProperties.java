@@ -37,64 +37,64 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "server")
 public class HttpProperties {
 
-    private Map<String, String> responseHeaders = new HashMap<>(16);
+	private Map<String, String> responseHeaders = new HashMap<>(16, 0.8F);
 
-    private String serverInfoName;
+	private String serverInfoName;
 
-    private String serverInfoPrefix;
+	private String serverInfoPrefix;
 
-    private String serverInfoSuffix;
+	private String serverInfoSuffix;
 
-    private String stripServerInfoPrefix;
+	private String stripServerInfoPrefix;
 
-    private String stripServerInfoSuffix;
+	private String stripServerInfoSuffix;
 
-    public Map<String, String> getResponseHeaders(){
-        return responseHeaders;
-    }
+	public Map<String, String> getResponseHeaders(){
+		return responseHeaders;
+	}
 
-    public void setResponseHeaders(Map<String, String> responseHeaders){
-        this.responseHeaders = responseHeaders;
-    }
+	public void setResponseHeaders(Map<String, String> responseHeaders){
+		this.responseHeaders = responseHeaders;
+	}
 
-    public String getServerInfoName(){
-        return serverInfoName;
-    }
+	public String getServerInfoName(){
+		return serverInfoName;
+	}
 
-    public void setServerInfoName(String serverInfoName){
-        this.serverInfoName = serverInfoName;
-    }
+	public void setServerInfoName(String serverInfoName){
+		this.serverInfoName = serverInfoName;
+	}
 
-    public String getServerInfoPrefix(){
-        return serverInfoPrefix;
-    }
+	public String getServerInfoPrefix(){
+		return serverInfoPrefix;
+	}
 
-    public void setServerInfoPrefix(String serverInfoPrefix){
-        this.serverInfoPrefix = serverInfoPrefix;
-    }
+	public void setServerInfoPrefix(String serverInfoPrefix){
+		this.serverInfoPrefix = serverInfoPrefix;
+	}
 
-    public String getServerInfoSuffix(){
-        return serverInfoSuffix;
-    }
+	public String getServerInfoSuffix(){
+		return serverInfoSuffix;
+	}
 
-    public void setServerInfoSuffix(String serverInfoSuffix){
-        this.serverInfoSuffix = serverInfoSuffix;
-    }
+	public void setServerInfoSuffix(String serverInfoSuffix){
+		this.serverInfoSuffix = serverInfoSuffix;
+	}
 
-    public String getStripServerInfoPrefix(){
-        return stripServerInfoPrefix;
-    }
+	public String getStripServerInfoPrefix(){
+		return stripServerInfoPrefix;
+	}
 
-    public void setStripServerInfoPrefix(String stripServerInfoPrefix){
-        this.stripServerInfoPrefix = stripServerInfoPrefix;
-    }
+	public void setStripServerInfoPrefix(String stripServerInfoPrefix){
+		this.stripServerInfoPrefix = stripServerInfoPrefix;
+	}
 
-    public String getStripServerInfoSuffix(){
-        return stripServerInfoSuffix;
-    }
+	public String getStripServerInfoSuffix(){
+		return stripServerInfoSuffix;
+	}
 
-    public void setStripServerInfoSuffix(String stripServerInfoSuffix){
-        this.stripServerInfoSuffix = stripServerInfoSuffix;
-    }
+	public void setStripServerInfoSuffix(String stripServerInfoSuffix){
+		this.stripServerInfoSuffix = stripServerInfoSuffix;
+	}
 
 }

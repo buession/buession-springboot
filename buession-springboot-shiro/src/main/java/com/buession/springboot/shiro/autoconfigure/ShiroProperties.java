@@ -187,6 +187,8 @@ public class ShiroProperties {
 
 		private int expire = SessionDAO.DEFAULT_EXPIRE;
 
+		private boolean sessionManagerDeleteInvalidSessions = true;
+
 		private Cookie cookie = new Cookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, SimpleCookie.DEFAULT_MAX_AGE,
 				false);
 
@@ -260,6 +262,18 @@ public class ShiroProperties {
 
 		public void setExpire(int expire){
 			this.expire = expire;
+		}
+
+		public boolean isSessionManagerDeleteInvalidSessions(){
+			return getSessionManagerDeleteInvalidSessions();
+		}
+
+		public boolean getSessionManagerDeleteInvalidSessions(){
+			return sessionManagerDeleteInvalidSessions;
+		}
+
+		public void setSessionManagerDeleteInvalidSessions(boolean sessionManagerDeleteInvalidSessions){
+			this.sessionManagerDeleteInvalidSessions = sessionManagerDeleteInvalidSessions;
 		}
 
 		public Cookie getCookie(){

@@ -40,7 +40,6 @@ import java.util.Date;
  */
 public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
 
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected AbstractCliApplication(){
@@ -59,6 +58,10 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 
 		if(banner != null){
 			springApplicationBuilder.banner(banner);
+		}
+
+		if(getConfigurableApplicationContext() != null){
+			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
 		}
 
 		springApplicationBuilder.web(WebApplicationType.NONE).properties(createRuntimeProperties()).logStartupInfo
