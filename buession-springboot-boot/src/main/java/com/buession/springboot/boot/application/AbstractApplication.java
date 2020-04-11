@@ -21,28 +21,42 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2019 Buession.com Inc.														|
+ * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
 
 import com.buession.springboot.boot.config.RuntimeProperties;
 import org.springframework.boot.Banner;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author Yong.Teng
  */
 public abstract class AbstractApplication implements Application {
 
-    /**
-     * 获取 Banner
-     *
-     * @return Banner
-     */
-    protected abstract Banner getBanner();
+	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
-    protected RuntimeProperties createRuntimeProperties(){
-        return new RuntimeProperties();
-    }
+	@Override
+	public Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext(){
+		return configurableApplicationContext;
+	}
+
+	@Override
+	public void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
+															  configurableApplicationContext){
+		this.configurableApplicationContext = configurableApplicationContext;
+	}
+
+	/**
+	 * 获取 Banner
+	 *
+	 * @return Banner
+	 */
+	protected abstract Banner getBanner();
+
+	protected RuntimeProperties createRuntimeProperties(){
+		return new RuntimeProperties();
+	}
 
 }

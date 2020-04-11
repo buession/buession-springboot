@@ -65,7 +65,12 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 			springApplicationBuilder.banner(banner);
 		}
 
+		if(getConfigurableApplicationContext() != null){
+			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
+		}
+
 		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo
 				(true).run(args);
 	}
+
 }

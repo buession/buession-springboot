@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.velocity.autoconfigure;
@@ -29,13 +29,14 @@ package com.buession.springboot.velocity.autoconfigure;
  */
 public class VelocityMacroProperties {
 
-    private String library;
+	private String library;
 
-    public String getLibrary(){
-        return library;
-    }
+	public String getLibrary(){
+		return library;
+	}
 
-    public void setLibrary(String library){
-        this.library = library;
-    }
+	public void setLibrary(String library){
+		this.library = library;
+	}
+
 }

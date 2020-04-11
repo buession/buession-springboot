@@ -26,10 +26,17 @@
  */
 package com.buession.springboot.boot.application;
 
+import org.springframework.context.ConfigurableApplicationContext;
+
 /**
  * @author Yong.Teng
  */
 public interface Application {
+
+	Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext();
+
+	void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
+												   configurableApplicationContext);
 
 	void run(final String[] args);
 

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.velocity.autoconfigure;
@@ -64,126 +64,126 @@ import java.util.Properties;
 @AutoConfigureAfter({WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
 public class VelocityConfiguration {
 
-    private final ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-    @Autowired
-    private VelocityProperties properties;
+	@Autowired
+	private VelocityProperties properties;
 
-    private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
+	private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
 
-    public VelocityConfiguration(ApplicationContext applicationContext){
-        this.applicationContext = applicationContext;
-    }
+	public VelocityConfiguration(ApplicationContext applicationContext){
+		this.applicationContext = applicationContext;
+	}
 
-    @PostConstruct
-    public void checkTemplateLocationExists(){
-        if(properties.isCheckTemplateLocation()){
-            TemplateLocation location = new TemplateLocation(properties.getResourceLoaderPath());
-            if(location.exists(applicationContext) == false){
-                logger.warn("Cannot find template location: {} (please add some templates, check your Velocity " +
-                        "configuration, or set {}.checkTemplateLocation=false)", location, VelocityProperties.class
-                        .getName());
-            }
-        }
-    }
+	@PostConstruct
+	public void checkTemplateLocationExists(){
+		if(properties.isCheckTemplateLocation()){
+			TemplateLocation location = new TemplateLocation(properties.getResourceLoaderPath());
+			if(location.exists(applicationContext) == false){
+				logger.warn("Cannot find template location: {} (please add some templates, check your Velocity " +
+						"configuration, or set {}.checkTemplateLocation=false)", location, VelocityProperties.class
+						.getName());
+			}
+		}
+	}
 
-    static abstract class AbstractVelocityConfiguration {
+	static abstract class AbstractVelocityConfiguration {
 
-        @Autowired
-        protected VelocityProperties properties;
+		@Autowired
+		protected VelocityProperties properties;
 
-        protected VelocityConfigurer velocityConfigurer(){
-            VelocityConfigurer configurer = new VelocityConfigurer();
+		protected VelocityConfigurer velocityConfigurer(){
+			VelocityConfigurer configurer = new VelocityConfigurer();
 
-            applyProperties(configurer);
+			applyProperties(configurer);
 
-            return configurer;
-        }
+			return configurer;
+		}
 
-        protected void applyProperties(VelocityEngineFactory factory){
-            Properties velocityProperties = new Properties();
+		protected void applyProperties(VelocityEngineFactory factory){
+			Properties velocityProperties = new Properties();
 
-            velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName());
-            // velocityProperties.setProperty("output.encoding", properties.getCharsetName());
-            velocityProperties.setProperty(RuntimeConstants.VM_LIBRARY, properties.getVelocityMacro().getLibrary());
-            velocityProperties.putAll(properties.getProperties());
+			velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName() == null ?
+					RuntimeConstants.ENCODING_DEFAULT : properties.getCharsetName());
+			velocityProperties.setProperty(RuntimeConstants.VM_LIBRARY, properties.getVelocityMacro().getLibrary());
+			velocityProperties.putAll(properties.getProperties());
 
-            factory.setResourceLoaderPath(properties.getResourceLoaderPath());
-            factory.setPreferFileSystemAccess(properties.isPreferFileSystemAccess());
-            factory.setVelocityProperties(velocityProperties);
-        }
+			factory.setResourceLoaderPath(properties.getResourceLoaderPath());
+			factory.setPreferFileSystemAccess(properties.isPreferFileSystemAccess());
+			factory.setVelocityProperties(velocityProperties);
+		}
 
-    }
+	}
 
-    @Configuration
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    @ConditionalOnClass({Servlet.class})
-    @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-    public class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
+	@Configuration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	@ConditionalOnClass({Servlet.class})
+	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+	public class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
 
-        @Bean
-        @ConditionalOnMissingBean
-        @Override
-        public VelocityConfigurer velocityConfigurer(){
-            return super.velocityConfigurer();
-        }
+		@Bean
+		@ConditionalOnMissingBean
+		@Override
+		public VelocityConfigurer velocityConfigurer(){
+			return super.velocityConfigurer();
+		}
 
-        @Bean
-        @ConditionalOnMissingBean(name = "velocityViewResolver")
-        public com.buession.velocity.servlet.VelocityViewResolver velocityViewResolver(){
-            com.buession.velocity.servlet.VelocityViewResolver resolver = new com.buession.velocity.servlet
-                    .VelocityViewResolver();
+		@Bean
+		@ConditionalOnMissingBean(name = "velocityViewResolver")
+		public com.buession.velocity.servlet.VelocityViewResolver velocityViewResolver(){
+			com.buession.velocity.servlet.VelocityViewResolver resolver = new com.buession.velocity.servlet
+					.VelocityViewResolver();
 
-            resolver.setEncoding(properties.getCharset().name());
-            resolver.setToolboxConfigLocation(properties.getToolboxConfigLocation());
-            resolver.setDateToolAttribute(properties.getDateToolAttribute());
-            resolver.setNumberToolAttribute(properties.getNumberToolAttribute());
+			resolver.setEncoding(properties.getCharset().name());
+			resolver.setToolboxConfigLocation(properties.getToolboxConfigLocation());
+			resolver.setDateToolAttribute(properties.getDateToolAttribute());
+			resolver.setNumberToolAttribute(properties.getNumberToolAttribute());
 
-            properties.applyToMvcViewResolver(resolver);
+			properties.applyToMvcViewResolver(resolver);
 
-            return resolver;
-        }
+			return resolver;
+		}
 
-        @Bean
-        @ConditionalOnEnabledResourceChain
-        @ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
-        public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter(){
-            FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(new
-                    ResourceUrlEncodingFilter());
-            registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
-            return registration;
-        }
+		@Bean
+		@ConditionalOnEnabledResourceChain
+		@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
+		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter(){
+			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(new
+					ResourceUrlEncodingFilter());
+			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
+			return registration;
+		}
 
-    }
+	}
 
-    @Configuration
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    @ConditionalOnClass(WebFluxConfigurer.class)
-    @AutoConfigureAfter(WebFluxAutoConfiguration.class)
-    public class VelocityReactiveWebConfiguration extends AbstractVelocityConfiguration {
+	@Configuration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnClass(WebFluxConfigurer.class)
+	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
+	public class VelocityReactiveWebConfiguration extends AbstractVelocityConfiguration {
 
-        @PostConstruct
-        public void initialize(){
-            logger.error("{} cloud not support on {}", VelocityEngine.class.getName(), ConditionalOnWebApplication
-                    .Type.REACTIVE.name());
-        }
+		@PostConstruct
+		public void initialize(){
+			logger.error("{} cloud not support on {}", VelocityEngine.class.getName(), ConditionalOnWebApplication
+					.Type.REACTIVE.name());
+		}
 
-    }
+	}
 
-    @Configuration
-    @ConditionalOnNotWebApplication
-    public class VelocityNonWebConfiguration extends AbstractVelocityConfiguration {
+	@Configuration
+	@ConditionalOnNotWebApplication
+	public class VelocityNonWebConfiguration extends AbstractVelocityConfiguration {
 
-        @Bean
-        @ConditionalOnMissingBean
-        public VelocityEngineFactoryBean velocityConfiguration(){
-            VelocityEngineFactoryBean velocityEngineFactoryBean = new VelocityEngineFactoryBean();
+		@Bean
+		@ConditionalOnMissingBean
+		public VelocityEngineFactoryBean velocityConfiguration(){
+			VelocityEngineFactoryBean velocityEngineFactoryBean = new VelocityEngineFactoryBean();
 
-            applyProperties(velocityEngineFactoryBean);
+			applyProperties(velocityEngineFactoryBean);
 
-            return velocityEngineFactoryBean;
-        }
+			return velocityEngineFactoryBean;
+		}
 
-    }
+	}
 
 }

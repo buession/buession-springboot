@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>1.1.0</version>
+		<version>1.1.2</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>1.1.0</version>
+	<version>1.1.2</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -86,6 +86,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.velocity.autoconfigure;
@@ -37,109 +37,109 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "velocity")
 public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
-    public final static String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/Templates/";
+	public final static String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/Templates/";
 
-    public final static String DEFAULT_PREFIX = "";
+	public final static String DEFAULT_PREFIX = "";
 
-    public final static String DEFAULT_SUFFIX = ".vm";
+	public final static String DEFAULT_SUFFIX = ".vm";
 
-    private String prefix = DEFAULT_PREFIX;
+	private String prefix = DEFAULT_PREFIX;
 
-    private String suffix = DEFAULT_SUFFIX;
+	private String suffix = DEFAULT_SUFFIX;
 
-    private String dateToolAttribute;
+	private String dateToolAttribute;
 
-    private String numberToolAttribute;
+	private String numberToolAttribute;
 
-    private Map<String, String> properties = new HashMap<>();
+	private Map<String, String> properties = new HashMap<>(16, 0.8F);
 
-    private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
+	private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
 
-    private String toolboxConfigLocation;
+	private String toolboxConfigLocation;
 
-    @NestedConfigurationProperty
-    private VelocityMacroProperties velocityMacro = new VelocityMacroProperties();
+	@NestedConfigurationProperty
+	private VelocityMacroProperties velocityMacro = new VelocityMacroProperties();
 
-    private boolean preferFileSystemAccess = true;
+	private boolean preferFileSystemAccess = true;
 
-    public VelocityProperties(){
-        super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
-    }
+	public VelocityProperties(){
+		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+	}
 
-    @Override
-    public String getPrefix(){
-        return prefix;
-    }
+	@Override
+	public String getPrefix(){
+		return prefix;
+	}
 
-    @Override
-    public void setPrefix(String prefix){
-        this.prefix = prefix;
-    }
+	@Override
+	public void setPrefix(String prefix){
+		this.prefix = prefix;
+	}
 
-    @Override
-    public String getSuffix(){
-        return suffix;
-    }
+	@Override
+	public String getSuffix(){
+		return suffix;
+	}
 
-    @Override
-    public void setSuffix(String suffix){
-        this.suffix = suffix;
-    }
+	@Override
+	public void setSuffix(String suffix){
+		this.suffix = suffix;
+	}
 
-    public String getDateToolAttribute(){
-        return dateToolAttribute;
-    }
+	public String getDateToolAttribute(){
+		return dateToolAttribute;
+	}
 
-    public void setDateToolAttribute(String dateToolAttribute){
-        this.dateToolAttribute = dateToolAttribute;
-    }
+	public void setDateToolAttribute(String dateToolAttribute){
+		this.dateToolAttribute = dateToolAttribute;
+	}
 
-    public String getNumberToolAttribute(){
-        return numberToolAttribute;
-    }
+	public String getNumberToolAttribute(){
+		return numberToolAttribute;
+	}
 
-    public void setNumberToolAttribute(String numberToolAttribute){
-        this.numberToolAttribute = numberToolAttribute;
-    }
+	public void setNumberToolAttribute(String numberToolAttribute){
+		this.numberToolAttribute = numberToolAttribute;
+	}
 
-    public Map<String, String> getProperties(){
-        return properties;
-    }
+	public Map<String, String> getProperties(){
+		return properties;
+	}
 
-    public void setProperties(Map<String, String> properties){
-        this.properties = properties;
-    }
+	public void setProperties(Map<String, String> properties){
+		this.properties = properties;
+	}
 
-    public String getResourceLoaderPath(){
-        return resourceLoaderPath;
-    }
+	public String getResourceLoaderPath(){
+		return resourceLoaderPath;
+	}
 
-    public void setResourceLoaderPath(String resourceLoaderPath){
-        this.resourceLoaderPath = resourceLoaderPath;
-    }
+	public void setResourceLoaderPath(String resourceLoaderPath){
+		this.resourceLoaderPath = resourceLoaderPath;
+	}
 
-    public String getToolboxConfigLocation(){
-        return toolboxConfigLocation;
-    }
+	public String getToolboxConfigLocation(){
+		return toolboxConfigLocation;
+	}
 
-    public void setToolboxConfigLocation(String toolboxConfigLocation){
-        this.toolboxConfigLocation = toolboxConfigLocation;
-    }
+	public void setToolboxConfigLocation(String toolboxConfigLocation){
+		this.toolboxConfigLocation = toolboxConfigLocation;
+	}
 
-    public VelocityMacroProperties getVelocityMacro(){
-        return velocityMacro;
-    }
+	public VelocityMacroProperties getVelocityMacro(){
+		return velocityMacro;
+	}
 
-    public void setVelocityMacro(VelocityMacroProperties velocityMacro){
-        this.velocityMacro = velocityMacro;
-    }
+	public void setVelocityMacro(VelocityMacroProperties velocityMacro){
+		this.velocityMacro = velocityMacro;
+	}
 
-    public boolean isPreferFileSystemAccess(){
-        return this.preferFileSystemAccess;
-    }
+	public boolean isPreferFileSystemAccess(){
+		return this.preferFileSystemAccess;
+	}
 
-    public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
-        this.preferFileSystemAccess = preferFileSystemAccess;
-    }
+	public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
+		this.preferFileSystemAccess = preferFileSystemAccess;
+	}
 
 }
