@@ -19,14 +19,14 @@
 
 ## Maven
 
-- https://search.maven.org/search?q=g:com.buession.springboot
-- https://mvnrepository.com/search?q=com.buession.springboot
+- [https://search.maven.org/search?q=g:com.buession.springboot](https://search.maven.org/search?q=g:com.buession.springboot)
+- [https://mvnrepository.com/search?q=com.buession.springboot](https://mvnrepository.com/search?q=com.buession.springboot)
 
 ## Documentation
----
 
-- 中文 https://github.com/buession/buession-springboot/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98
-- English https://github.com/buession/buession-springboot/wiki/FAQ
+- 参考文档 [https://springboot.buession.com/](https://springboot.buession.com/)
+- Wiki [https://github.com/buession/buession-springboot/wiki](https://github.com/buession/buession-springboot/wiki)
+- API Reference [https://springboot.buession.com/doc/](https://springboot.buession.com/doc/)
 
 ## License
 
