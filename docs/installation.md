@@ -2,8 +2,8 @@
 
 Maven 中央仓库搜索
 
-- [https://search.maven.org/search?q=g:com.buession.springboot](https://search.maven.org/search?q=g:com.buession.springboot)
-- [https://mvnrepository.com/search?q=com.buession.springboot](https://mvnrepository.com/search?q=com.buession.springboot)
+- [https://search.maven.org/search?q=g:com.buession.springboot](https://search.maven.org/search?q=g:com.buession.springboot){:target="_blank"}
+- [https://mvnrepository.com/search?q=com.buession.springboot](https://mvnrepository.com/search?q=com.buession.springboot){:target="_blank"}
 
 **手动编译**
 
