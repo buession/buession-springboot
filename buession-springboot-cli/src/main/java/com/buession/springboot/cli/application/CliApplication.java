@@ -19,16 +19,27 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cli.application;
 
 import com.buession.springboot.boot.application.Application;
+import org.springframework.boot.CommandLineRunner;
 
 /**
  * @author Yong.Teng
  */
-public interface CliApplication extends Application {
+public interface CliApplication extends Application, CommandLineRunner {
+
+	void startup(final String[] args);
+
+	default void start(final String[] args){
+		startup(args);
+	}
+
+	default void launch(final String[] args){
+		startup(args);
+	}
 
 }

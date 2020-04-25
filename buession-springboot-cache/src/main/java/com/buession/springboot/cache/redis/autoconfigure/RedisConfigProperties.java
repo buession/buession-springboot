@@ -19,11 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2018 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.redis.serializer.Serializer;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -34,64 +35,85 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "redis")
 public class RedisConfigProperties {
 
-    private String host;
+	private String host;
 
-    private int port;
+	private int port;
 
-    private int timeout;
+	private int timeout;
 
-    private String password;
+	private String password;
 
-    private int database;
+	private int database;
 
-    @NestedConfigurationProperty
-    private PoolConfig pool = new PoolConfig();
+	private String keyPrefix;
 
-    public String getHost(){
-        return host;
-    }
+	private Serializer serializer;
 
-    public void setHost(String host){
-        this.host = host;
-    }
+	@NestedConfigurationProperty
+	private PoolConfig pool = new PoolConfig();
 
-    public int getPort(){
-        return port;
-    }
+	public String getHost(){
+		return host;
+	}
 
-    public void setPort(int port){
-        this.port = port;
-    }
+	public void setHost(String host){
+		this.host = host;
+	}
 
-    public int getTimeout(){
-        return timeout;
-    }
+	public int getPort(){
+		return port;
+	}
 
-    public void setTimeout(int timeout){
-        this.timeout = timeout;
-    }
+	public void setPort(int port){
+		this.port = port;
+	}
 
-    public String getPassword(){
-        return password;
-    }
+	public int getTimeout(){
+		return timeout;
+	}
 
-    public void setPassword(String password){
-        this.password = password;
-    }
+	public void setTimeout(int timeout){
+		this.timeout = timeout;
+	}
 
-    public int getDatabase(){
-        return database;
-    }
+	public String getPassword(){
+		return password;
+	}
 
-    public void setDatabase(int database){
-        this.database = database;
-    }
+	public void setPassword(String password){
+		this.password = password;
+	}
 
-    public PoolConfig getPool(){
-        return pool;
-    }
+	public int getDatabase(){
+		return database;
+	}
 
-    public void setPool(PoolConfig pool){
-        this.pool = pool;
-    }
+	public void setDatabase(int database){
+		this.database = database;
+	}
+
+	public String getKeyPrefix(){
+		return keyPrefix;
+	}
+
+	public void setKeyPrefix(String keyPrefix){
+		this.keyPrefix = keyPrefix;
+	}
+
+	public Serializer getSerializer(){
+		return serializer;
+	}
+
+	public void setSerializer(Serializer serializer){
+		this.serializer = serializer;
+	}
+
+	public PoolConfig getPool(){
+		return pool;
+	}
+
+	public void setPool(PoolConfig pool){
+		this.pool = pool;
+	}
+
 }

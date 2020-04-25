@@ -47,8 +47,12 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	}
 
 	@Override
-	public void run(final String[] args){
+	public void startup(final String[] args){
 		run(getClass(), args);
+	}
+
+	@Override
+	public final void run(final String[] args){
 	}
 
 	@Override

@@ -26,7 +26,6 @@ package com.buession.springboot.cas.autoconfigure;
 
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
-import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

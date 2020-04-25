@@ -33,35 +33,19 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * @author Yong.Teng
  */
 @Configuration
-@ConditionalOnBean({
-		DataSourceConfiguration.class,
-		javax.sql.DataSource.class
-})
+@ConditionalOnBean({DataSourceConfiguration.class, DataSource.class})
 @Import({DataSourceConfiguration.class})
 @EnableTransactionManagement
 public class DataSourceTransactionConfiguration {
 
 	@Bean
-	@ConditionalOnBean({DataSource.class})
 	@ConditionalOnMissingBean
 	public DataSourceTransactionManager masterTransactionManager(DataSource dataSource){
 		return new DataSourceTransactionManager(dataSource.getMaster());
-	}
-
-	@Bean
-	@ConditionalOnBean({DataSource.class})
-	@ConditionalOnMissingBean
-	public List<DataSourceTransactionManager> slaveTransactionManagers(DataSource dataSource){
-		return dataSource.getSlaves().stream().map((ds)->new DataSourceTransactionManager(ds)).collect(Collectors
-				.toList());
 	}
 
 }

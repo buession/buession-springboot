@@ -52,7 +52,7 @@ public class HttpClientConfiguration {
 	 * @return ApacheClientConnectionManager 连接池管理器
 	 */
 	@Bean
-	@ConditionalOnClass({org.apache.http.conn.HttpClientConnectionManager.class})
+	@ConditionalOnClass(name = {"org.apache.http.conn.HttpClientConnectionManager"})
 	@ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing =
 			true)
 	@ConditionalOnMissingBean
@@ -61,7 +61,7 @@ public class HttpClientConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass({org.apache.http.client.HttpClient.class})
+	@ConditionalOnClass(name = {"org.apache.http.client.HttpClient"})
 	@ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing =
 			true)
 	@ConditionalOnMissingBean
@@ -75,7 +75,7 @@ public class HttpClientConfiguration {
 	 * @return OkHttpClientConnectionManager 连接池管理器
 	 */
 	@Bean
-	@ConditionalOnClass({okhttp3.ConnectionPool.class})
+	@ConditionalOnClass(name = {"okhttp3.ConnectionPool"})
 	@ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public OkHttpClientConnectionManager okHttpClientConnectionManager(){
@@ -83,7 +83,7 @@ public class HttpClientConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass({okhttp3.OkHttpClient.class})
+	@ConditionalOnClass(name = {"okhttp3.OkHttpClient"})
 	@ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
