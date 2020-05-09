@@ -32,13 +32,8 @@ import org.springframework.boot.CommandLineRunner;
  */
 public interface CliApplication extends Application, CommandLineRunner {
 
-	void startup(final String[] args);
-
-	default void start(final String[] args){
-		startup(args);
-	}
-
-	default void launch(final String[] args){
+	@Override
+	default void run(final String[] args){
 		startup(args);
 	}
 

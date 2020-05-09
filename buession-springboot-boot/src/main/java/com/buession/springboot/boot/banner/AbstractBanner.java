@@ -96,7 +96,7 @@ public abstract class AbstractBanner implements Banner {
 		try{
 			if(properties.containsKey("BANNER_SKIP") == false){
 				formatter.format("Buession Framework Version: %s%n", Framework.VERSION);
-				formatter.format("Buession Spring Boot Version: %s%n", getVersion(Banner.class));
+				formatter.format("Buession Spring Boot Version: %s%n", getVersion(AbstractBanner.class));
 				formatter.format("%s%n", LINE_SEPARATOR);
 
 				formatter.format("Spring Framework Version: %s%n", SpringVersion.getVersion());
@@ -107,7 +107,8 @@ public abstract class AbstractBanner implements Banner {
 				formatter.format("OS Name: %s%n", properties.get("os.name"));
 				formatter.format("OS Version: %s%n", properties.get("os.version"));
 				formatter.format("System Date Time: %s%n", LocalDateTime.now());
-				formatter.format("System Temp Directory: %s%n", properties.get("java.io.tmpdir"));
+				formatter.format("System Temp Directory: %s%n", FileUtils.getTempDirectoryPath());
+				formatter.format("User Home: %s%n", FileUtils.getUserDirectoryPath());
 				formatter.format("%s%n", LINE_SEPARATOR);
 
 				Runtime runtime = Runtime.getRuntime();

@@ -38,8 +38,32 @@ public interface Application {
 	void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
 												   configurableApplicationContext);
 
-	void run(final String[] args);
+	void startup(final String[] args);
 
-	void run(final Class<? extends Application> clazz, final String[] args);
+	void startup(final Class<? extends Application> clazz, final String[] args);
+
+	default void start(final String[] args){
+		startup(args);
+	}
+
+	default void start(final Class<? extends Application> clazz, final String[] args){
+		startup(clazz, args);
+	}
+
+	default void launch(final String[] args){
+		startup(args);
+	}
+
+	default void launch(final Class<? extends Application> clazz, final String[] args){
+		startup(clazz, args);
+	}
+
+	default void run(final String[] args){
+		startup(args);
+	}
+
+	default void run(final Class<? extends Application> clazz, final String[] args){
+		startup(clazz, args);
+	}
 
 }

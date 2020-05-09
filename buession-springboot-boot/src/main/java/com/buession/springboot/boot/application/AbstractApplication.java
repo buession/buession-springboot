@@ -27,6 +27,8 @@
 package com.buession.springboot.boot.application;
 
 import com.buession.springboot.boot.config.RuntimeProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -37,6 +39,8 @@ public abstract class AbstractApplication implements Application {
 
 	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
+	private final static Logger logger = LoggerFactory.getLogger(AbstractApplication.class);
+
 	@Override
 	public Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext(){
 		return configurableApplicationContext;
@@ -46,6 +50,15 @@ public abstract class AbstractApplication implements Application {
 	public void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
 															  configurableApplicationContext){
 		this.configurableApplicationContext = configurableApplicationContext;
+	}
+
+	@Override
+	public void startup(final String[] args){
+		startup(getClass(), args);
+
+		if(logger.isInfoEnabled()){
+			logger.info("Startup {} width arguments: {}", getClass().getSimpleName(), args);
+		}
 	}
 
 	/**

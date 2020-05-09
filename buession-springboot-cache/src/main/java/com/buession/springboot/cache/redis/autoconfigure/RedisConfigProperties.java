@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.redis.client.ClientConfiguration;
 import com.buession.redis.serializer.Serializer;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -39,11 +40,22 @@ public class RedisConfigProperties {
 
 	private int port;
 
-	private int timeout;
-
 	private String password;
 
 	private int database;
+
+	private String clientName;
+
+	@Deprecated
+	private int timeout;
+
+	private int connectTimeout = ClientConfiguration.DEFAULT_TIMEOUT;
+
+	private int soTimeout = ClientConfiguration.DEFAULT_TIMEOUT;
+
+	private boolean useSsl;
+
+	private int weight;
 
 	private String keyPrefix;
 
@@ -68,14 +80,6 @@ public class RedisConfigProperties {
 		this.port = port;
 	}
 
-	public int getTimeout(){
-		return timeout;
-	}
-
-	public void setTimeout(int timeout){
-		this.timeout = timeout;
-	}
-
 	public String getPassword(){
 		return password;
 	}
@@ -90,6 +94,56 @@ public class RedisConfigProperties {
 
 	public void setDatabase(int database){
 		this.database = database;
+	}
+
+	public String getClientName(){
+		return clientName;
+	}
+
+	public void setClientName(String clientName){
+		this.clientName = clientName;
+	}
+
+	@Deprecated
+	public int getTimeout(){
+		return timeout;
+	}
+
+	@Deprecated
+	public void setTimeout(int timeout){
+		this.timeout = timeout;
+	}
+
+	public int getConnectTimeout(){
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(int connectTimeout){
+		this.connectTimeout = connectTimeout;
+	}
+
+	public int getSoTimeout(){
+		return soTimeout;
+	}
+
+	public void setSoTimeout(int soTimeout){
+		this.soTimeout = soTimeout;
+	}
+
+	public boolean isUseSsl(){
+		return useSsl;
+	}
+
+	public void setUseSsl(boolean useSsl){
+		this.useSsl = useSsl;
+	}
+
+	public int getWeight(){
+		return weight;
+	}
+
+	public void setWeight(int weight){
+		this.weight = weight;
 	}
 
 	public String getKeyPrefix(){

@@ -40,23 +40,14 @@ import java.util.Date;
  */
 public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final static Logger logger = LoggerFactory.getLogger(AbstractCliApplication.class);
 
 	protected AbstractCliApplication(){
-
+		super();
 	}
 
 	@Override
-	public void startup(final String[] args){
-		run(getClass(), args);
-	}
-
-	@Override
-	public final void run(final String[] args){
-	}
-
-	@Override
-	public void run(final Class<? extends Application> clazz, final String[] args){
+	public void startup(Class<? extends Application> clazz, String[] args){
 		final Banner banner = getBanner();
 		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
@@ -71,6 +62,10 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 		springApplicationBuilder.web(WebApplicationType.NONE).properties(createRuntimeProperties()).logStartupInfo
 				(true).run(args);
 		logger.info("Application startup at {}", new Date());
+	}
+
+	@Override
+	public final void run(final String[] args){
 	}
 
 }

@@ -32,12 +32,12 @@ import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
@@ -53,24 +53,53 @@ public class RedisConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
+	@Bean
+	@ConditionalOnBean(RedisConnection.class)
+	@ConditionalOnMissingBean
+	public RedisTemplate redisTemplate(RedisConnection redisConnection){
+		RedisTemplate template = new RedisTemplate(redisConnection);
+
+		template.afterPropertiesSet();
+		logger.info("RedisTemplate bean init success.");
+
+		return template;
+	}
+
 	@Configuration
-	@ConditionalOnClass({Jedis.class})
+	@ConditionalOnClass(name = {"redis.clients.jedis.Jedis"})
 	public static class JedisConfiguration extends RedisConfiguration {
 
 		@Bean
-		@ConditionalOnClass({Jedis.class})
 		@ConditionalOnMissingBean
 		public RedisConnection jedisConnection() throws Exception{
 			JedisRedisConnectionFactoryBean connectionFactory = new JedisRedisConnectionFactoryBean();
 
-			connectionFactory.setPoolConfig(jedisPoolConfig(redisConfigProperties));
 			connectionFactory.setHost(redisConfigProperties.getHost());
 			connectionFactory.setPort(redisConfigProperties.getPort());
-			connectionFactory.setDatabase(redisConfigProperties.getDatabase());
 
 			if(Validate.hasText(redisConfigProperties.getPassword())){
 				connectionFactory.setPassword(redisConfigProperties.getPassword());
 			}
+
+			connectionFactory.setDatabase(redisConfigProperties.getDatabase());
+			connectionFactory.setClientName(redisConfigProperties.getClientName());
+
+			if(redisConfigProperties.getConnectTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
+				connectionFactory.setConnectTimeout(redisConfigProperties.getTimeout());
+			}else{
+				connectionFactory.setConnectTimeout(redisConfigProperties.getConnectTimeout());
+			}
+
+			if(redisConfigProperties.getSoTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
+				connectionFactory.setSoTimeout(redisConfigProperties.getTimeout());
+			}else{
+				connectionFactory.setSoTimeout(redisConfigProperties.getSoTimeout());
+			}
+
+			connectionFactory.setUseSsl(redisConfigProperties.isUseSsl());
+			connectionFactory.setWeight(redisConfigProperties.getWeight());
+
+			connectionFactory.setPoolConfig(jedisPoolConfig(redisConfigProperties));
 
 			try{
 				connectionFactory.afterPropertiesSet();
@@ -79,17 +108,6 @@ public class RedisConfiguration {
 			}
 
 			return connectionFactory.getObject();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public RedisTemplate redisTemplate(RedisConnection redisConnection){
-			RedisTemplate template = new RedisTemplate(redisConnection);
-
-			template.afterPropertiesSet();
-			logger.info("RedisTemplate bean init success.");
-
-			return template;
 		}
 
 		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties

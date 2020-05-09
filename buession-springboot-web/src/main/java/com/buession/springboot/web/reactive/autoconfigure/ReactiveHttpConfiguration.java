@@ -26,9 +26,10 @@ package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractHttpConfiguration;
-import com.buession.springboot.web.reactive.filter.ReactivePoweredByHeaderFilter;
 import com.buession.springboot.web.web.HttpProperties;
 import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSourcePointcutAdvisor;
+import com.buession.web.reactive.filter.PoweredByHeaderFilter;
+import com.buession.web.reactive.filter.PrintUrlFilter;
 import com.buession.web.reactive.filter.ResponseHeadersFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,8 +61,8 @@ public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.poweredby", name = "enable", havingValue = "true", matchIfMissing = true)
-	public ReactivePoweredByHeaderFilter poweredByHeaderFilter(){
-		return new ReactivePoweredByHeaderFilter();
+	public PoweredByHeaderFilter poweredByHeaderFilter(){
+		return new PoweredByHeaderFilter();
 	}
 
 	@Bean
@@ -75,6 +76,13 @@ public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 		}
 
 		return serverInfoFilter;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "server.print-url", name = "enable", havingValue = "true")
+	public PrintUrlFilter printUrlFilter(){
+		return new PrintUrlFilter();
 	}
 
 	@Bean

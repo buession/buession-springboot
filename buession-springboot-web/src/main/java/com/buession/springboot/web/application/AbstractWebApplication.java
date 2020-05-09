@@ -40,7 +40,7 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 	private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
 
 	protected AbstractWebApplication(){
-
+		super();
 	}
 
 	protected AbstractWebApplication(WebApplicationType webApplicationType){
@@ -52,12 +52,7 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 	}
 
 	@Override
-	public void run(final String[] args){
-		run(getClass(), args);
-	}
-
-	@Override
-	public void run(final Class<? extends Application> clazz, final String[] args){
+	public void startup(final Class<? extends Application> clazz, final String[] args){
 		final Banner banner = getBanner();
 		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 

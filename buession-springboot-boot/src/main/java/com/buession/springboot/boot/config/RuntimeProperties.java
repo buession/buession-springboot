@@ -30,25 +30,26 @@ import com.buession.core.Framework;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Yong.Teng
  */
-public class RuntimeProperties extends HashMap<String, Object> {
+public class RuntimeProperties extends Properties {
 
-	private final static Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(16, 0.8F);
+	public RuntimeProperties(){
+		put("EmbeddedContainerConfigurationActive", true);
+		put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
+	}
 
-	static{
-		DEFAULT_PROPERTIES.put("EmbeddedContainerConfigurationActive", true);
-		DEFAULT_PROPERTIES.put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
+	public RuntimeProperties(Properties properties){
+		super(properties);
 	}
 
 	public RuntimeProperties(Map<String, Object> m){
-		super(m);
-	}
-
-	public RuntimeProperties(){
-		super(DEFAULT_PROPERTIES);
+		if(m != null){
+			m.forEach((key, value)->put(key, value));
+		}
 	}
 
 }
