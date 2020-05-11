@@ -60,7 +60,7 @@ public class RedisConfiguration {
 		RedisTemplate template = new RedisTemplate(redisConnection);
 
 		template.afterPropertiesSet();
-		logger.info("RedisTemplate bean init success.");
+		logger.info("RedisTemplate bean initialize success.");
 
 		return template;
 	}
@@ -103,15 +103,15 @@ public class RedisConfiguration {
 
 			try{
 				connectionFactory.afterPropertiesSet();
+				logger.info("RedisConnection bean initialize success.");
 			}catch(Exception e){
-				logger.error("RedisConnection initialize failure: {}", e);
+				logger.error("RedisConnection bean initialize failure.", e);
 			}
 
 			return connectionFactory.getObject();
 		}
 
-		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties
-																						 redisConfigProperties){
+		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties redisConfigProperties){
 
 			PoolConfig poolConfig = redisConfigProperties.getPool();
 			JedisPoolConfig config = new JedisPoolConfig();
@@ -133,7 +133,7 @@ public class RedisConfiguration {
 			config.setMinIdle(poolConfig.getMinIdle());
 			config.setMaxIdle(poolConfig.getMaxIdle());
 
-			logger.info("JedisPoolConfig bean init success.");
+			logger.info("JedisPoolConfig bean initialize success.");
 
 			return config;
 		}
