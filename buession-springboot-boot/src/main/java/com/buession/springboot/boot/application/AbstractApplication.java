@@ -39,7 +39,7 @@ public abstract class AbstractApplication implements Application {
 
 	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
-	private final static Logger logger = LoggerFactory.getLogger(AbstractApplication.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext(){

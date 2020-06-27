@@ -24,7 +24,8 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
-import com.buession.redis.client.ClientConfiguration;
+import com.buession.redis.Constants;
+import com.buession.redis.core.ClusterMode;
 import com.buession.redis.serializer.Serializer;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,12 +47,16 @@ public class RedisConfigProperties {
 
 	private String clientName;
 
+	private ClusterMode clusterMode;
+
+	private String nodes;
+
 	@Deprecated
 	private int timeout;
 
-	private int connectTimeout = ClientConfiguration.DEFAULT_TIMEOUT;
+	private int connectTimeout = Constants.DEFAULT_CONNECT_TIMEOUT;
 
-	private int soTimeout = ClientConfiguration.DEFAULT_TIMEOUT;
+	private int soTimeout = Constants.DEFAULT_SO_TIMEOUT;
 
 	private boolean useSsl;
 
@@ -60,6 +65,8 @@ public class RedisConfigProperties {
 	private String keyPrefix;
 
 	private Serializer serializer;
+
+	private boolean enableTransactionSupport;
 
 	@NestedConfigurationProperty
 	private PoolConfig pool = new PoolConfig();
@@ -104,6 +111,22 @@ public class RedisConfigProperties {
 		this.clientName = clientName;
 	}
 
+	public ClusterMode getClusterMode(){
+		return clusterMode;
+	}
+
+	public void setClusterMode(ClusterMode clusterMode){
+		this.clusterMode = clusterMode;
+	}
+
+	public String getNodes(){
+		return nodes;
+	}
+
+	public void setNodes(String nodes){
+		this.nodes = nodes;
+	}
+
 	@Deprecated
 	public int getTimeout(){
 		return timeout;
@@ -112,6 +135,8 @@ public class RedisConfigProperties {
 	@Deprecated
 	public void setTimeout(int timeout){
 		this.timeout = timeout;
+		setConnectTimeout(timeout);
+		setSoTimeout(timeout);
 	}
 
 	public int getConnectTimeout(){
@@ -160,6 +185,18 @@ public class RedisConfigProperties {
 
 	public void setSerializer(Serializer serializer){
 		this.serializer = serializer;
+	}
+
+	public boolean isEnableTransactionSupport(){
+		return getEnableTransactionSupport();
+	}
+
+	public boolean getEnableTransactionSupport(){
+		return enableTransactionSupport;
+	}
+
+	public void setEnableTransactionSupport(boolean enableTransactionSupport){
+		this.enableTransactionSupport = enableTransactionSupport;
 	}
 
 	public PoolConfig getPool(){

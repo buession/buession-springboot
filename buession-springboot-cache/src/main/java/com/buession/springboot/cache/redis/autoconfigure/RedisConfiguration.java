@@ -24,9 +24,14 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.redis.RedisTemplate;
 import com.buession.redis.client.connection.RedisConnection;
+import com.buession.redis.core.Options;
+import com.buession.redis.core.RedisURI;
+import com.buession.redis.core.ShardedRedisNode;
+import com.buession.redis.exception.RedisException;
 import com.buession.redis.spring.JedisRedisConnectionFactoryBean;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.slf4j.Logger;
@@ -39,6 +44,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.net.URISyntaxException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Yong.Teng
@@ -59,10 +68,21 @@ public class RedisConfiguration {
 	public RedisTemplate redisTemplate(RedisConnection redisConnection){
 		RedisTemplate template = new RedisTemplate(redisConnection);
 
+		template.setOptions(createOptions());
 		template.afterPropertiesSet();
 		logger.info("RedisTemplate bean initialize success.");
 
 		return template;
+	}
+
+	protected Options createOptions(){
+		final Options options = new Options();
+
+		options.setEnableTransactionSupport(redisConfigProperties.isEnableTransactionSupport());
+		options.setPrefix(options.getPrefix());
+		options.setSerializer(redisConfigProperties.getSerializer());
+
+		return options;
 	}
 
 	@Configuration
@@ -72,17 +92,16 @@ public class RedisConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RedisConnection jedisConnection() throws Exception{
-			JedisRedisConnectionFactoryBean connectionFactory = new JedisRedisConnectionFactoryBean();
+			JedisRedisConnectionFactoryBean connectionFactory;
 
-			connectionFactory.setHost(redisConfigProperties.getHost());
-			connectionFactory.setPort(redisConfigProperties.getPort());
-
-			if(Validate.hasText(redisConfigProperties.getPassword())){
-				connectionFactory.setPassword(redisConfigProperties.getPassword());
+			switch(redisConfigProperties.getClusterMode()){
+				case SHARDED:
+					connectionFactory = createShardedJedisRedisConnectionFactory();
+					break;
+				default:
+					connectionFactory = createJedisRedisConnectionFactory();
+					break;
 			}
-
-			connectionFactory.setDatabase(redisConfigProperties.getDatabase());
-			connectionFactory.setClientName(redisConfigProperties.getClientName());
 
 			if(redisConfigProperties.getConnectTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
 				connectionFactory.setConnectTimeout(redisConfigProperties.getTimeout());
@@ -97,9 +116,6 @@ public class RedisConfiguration {
 			}
 
 			connectionFactory.setUseSsl(redisConfigProperties.isUseSsl());
-			connectionFactory.setWeight(redisConfigProperties.getWeight());
-
-			connectionFactory.setPoolConfig(jedisPoolConfig(redisConfigProperties));
 
 			try{
 				connectionFactory.afterPropertiesSet();
@@ -111,8 +127,46 @@ public class RedisConfiguration {
 			return connectionFactory.getObject();
 		}
 
-		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties redisConfigProperties){
+		protected JedisRedisConnectionFactoryBean createJedisRedisConnectionFactory(){
+			return new JedisRedisConnectionFactoryBean(redisConfigProperties.getHost(),
+					redisConfigProperties.getPort(), redisConfigProperties.getPassword(),
+					redisConfigProperties.getDatabase(), redisConfigProperties.getClientName(), true,
+					jedisPoolConfig(redisConfigProperties));
+		}
 
+		protected JedisRedisConnectionFactoryBean createShardedJedisRedisConnectionFactory(){
+			try{
+				return new JedisRedisConnectionFactoryBean(parseShardedRedisNode(redisConfigProperties.getNodes()));
+			}catch(URISyntaxException e){
+				throw new RedisException(e.getMessage());
+			}catch(Exception e){
+				throw e;
+			}
+		}
+
+		protected final static Set<ShardedRedisNode> parseShardedRedisNode(final String url) throws URISyntaxException{
+			if(Validate.hasText(url)){
+				return null;
+			}else{
+				String[] parts = StringUtils.split(url, ';');
+				RedisURI redisURI;
+				ShardedRedisNode node;
+				Set<ShardedRedisNode> nodes = new LinkedHashSet<>(parts.length);
+
+				for(String part : parts){
+					redisURI = RedisURI.create(part);
+					node = new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getWeight(),
+							redisURI.getPassword());
+					node.setName(redisURI.getClientName());
+
+					nodes.add(node);
+				}
+
+				return nodes;
+			}
+		}
+
+		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties redisConfigProperties){
 			PoolConfig poolConfig = redisConfigProperties.getPool();
 			JedisPoolConfig config = new JedisPoolConfig();
 
