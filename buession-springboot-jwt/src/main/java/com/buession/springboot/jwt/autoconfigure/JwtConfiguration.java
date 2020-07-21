@@ -25,6 +25,7 @@
 package com.buession.springboot.jwt.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
+import com.buession.lang.Constants;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -69,10 +70,10 @@ public class JwtConfiguration {
 	private void initialize(){
 		int padSize = 32;
 
-		String jwtSecret = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize, jwtProperties
-				.getEncryptionKey());
-		String jwtEncryptionKey = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize, jwtProperties
-				.getEncryptionKey());
+		String jwtSecret = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize,
+				jwtProperties.getEncryptionKey());
+		String jwtEncryptionKey = StringUtils.leftPad(jwtProperties.getEncryptionKey(), padSize,
+				jwtProperties.getEncryptionKey());
 
 		signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
 		secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR,
@@ -90,8 +91,8 @@ public class JwtConfiguration {
 	@ConditionalOnMissingBean
 	public ParameterClient jwtClient(){
 		ParameterClient parameterClient = new ParameterClient();
-		HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(), jwtProperties
-				.getPrefixHeader() == null ? "" : jwtProperties.getPrefixHeader());
+		HeaderExtractor headerExtractor = new HeaderExtractor(jwtProperties.getParameterName(),
+				jwtProperties.getPrefixHeader() == null ? Constants.EMPTY_STRING : jwtProperties.getPrefixHeader());
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration,
 				secretEncryptionConfiguration);
 
@@ -102,9 +103,7 @@ public class JwtConfiguration {
 		parameterClient.setCredentialsExtractor(headerExtractor);
 		//parameterClient.setProfileCreator(new AuthenticatorProfileCreator<>());
 
-		logger.debug("initialize {} name => jwt, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, "
-				+ "headerName => {}", ParameterClient.class.getName(), jwtProperties.getEncryptionKey(), jwtProperties
-				.getParameterName(), jwtProperties.getPrefixHeader());
+		logger.debug("initialize {} name => jwt, width encryptionKey => {}, parameterName => {}, prefixHeader => {}, " + "headerName => {}", ParameterClient.class.getName(), jwtProperties.getEncryptionKey(), jwtProperties.getParameterName(), jwtProperties.getPrefixHeader());
 
 		return parameterClient;
 	}

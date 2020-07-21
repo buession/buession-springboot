@@ -33,6 +33,7 @@ import com.buession.redis.core.RedisURI;
 import com.buession.redis.core.ShardedRedisNode;
 import com.buession.redis.exception.RedisException;
 import com.buession.redis.spring.JedisRedisConnectionFactoryBean;
+import com.buession.redis.spring.jedis.ShardedRedisConfiguration;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -91,52 +93,77 @@ public class RedisConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RedisConnection jedisConnection() throws Exception{
-			JedisRedisConnectionFactoryBean connectionFactory;
-
-			switch(redisConfigProperties.getClusterMode()){
-				case SHARDED:
-					connectionFactory = createShardedJedisRedisConnectionFactory();
-					break;
-				default:
-					connectionFactory = createJedisRedisConnectionFactory();
-					break;
-			}
-
-			if(redisConfigProperties.getConnectTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
-				connectionFactory.setConnectTimeout(redisConfigProperties.getTimeout());
-			}else{
-				connectionFactory.setConnectTimeout(redisConfigProperties.getConnectTimeout());
-			}
-
-			if(redisConfigProperties.getSoTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
-				connectionFactory.setSoTimeout(redisConfigProperties.getTimeout());
-			}else{
-				connectionFactory.setSoTimeout(redisConfigProperties.getSoTimeout());
-			}
-
-			connectionFactory.setUseSsl(redisConfigProperties.isUseSsl());
-
-			try{
-				connectionFactory.afterPropertiesSet();
-				logger.info("RedisConnection bean initialize success.");
-			}catch(Exception e){
-				logger.error("RedisConnection bean initialize failure.", e);
-			}
-
+		@ConditionalOnProperty(prefix = "redis", name = "mode", havingValue = "sharded")
+		public RedisConnection shardedJedisConnection() throws Exception{
+			JedisRedisConnectionFactoryBean connectionFactory = createShardedJedisRedisConnectionFactory();
+			connectionFactory.afterPropertiesSet();
 			return connectionFactory.getObject();
 		}
 
+		@Bean
+		@ConditionalOnMissingBean
+		public RedisConnection jedisConnection() throws Exception{
+			JedisRedisConnectionFactoryBean connectionFactory = createJedisRedisConnectionFactory();
+			connectionFactory.afterPropertiesSet();
+			return connectionFactory.getObject();
+		}
+
+		protected void setTimeout(final com.buession.redis.spring.RedisConfiguration configuration){
+			if(redisConfigProperties.getConnectTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
+				configuration.setConnectTimeout(redisConfigProperties.getTimeout());
+			}else{
+				configuration.setConnectTimeout(redisConfigProperties.getConnectTimeout());
+			}
+
+			if(redisConfigProperties.getSoTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
+				configuration.setSoTimeout(redisConfigProperties.getTimeout());
+			}else{
+				configuration.setSoTimeout(redisConfigProperties.getSoTimeout());
+			}
+		}
+
 		protected JedisRedisConnectionFactoryBean createJedisRedisConnectionFactory(){
-			return new JedisRedisConnectionFactoryBean(redisConfigProperties.getHost(),
-					redisConfigProperties.getPort(), redisConfigProperties.getPassword(),
-					redisConfigProperties.getDatabase(), redisConfigProperties.getClientName(), true,
-					jedisPoolConfig(redisConfigProperties));
+			com.buession.redis.spring.jedis.JedisConfiguration configuration =
+					new com.buession.redis.spring.jedis.JedisConfiguration();
+
+			if(Validate.hasText(redisConfigProperties.getHost())){
+				configuration.setHost(redisConfigProperties.getHost());
+				configuration.setPort(redisConfigProperties.getPort());
+				configuration.setPassword(redisConfigProperties.getPassword());
+				configuration.setDatabase(redisConfigProperties.getDatabase());
+				configuration.setClientName(redisConfigProperties.getClientName());
+			}else{
+				if(Validate.hasText(redisConfigProperties.getUri())){
+					try{
+						RedisURI redisURI = RedisURI.create(redisConfigProperties.getUri());
+
+						configuration.setHost(redisURI.getHost());
+						configuration.setPort(redisURI.getPort());
+						configuration.setPassword(redisURI.getPassword());
+						configuration.setDatabase(redisURI.getDatabase());
+						configuration.setClientName(redisURI.getClientName());
+					}catch(Exception e){
+						throw e;
+					}
+				}
+
+				return null;
+			}
+
+			setTimeout(configuration);
+
+			return new JedisRedisConnectionFactoryBean(configuration, jedisPoolConfig(redisConfigProperties));
 		}
 
 		protected JedisRedisConnectionFactoryBean createShardedJedisRedisConnectionFactory(){
+			ShardedRedisConfiguration configuration = new ShardedRedisConfiguration();
+
+			setTimeout(configuration);
+
 			try{
-				return new JedisRedisConnectionFactoryBean(parseShardedRedisNode(redisConfigProperties.getNodes()));
+				configuration.setNodes(parseShardedRedisNode(redisConfigProperties.getNodes()));
+
+				return new JedisRedisConnectionFactoryBean(configuration, jedisPoolConfig(redisConfigProperties));
 			}catch(URISyntaxException e){
 				throw new RedisException(e.getMessage());
 			}catch(Exception e){
@@ -147,27 +174,28 @@ public class RedisConfiguration {
 		protected final static Set<ShardedRedisNode> parseShardedRedisNode(final String url) throws URISyntaxException{
 			if(Validate.hasText(url)){
 				return null;
-			}else{
-				String[] parts = StringUtils.split(url, ';');
-				RedisURI redisURI;
-				ShardedRedisNode node;
-				Set<ShardedRedisNode> nodes = new LinkedHashSet<>(parts.length);
-
-				for(String part : parts){
-					redisURI = RedisURI.create(part);
-					node = new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getWeight(),
-							redisURI.getPassword());
-					node.setName(redisURI.getClientName());
-
-					nodes.add(node);
-				}
-
-				return nodes;
 			}
+
+			String[] parts = StringUtils.splitByWholeSeparatorPreserveAllTokens(url, ";");
+			Set<ShardedRedisNode> nodes = new LinkedHashSet<>(parts.length);
+			RedisURI redisURI;
+
+			for(String part : parts){
+				redisURI = RedisURI.create(part);
+				nodes.add(new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getPassword(),
+						redisURI.getDatabase(), redisURI.getClientName(), redisURI.getWeight()));
+			}
+
+			return nodes;
 		}
 
 		private final static redis.clients.jedis.JedisPoolConfig jedisPoolConfig(RedisConfigProperties redisConfigProperties){
 			PoolConfig poolConfig = redisConfigProperties.getPool();
+
+			if(poolConfig == null){
+				return null;
+			}
+
 			JedisPoolConfig config = new JedisPoolConfig();
 
 			config.setLifo(poolConfig.getLifo());

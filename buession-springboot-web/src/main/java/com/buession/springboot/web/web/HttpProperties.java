@@ -29,6 +29,7 @@ package com.buession.springboot.web.web;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "server")
 public class HttpProperties {
 
-	private Map<String, String> responseHeaders = new HashMap<>(16, 0.8F);
+	private Map<String, String> responseHeaders = new LinkedHashMap<>(16, 0.8F);
 
 	private String serverInfoName;
 

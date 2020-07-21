@@ -48,7 +48,7 @@ public class RuntimeProperties extends Properties {
 
 	public RuntimeProperties(Map<String, Object> m){
 		if(m != null){
-			m.forEach((key, value)->put(key, value));
+			putAll(m);
 		}
 	}
 

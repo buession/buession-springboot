@@ -97,8 +97,8 @@ public class MybatisConfiguration {
 	private static final Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
 	public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
-								ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+			ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+			ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
 		this.interceptors = interceptorsProvider.getIfAvailable();
 		this.resourceLoader = resourceLoader;
 		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
@@ -149,8 +149,7 @@ public class MybatisConfiguration {
 			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
 		}
 
-		return slaveSqlSessionFactories.stream().map(sqlSessionFactory->createSqlSessionTemplate(sqlSessionFactory))
-				.collect(Collectors.toList());
+		return slaveSqlSessionFactories.stream().map(sqlSessionFactory->createSqlSessionTemplate(sqlSessionFactory)).collect(Collectors.toList());
 	}
 
 	private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
@@ -197,7 +196,7 @@ public class MybatisConfiguration {
 			factory.setTypeHandlersPackage(properties.getTypeHandlersPackage());
 		}
 
-		if(Validate.isEmpty(properties.resolveMapperLocations()) == false){
+		if(Validate.isNotEmpty(properties.resolveMapperLocations())){
 			factory.setMapperLocations(properties.resolveMapperLocations());
 		}
 
@@ -206,8 +205,8 @@ public class MybatisConfiguration {
 
 	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
 		ExecutorType executorType = properties.getExecutorType();
-		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate
-				(sqlSessionFactory);
+		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) :
+				new SqlSessionTemplate(sqlSessionFactory);
 	}
 
 	@Configuration
@@ -230,8 +229,8 @@ public class MybatisConfiguration {
 		private ResourceLoader resourceLoader;
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry
-				registry){
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry){
 			logger.debug("Searching for mappers annotated with @Mapper");
 			ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
 
@@ -242,10 +241,8 @@ public class MybatisConfiguration {
 			try{
 				List<String> ex = AutoConfigurationPackages.get(beanFactory);
 				if(logger.isDebugEnabled()){
-					Iterator<String> iterator = ex.iterator();
-
-					while(iterator.hasNext()){
-						logger.debug("Using auto-configuration base package \'{}\'", iterator.next());
+					for(String s : ex){
+						logger.debug("Using auto-configuration base package \'{}\'", s);
 					}
 				}
 
@@ -266,6 +263,7 @@ public class MybatisConfiguration {
 		public void setResourceLoader(ResourceLoader resourceLoader){
 			this.resourceLoader = resourceLoader;
 		}
+
 	}
 
 }

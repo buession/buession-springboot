@@ -25,7 +25,6 @@
 package com.buession.springboot.cache.redis.autoconfigure;
 
 import com.buession.redis.Constants;
-import com.buession.redis.core.ClusterMode;
 import com.buession.redis.serializer.Serializer;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -37,6 +36,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "redis")
 public class RedisConfigProperties {
 
+	private String uri;
+
 	private String host;
 
 	private int port;
@@ -47,8 +48,6 @@ public class RedisConfigProperties {
 
 	private String clientName;
 
-	private ClusterMode clusterMode;
-
 	private String nodes;
 
 	@Deprecated
@@ -57,8 +56,6 @@ public class RedisConfigProperties {
 	private int connectTimeout = Constants.DEFAULT_CONNECT_TIMEOUT;
 
 	private int soTimeout = Constants.DEFAULT_SO_TIMEOUT;
-
-	private boolean useSsl;
 
 	private int weight;
 
@@ -70,6 +67,14 @@ public class RedisConfigProperties {
 
 	@NestedConfigurationProperty
 	private PoolConfig pool = new PoolConfig();
+
+	public String getUri(){
+		return uri;
+	}
+
+	public void setUri(final String uri){
+		this.uri = uri;
+	}
 
 	public String getHost(){
 		return host;
@@ -111,14 +116,6 @@ public class RedisConfigProperties {
 		this.clientName = clientName;
 	}
 
-	public ClusterMode getClusterMode(){
-		return clusterMode;
-	}
-
-	public void setClusterMode(ClusterMode clusterMode){
-		this.clusterMode = clusterMode;
-	}
-
 	public String getNodes(){
 		return nodes;
 	}
@@ -153,14 +150,6 @@ public class RedisConfigProperties {
 
 	public void setSoTimeout(int soTimeout){
 		this.soTimeout = soTimeout;
-	}
-
-	public boolean isUseSsl(){
-		return useSsl;
-	}
-
-	public void setUseSsl(boolean useSsl){
-		this.useSsl = useSsl;
 	}
 
 	public int getWeight(){
