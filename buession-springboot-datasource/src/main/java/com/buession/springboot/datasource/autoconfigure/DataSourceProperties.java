@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -32,63 +32,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 数据源配置
+ *
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceProperties {
 
-    /**
-     * Fully qualified name of the connection pool implementation to use. By default, it
-     * is auto-detected from the classpath.
-     */
-    private Class<? extends DataSource> type;
+	/**
+	 * Fully qualified name of the connection pool implementation to use. By default, it
+	 * is auto-detected from the classpath.
+	 */
+	private Class<? extends DataSource> type;
 
-    /**
-     * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
-     */
-    private String driverClassName;
+	/**
+	 * 数据库驱动类名
+	 */
+	private String driverClassName;
 
-    @NestedConfigurationProperty
-    private org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master = new org.springframework.boot
-            .autoconfigure.jdbc.DataSourceProperties();
+	/**
+	 * Master 配置
+	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
+	 */
+	@NestedConfigurationProperty
+	private org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master =
+			new org.springframework.boot.autoconfigure.jdbc.DataSourceProperties();
 
-    private List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves = new ArrayList<>();
+	/**
+	 * Slaves 配置
+	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
+	 */
+	private List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves = new ArrayList<>();
 
-    public Class<? extends DataSource> getType(){
-        return type;
-    }
+	public Class<? extends DataSource> getType(){
+		return type;
+	}
 
-    public void setType(Class<? extends DataSource> type){
-        this.type = type;
-    }
+	public void setType(Class<? extends DataSource> type){
+		this.type = type;
+	}
 
-    /**
-     * Return the configured driver or {@code null} if none was configured.
-     *
-     * @return the configured driver
-     */
-    public String getDriverClassName(){
-        return driverClassName;
-    }
+	/**
+	 * 返回数据库驱动类名
+	 *
+	 * @return 数据库驱动类名
+	 */
+	public String getDriverClassName(){
+		return driverClassName;
+	}
 
-    public void setDriverClassName(String driverClassName){
-        this.driverClassName = driverClassName;
-    }
+	/**
+	 * 设置数据库驱动类名
+	 *
+	 * @param driverClassName
+	 * 		数据库驱动类名
+	 */
+	public void setDriverClassName(String driverClassName){
+		this.driverClassName = driverClassName;
+	}
 
-    public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster(){
-        return master;
-    }
+	public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster(){
+		return master;
+	}
 
-    public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master){
-        this.master = master;
-    }
+	public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master){
+		this.master = master;
+	}
 
-    public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves(){
-        return slaves;
-    }
+	public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves(){
+		return slaves;
+	}
 
-    public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves){
-        this.slaves = slaves;
-    }
+	public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves){
+		this.slaves = slaves;
+	}
 
 }

@@ -46,6 +46,7 @@ import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -62,12 +63,15 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,12 +110,8 @@ public class MybatisConfiguration {
 	}
 
 	@PostConstruct
-	public void checkConfigFileExists(){
-		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
-			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
-			Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
-					"autoconfigure file or check your Mybatis configuration)");
-		}
+	public void initialize(){
+		checkConfigFileExists();
 	}
 
 	@Bean
@@ -180,7 +180,7 @@ public class MybatisConfiguration {
 			factory.setConfigurationProperties(properties.getConfigurationProperties());
 		}
 
-		if(Validate.isEmpty(interceptors) == false){
+		if(Validate.isNotEmpty(interceptors)){
 			factory.setPlugins(interceptors);
 		}
 
@@ -192,15 +192,61 @@ public class MybatisConfiguration {
 			factory.setTypeAliasesPackage(properties.getTypeAliasesPackage());
 		}
 
+		if(properties.getTypeAliasesSuperType() != null){
+			factory.setTypeAliasesSuperType(properties.getTypeAliasesSuperType());
+		}
+
+		if(Validate.isNotEmpty(properties.getTypeAliases())){
+			factory.setTypeAliases(properties.getTypeAliases());
+		}
+
 		if(Validate.hasText(properties.getTypeHandlersPackage())){
 			factory.setTypeHandlersPackage(properties.getTypeHandlersPackage());
 		}
 
-		if(Validate.isNotEmpty(properties.resolveMapperLocations())){
-			factory.setMapperLocations(properties.resolveMapperLocations());
+		if(Validate.isNotEmpty(properties.getTypeHandlers())){
+			factory.setTypeHandlers(properties.getTypeHandlers());
+		}
+
+		if(properties.getDefaultEnumTypeHandler() != null){
+			factory.setDefaultEnumTypeHandler(properties.getDefaultEnumTypeHandler());
+		}
+
+		factory.setFailFast(properties.getFailFast());
+
+		Resource[] resolveMapperLocations = resolveMapperLocations();
+		if(Validate.isNotEmpty(resolveMapperLocations)){
+			factory.setMapperLocations(resolveMapperLocations);
 		}
 
 		return factory.getObject();
+	}
+
+	private void checkConfigFileExists(){
+		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
+			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
+			Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
+					"autoconfigure file or check your Mybatis configuration)");
+		}
+	}
+
+	private Resource[] resolveMapperLocations(){
+		if(Validate.isEmpty(properties.getMapperLocations())){
+			return new Resource[]{};
+		}
+
+		PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+		ArrayList<Resource> resources = new ArrayList<>(properties.getMapperLocations().length);
+
+		for(String mapperLocation : properties.getMapperLocations()){
+			try{
+				Resource[] mappers = resourceResolver.getResources(mapperLocation);
+				resources.addAll(Arrays.asList(mappers));
+			}catch(IOException e){
+			}
+		}
+
+		return resources.toArray(new Resource[resources.size()]);
 	}
 
 	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
@@ -212,10 +258,10 @@ public class MybatisConfiguration {
 	@Configuration
 	@Import({MapperScannerRegistrarAutoConfigured.class})
 	@ConditionalOnMissingBean({MapperFactoryBean.class})
-	public static class MapperScannerRegistrarNotFoundConfiguration {
+	public static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
-		@PostConstruct
-		public void afterPropertiesSet(){
+		@Override
+		public void afterPropertiesSet() throws Exception{
 			logger.debug("No {} found.", MapperFactoryBean.class.getName());
 		}
 

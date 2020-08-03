@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2018 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
@@ -47,30 +47,30 @@ import javax.annotation.PostConstruct;
 @Import({MongoDataAutoConfiguration.class})
 public class MongoDBConfiguration {
 
-    @Autowired
-    private MongoDBProperties mongoDBProperties;
+	@Autowired
+	private MongoDBProperties mongoDBProperties;
 
-    @Autowired
-    private MongoMappingContext mongoMappingContext;
+	@Autowired
+	private MongoMappingContext mongoMappingContext;
 
-    @Autowired
-    private MappingMongoConverter mappingMongoConverter;
+	@Autowired
+	private MappingMongoConverter mappingMongoConverter;
 
-    @PostConstruct
-    public void initialize(){
-        setTypeMapper();
-    }
+	@PostConstruct
+	public void initialize(){
+		setTypeMapper();
+	}
 
-    protected void setTypeMapper(){
-        MongoTypeMapper mongoTypeMapper;
+	protected void setTypeMapper(){
+		MongoTypeMapper mongoTypeMapper;
 
-        if(mongoDBProperties.getTypeMapper() != null){
-            mongoTypeMapper = BeanUtils.instantiateClass(mongoDBProperties.getTypeMapper());
-        }else{
-            mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(), mongoMappingContext);
-        }
+		if(mongoDBProperties.getTypeMapper() != null){
+			mongoTypeMapper = BeanUtils.instantiateClass(mongoDBProperties.getTypeMapper());
+		}else{
+			mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(), mongoMappingContext);
+		}
 
-        mappingMongoConverter.setTypeMapper(mongoTypeMapper);
-    }
+		mappingMongoConverter.setTypeMapper(mongoTypeMapper);
+	}
 
 }

@@ -109,17 +109,8 @@ public class RedisConfiguration {
 		}
 
 		protected void setTimeout(final com.buession.redis.spring.RedisConfiguration configuration){
-			if(redisConfigProperties.getConnectTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
-				configuration.setConnectTimeout(redisConfigProperties.getTimeout());
-			}else{
-				configuration.setConnectTimeout(redisConfigProperties.getConnectTimeout());
-			}
-
-			if(redisConfigProperties.getSoTimeout() == 0 && redisConfigProperties.getTimeout() > 0){
-				configuration.setSoTimeout(redisConfigProperties.getTimeout());
-			}else{
-				configuration.setSoTimeout(redisConfigProperties.getSoTimeout());
-			}
+			configuration.setConnectTimeout(redisConfigProperties.getConnectTimeout());
+			configuration.setSoTimeout(redisConfigProperties.getSoTimeout());
 		}
 
 		protected JedisRedisConnectionFactoryBean createJedisRedisConnectionFactory(){
@@ -199,18 +190,22 @@ public class RedisConfiguration {
 			JedisPoolConfig config = new JedisPoolConfig();
 
 			config.setLifo(poolConfig.getLifo());
-			config.setMaxWaitMillis(poolConfig.getMaxWaitMillis());
-			config.setMinEvictableIdleTimeMillis(poolConfig.getMinEvictableIdleTimeMillis());
-			config.setSoftMinEvictableIdleTimeMillis(poolConfig.getSoftMinEvictableIdleTimeMillis());
-			config.setNumTestsPerEvictionRun(poolConfig.getNumTestsPerEvictionRun());
+			config.setFairness(poolConfig.getFairness());
+			config.setMaxWaitMillis(poolConfig.getMaxWait());
+			config.setMinEvictableIdleTimeMillis(poolConfig.getMinEvictableIdleTime());
+			config.setSoftMinEvictableIdleTimeMillis(poolConfig.getSoftMinEvictableIdleTime());
 			config.setEvictionPolicyClassName(poolConfig.getEvictionPolicyClassName());
+			config.setEvictorShutdownTimeoutMillis(poolConfig.getEvictorShutdownTimeout());
+			config.setNumTestsPerEvictionRun(poolConfig.getNumTestsPerEvictionRun());
+			config.setTestOnCreate(poolConfig.getTestOnCreate());
 			config.setTestOnBorrow(poolConfig.getTestOnBorrow());
 			config.setTestOnReturn(poolConfig.getTestOnReturn());
 			config.setTestWhileIdle(poolConfig.getTestWhileIdle());
-			config.setTimeBetweenEvictionRunsMillis(poolConfig.getTimeBetweenEvictionRunsMillis());
+			config.setTimeBetweenEvictionRunsMillis(poolConfig.getTimeBetweenEvictionRuns());
 			config.setBlockWhenExhausted(poolConfig.getBlockWhenExhausted());
 			config.setJmxEnabled(poolConfig.getJmxEnabled());
 			config.setJmxNamePrefix(poolConfig.getJmxNamePrefix());
+			config.setJmxNameBase(poolConfig.getJmxNameBase());
 			config.setMaxTotal(poolConfig.getMaxTotal());
 			config.setMinIdle(poolConfig.getMinIdle());
 			config.setMaxIdle(poolConfig.getMaxIdle());

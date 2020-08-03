@@ -39,7 +39,7 @@ import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -74,7 +74,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Bean(name = "shiroFilterRegistrationBean")
-	@ConditionalOnBean(name = {"org.pac4j.core.config.Config"})
+	@ConditionalOnClass(name = {"org.pac4j.core.config.Config"})
 	@ConditionalOnMissingBean
 	public FilterRegistrationBean shiroFilterRegistrationBean(Config pac4jConfig) throws Exception{
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();

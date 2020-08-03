@@ -19,29 +19,55 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.captcha.autoconfigure;
 
 import com.buession.springboot.captcha.Geetest;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "captcha")
+@ConfigurationProperties(prefix = "spring.captcha")
 public class CaptchaProperties {
 
-    @NestedConfigurationProperty
-    private Geetest geetest = new Geetest();
+	/**
+	 * 极验行为验证配置
+	 */
+	@NestedConfigurationProperty
+	private Geetest geetest = new Geetest();
 
-    public Geetest getGeetest(){
-        return geetest;
-    }
+	public Geetest getGeetest(){
+		return geetest;
+	}
 
-    public void setGeetest(final Geetest geetest){
-        this.geetest = geetest;
-    }
+	public void setGeetest(Geetest geetest){
+		this.geetest = geetest;
+	}
+
+	@ConfigurationProperties(prefix = "captcha")
+	@Deprecated
+	public final static class DeprecatedCaptchaProperties extends CaptchaProperties {
+
+		/**
+		 * 极验行为验证配置
+		 */
+		@Deprecated
+		@NestedConfigurationProperty
+		private Geetest geetest = new Geetest();
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.captcha.geetest")
+		@Override
+		public void setGeetest(Geetest geetest){
+			super.setGeetest(geetest);
+			this.geetest = geetest;
+		}
+
+	}
+
 }

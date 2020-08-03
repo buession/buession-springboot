@@ -24,38 +24,29 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.oss.autoconfigure;
+package com.buession.springboot.cache.redis;
 
-import com.buession.oss.AliCloudOSSClient;
+import com.buession.redis.RedisTemplate;
+import com.buession.springboot.cache.SpringBootTestApplication;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author Yong.Teng
  */
-@Configuration
-@EnableConfigurationProperties(OssProperties.class)
-public class OssConfiguration {
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = SpringBootTestApplication.class)
+public class ConfigurationTest {
 
 	@Autowired
-	private OssProperties ossProperties;
+	private RedisTemplate redisTemplate;
 
-	@Bean
-	@ConditionalOnClass(name = {"com.aliyun.oss.OSS"})
-	@ConditionalOnMissingBean
-	public AliCloudOSSClient aliCloudOSSClient(){
-		AliCloudOSSClient ossClient = new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getKey(),
-				ossProperties.getSecret());
+	@Test
+	public void test() throws Exception{
 
-		if(ossProperties.getBaseUrl() != null){
-			//ossClient.setBaseUrl(ossProperties.getBaseUrl());
-		}
-
-		return ossClient;
 	}
 
 }

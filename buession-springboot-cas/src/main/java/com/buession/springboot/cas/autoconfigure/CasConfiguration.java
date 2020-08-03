@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +49,8 @@ public class CasConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public org.pac4j.cas.config.CasConfiguration casConfiguration(){
-		org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration
-				(casProperties.getLoginUrl(), casProperties.getPrefixUrl());
+		org.pac4j.cas.config.CasConfiguration casConfiguration =
+				new org.pac4j.cas.config.CasConfiguration(casProperties.getLoginUrl(), casProperties.getPrefixUrl());
 
 		casConfiguration.setProtocol(casProperties.getProtocol());
 
@@ -57,7 +58,7 @@ public class CasConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "pac4j.client", name = "cas", havingValue = "on")
+	@ConditionalOnProperty(prefix = "spring.pac4j.client", name = "cas", havingValue = "on")
 	@ConditionalOnMissingBean
 	public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
 		CasClient casClient = new CasClient();
@@ -70,7 +71,16 @@ public class CasConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "pac4j.client", name = "rest", havingValue = "on")
+	@ConditionalOnProperty(prefix = "pac4j.client", name = "cas", havingValue = "on")
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.pac4j.client.cas")
+	@ConditionalOnMissingBean
+	@Deprecated
+	public CasClient deprecatedCasClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+		return casClient(casConfiguration);
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.pac4j.client", name = "rest", havingValue = "on")
 	@ConditionalOnMissingBean
 	public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
 		CasRestFormClient casRestFormClient = new CasRestFormClient();
@@ -79,6 +89,15 @@ public class CasConfiguration {
 		casRestFormClient.setConfiguration(casConfiguration);
 
 		return casRestFormClient;
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = "pac4j.client", name = "rest", havingValue = "on")
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.pac4j.client.rest")
+	@ConditionalOnMissingBean
+	@Deprecated
+	public CasRestFormClient deprecatedCasRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+		return casRestFormClient(casConfiguration);
 	}
 
 }

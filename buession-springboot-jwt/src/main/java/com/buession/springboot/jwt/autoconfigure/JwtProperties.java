@@ -19,48 +19,107 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.jwt.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
+ * JWT 配置
+ *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties(prefix = "spring.jwt")
 public class JwtProperties {
 
-    private String parameterName;
+	/**
+	 * 参数名
+	 */
+	private String parameterName;
 
-    private String prefixHeader;
+	/**
+	 * HTTP 头前缀
+	 */
+	private String prefixHeader;
 
-    private String encryptionKey;
+	/**
+	 * 加密 Key
+	 */
+	private String encryptionKey;
 
-    public String getParameterName(){
-        return parameterName;
-    }
+	public String getParameterName(){
+		return parameterName;
+	}
 
-    public void setParameterName(String parameterName){
-        this.parameterName = parameterName;
-    }
+	public void setParameterName(String parameterName){
+		this.parameterName = parameterName;
+	}
 
-    public String getPrefixHeader(){
-        return prefixHeader;
-    }
+	public String getPrefixHeader(){
+		return prefixHeader;
+	}
 
-    public void setPrefixHeader(String prefixHeader){
-        this.prefixHeader = prefixHeader;
-    }
+	public void setPrefixHeader(String prefixHeader){
+		this.prefixHeader = prefixHeader;
+	}
 
-    public String getEncryptionKey(){
-        return encryptionKey;
-    }
+	public String getEncryptionKey(){
+		return encryptionKey;
+	}
 
-    public void setEncryptionKey(String encryptionKey){
-        this.encryptionKey = encryptionKey;
-    }
+	public void setEncryptionKey(String encryptionKey){
+		this.encryptionKey = encryptionKey;
+	}
 
+	@ConfigurationProperties(prefix = "jwt")
+	@Deprecated
+	public final static class DeprecatedJwtProperties extends JwtProperties {
+
+		/**
+		 * 参数名
+		 */
+		@Deprecated
+		private String parameterName;
+
+		/**
+		 * HTTP 头前缀
+		 */
+		@Deprecated
+		private String prefixHeader;
+
+		/**
+		 * 加密 Key
+		 */
+		@Deprecated
+		private String encryptionKey;
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.parameter-name")
+		@Override
+		public void setParameterName(String parameterName){
+			super.setParameterName(parameterName);
+			this.parameterName = parameterName;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.prefix-header")
+		@Override
+		public void setPrefixHeader(String prefixHeader){
+			super.setPrefixHeader(prefixHeader);
+			this.prefixHeader = prefixHeader;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.encryption-key")
+		@Override
+		public void setEncryptionKey(String encryptionKey){
+			super.setEncryptionKey(encryptionKey);
+			this.encryptionKey = encryptionKey;
+		}
+
+	}
 
 }

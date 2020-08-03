@@ -25,7 +25,7 @@
 package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.web.HttpProperties;
+import com.buession.springboot.web.web.ServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -36,59 +36,57 @@ import java.util.Map;
  */
 public abstract class AbstractHttpConfiguration implements HttpConfiguration {
 
-    protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
+	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
 
-    @Autowired(required = false)
-    protected HttpProperties httpProperties;
+	@Autowired(required = false)
+	protected ServerProperties serverProperties;
 
-    protected final static Map<String, String> buildHeaders(final Map<String, String> headers){
-        final Map<String, String> result = new HashMap<>(headers.size());
+	protected final static Map<String, String> buildHeaders(final Map<String, String> headers){
+		final Map<String, String> result = new HashMap<>(headers.size());
 
-        headers.forEach((key, value)->{
-            if(value.startsWith(HEADER_VARIABLE_IDENTIFIER)){
-                String propertyName = value.substring(1);
-                String propertyValue = System.getProperty(propertyName);
+		headers.forEach((key, value)->{
+			if(value.startsWith(HEADER_VARIABLE_IDENTIFIER)){
+				String propertyName = value.substring(1);
+				String propertyValue = System.getProperty(propertyName);
 
-                if(Validate.hasText(propertyValue) == false){
-                    propertyValue = System.getenv(propertyName);
-                }
+				if(Validate.hasText(propertyValue) == false){
+					propertyValue = System.getenv(propertyName);
+				}
 
-                if(Validate.hasText(propertyValue)){
-                    result.put(key, propertyValue);
-                }
-            }else{
-                result.put(key, value);
-            }
-        });
+				if(Validate.hasText(propertyValue)){
+					result.put(key, propertyValue);
+				}
+			}else{
+				result.put(key, value);
+			}
+		});
 
-        return result;
-    }
+		return result;
+	}
 
-    protected final static String buildServerInfo(final HttpProperties httpProperties, final String serverName){
-        String s = serverName;
-        StringBuffer sb = new StringBuffer();
+	protected final static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
+		String s = serverName;
+		StringBuffer sb = new StringBuffer();
 
-        if(Validate.hasText(httpProperties.getServerInfoPrefix())){
-            sb.append(httpProperties.getServerInfoPrefix());
-        }
+		if(Validate.hasText(serverProperties.getServerInfoPrefix())){
+			sb.append(serverProperties.getServerInfoPrefix());
+		}
 
-        if(Validate.hasText(httpProperties.getStripServerInfoPrefix()) && s.startsWith(httpProperties
-                .getStripServerInfoPrefix())){
-            s = s.substring(httpProperties.getStripServerInfoPrefix().length());
-        }
+		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) && s.startsWith(serverProperties.getStripServerInfoPrefix())){
+			s = s.substring(serverProperties.getStripServerInfoPrefix().length());
+		}
 
-        if(Validate.hasText(httpProperties.getStripServerInfoSuffix()) && s.endsWith(httpProperties
-                .getStripServerInfoSuffix())){
-            s = s.substring(0, s.length() - httpProperties.getStripServerInfoSuffix().length());
-        }
+		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) && s.endsWith(serverProperties.getStripServerInfoSuffix())){
+			s = s.substring(0, s.length() - serverProperties.getStripServerInfoSuffix().length());
+		}
 
-        sb.append(s);
+		sb.append(s);
 
-        if(Validate.hasText(httpProperties.getServerInfoSuffix())){
-            sb.append(httpProperties.getServerInfoSuffix());
-        }
+		if(Validate.hasText(serverProperties.getServerInfoSuffix())){
+			sb.append(serverProperties.getServerInfoSuffix());
+		}
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
 }

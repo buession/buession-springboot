@@ -33,21 +33,41 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Web Server 配置
+ *
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "server")
-public class HttpProperties {
+public class ServerProperties {
 
+	/**
+	 * 自定义响应头
+	 */
 	private Map<String, String> responseHeaders = new LinkedHashMap<>(16, 0.8F);
 
+	/**
+	 * Server 信息响应头名称
+	 */
 	private String serverInfoName;
 
+	/**
+	 * Server 信息响应头前缀
+	 */
 	private String serverInfoPrefix;
 
+	/**
+	 * Server 信息响应头后缀
+	 */
 	private String serverInfoSuffix;
 
+	/**
+	 * 删除 Server 信息响应头前缀
+	 */
 	private String stripServerInfoPrefix;
 
+	/**
+	 * 删除 Server 信息响应头后缀
+	 */
 	private String stripServerInfoSuffix;
 
 	public Map<String, String> getResponseHeaders(){

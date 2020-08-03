@@ -1,0 +1,15 @@
+spring:
+  redis:
+    host: 10.101.0.36
+    port: 6379
+    password: tQP!Vf7JxL-nrH-x
+    connect-timeout: 2000
+    so-timeout: 30000
+    pool:
+      maxTotal: 10
+      minIdle: 3
+      maxIdle: 5
+      maxWaitMillis: 10000
+      maxActive: 3
+      timeout: 2000
+      testOnBorrow: true

@@ -19,36 +19,82 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
+ * GeoIP 配置
+ *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "geoip")
+@ConfigurationProperties(prefix = "spring.geoip")
 public class GeoIPProperties {
 
-    private String dbPath;
+	/**
+	 * 数据文件路径
+	 */
+	private String dbPath;
 
-    private boolean enableCache = true;
+	/**
+	 * 是否开启缓存
+	 */
+	private boolean enableCache = true;
 
-    public String getDbPath(){
-        return dbPath;
-    }
+	public String getDbPath(){
+		return dbPath;
+	}
 
-    public void setDbPath(String dbPath){
-        this.dbPath = dbPath;
-    }
+	public void setDbPath(String dbPath){
+		this.dbPath = dbPath;
+	}
 
-    public boolean isEnableCache(){
-        return enableCache;
-    }
+	public boolean isEnableCache(){
+		return getEnableCache();
+	}
 
-    public void setEnableCache(boolean enableCache){
-        this.enableCache = enableCache;
-    }
+	public boolean getEnableCache(){
+		return enableCache;
+	}
+
+	public void setEnableCache(boolean enableCache){
+		this.enableCache = enableCache;
+	}
+
+	@ConfigurationProperties(prefix = "geoip")
+	@Deprecated
+	public final static class DeprecatedGeoIPProperties extends GeoIPProperties {
+
+		/**
+		 * 数据文件路径
+		 */
+		private String dbPath;
+
+		/**
+		 * 是否开启缓存
+		 */
+		private boolean enableCache = true;
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.geoip.db-path")
+		@Override
+		public void setDbPath(String dbPath){
+			super.setDbPath(dbPath);
+			this.dbPath = dbPath;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.geoip.enable-cache")
+		@Override
+		public void setEnableCache(boolean enableCache){
+			super.setEnableCache(enableCache);
+			this.enableCache = enableCache;
+		}
+
+	}
+
 }

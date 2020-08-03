@@ -25,7 +25,7 @@
 package com.buession.springboot.web;
 
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.web.HttpProperties;
+import com.buession.springboot.web.web.ServerProperties;
 import org.junit.Test;
 
 /**
@@ -33,46 +33,44 @@ import org.junit.Test;
  */
 public class StringUtils {
 
-    @Test
-    public void substr(){
-        HttpProperties httpProperties = new HttpProperties();
-        String str = "liangvi-web-s-6fb77bc686-qsnj4";
+	@Test
+	public void substr(){
+		ServerProperties serverProperties = new ServerProperties();
+		String str = "liangvi-web-s-6fb77bc686-qsnj4";
 
-        // httpProperties.setServerInfoPrefix("test-");
-        //httpProperties.setServerInfoSuffix("-aaa");
+		// httpProperties.setServerInfoPrefix("test-");
+		//httpProperties.setServerInfoSuffix("-aaa");
 
-        httpProperties.setStripServerInfoPrefix("liangvi-web-s-");
-        httpProperties.setStripServerInfoSuffix("j4");
+		serverProperties.setStripServerInfoPrefix("liangvi-web-s-");
+		serverProperties.setStripServerInfoSuffix("j4");
 
-        System.out.println(buildServerInfo(httpProperties, str));
-    }
+		System.out.println(buildServerInfo(serverProperties, str));
+	}
 
-    private final static String buildServerInfo(final HttpProperties httpProperties, final String serverName){
-        String s = serverName;
-        StringBuffer sb = new StringBuffer();
+	private final static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
+		String s = serverName;
+		StringBuffer sb = new StringBuffer();
 
-        if(Validate.hasText(httpProperties.getServerInfoPrefix())){
-            sb.append(httpProperties.getServerInfoPrefix());
-        }
+		if(Validate.hasText(serverProperties.getServerInfoPrefix())){
+			sb.append(serverProperties.getServerInfoPrefix());
+		}
 
-        if(Validate.hasText(httpProperties.getStripServerInfoPrefix()) && s.startsWith(httpProperties
-                .getStripServerInfoPrefix())){
-            s = s.substring(httpProperties.getStripServerInfoPrefix().length());
-        }
+		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) && s.startsWith(serverProperties.getStripServerInfoPrefix())){
+			s = s.substring(serverProperties.getStripServerInfoPrefix().length());
+		}
 
-        if(Validate.hasText(httpProperties.getStripServerInfoSuffix()) && s.endsWith(httpProperties
-                .getStripServerInfoSuffix())){
-            s = s.substring(0, s.length() - httpProperties.getStripServerInfoSuffix().length());
-        }
+		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) && s.endsWith(serverProperties.getStripServerInfoSuffix())){
+			s = s.substring(0, s.length() - serverProperties.getStripServerInfoSuffix().length());
+		}
 
-        sb.append(s);
+		sb.append(s);
 
-        if(Validate.hasText(httpProperties.getServerInfoSuffix())){
-            sb.append(httpProperties.getServerInfoSuffix());
-        }
+		if(Validate.hasText(serverProperties.getServerInfoSuffix())){
+			sb.append(serverProperties.getServerInfoSuffix());
+		}
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
 
 }

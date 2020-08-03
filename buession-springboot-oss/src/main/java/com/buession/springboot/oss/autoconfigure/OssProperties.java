@@ -27,18 +27,30 @@
 package com.buession.springboot.oss.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
+ * OSS 配置
+ *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "oss")
+@ConfigurationProperties(prefix = "spring.oss")
 public class OssProperties {
 
+	/**
+	 * Endpoint 地址
+	 */
 	private String endpoint;
 
-	private String accessKeyId;
+	/**
+	 * Key
+	 */
+	private String key;
 
-	private String secretAccessKey;
+	/**
+	 * Secret
+	 */
+	private String secret;
 
 	private String baseUrl;
 
@@ -50,20 +62,20 @@ public class OssProperties {
 		this.endpoint = endpoint;
 	}
 
-	public String getAccessKeyId(){
-		return accessKeyId;
+	public String getKey(){
+		return key;
 	}
 
-	public void setAccessKeyId(String accessKeyId){
-		this.accessKeyId = accessKeyId;
+	public void setKey(String key){
+		this.key = key;
 	}
 
-	public String getSecretAccessKey(){
-		return secretAccessKey;
+	public String getSecret(){
+		return secret;
 	}
 
-	public void setSecretAccessKey(String secretAccessKey){
-		this.secretAccessKey = secretAccessKey;
+	public void setSecret(String secret){
+		this.secret = secret;
 	}
 
 	public String getBaseUrl(){
@@ -72,6 +84,61 @@ public class OssProperties {
 
 	public void setBaseUrl(String baseUrl){
 		this.baseUrl = baseUrl;
+	}
+
+	@ConfigurationProperties(prefix = "oss")
+	@Deprecated
+	public final static class DeprecatedOssProperties extends OssProperties {
+
+		/**
+		 * Endpoint 地址
+		 */
+		private String endpoint;
+
+		/**
+		 * Key
+		 */
+		@Deprecated
+		private String accessKeyId;
+
+		/**
+		 * Secret
+		 */
+		@Deprecated
+		private String secretAccessKey;
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.oss.endpoint")
+		@Override
+		public void setEndpoint(String endpoint){
+			super.setEndpoint(endpoint);
+			this.endpoint = endpoint;
+		}
+
+		@Deprecated
+		public String getAccessKeyId(){
+			return accessKeyId;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.oss.key")
+		public void setAccessKeyId(String accessKeyId){
+			this.accessKeyId = accessKeyId;
+			setKey(accessKeyId);
+		}
+
+		@Deprecated
+		public String getSecretAccessKey(){
+			return secretAccessKey;
+		}
+
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.oss.secret")
+		public void setSecretAccessKey(String secretAccessKey){
+			this.secretAccessKey = secretAccessKey;
+			setSecret(secretAccessKey);
+		}
+
 	}
 
 }

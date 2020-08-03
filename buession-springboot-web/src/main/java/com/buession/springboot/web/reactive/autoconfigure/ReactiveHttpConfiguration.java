@@ -28,7 +28,7 @@ package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractHttpConfiguration;
-import com.buession.springboot.web.web.HttpProperties;
+import com.buession.springboot.web.web.ServerProperties;
 import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSourcePointcutAdvisor;
 import com.buession.web.reactive.filter.PoweredByHeaderFilter;
 import com.buession.web.reactive.filter.PrintUrlFilter;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  */
 @Configuration
-@EnableConfigurationProperties({HttpProperties.class})
+@EnableConfigurationProperties({ServerProperties.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 
@@ -53,8 +53,8 @@ public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 	public ResponseHeadersFilter responseHeadersFilter(){
 		final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
 
-		if(Validate.isNotEmpty(httpProperties.getResponseHeaders())){
-			responseHeadersFilter.setHeaders(buildHeaders(httpProperties.getResponseHeaders()));
+		if(Validate.isNotEmpty(serverProperties.getResponseHeaders())){
+			responseHeadersFilter.setHeaders(buildHeaders(serverProperties.getResponseHeaders()));
 		}
 
 		return responseHeadersFilter;
@@ -73,8 +73,8 @@ public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 	public com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter(){
 		final ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 
-		if(Validate.hasText(httpProperties.getServerInfoName())){
-			serverInfoFilter.setHeaderName(httpProperties.getServerInfoName());
+		if(Validate.hasText(serverProperties.getServerInfoName())){
+			serverInfoFilter.setHeaderName(serverProperties.getServerInfoName());
 		}
 
 		return serverInfoFilter;
@@ -97,7 +97,7 @@ public class ReactiveHttpConfiguration extends AbstractHttpConfiguration {
 
 		@Override
 		protected String format(String computerName){
-			return buildServerInfo(httpProperties, computerName);
+			return buildServerInfo(serverProperties, computerName);
 		}
 
 	}

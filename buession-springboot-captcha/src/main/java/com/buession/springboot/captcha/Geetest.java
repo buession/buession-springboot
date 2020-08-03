@@ -19,48 +19,59 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.captcha;
 
 /**
+ * 极验行为验证配置
+ *
  * @author Yong.Teng
  */
 public class Geetest {
 
-    private String geetestId;
+	/**
+	 * 公钥
+	 */
+	private String geetestId;
 
-    private String geetestKey;
+	/**
+	 * 私钥
+	 */
+	private String geetestKey;
 
-    private boolean newFailback = true;
+	/**
+	 * 是否开启新的 failback
+	 */
+	private boolean newFailback = true;
 
-    public String getGeetestId(){
-        return geetestId;
-    }
+	public String getGeetestId(){
+		return geetestId;
+	}
 
-    public void setGeetestId(String geetestId){
-        this.geetestId = geetestId;
-    }
+	public void setGeetestId(String geetestId){
+		this.geetestId = geetestId;
+	}
 
-    public String getGeetestKey(){
-        return geetestKey;
-    }
+	public String getGeetestKey(){
+		return geetestKey;
+	}
 
-    public void setGeetestKey(String geetestKey){
-        this.geetestKey = geetestKey;
-    }
+	public void setGeetestKey(String geetestKey){
+		this.geetestKey = geetestKey;
+	}
 
-    public boolean getNewFailback(){
-        return newFailback;
-    }
+	public boolean isNewFailback(){
+		return getNewFailback();
+	}
 
-    public boolean isNewFailback(){
-        return getNewFailback();
-    }
+	public boolean getNewFailback(){
+		return newFailback;
+	}
 
-    public void setNewFailback(boolean newFailback){
-        this.newFailback = newFailback;
-    }
+	public void setNewFailback(boolean newFailback){
+		this.newFailback = newFailback;
+	}
 
 }

@@ -71,7 +71,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	public void initialize(){
 		ShiroProperties.Session session = shiroProperties.getSession();
 
-		useNativeSessionManager = session.isUserNativeSessionManager();
+		useNativeSessionManager = session.isUseNativeSessionManager();
 		sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
 		sessionIdUrlRewritingEnabled = session.isSessionIdUrlRewritingEnabled();
 		sessionManagerDeleteInvalidSessions = session.isSessionManagerDeleteInvalidSessions();
