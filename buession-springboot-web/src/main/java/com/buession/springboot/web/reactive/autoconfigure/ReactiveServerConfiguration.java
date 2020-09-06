@@ -24,15 +24,15 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.autoconfigure.AbstractHttpConfiguration;
+import com.buession.springboot.web.autoconfigure.AbstractServerConfiguration;
 import com.buession.springboot.web.web.ServerProperties;
-import com.buession.web.servlet.aop.advice.aopalliance.ServletHttpAttributeSourcePointcutAdvisor;
-import com.buession.web.servlet.filter.PoweredByHeaderFilter;
-import com.buession.web.servlet.filter.PrintUrlFilter;
-import com.buession.web.servlet.filter.ResponseHeadersFilter;
+import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSourcePointcutAdvisor;
+import com.buession.web.reactive.filter.PoweredByHeaderFilter;
+import com.buession.web.reactive.filter.PrintUrlFilter;
+import com.buession.web.reactive.filter.ResponseHeadersFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -45,8 +45,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties({ServerProperties.class})
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletHttpConfiguration extends AbstractHttpConfiguration {
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -70,7 +70,7 @@ public class ServletHttpConfiguration extends AbstractHttpConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing = true)
-	public com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter(){
+	public com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter(){
 		final ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
 
 		if(Validate.hasText(serverProperties.getServerInfoName())){
@@ -89,11 +89,11 @@ public class ServletHttpConfiguration extends AbstractHttpConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServletHttpAttributeSourcePointcutAdvisor servletHttpAttributeSourcePointcutAdvisor(){
-		return new ServletHttpAttributeSourcePointcutAdvisor();
+	public ReactiveHttpAttributeSourcePointcutAdvisor reactiveHttpAttributeSourcePointcutAdvisor(){
+		return new ReactiveHttpAttributeSourcePointcutAdvisor();
 	}
 
-	private final class ServerInfoFilter extends com.buession.web.servlet.filter.ServerInfoFilter {
+	private final class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInfoFilter {
 
 		@Override
 		protected String format(String computerName){

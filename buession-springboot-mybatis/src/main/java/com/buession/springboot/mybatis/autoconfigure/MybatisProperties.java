@@ -85,28 +85,36 @@ public class MybatisProperties {
 
 	/**
 	 * 默认枚举 TypeHandler
+	 *
+	 * @since 1.2.0
 	 */
 	private Class<? extends TypeHandler> defaultEnumTypeHandler;
 
 	/**
 	 * MyBatis 的执行器
+	 *
+	 * @since 1.2.0
 	 */
 	private ExecutorType executorType;
 
 	/**
 	 * 指定外部化 MyBatis Properties 配置，通过该配置可以抽离配置，实现不同环境的配置部署
+	 *
+	 * @since 1.2.0
 	 */
 	private Properties configurationProperties;
 
 	/**
-	 * 原生 MyBatis 所支持的配置
-	 * {@link Configuration}
+	 * 原生 MyBatis 所支持的配置 {@link Configuration}
+	 *
+	 * @since 1.2.0
 	 */
-	@NestedConfigurationProperty
-	private Configuration configuration = new Configuration();
+	private Configuration configuration;
 
 	/**
 	 * 是否启用快速失败机制
+	 *
+	 * @since 1.2.0
 	 */
 	private boolean failFast;
 
@@ -189,42 +197,117 @@ public class MybatisProperties {
 		this.typeHandlers = typeHandlers;
 	}
 
+	/**
+	 * 返回默认枚举 TypeHandler
+	 *
+	 * @return 默认枚举 TypeHandler
+	 *
+	 * @since 1.2.0
+	 */
 	public Class<? extends TypeHandler> getDefaultEnumTypeHandler(){
 		return defaultEnumTypeHandler;
 	}
 
+	/**
+	 * 设置默认枚举 TypeHandler
+	 *
+	 * @param defaultEnumTypeHandler
+	 * 		默认枚举 TypeHandler
+	 *
+	 * @since 1.2.0
+	 */
 	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> defaultEnumTypeHandler){
 		this.defaultEnumTypeHandler = defaultEnumTypeHandler;
 	}
 
+	/**
+	 * 返回 MyBatis 的执行器
+	 *
+	 * @return MyBatis 的执行器
+	 *
+	 * @since 1.2.0
+	 */
 	public ExecutorType getExecutorType(){
 		return executorType;
 	}
 
+	/**
+	 * 设置 MyBatis 的执行器
+	 *
+	 * @param executorType
+	 * 		MyBatis 的执行器
+	 *
+	 * @since 1.2.0
+	 */
 	public void setExecutorType(ExecutorType executorType){
 		this.executorType = executorType;
 	}
 
+	/**
+	 * 返回指定的外部化 MyBatis Properties 配置
+	 *
+	 * @return 指定的外部化 MyBatis Properties 配置
+	 *
+	 * @since 1.2.0
+	 */
 	public Properties getConfigurationProperties(){
 		return configurationProperties;
 	}
 
+	/**
+	 * 指定外部化 MyBatis Properties 配置，通过该配置可以抽离配置，实现不同环境的配置部署
+	 *
+	 * @param configurationProperties
+	 * 		外部化 MyBatis Properties 配置
+	 *
+	 * @since 1.2.0
+	 */
 	public void setConfigurationProperties(Properties configurationProperties){
 		this.configurationProperties = configurationProperties;
 	}
 
+	/**
+	 * 返回原生 MyBatis 所支持的配置 {@link Configuration}
+	 *
+	 * @return 原生 MyBatis 所支持的配置
+	 *
+	 * @since 1.2.0
+	 */
 	public Configuration getConfiguration(){
 		return configuration;
 	}
 
+	/**
+	 * 设置原生 MyBatis 所支持的配置 {@link Configuration}
+	 *
+	 * @param configuration
+	 * 		原生 MyBatis 所支持的配置
+	 *
+	 * @since 1.2.0
+	 */
 	public void setConfiguration(Configuration configuration){
 		this.configuration = configuration;
 	}
 
+	/**
+	 * 返回是否启用快速失败机制
+	 *
+	 * @return 是否启用快速失败机制
+	 *
+	 * @since 1.2.0
+	 */
 	public boolean getFailFast(){
 		return failFast;
 	}
 
+	/**
+	 * 配置是否启用快速失败机制
+	 *
+	 * @param failFast
+	 * 		是否启用快速失败机制
+	 *
+	 * @since 1.2.0
+	 */
 	public void setFailFast(boolean failFast){
 		this.failFast = failFast;
 	}
@@ -280,38 +363,6 @@ public class MybatisProperties {
 		 */
 		@Deprecated
 		private TypeHandler<?>[] typeHandlers;
-
-		/**
-		 * 默认枚举 TypeHandler
-		 */
-		@Deprecated
-		private Class<? extends TypeHandler> defaultEnumTypeHandler;
-
-		/**
-		 * MyBatis 的执行器
-		 */
-		@Deprecated
-		private ExecutorType executorType;
-
-		/**
-		 * 指定外部化 MyBatis Properties 配置，通过该配置可以抽离配置，实现不同环境的配置部署
-		 */
-		@Deprecated
-		private Properties configurationProperties;
-
-		/**
-		 * 原生 MyBatis 所支持的配置
-		 * {@link Configuration}
-		 */
-		@Deprecated
-		@NestedConfigurationProperty
-		private Configuration configuration = new Configuration();
-
-		/**
-		 * 是否启用快速失败机制
-		 */
-		@Deprecated
-		private boolean failFast;
 
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.config-location")
@@ -375,46 +426,6 @@ public class MybatisProperties {
 		public void setTypeHandlers(TypeHandler<?>[] typeHandlers){
 			super.setTypeHandlers(typeHandlers);
 			this.typeHandlers = typeHandlers;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.default-enum-type-handler")
-		@Override
-		public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> defaultEnumTypeHandler){
-			super.setDefaultEnumTypeHandler(defaultEnumTypeHandler);
-			this.defaultEnumTypeHandler = defaultEnumTypeHandler;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.executor-type")
-		@Override
-		public void setExecutorType(ExecutorType executorType){
-			super.setExecutorType(executorType);
-			this.executorType = executorType;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.configuration-properties")
-		@Override
-		public void setConfigurationProperties(Properties configurationProperties){
-			super.setConfigurationProperties(configurationProperties);
-			this.configurationProperties = configurationProperties;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.configuration")
-		@Override
-		public void setConfiguration(Configuration configuration){
-			super.setConfiguration(configuration);
-			this.configuration = configuration;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mybatis.fail-fast")
-		@Override
-		public void setFailFast(boolean failFast){
-			super.setFailFast(failFast);
-			this.failFast = failFast;
 		}
 
 	}

@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * @author Yong.Teng
  */
-public abstract class AbstractHttpConfiguration implements HttpConfiguration {
+public abstract class AbstractServerConfiguration implements ServerConfiguration {
 
 	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
 

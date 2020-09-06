@@ -27,6 +27,6 @@ package com.buession.springboot.web.autoconfigure;
 /**
  * @author Yong.Teng
  */
-public interface HttpConfiguration {
+public interface ServerConfiguration {
 
 }

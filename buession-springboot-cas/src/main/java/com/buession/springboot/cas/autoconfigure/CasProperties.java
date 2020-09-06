@@ -47,7 +47,7 @@ public class CasProperties {
 	private String loginUrl;
 
 	/**
-	 * CAS 客户端 URL 前缀
+	 * CAS URL 前缀
 	 */
 	private String prefixUrl;
 
@@ -105,7 +105,7 @@ public class CasProperties {
 		private String loginUrl;
 
 		/**
-		 * CAS 客户端 URL 前缀
+		 * CAS URL 前缀
 		 */
 		@Deprecated
 		private String prefixUrl;

@@ -87,7 +87,12 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	 * 宏配置
 	 */
 	@NestedConfigurationProperty
-	private VelocityMacroProperties velocityMacro = new VelocityMacroProperties();
+	private VelocityMacro velocityMacro = new VelocityMacro();
+
+	/**
+	 * 是否开启缓存
+	 */
+	private boolean enableCache = true;
 
 	private boolean preferFileSystemAccess = true;
 
@@ -155,11 +160,11 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		this.toolboxConfigLocation = toolboxConfigLocation;
 	}
 
-	public VelocityMacroProperties getVelocityMacro(){
+	public VelocityMacro getVelocityMacro(){
 		return velocityMacro;
 	}
 
-	public void setVelocityMacro(VelocityMacroProperties velocityMacro){
+	public void setVelocityMacro(VelocityMacro velocityMacro){
 		this.velocityMacro = velocityMacro;
 	}
 
@@ -173,6 +178,18 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
 	public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
 		this.preferFileSystemAccess = preferFileSystemAccess;
+	}
+
+	public boolean isEnableCache(){
+		return getEnableCache();
+	}
+
+	public boolean getEnableCache(){
+		return enableCache;
+	}
+
+	public void setEnableCache(boolean enableCache){
+		this.enableCache = enableCache;
 	}
 
 	@ConfigurationProperties(prefix = "velocity")
@@ -226,7 +243,7 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		 */
 		@Deprecated
 		@NestedConfigurationProperty
-		private VelocityMacroProperties velocityMacro = new VelocityMacroProperties();
+		private VelocityMacro velocityMacro = new VelocityMacro();
 
 		@Deprecated
 		private boolean preferFileSystemAccess = true;
@@ -290,7 +307,7 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.velocity-macro")
 		@Override
-		public void setVelocityMacro(VelocityMacroProperties velocityMacro){
+		public void setVelocityMacro(VelocityMacro velocityMacro){
 			super.setVelocityMacro(velocityMacro);
 			this.velocityMacro = velocityMacro;
 		}
@@ -301,6 +318,20 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
 			super.setPreferFileSystemAccess(preferFileSystemAccess);
 			this.preferFileSystemAccess = preferFileSystemAccess;
+		}
+
+	}
+
+	public class VelocityMacro {
+
+		private String library;
+
+		public String getLibrary(){
+			return library;
+		}
+
+		public void setLibrary(String library){
+			this.library = library;
 		}
 
 	}

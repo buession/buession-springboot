@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.jwt.autoconfigure;
 
+import com.buession.lang.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
@@ -38,17 +39,27 @@ public class JwtProperties {
 	/**
 	 * 参数名
 	 */
-	private String parameterName;
+	private String parameterName = Constants.EMPTY_STRING;
 
 	/**
 	 * HTTP 头前缀
 	 */
-	private String prefixHeader;
+	private String prefixHeader = Constants.EMPTY_STRING;
 
 	/**
 	 * 加密 Key
 	 */
 	private String encryptionKey;
+
+	/**
+	 * 是否支持 GET 请求
+	 */
+	private boolean supportGetRequest = false;
+
+	/**
+	 * 是否支持 POST 请求
+	 */
+	private boolean supportPostRequest = true;
 
 	public String getParameterName(){
 		return parameterName;
@@ -72,6 +83,30 @@ public class JwtProperties {
 
 	public void setEncryptionKey(String encryptionKey){
 		this.encryptionKey = encryptionKey;
+	}
+
+	public boolean isSupportGetRequest(){
+		return getSupportGetRequest();
+	}
+
+	public boolean getSupportGetRequest(){
+		return supportGetRequest;
+	}
+
+	public void setSupportGetRequest(boolean supportGetRequest){
+		this.supportGetRequest = supportGetRequest;
+	}
+
+	public boolean isSupportPostRequest(){
+		return getSupportPostRequest();
+	}
+
+	public boolean getSupportPostRequest(){
+		return supportPostRequest;
+	}
+
+	public void setSupportPostRequest(boolean supportPostRequest){
+		this.supportPostRequest = supportPostRequest;
 	}
 
 	@ConfigurationProperties(prefix = "jwt")

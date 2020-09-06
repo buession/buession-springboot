@@ -69,6 +69,13 @@
 				<artifactId>buession-core</artifactId>
 				<version>${buession.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-autoconfigure-processor</artifactId>
+				<version>${springframework.boot.version}</version>
+				<optional>true</optional>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
