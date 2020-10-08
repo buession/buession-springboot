@@ -92,6 +92,7 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	/**
 	 * 是否开启缓存
 	 */
+	@Deprecated
 	private boolean enableCache = true;
 
 	private boolean preferFileSystemAccess = true;
@@ -180,15 +181,22 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
 	public boolean isEnableCache(){
 		return getEnableCache();
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
 	public boolean getEnableCache(){
 		return enableCache;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
 	public void setEnableCache(boolean enableCache){
+		setCache(enableCache);
 		this.enableCache = enableCache;
 	}
 
