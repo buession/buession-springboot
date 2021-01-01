@@ -78,19 +78,10 @@ public class ShiroProperties {
 	private RememberMeConfig rememberMe = new RememberMeConfig();
 
 	/**
-	 * 客户端名称
+	 * Pac4j
 	 */
-	private Set<String> clients;
-
-	/**
-	 * 是否允许多个 Profile
-	 */
-	private boolean multiProfile;
-
-	/**
-	 * 认证器名称
-	 */
-	private String[] authorizers;
+	@NestedConfigurationProperty
+	private Pac4j pac4j = new Pac4j();
 
 	public String getLoginUrl(){
 		return loginUrl;
@@ -140,32 +131,12 @@ public class ShiroProperties {
 		this.rememberMe = rememberMe;
 	}
 
-	public Set<String> getClients(){
-		return clients;
+	public Pac4j getPac4j(){
+		return pac4j;
 	}
 
-	public void setClients(Set<String> clients){
-		this.clients = clients;
-	}
-
-	public boolean isMultiProfile(){
-		return getMultiProfile();
-	}
-
-	public boolean getMultiProfile(){
-		return multiProfile;
-	}
-
-	public void setMultiProfile(boolean multiProfile){
-		this.multiProfile = multiProfile;
-	}
-
-	public String[] getAuthorizers(){
-		return authorizers;
-	}
-
-	public void setAuthorizers(String[] authorizers){
-		this.authorizers = authorizers;
+	public void setPac4j(Pac4j pac4j){
+		this.pac4j = pac4j;
 	}
 
 	@ConfigurationProperties(prefix = "shiro")
@@ -210,18 +181,6 @@ public class ShiroProperties {
 		@Deprecated
 		@NestedConfigurationProperty
 		private RememberMeConfig rememberMe = new RememberMeConfig();
-
-		/**
-		 * 客户端名称
-		 */
-		@Deprecated
-		private Set<String> clients;
-
-		/**
-		 * 是否允许多个 Profile
-		 */
-		@Deprecated
-		private boolean multiProfile;
 
 		/**
 		 * 认证器名称
@@ -275,30 +234,6 @@ public class ShiroProperties {
 		public void setRememberMe(RememberMeConfig rememberMe){
 			super.setRememberMe(rememberMe);
 			this.rememberMe = rememberMe;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.shiro.clients")
-		@Override
-		public void setClients(Set<String> clients){
-			super.setClients(clients);
-			this.clients = clients;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.shiro.multi-profile")
-		@Override
-		public void setMultiProfile(boolean multiProfile){
-			super.setMultiProfile(multiProfile);
-			this.multiProfile = multiProfile;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "更通用的命名", replacement = "spring.shiro.authorizers")
-		@Override
-		public void setAuthorizers(String[] authorizers){
-			super.setAuthorizers(authorizers);
-			this.authorizers = authorizers;
 		}
 
 	}
@@ -502,6 +437,163 @@ public class ShiroProperties {
 
 		public void setCookie(Cookie cookie){
 			this.cookie = cookie;
+		}
+
+	}
+
+	/**
+	 * Pac4j
+	 */
+	public final static class Pac4j {
+
+		/**
+		 * 客户端名称
+		 */
+		private Set<String> clients;
+
+		/**
+		 * 默认客户端名称
+		 */
+		private String defaultClient;
+
+		/**
+		 * 是否允许多个 Profile
+		 */
+		private boolean multiProfile;
+
+		/**
+		 * 认证器名称
+		 */
+		private String[] authorizers;
+
+		private String[] matchers;
+
+		private boolean saveInSession = true;
+
+		/**
+		 * 登录成功默认跳转地址
+		 */
+		private String defaultUrl;
+
+		/**
+		 * 登出成功默认跳转地址
+		 */
+		private String logoutRedirectUrl;
+
+		private String logoutUrlPattern;
+
+		/**
+		 * 本地是否退出登录
+		 */
+		private boolean localLogout = true;
+
+		/**
+		 * 认证中心是否退出登录
+		 */
+		private boolean centralLogout = true;
+
+		public Set<String> getClients(){
+			return clients;
+		}
+
+		public void setClients(Set<String> clients){
+			this.clients = clients;
+		}
+
+		public String getDefaultClient(){
+			return defaultClient;
+		}
+
+		public void setDefaultClient(String defaultClient){
+			this.defaultClient = defaultClient;
+		}
+
+		public boolean isMultiProfile(){
+			return getMultiProfile();
+		}
+
+		public boolean getMultiProfile(){
+			return multiProfile;
+		}
+
+		public void setMultiProfile(boolean multiProfile){
+			this.multiProfile = multiProfile;
+		}
+
+		public String[] getAuthorizers(){
+			return authorizers;
+		}
+
+		public void setAuthorizers(String[] authorizers){
+			this.authorizers = authorizers;
+		}
+
+		public String[] getMatchers(){
+			return matchers;
+		}
+
+		public void setMatchers(String[] matchers){
+			this.matchers = matchers;
+		}
+
+		public boolean isSaveInSession(){
+			return getSaveInSession();
+		}
+
+		public boolean getSaveInSession(){
+			return saveInSession;
+		}
+
+		public void setSaveInSession(boolean saveInSession){
+			this.saveInSession = saveInSession;
+		}
+
+		public String getDefaultUrl(){
+			return defaultUrl;
+		}
+
+		public void setDefaultUrl(String defaultUrl){
+			this.defaultUrl = defaultUrl;
+		}
+
+		public String getLogoutRedirectUrl(){
+			return logoutRedirectUrl;
+		}
+
+		public void setLogoutRedirectUrl(String logoutRedirectUrl){
+			this.logoutRedirectUrl = logoutRedirectUrl;
+		}
+
+		public String getLogoutUrlPattern(){
+			return logoutUrlPattern;
+		}
+
+		public void setLogoutUrlPattern(String logoutUrlPattern){
+			this.logoutUrlPattern = logoutUrlPattern;
+		}
+
+		public boolean isLocalLogout(){
+			return getLocalLogout();
+		}
+
+		public boolean getLocalLogout(){
+			return localLogout;
+		}
+
+		public void setLocalLogout(boolean localLogout){
+			this.localLogout = localLogout;
+		}
+
+		public boolean isCentralLogout(){
+			return getCentralLogout();
+		}
+
+		public boolean getCentralLogout(){
+			return centralLogout;
+		}
+
+		public void setCentralLogout(boolean centralLogout){
+			this.centralLogout = centralLogout;
 		}
 
 	}

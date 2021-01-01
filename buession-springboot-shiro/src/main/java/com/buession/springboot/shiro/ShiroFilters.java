@@ -24,9 +24,34 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro;/**
- * 
+package com.buession.springboot.shiro;
+
+import javax.servlet.Filter;
+import java.util.Map;
+
+/**
+ * Shiro filters
  *
  * @author Yong.Teng
- */public class ShiroFilters {
+ * @since 1.2.0
+ */
+public class ShiroFilters {
+
+	private Map<String, Filter> filters;
+
+	public ShiroFilters(){
+	}
+
+	public ShiroFilters(Map<String, Filter> filters){
+		this.filters = filters;
+	}
+
+	public Map<String, Filter> getFilters(){
+		return filters;
+	}
+
+	public void setFilters(Map<String, Filter> filters){
+		this.filters = filters;
+	}
+
 }

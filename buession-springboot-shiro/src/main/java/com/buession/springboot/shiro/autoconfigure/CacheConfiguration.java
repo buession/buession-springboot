@@ -57,27 +57,28 @@ public class CacheConfiguration {
 	@AutoConfigureAfter(RedisConfiguration.class)
 	public static class RedisCacheConfiguration extends CacheConfiguration {
 
-		@Bean(name = "shiroRedisManager")
+		@Bean
 		@ConditionalOnMissingBean
-		public RedisManager shiroRedisManager(RedisTemplate redisTemplate){
+		public RedisManager redisManager(RedisTemplate redisTemplate){
 			return new DefaultRedisManager(redisTemplate);
 		}
 
-		@Bean(name = "cacheManager")
+		@Bean
 		@ConditionalOnMissingBean
-		public CacheManager redisCacheManager(RedisManager shiroRedisManager){
+		public CacheManager cacheManager(RedisManager shiroRedisManager){
 			ShiroProperties.Cache cache = shiroProperties.getCache();
-			return new RedisCacheManager(shiroRedisManager, cache.getPrefix(), cache.getExpire(), cache
-					.getPrincipalIdFieldName());
+			return new RedisCacheManager(shiroRedisManager, cache.getPrefix(), cache.getExpire(),
+					cache.getPrincipalIdFieldName());
 		}
 
-		@Bean(name = "sessionDAO")
+		@Bean
 		@ConditionalOnMissingBean
-		public SessionDAO redisSessionDAO(RedisManager shiroRedisManager){
+		public SessionDAO sessionDAO(RedisManager shiroRedisManager){
 			ShiroProperties.Session session = shiroProperties.getSession();
-			return new RedisSessionDAO(shiroRedisManager, session.getPrefix(), session.getExpire(), session
-					.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+			return new RedisSessionDAO(shiroRedisManager, session.getPrefix(), session.getExpire(),
+					session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
 		}
+
 	}
 
 }
