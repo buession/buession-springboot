@@ -58,6 +58,11 @@
 			<artifactId>buession-security-spring</artifactId>
 			<version>${buession.security.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.buession.security</groupId>
+			<artifactId>buession-security-web</artifactId>
+			<version>${buession.security.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

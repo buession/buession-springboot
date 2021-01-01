@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.web.security.autoconfigure;
 
+import com.buession.core.validator.Validate;
 import com.buession.security.spring.web.csrf.CookieCsrfTokenRepositoryGenerator;
 import com.buession.security.spring.web.csrf.CsrfTokenRepositoryGenerator;
 import com.buession.security.spring.web.csrf.HttpSessionCsrfTokenRepositoryGenerator;
@@ -47,51 +48,54 @@ import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
  * @since 1.2.0
  */
 @Configuration
-@EnableConfigurationProperties(SecurityProperties.class)
+@EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnClass({HttpSecurity.class})
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private SecurityProperties securityProperties;
+	private WebSecurityProperties webSecurityProperties;
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
-		httpBasicConfigure(httpSecurity, securityProperties.getHttpBasic());
-		csrfConfigure(httpSecurity, securityProperties.getCsrf());
-		frameOptionsConfigure(httpSecurity, securityProperties.getFrameOptions());
-		hstsConfigure(httpSecurity, securityProperties.getHsts());
-		hpkpConfigure(httpSecurity, securityProperties.getHpkp());
-		contentSecurityPolicyConfigure(httpSecurity, securityProperties.getContentSecurityPolicy());
-		referrerPolicyConfigure(httpSecurity, securityProperties.getReferrerPolicy());
-		xssConfigure(httpSecurity, securityProperties.getXss());
+		httpBasicConfigure(httpSecurity, webSecurityProperties.getHttpBasic());
+		csrfConfigure(httpSecurity, webSecurityProperties.getCsrf());
+		frameOptionsConfigure(httpSecurity, webSecurityProperties.getFrameOptions());
+		hstsConfigure(httpSecurity, webSecurityProperties.getHsts());
+		hpkpConfigure(httpSecurity, webSecurityProperties.getHpkp());
+		contentSecurityPolicyConfigure(httpSecurity, webSecurityProperties.getContentSecurityPolicy());
+		referrerPolicyConfigure(httpSecurity, webSecurityProperties.getReferrerPolicy());
+		xssConfigure(httpSecurity, webSecurityProperties.getXss());
 	}
 
-	protected void httpBasicConfigure(final HttpSecurity httpSecurity, final SecurityProperties.HttpBasic config) throws Exception{
+	protected void httpBasicConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.HttpBasic config) throws Exception{
 		if(config.isEnable() == false){
 			httpSecurity.httpBasic().disable();
 		}
 	}
 
-	protected void csrfConfigure(final HttpSecurity httpSecurity, final SecurityProperties.Csrf config) throws Exception{
+	protected void csrfConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Csrf config) throws Exception{
 		CsrfConfigurer<HttpSecurity> csrfConfigurer = httpSecurity.csrf();
 
 		if(config.isEnable()){
-			CsrfTokenRepositoryGenerator csrfTokenRepositoryGenerator = null;
+			if(config.getTokenRepositoryGenerator() != null){
+				CsrfTokenRepositoryGenerator csrfTokenRepositoryGenerator = null;
 
-			if(config.getTokenRepositoryGenerator().isAssignableFrom(CookieCsrfTokenRepositoryGenerator.class)){
-				SecurityProperties.Csrf.Cookie cookie = config.getCookie();
-				csrfTokenRepositoryGenerator = new CookieCsrfTokenRepositoryGenerator(cookie.getParameterName(),
-						cookie.getHeaderName(), cookie.getCookieName(), cookie.getCookieDomain(),
-						cookie.getCookiePath(), cookie.getCookieHttpOnly());
-			}else if(config.getTokenRepositoryGenerator().isAssignableFrom(HttpSessionCsrfTokenRepositoryGenerator.class)){
-				SecurityProperties.Csrf.Session session = config.getSession();
-				csrfTokenRepositoryGenerator = new HttpSessionCsrfTokenRepositoryGenerator(session.getParameterName(),
-						session.getHeaderName(), session.getSessionAttributeName());
-			}
+				if(config.getTokenRepositoryGenerator().isAssignableFrom(CookieCsrfTokenRepositoryGenerator.class)){
+					WebSecurityProperties.Csrf.Cookie cookie = config.getCookie();
+					csrfTokenRepositoryGenerator = new CookieCsrfTokenRepositoryGenerator(cookie.getParameterName(),
+							cookie.getHeaderName(), cookie.getCookieName(), cookie.getCookieDomain(),
+							cookie.getCookiePath(), cookie.getCookieHttpOnly());
+				}else if(config.getTokenRepositoryGenerator().isAssignableFrom(HttpSessionCsrfTokenRepositoryGenerator.class)){
+					WebSecurityProperties.Csrf.Session session = config.getSession();
+					csrfTokenRepositoryGenerator =
+							new HttpSessionCsrfTokenRepositoryGenerator(session.getParameterName(),
+									session.getHeaderName(), session.getSessionAttributeName());
+				}
 
-			if(csrfTokenRepositoryGenerator != null){
-				csrfConfigurer.csrfTokenRepository(new LazyCsrfTokenRepository(csrfTokenRepositoryGenerator.generate()));
+				if(csrfTokenRepositoryGenerator != null){
+					csrfConfigurer.csrfTokenRepository(new LazyCsrfTokenRepository(csrfTokenRepositoryGenerator.generate()));
+				}
 			}
 		}else{
 			csrfConfigurer.disable();
@@ -99,7 +103,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	protected void frameOptionsConfigure(final HttpSecurity httpSecurity,
-			final SecurityProperties.FrameOptions config) throws Exception{
+			final WebSecurityProperties.FrameOptions config) throws Exception{
 		HeadersConfigurer.FrameOptionsConfig frameOptionsConfig = httpSecurity.headers().frameOptions();
 
 		if(config.isEnable()){
@@ -120,7 +124,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	protected void hstsConfigure(final HttpSecurity httpSecurity, final SecurityProperties.Hsts config) throws Exception{
+	protected void hstsConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Hsts config) throws Exception{
 		HeadersConfigurer.HstsConfig hstsConfig = httpSecurity.headers().httpStrictTransportSecurity();
 
 		if(config.isEnable()){
@@ -134,14 +138,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	protected void hpkpConfigure(final HttpSecurity httpSecurity, final SecurityProperties.Hpkp config) throws Exception{
+	protected void hpkpConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Hpkp config) throws Exception{
 		HeadersConfigurer.HpkpConfig hpkpConfig = httpSecurity.headers().httpPublicKeyPinning();
 
 		if(config.isEnable()){
-			if(config.getPins() == null){
-				hpkpConfig.withPins(config.getPins()).addSha256Pins(config.getSha256Pins()).maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).reportOnly(config.isReportOnly()).reportUri(config.getReportUri());
-			}else{
-				hpkpConfig.addSha256Pins(config.getSha256Pins()).maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).reportOnly(config.isReportOnly()).reportUri(config.getReportUri());
+			hpkpConfig.maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).reportOnly(config.isReportOnly());
+
+			if(config.getPins() != null){
+				hpkpConfig.withPins(config.getPins());
+			}
+
+			if(config.getSha256Pins() != null){
+				hpkpConfig.addSha256Pins(config.getSha256Pins());
+			}
+
+			if(Validate.hasText(config.getReportUri())){
+				hpkpConfig.reportUri(config.getReportUri());
 			}
 		}else{
 			hpkpConfig.disable();
@@ -149,11 +161,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	protected void contentSecurityPolicyConfigure(final HttpSecurity httpSecurity,
-			final SecurityProperties.ContentSecurityPolicy config) throws Exception{
-		HeadersConfigurer.ContentSecurityPolicyConfig contentSecurityPolicyConfig =
-				httpSecurity.headers().contentSecurityPolicy(config.getPolicyDirectives());
+			final WebSecurityProperties.ContentSecurityPolicy config) throws Exception{
+		if(config.isEnable() && Validate.hasText(config.getPolicyDirectives())){
+			HeadersConfigurer.ContentSecurityPolicyConfig contentSecurityPolicyConfig =
+					httpSecurity.headers().contentSecurityPolicy(config.getPolicyDirectives());
 
-		if(config.isEnable()){
 			if(config.isReportOnly()){
 				contentSecurityPolicyConfig.reportOnly();
 			}
@@ -161,13 +173,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	protected void referrerPolicyConfigure(final HttpSecurity httpSecurity,
-			final SecurityProperties.ReferrerPolicy config) throws Exception{
+			final WebSecurityProperties.ReferrerPolicy config) throws Exception{
 		if(config.isEnable()){
 			httpSecurity.headers().referrerPolicy(config.getReferrerPolicy());
 		}
 	}
 
-	protected void xssConfigure(final HttpSecurity httpSecurity, final SecurityProperties.Xss config) throws Exception{
+	protected void xssConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Xss config) throws Exception{
 		HeadersConfigurer.XXssConfig xXssConfig = httpSecurity.headers().xssProtection();
 
 		if(config.isEnable()){

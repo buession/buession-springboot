@@ -31,6 +31,7 @@ import com.buession.security.spring.web.csrf.CsrfTokenRepositoryGenerator;
 import com.buession.security.spring.web.csrf.HttpSessionCsrfTokenRepositoryGenerator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.io.Resource;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -44,7 +45,7 @@ import java.util.Map;
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.security")
-public class SecurityProperties {
+public class WebSecurityProperties {
 
 	/**
 	 * Http Basic 配置
@@ -1155,6 +1156,11 @@ public class SecurityProperties {
 		private boolean enabledProtection;
 
 		/**
+		 * XSS 策略配置文件路径
+		 */
+		private String policyConfigLocation;
+
+		/**
 		 * 返回是否启用 Xss 配置
 		 *
 		 * @return 是否启用 Xss 配置
@@ -1203,6 +1209,25 @@ public class SecurityProperties {
 
 		public void setEnabledProtection(boolean enabledProtection){
 			this.enabledProtection = enabledProtection;
+		}
+
+		/**
+		 * 返回 XSS 策略配置文件路径
+		 *
+		 * @return XSS 策略配置文件路径
+		 */
+		public String getPolicyConfigLocation(){
+			return policyConfigLocation;
+		}
+
+		/**
+		 * 设置 XSS 策略配置文件路径
+		 *
+		 * @param policyConfigLocation
+		 * 		XSS 策略配置文件路径
+		 */
+		public void setPolicyConfigLocation(String policyConfigLocation){
+			this.policyConfigLocation = policyConfigLocation;
 		}
 
 	}

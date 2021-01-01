@@ -24,9 +24,47 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.security.autoconfigure;/**
- * 
+package com.buession.springboot.web.security.autoconfigure;
+
+import com.buession.security.web.xss.servlet.XssFilter;
+import org.owasp.validator.html.Policy;
+import org.owasp.validator.html.PolicyException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Xss 过滤器自动配置
  *
  * @author Yong.Teng
- */public class XssConfiguration {
+ * @since 1.2.0
+ */
+@Configuration
+@EnableConfigurationProperties(WebSecurityProperties.class)
+@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+public class XssConfiguration {
+
+	@Autowired
+	protected WebSecurityProperties webSecurityProperties;
+
+	@Configuration
+	@ConditionalOnClass(XssFilter.class)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	public static class ServletXssConfiguration extends XssConfiguration {
+
+		@Bean
+		public XssFilter xssFilter() throws PolicyException{
+			XssFilter xssFilter = new XssFilter();
+
+			xssFilter.setPolicy(Policy.getInstance(webSecurityProperties.getXss().getPolicyConfigLocation()));
+
+			return xssFilter;
+		}
+
+	}
+
 }
