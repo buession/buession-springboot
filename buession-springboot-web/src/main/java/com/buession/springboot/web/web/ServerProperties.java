@@ -28,7 +28,6 @@ package com.buession.springboot.web.web;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

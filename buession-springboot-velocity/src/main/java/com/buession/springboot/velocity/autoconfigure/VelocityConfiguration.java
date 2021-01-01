@@ -61,7 +61,7 @@ import java.util.Properties;
  * @author Yong.Teng
  */
 @Configuration
-@EnableConfigurationProperties({VelocityProperties.class})
+@EnableConfigurationProperties(VelocityProperties.class)
 @ConditionalOnClass({VelocityEngine.class})
 @AutoConfigureAfter({WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
 public class VelocityConfiguration {

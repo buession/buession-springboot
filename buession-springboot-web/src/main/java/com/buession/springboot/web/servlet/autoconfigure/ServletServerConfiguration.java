@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  */
 @Configuration
-@EnableConfigurationProperties({ServerProperties.class})
+@EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ServletServerConfiguration extends AbstractServerConfiguration {
 
