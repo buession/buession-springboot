@@ -27,19 +27,24 @@
 package com.buession.springboot.web.security.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.security.spring.web.csrf.CookieCsrfTokenRepositoryGenerator;
-import com.buession.security.spring.web.csrf.CsrfTokenRepositoryGenerator;
-import com.buession.security.spring.web.csrf.HttpSessionCsrfTokenRepositoryGenerator;
+import com.buession.security.web.xss.servlet.XssFilter;
+import com.buession.springboot.web.security.HttpSecurityBuilder;
+import org.owasp.validator.html.Policy;
+import org.owasp.validator.html.PolicyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
+
+import java.io.IOException;
 
 /**
  * Spring Security Configuration
@@ -50,6 +55,7 @@ import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
 @Configuration
 @EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnClass({HttpSecurity.class})
+@ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -58,135 +64,40 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
-		httpBasicConfigure(httpSecurity, webSecurityProperties.getHttpBasic());
-		csrfConfigure(httpSecurity, webSecurityProperties.getCsrf());
-		frameOptionsConfigure(httpSecurity, webSecurityProperties.getFrameOptions());
-		hstsConfigure(httpSecurity, webSecurityProperties.getHsts());
-		hpkpConfigure(httpSecurity, webSecurityProperties.getHpkp());
-		contentSecurityPolicyConfigure(httpSecurity, webSecurityProperties.getContentSecurityPolicy());
-		referrerPolicyConfigure(httpSecurity, webSecurityProperties.getReferrerPolicy());
-		xssConfigure(httpSecurity, webSecurityProperties.getXss());
+		HttpSecurityBuilder.getInstance(httpSecurity).httpBasic(webSecurityProperties.getHttpBasic()).csrf(webSecurityProperties.getCsrf()).frameOptions(webSecurityProperties.getFrameOptions()).hsts(webSecurityProperties.getHsts()).hpkp(webSecurityProperties.getHpkp()).contentSecurityPolicy(webSecurityProperties.getContentSecurityPolicy()).referrerPolicy(webSecurityProperties.getReferrerPolicy()).xss(webSecurityProperties.getXss());
 	}
 
-	protected void httpBasicConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.HttpBasic config) throws Exception{
-		if(config.isEnable() == false){
-			httpSecurity.httpBasic().disable();
-		}
-	}
+	@Configuration
+	@EnableConfigurationProperties(WebSecurityProperties.class)
+	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+	public static class XssConfiguration {
 
-	protected void csrfConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Csrf config) throws Exception{
-		CsrfConfigurer<HttpSecurity> csrfConfigurer = httpSecurity.csrf();
+		@Configuration
+		@EnableConfigurationProperties(WebSecurityProperties.class)
+		@ConditionalOnClass(XssFilter.class)
+		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+		public static class ServletXssConfiguration {
 
-		if(config.isEnable()){
-			if(config.getTokenRepositoryGenerator() != null){
-				CsrfTokenRepositoryGenerator csrfTokenRepositoryGenerator = null;
+			@Autowired
+			protected WebSecurityProperties webSecurityProperties;
 
-				if(config.getTokenRepositoryGenerator().isAssignableFrom(CookieCsrfTokenRepositoryGenerator.class)){
-					WebSecurityProperties.Csrf.Cookie cookie = config.getCookie();
-					csrfTokenRepositoryGenerator = new CookieCsrfTokenRepositoryGenerator(cookie.getParameterName(),
-							cookie.getHeaderName(), cookie.getCookieName(), cookie.getCookieDomain(),
-							cookie.getCookiePath(), cookie.getCookieHttpOnly());
-				}else if(config.getTokenRepositoryGenerator().isAssignableFrom(HttpSessionCsrfTokenRepositoryGenerator.class)){
-					WebSecurityProperties.Csrf.Session session = config.getSession();
-					csrfTokenRepositoryGenerator =
-							new HttpSessionCsrfTokenRepositoryGenerator(session.getParameterName(),
-									session.getHeaderName(), session.getSessionAttributeName());
+			@Bean
+			public XssFilter xssFilter() throws PolicyException, IOException{
+				XssFilter xssFilter = new XssFilter();
+				String policyConfigLocation = webSecurityProperties.getXss().getPolicyConfigLocation();
+
+				if(Validate.hasText(policyConfigLocation)){
+					PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+					Resource[] resources = resourceResolver.getResources(policyConfigLocation);
+
+					xssFilter.setPolicy(Policy.getInstance(resources[0].getInputStream()));
 				}
 
-				if(csrfTokenRepositoryGenerator != null){
-					csrfConfigurer.csrfTokenRepository(new LazyCsrfTokenRepository(csrfTokenRepositoryGenerator.generate()));
-				}
-			}
-		}else{
-			csrfConfigurer.disable();
-		}
-	}
-
-	protected void frameOptionsConfigure(final HttpSecurity httpSecurity,
-			final WebSecurityProperties.FrameOptions config) throws Exception{
-		HeadersConfigurer.FrameOptionsConfig frameOptionsConfig = httpSecurity.headers().frameOptions();
-
-		if(config.isEnable()){
-			switch(config.getMode()){
-				case ALLOW_FROM:
-					break;
-				case SAMEORIGIN:
-					frameOptionsConfig.sameOrigin();
-					break;
-				case DENY:
-					frameOptionsConfig.deny();
-					break;
-				default:
-					break;
-			}
-		}else{
-			frameOptionsConfig.disable();
-		}
-	}
-
-	protected void hstsConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Hsts config) throws Exception{
-		HeadersConfigurer.HstsConfig hstsConfig = httpSecurity.headers().httpStrictTransportSecurity();
-
-		if(config.isEnable()){
-			if(config.getMatcher() == null){
-				hstsConfig.maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).preload(config.isPreload());
-			}else{
-				hstsConfig.requestMatcher(config.getMatcher().newInstance()).maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).preload(config.isPreload());
-			}
-		}else{
-			hstsConfig.disable();
-		}
-	}
-
-	protected void hpkpConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Hpkp config) throws Exception{
-		HeadersConfigurer.HpkpConfig hpkpConfig = httpSecurity.headers().httpPublicKeyPinning();
-
-		if(config.isEnable()){
-			hpkpConfig.maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).reportOnly(config.isReportOnly());
-
-			if(config.getPins() != null){
-				hpkpConfig.withPins(config.getPins());
+				return xssFilter;
 			}
 
-			if(config.getSha256Pins() != null){
-				hpkpConfig.addSha256Pins(config.getSha256Pins());
-			}
-
-			if(Validate.hasText(config.getReportUri())){
-				hpkpConfig.reportUri(config.getReportUri());
-			}
-		}else{
-			hpkpConfig.disable();
 		}
-	}
 
-	protected void contentSecurityPolicyConfigure(final HttpSecurity httpSecurity,
-			final WebSecurityProperties.ContentSecurityPolicy config) throws Exception{
-		if(config.isEnable() && Validate.hasText(config.getPolicyDirectives())){
-			HeadersConfigurer.ContentSecurityPolicyConfig contentSecurityPolicyConfig =
-					httpSecurity.headers().contentSecurityPolicy(config.getPolicyDirectives());
-
-			if(config.isReportOnly()){
-				contentSecurityPolicyConfig.reportOnly();
-			}
-		}
-	}
-
-	protected void referrerPolicyConfigure(final HttpSecurity httpSecurity,
-			final WebSecurityProperties.ReferrerPolicy config) throws Exception{
-		if(config.isEnable()){
-			httpSecurity.headers().referrerPolicy(config.getReferrerPolicy());
-		}
-	}
-
-	protected void xssConfigure(final HttpSecurity httpSecurity, final WebSecurityProperties.Xss config) throws Exception{
-		HeadersConfigurer.XXssConfig xXssConfig = httpSecurity.headers().xssProtection();
-
-		if(config.isEnable()){
-			xXssConfig.block(config.getBlock()).xssProtectionEnabled(config.isEnabledProtection());
-		}else{
-			xXssConfig.disable();
-		}
 	}
 
 }
