@@ -21,51 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2018 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.mybatis;
-
-import org.apache.ibatis.io.VFS;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
+package com.buession.springboot.web.security;/**
+ * 
+ *
  * @author Yong.Teng
- */
-public class SpringBootVFS extends VFS {
-
-	private final ResourcePatternResolver resourceResolver =
-			new PathMatchingResourcePatternResolver(getClass().getClassLoader());
-
-	@Override
-	public boolean isValid(){
-		return true;
-	}
-
-	@Override
-	protected List<String> list(URL url, String path) throws IOException{
-		Resource[] resources = resourceResolver.getResources("classpath*:" + path + "/**/*.class");
-		ArrayList<String> resourcePaths = new ArrayList<>(resources.length);
-
-		for(Resource resource : resources){
-			resourcePaths.add(preserveSubpackageName(resource.getURI(), path));
-		}
-
-		return resourcePaths;
-	}
-
-	private static String preserveSubpackageName(URI uri, String rootPath){
-		String uriStr = uri.toString();
-		int i = uriStr.indexOf(rootPath);
-		return uriStr.substring(i);
-	}
-
+ */public class HttpSecurityBuilder {
 }
