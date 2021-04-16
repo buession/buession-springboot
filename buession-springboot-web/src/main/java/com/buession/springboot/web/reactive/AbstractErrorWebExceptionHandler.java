@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.web.reactive;
 
+import com.buession.core.validator.Validate;
 import com.buession.web.reactive.ErrorWebExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -71,8 +72,7 @@ import java.util.Set;
 /**
  * @author Yong.Teng
  */
-public abstract class AbstractErrorWebExceptionHandler extends org.springframework.boot.autoconfigure.web.reactive
-		.error.AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler {
+public abstract class AbstractErrorWebExceptionHandler extends org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler {
 
 	protected final ErrorProperties errorProperties;
 
@@ -135,12 +135,12 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		return null;
 	}
 
-	protected Map<String, Object> doResolveException(final ServerRequest request, final ServerResponse response, final
-	Throwable throwable){
+	protected Map<String, Object> doResolveException(final ServerRequest request, final ServerResponse response,
+													 final Throwable throwable){
 		try{
 			if(throwable instanceof MethodArgumentNotValidException){
-				return handleMethodArgumentNotValidException(request, response, (MethodArgumentNotValidException)
-						throwable);
+				return handleMethodArgumentNotValidException(request, response,
+						(MethodArgumentNotValidException) throwable);
 			}else if(throwable instanceof BindException){
 				return handleBindException(request, response, (BindException) throwable);
 			}else if(throwable instanceof WebExchangeBindException){
@@ -150,24 +150,26 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 			}else if(throwable instanceof TypeMismatchException){
 				return handleTypeMismatchException(request, response, (TypeMismatchException) throwable);
 			}else if(throwable instanceof HttpMessageNotReadableException){
-				return handleHttpMessageNotReadableException(request, response, (HttpMessageNotReadableException)
-						throwable);
+				return handleHttpMessageNotReadableException(request, response,
+						(HttpMessageNotReadableException) throwable);
 			}else if(throwable instanceof MethodNotAllowedException){
 				return handleMethodNotAllowedException(request, response, (MethodNotAllowedException) throwable);
 			}else if(throwable instanceof NotAcceptableStatusException){
 				return handleNotAcceptableException(request, response, (NotAcceptableStatusException) throwable);
 			}else if(throwable instanceof MediaTypeNotSupportedStatusException){
-				return handleMediaTypeNotSupportedException(request, response, (MediaTypeNotSupportedStatusException)
-						throwable);
+				return handleMediaTypeNotSupportedException(request, response,
+						(MediaTypeNotSupportedStatusException) throwable);
 			}else if(throwable instanceof UnsupportedMediaTypeStatusException){
-				return handleUnsupportedMediaTypeException(request, response, (UnsupportedMediaTypeStatusException)
-						throwable);
+				return handleUnsupportedMediaTypeException(request, response,
+						(UnsupportedMediaTypeStatusException) throwable);
+				//}else if(throwable instanceof MissingPathVariableException){
+				//return handleMissingPathVariable(request, response, (MissingPathVariableException) throwable);
 			}else if(throwable instanceof ConversionNotSupportedException){
-				return handleConversionNotSupportedException(request, response, (ConversionNotSupportedException)
-						throwable);
+				return handleConversionNotSupportedException(request, response,
+						(ConversionNotSupportedException) throwable);
 			}else if(throwable instanceof HttpMessageNotWritableException){
-				return handleHttpMessageNotWritableException(request, response, (HttpMessageNotWritableException)
-						throwable);
+				return handleHttpMessageNotWritableException(request, response,
+						(HttpMessageNotWritableException) throwable);
 			}else if(throwable instanceof ResponseStatusException){
 				return handleResponseStatusException(request, response, (ResponseStatusException) throwable);
 			}else if(throwable instanceof AsyncRequestTimeoutException){
@@ -185,14 +187,33 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link MethodArgumentNotValidException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request, final
-	ServerResponse response, final MethodArgumentNotValidException ex){
+	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request,
+																		final ServerResponse response,
+																		final MethodArgumentNotValidException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link BindException}
+	 *
+	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
 													  final BindException ex){
@@ -201,17 +222,37 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link WebExchangeBindException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request, final ServerResponse
-			response, final WebExchangeBindException ex){
+	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request,
+																 final ServerResponse response,
+																 final WebExchangeBindException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link ServerWebInputException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleServerWebInputException(final ServerRequest request, final ServerResponse
-			response, final ServerWebInputException ex){
+	protected Map<String, Object> handleServerWebInputException(final ServerRequest request,
+																final ServerResponse response,
+																final ServerWebInputException ex){
 		return doResolve(request, ex);
 	}
 
@@ -226,27 +267,57 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link TypeMismatchException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request, final ServerResponse
-			response, final TypeMismatchException ex){
+	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request,
+															  final ServerResponse response,
+															  final TypeMismatchException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 400
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link HttpMessageNotReadableException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request, final
-	ServerResponse response, final HttpMessageNotReadableException ex){
+	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request,
+																		final ServerResponse response,
+																		final HttpMessageNotReadableException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 405
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link MethodNotAllowedException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request, final ServerResponse
-			response, final MethodNotAllowedException ex){
+	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request,
+																  final ServerResponse response,
+																  final MethodNotAllowedException ex){
 		Set<HttpMethod> supportedMethods = ex.getSupportedMethods();
-		if(supportedMethods != null){
+		if(supportedMethods != null && response.headers() != null){
 			response.headers().setAllow(supportedMethods);
 		}
 
@@ -255,19 +326,39 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 406
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link NotAcceptableStatusException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request, final ServerResponse
-			response, final NotAcceptableStatusException ex){
+	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request,
+															   final ServerResponse response,
+															   final NotAcceptableStatusException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 415
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link MediaTypeNotSupportedStatusException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request, final
-	ServerResponse response, final MediaTypeNotSupportedStatusException ex){
+	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request,
+																	   final ServerResponse response,
+																	   final MediaTypeNotSupportedStatusException ex){
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(!CollectionUtils.isEmpty(mediaTypes)){
+		if(Validate.isNotEmpty(mediaTypes) && response.headers() != null){
 			response.headers().setAccept(mediaTypes);
 		}
 
@@ -276,11 +367,21 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 415
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link UnsupportedMediaTypeStatusException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request, final
-	ServerResponse response, final UnsupportedMediaTypeStatusException ex){
+	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request,
+																	  final ServerResponse response,
+																	  final UnsupportedMediaTypeStatusException ex){
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(!CollectionUtils.isEmpty(mediaTypes)){
+		if(Validate.isNotEmpty(mediaTypes) && response.headers() != null){
 			response.headers().setAccept(mediaTypes);
 		}
 
@@ -289,33 +390,73 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 500
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link MissingPathVariableException}
+	 *
+	 * @return 返回数据
 	 */
-	/*protected Map<String, Object> handleMissingPathVariable(final ServerRequest request, final ServerResponse
-			response, final MissingPathVariableException ex){
-		return doResolve(request, ex);
-	}*/
+	//protected Map<String, Object> handleMissingPathVariable(final ServerRequest request, final ServerResponse
+	// response
+	//	, final MissingPathVariableException ex){
+	//	return doResolve(request, ex);
+	//}
 
 	/**
 	 * Status code: 500
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link ConversionNotSupportedException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request, final
-	ServerResponse response, final ConversionNotSupportedException ex){
+	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request,
+																		final ServerResponse response,
+																		final ConversionNotSupportedException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
 	 * Status code: 500
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link HttpMessageNotWritableException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request, final
-	ServerResponse response, final HttpMessageNotWritableException ex){
+	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request,
+																		final ServerResponse response,
+																		final HttpMessageNotWritableException ex){
 		return doResolve(request, ex);
 	}
 
 	/**
-	 * Status code: 404
+	 * Status code: 错误码
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link ResponseStatusException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleResponseStatusException(final ServerRequest request, final ServerResponse
-			response, final ResponseStatusException ex){
+	protected Map<String, Object> handleResponseStatusException(final ServerRequest request,
+																final ServerResponse response,
+																final ResponseStatusException ex){
 		if(ex.getStatus() == HttpStatus.NOT_FOUND){
 			pageNotFoundLogger.warn(ex.getMessage());
 		}
@@ -324,9 +465,19 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 
 	/**
 	 * Status code: 503
+	 *
+	 * @param request
+	 *        {@link ServerRequest}
+	 * @param response
+	 *        {@link ServerResponse}
+	 * @param ex
+	 *        {@link AsyncRequestTimeoutException}
+	 *
+	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request, final ServerResponse
-			response, final AsyncRequestTimeoutException ex){
+	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request,
+																	 final ServerResponse response,
+																	 final AsyncRequestTimeoutException ex){
 		if(request.exchange().getResponse().isCommitted() == false){
 			//response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
 		}else{
@@ -397,8 +548,8 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		return null;
 	}
 
-	protected String[] determineViewName(final ServerRequest request, final Throwable throwable, final HttpStatus
-			httpStatus){
+	protected String[] determineViewName(final ServerRequest request, final Throwable throwable,
+										 final HttpStatus httpStatus){
 		Set<String> views = new LinkedHashSet<>(4);
 		String viewName = null;
 
@@ -462,9 +613,7 @@ public abstract class AbstractErrorWebExceptionHandler extends org.springframewo
 		String[] views = determineViewName(request, throwable, httpStatus);
 		ServerResponse.BodyBuilder responseBody = responseBody(httpStatus, MediaType.TEXT_HTML);
 
-		return Flux.just(views).flatMap((viewName)->renderErrorView(viewName, responseBody, errorAttributes))
-				.switchIfEmpty(whitelabelEnabled ? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error
-						(getError(request))).next();
+		return Flux.just(views).flatMap((viewName)->renderErrorView(viewName, responseBody, errorAttributes)).switchIfEmpty(whitelabelEnabled ? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error(getError(request))).next();
 	}
 
 	protected Mono<ServerResponse> renderErrorJsonView(final ServerRequest request){
