@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
@@ -83,28 +83,28 @@ public class HttpClientProperties extends Configuration {
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.allow-redirects")
 		@Override
-		public void setAllowRedirects(boolean allowRedirects){
+		public void setAllowRedirects(Boolean allowRedirects){
 			super.setAllowRedirects(allowRedirects);
 		}
 
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.allow-redirects")
 		@Override
-		public void setRelativeRedirectsAllowed(boolean relativeRedirectsAllowed){
+		public void setRelativeRedirectsAllowed(Boolean relativeRedirectsAllowed){
 			super.setRelativeRedirectsAllowed(relativeRedirectsAllowed);
 		}
 
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.circular-redirects-allowed")
 		@Override
-		public void setCircularRedirectsAllowed(boolean circularRedirectsAllowed){
+		public void setCircularRedirectsAllowed(Boolean circularRedirectsAllowed){
 			super.setCircularRedirectsAllowed(circularRedirectsAllowed);
 		}
 
 		@Deprecated
 		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.max-redirects")
 		@Override
-		public void setMaxRedirects(int maxRedirects){
+		public void setMaxRedirects(Integer maxRedirects){
 			super.setMaxRedirects(maxRedirects);
 		}
 
