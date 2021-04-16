@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.captcha.autoconfigure.CaptchaConfiguration
+  com.buession.springboot.captcha.autoconfigure.CaptchaConfiguration, \
+  com.buession.springboot.captcha.autoconfigure.GeetestConfiguration

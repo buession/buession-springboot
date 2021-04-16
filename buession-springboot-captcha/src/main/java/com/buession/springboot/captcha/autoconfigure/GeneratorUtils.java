@@ -22,5 +22,32 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.captcha.autoconfigure;public class GeneratorUtils {
+package com.buession.springboot.captcha.autoconfigure;
+
+import com.buession.security.captcha.core.ImageType;
+import com.buession.security.captcha.handler.generator.Generator;
+import com.buession.security.captcha.handler.generator.GifGenerator;
+import com.buession.security.captcha.handler.generator.JpgGenerator;
+import com.buession.security.captcha.handler.generator.PngGenerator;
+
+class GeneratorUtils {
+
+	private GeneratorUtils(){
+
+	}
+
+	public final static Generator createGenerator(ImageType imageType){
+		switch(imageType){
+			case JPG:
+			case JPEG:
+				return new JpgGenerator();
+			case GIF:
+				return new GifGenerator();
+			case PNG:
+				return new PngGenerator();
+			default:
+				return new PngGenerator();
+		}
+	}
+
 }

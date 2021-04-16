@@ -29,6 +29,7 @@ package com.buession.springboot.captcha;
  *
  * @author Yong.Teng
  */
+@Deprecated
 public class Geetest {
 
 	/**

@@ -22,10 +22,36 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.captcha.autoconfigure;/**
- * 
- *
+package com.buession.springboot.captcha.autoconfigure;
+
+import com.buession.core.utils.RandomUtils;
+import com.buession.security.captcha.color.ColorFactory;
+import com.buession.security.captcha.color.RandomColorFactory;
+import com.buession.security.captcha.color.SingleColorFactory;
+
+import java.awt.*;
+
+/**
  * @author Yong.Teng
  * @since 1.0.0
- */public class ColorUtils {
+ */
+class ColorUtils {
+
+	private ColorUtils(){
+
+	}
+
+	public final static ColorFactory createColorFactory(final int min, final int max){
+		if(min >= 0 && max <= 255 && max >= 0 && max <= 255){
+			return new RandomColorFactory(min, max);
+		}else{
+			int colorRgb = RandomUtils.nextInt(min, max);
+			return new SingleColorFactory(new Color(colorRgb));
+		}
+	}
+
+	public final static ColorFactory createColorFactory(final Image.Color color){
+		return createColorFactory(color.getMinColor(), color.getMaxColor());
+	}
+
 }
