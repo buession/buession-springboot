@@ -88,9 +88,9 @@ public class WebSecurityConfiguration {
 
 	/**
 	 * Csrf 配置
-	 * <p>ef="https://baike.baidu.com/item/跨站请求伪造/13777878" target="_blank">https://baike.baidu
-	 * .com/item/跨站请求伪造/13777878</a>
-	 * </p>
+	 * <p><a href="https://baike.baidu.com/item/%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/13777878"
+	 * target="_blank">https://baike.baidu.com/item
+	 * /跨站请求伪造/13777878</a></p>
 	 */
 	public final static class Csrf {
 
@@ -481,7 +481,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 Frame Options
 		 *
-		 * @return 是否启用 Frame Options
+		 * @param enable
+		 * 		是否启用 Frame Options
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
@@ -563,7 +564,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 Hsts
 		 *
-		 * @return 是否启用 Hsts
+		 * @param enable
+		 * 		是否启用 Hsts
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
@@ -716,7 +718,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 Hsts
 		 *
-		 * @return 是否启用 Hsts
+		 * @param enable
+		 * 		是否启用 Hsts
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
@@ -847,7 +850,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 ContentSecurityPolicy
 		 *
-		 * @return 是否启用 ContentSecurityPolicy
+		 * @param enable
+		 * 		是否启用 ContentSecurityPolicy
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
@@ -920,7 +924,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 ReferrerPolicy
 		 *
-		 * @return 是否启用 ReferrerPolicy
+		 * @param enable
+		 * 		是否启用 ReferrerPolicy
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
@@ -978,7 +983,8 @@ public class WebSecurityConfiguration {
 		/**
 		 * 配置是否启用 Xss 配置
 		 *
-		 * @return 是否启用 Xss 配置
+		 * @param enable
+		 * 		是否启用 Xss 配置
 		 */
 		public void setEnable(boolean enable){
 			this.enable = enable;
