@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.application;
@@ -64,8 +64,7 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
 		}
 
-		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo
-				(true).run(args);
+		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo(true).run(args);
 	}
 
 }

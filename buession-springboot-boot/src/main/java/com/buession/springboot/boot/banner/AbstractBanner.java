@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.banner;
@@ -29,14 +29,14 @@ package com.buession.springboot.boot.banner;
 import com.buession.core.Framework;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.utils.VersionUtils;
+import com.buession.springboot.boot.utils.FileUtils;
+import com.buession.springboot.boot.utils.JceUtils;
 import com.github.lalyos.jfiglet.FigletFont;
-import org.apache.commons.io.FileUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.env.Environment;
 
-import javax.crypto.Cipher;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -50,8 +50,10 @@ public abstract class AbstractBanner implements Banner {
 
 	private final static int SEPARATOR_REPEAT_COUNT = 60;
 
-	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY, Collections.nCopies
-			(SEPARATOR_REPEAT_COUNT, "-"));
+	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY,
+			Collections.nCopies(SEPARATOR_REPEAT_COUNT, "-"));
+
+	private final static String BANNER_SKIP_PROPERTY_NAME = "BANNER_SKIP";
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out){
@@ -61,7 +63,7 @@ public abstract class AbstractBanner implements Banner {
 			out.println("\u001b[36m");
 			out.println(FigletFont.convertOneLine(getTitle()));
 
-			if(StringUtils.isNotBlank(additional) == true){
+			if(StringUtils.isNotBlank(additional)){
 				out.println(additional);
 			}
 
@@ -72,7 +74,11 @@ public abstract class AbstractBanner implements Banner {
 	}
 
 	protected String getTitle(){
-		return "(" + Framework.NAME.toUpperCase() + ")";
+		StringBuilder sb = new StringBuilder(Framework.NAME.length());
+
+		sb.append('(').append(Framework.NAME.toUpperCase()).append(')');
+
+		return sb.toString();
 	}
 
 	protected String getVersion(){
@@ -94,7 +100,7 @@ public abstract class AbstractBanner implements Banner {
 		formatter.format("%s%n", LINE_SEPARATOR);
 
 		try{
-			if(properties.containsKey("BANNER_SKIP") == false){
+			if(properties.containsKey(BANNER_SKIP_PROPERTY_NAME) == false){
 				formatter.format("Buession Framework Version: %s%n", Framework.VERSION);
 				formatter.format("Buession Spring Boot Version: %s%n", getVersion(AbstractBanner.class));
 				formatter.format("%s%n", LINE_SEPARATOR);
@@ -107,8 +113,8 @@ public abstract class AbstractBanner implements Banner {
 				formatter.format("OS Name: %s%n", properties.get("os.name"));
 				formatter.format("OS Version: %s%n", properties.get("os.version"));
 				formatter.format("System Date Time: %s%n", LocalDateTime.now());
-				formatter.format("System Temp Directory: %s%n", FileUtils.getTempDirectoryPath());
-				formatter.format("User Home: %s%n", FileUtils.getUserDirectoryPath());
+				formatter.format("System Temp Directory: %s%n", System.getProperty("java.io.tmpdir"));
+				formatter.format("User Home: %s%n", System.getProperty("user.home"));
 				formatter.format("%s%n", LINE_SEPARATOR);
 
 				Runtime runtime = Runtime.getRuntime();
@@ -119,7 +125,7 @@ public abstract class AbstractBanner implements Banner {
 				formatter.format("JVM Total Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.totalMemory()));
 				formatter.format("JVM Maximum Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.maxMemory()));
 				formatter.format("JVM Free Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.freeMemory()));
-				formatter.format("JCE Installed: %s%n", isJceInstalled() ? "Yes" : "No");
+				formatter.format("JCE Installed: %s%n", JceUtils.isJceInstalled() ? "Yes" : "No");
 				formatter.format("%s%n", LINE_SEPARATOR);
 
 				injectEnvironmentInfoIntoBanner(formatter, environment, sourceClass);
@@ -134,16 +140,8 @@ public abstract class AbstractBanner implements Banner {
 		}
 	}
 
-	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment, final
-	Class<?> sourceClass){
-	}
-
-	private final static boolean isJceInstalled(){
-		try{
-			return Cipher.getMaxAllowedKeyLength("AES") == 2147483647;
-		}catch(Exception e){
-			return false;
-		}
+	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment,
+												   final Class<?> sourceClass){
 	}
 
 	private final static void closeFormatter(Formatter formatter, Throwable throwable){
