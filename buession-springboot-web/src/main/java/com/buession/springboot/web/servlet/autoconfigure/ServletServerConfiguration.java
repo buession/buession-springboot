@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.servlet.autoconfigure;
@@ -33,6 +33,7 @@ import com.buession.web.servlet.aop.advice.aopalliance.ServletHttpAttributeSourc
 import com.buession.web.servlet.filter.PoweredByHeaderFilter;
 import com.buession.web.servlet.filter.PrintUrlFilter;
 import com.buession.web.servlet.filter.ResponseHeadersFilter;
+import com.buession.web.servlet.filter.ServerInfoFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -70,8 +71,15 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing = true)
-	public com.buession.web.servlet.filter.ServerInfoFilter serverInfoFilter(){
-		final ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
+	public ServerInfoFilter serverInfoFilter(){
+		final ServerInfoFilter serverInfoFilter = new com.buession.web.servlet.filter.ServerInfoFilter() {
+
+			@Override
+			protected String format(String computerName){
+				return buildServerInfo(serverProperties, computerName);
+			}
+
+		};
 
 		if(Validate.hasText(serverProperties.getServerInfoName())){
 			serverInfoFilter.setHeaderName(serverProperties.getServerInfoName());
@@ -91,15 +99,6 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@ConditionalOnMissingBean
 	public ServletHttpAttributeSourcePointcutAdvisor servletHttpAttributeSourcePointcutAdvisor(){
 		return new ServletHttpAttributeSourcePointcutAdvisor();
-	}
-
-	private final class ServerInfoFilter extends com.buession.web.servlet.filter.ServerInfoFilter {
-
-		@Override
-		protected String format(String computerName){
-			return buildServerInfo(serverProperties, computerName);
-		}
-
 	}
 
 }

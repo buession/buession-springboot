@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
@@ -33,6 +33,7 @@ import com.buession.web.reactive.aop.advice.aopalliance.ReactiveHttpAttributeSou
 import com.buession.web.reactive.filter.PoweredByHeaderFilter;
 import com.buession.web.reactive.filter.PrintUrlFilter;
 import com.buession.web.reactive.filter.ResponseHeadersFilter;
+import com.buession.web.reactive.filter.ServerInfoFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -70,8 +71,15 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing = true)
-	public com.buession.web.reactive.filter.ServerInfoFilter serverInfoFilter(){
-		final ServerInfoFilter serverInfoFilter = new ServerInfoFilter();
+	public ServerInfoFilter serverInfoFilter(){
+		final ServerInfoFilter serverInfoFilter = new com.buession.web.reactive.filter.ServerInfoFilter() {
+
+			@Override
+			protected String format(String computerName){
+				return buildServerInfo(serverProperties, computerName);
+			}
+
+		};
 
 		if(Validate.hasText(serverProperties.getServerInfoName())){
 			serverInfoFilter.setHeaderName(serverProperties.getServerInfoName());
@@ -91,15 +99,6 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 	@ConditionalOnMissingBean
 	public ReactiveHttpAttributeSourcePointcutAdvisor reactiveHttpAttributeSourcePointcutAdvisor(){
 		return new ReactiveHttpAttributeSourcePointcutAdvisor();
-	}
-
-	private final class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInfoFilter {
-
-		@Override
-		protected String format(String computerName){
-			return buildServerInfo(serverProperties, computerName);
-		}
-
 	}
 
 }

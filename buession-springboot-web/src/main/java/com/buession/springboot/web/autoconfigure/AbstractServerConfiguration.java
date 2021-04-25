@@ -19,11 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.autoconfigure;
 
+import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.web.ServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,8 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
 	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
 
+	protected final static char HEADER_VARIABLE_IDENTIFIER_CHAR = '$';
+
 	@Autowired(required = false)
 	protected ServerProperties serverProperties;
 
@@ -45,7 +48,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 		final Map<String, String> result = new HashMap<>(headers.size());
 
 		headers.forEach((key, value)->{
-			if(value.startsWith(HEADER_VARIABLE_IDENTIFIER)){
+			if(StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
 				String propertyName = value.substring(1);
 				String propertyValue = System.getProperty(propertyName);
 
