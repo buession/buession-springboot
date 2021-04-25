@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,19 +54,46 @@ public class HttpClientConfiguration {
 	 */
 	@Bean
 	@ConditionalOnClass(name = {"org.apache.http.conn.HttpClientConnectionManager"})
-	@ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing =
-			true)
+	@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true",
+			matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public ApacheClientConnectionManager apacheClientConnectionManager(){
 		return new ApacheClientConnectionManager(httpClientProperties);
+	}
+
+	/**
+	 * 实例化 ApacheClientConnectionManager 连接池管理器
+	 *
+	 * @return ApacheClientConnectionManager 连接池管理器
+	 */
+	@Bean
+	@ConditionalOnClass(name = {"org.apache.http.conn.HttpClientConnectionManager"})
+	@ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing =
+			true)
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.httpclient.apache-client.enable")
+	@ConditionalOnMissingBean
+	@Deprecated
+	public ApacheClientConnectionManager deprecatedApacheClientConnectionManager(){
+		return new ApacheClientConnectionManager(httpClientProperties);
+	}
+
+	@Bean
+	@ConditionalOnClass(name = {"org.apache.http.client.HttpClient"})
+	@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true",
+			matchIfMissing = true)
+	@ConditionalOnMissingBean
+	public ApacheHttpClient apacheHttpClient(ApacheClientConnectionManager connectionManager){
+		return new ApacheHttpClient(connectionManager);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = {"org.apache.http.client.HttpClient"})
 	@ConditionalOnProperty(prefix = "httpclient.apacheclient", name = "enable", havingValue = "true", matchIfMissing =
 			true)
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.httpclient.apache-client.enable")
 	@ConditionalOnMissingBean
-	public ApacheHttpClient apacheHttpClient(ApacheClientConnectionManager connectionManager){
+	@Deprecated
+	public ApacheHttpClient deprecatedApacheHttpClient(ApacheClientConnectionManager connectionManager){
 		return new ApacheHttpClient(connectionManager);
 	}
 
@@ -76,17 +104,44 @@ public class HttpClientConfiguration {
 	 */
 	@Bean
 	@ConditionalOnClass(name = {"okhttp3.ConnectionPool"})
-	@ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing
+			= true)
 	@ConditionalOnMissingBean
 	public OkHttpClientConnectionManager okHttpClientConnectionManager(){
 		return new OkHttpClientConnectionManager(httpClientProperties);
 	}
 
+	/**
+	 * 实例化 OkHttpClientConnectionManager 连接池管理器
+	 *
+	 * @return OkHttpClientConnectionManager 连接池管理器
+	 */
+	@Bean
+	@ConditionalOnClass(name = {"okhttp3.ConnectionPool"})
+	@ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.httpclient.okhttp.enable")
+	@ConditionalOnMissingBean
+	@Deprecated
+	public OkHttpClientConnectionManager deprecatedOkHttpClientConnectionManager(){
+		return new OkHttpClientConnectionManager(httpClientProperties);
+	}
+
+	@Bean
+	@ConditionalOnClass(name = {"okhttp3.OkHttpClient"})
+	@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing
+			= true)
+	@ConditionalOnMissingBean
+	public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
+		return new OkHttpClient(connectionManager);
+	}
+
 	@Bean
 	@ConditionalOnClass(name = {"okhttp3.OkHttpClient"})
 	@ConditionalOnProperty(prefix = "httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.httpclient.okhttp.enable")
 	@ConditionalOnMissingBean
-	public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
+	@Deprecated
+	public OkHttpClient deprecatedOkHttpHttpClient(OkHttpClientConnectionManager connectionManager){
 		return new OkHttpClient(connectionManager);
 	}
 
