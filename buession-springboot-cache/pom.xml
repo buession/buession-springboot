@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>1.2.0</version>
+		<version>1.2.1</version>
 	</parent>
 	<artifactId>buession-springboot-cache</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
