@@ -69,12 +69,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Configuration
 	@EnableConfigurationProperties(WebSecurityProperties.class)
+	@ConditionalOnClass({Policy.class})
 	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
 	public static class XssConfiguration {
 
 		@Configuration
 		@EnableConfigurationProperties(WebSecurityProperties.class)
-		@ConditionalOnClass(XssFilter.class)
+		@ConditionalOnClass({XssFilter.class})
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 		public static class ServletXssConfiguration {
 

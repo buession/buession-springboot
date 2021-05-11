@@ -1,0 +1,9 @@
+com.buession.springboot.web.application
+com.buession.springboot.web.autoconfigure
+com.buession.springboot.web.reactive
+com.buession.springboot.web.reactive.autoconfigure
+com.buession.springboot.web.security
+com.buession.springboot.web.security.autoconfigure
+com.buession.springboot.web.servlet
+com.buession.springboot.web.servlet.autoconfigure
+com.buession.springboot.web.web
