@@ -22,10 +22,45 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.httpclient.autoconfigure;/**
- * 
+package com.buession.springboot.httpclient.autoconfigure;
+
+import com.buession.httpclient.ApacheHttpClient;
+import com.buession.httpclient.conn.ApacheClientConnectionManager;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Apache HttpClient Auto Configuration
  *
  * @author Yong.Teng
  * @since 1.2.2
- */public class ApacheHttpClientConfiguration {
+ */
+@Configuration
+@EnableConfigurationProperties(HttpClientProperties.class)
+@ConditionalOnClass(name = {"org.apache.http.conn.HttpClientConnectionManager"})
+@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true",
+		matchIfMissing = true)
+public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
+
+	/**
+	 * 实例化 ApacheClientConnectionManager 连接池管理器
+	 *
+	 * @return ApacheClientConnectionManager 连接池管理器
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public ApacheClientConnectionManager apacheClientConnectionManager(){
+		return new ApacheClientConnectionManager(httpClientProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ApacheHttpClient apacheHttpClient(ApacheClientConnectionManager connectionManager){
+		return new ApacheHttpClient(connectionManager);
+	}
+
 }

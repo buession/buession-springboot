@@ -22,10 +22,19 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.httpclient.autoconfigure;/**
- * 
+package com.buession.springboot.httpclient.autoconfigure;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * HttpClient Auto Configuration 抽象类
  *
  * @author Yong.Teng
  * @since 1.2.2
- */public class AbstractHttpClientConfiguration {
+ */
+public abstract class AbstractHttpClientConfiguration {
+
+	@Autowired
+	protected HttpClientProperties httpClientProperties;
+
 }

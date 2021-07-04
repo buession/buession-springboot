@@ -29,6 +29,7 @@ import com.buession.httpclient.OkHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,10 +43,9 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(HttpClientProperties.class)
-public class HttpClientConfiguration {
-
-	@Autowired
-	private HttpClientProperties httpClientProperties;
+@AutoConfigureAfter({ApacheHttpClientConfiguration.class, OkHttpHttpClientConfiguration.class})
+@Deprecated
+public class HttpClientConfiguration extends AbstractHttpClientConfiguration {
 
 	/**
 	 * 实例化 ApacheClientConnectionManager 连接池管理器
