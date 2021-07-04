@@ -21,11 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
 
+import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
@@ -65,7 +66,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -101,8 +101,8 @@ public class MybatisConfiguration {
 	private static final Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
 	public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-			ObjectProvider<DatabaseIdProvider> databaseIdProvider,
-			ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+								ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
 		this.interceptors = interceptorsProvider.getIfAvailable();
 		this.resourceLoader = resourceLoader;
 		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
@@ -225,7 +225,7 @@ public class MybatisConfiguration {
 	private void checkConfigFileExists(){
 		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
 			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
-			Assert.state(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
+			Assert.isFalse(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
 					"autoconfigure file or check your Mybatis configuration)");
 		}
 	}
@@ -276,7 +276,7 @@ public class MybatisConfiguration {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry){
+											BeanDefinitionRegistry registry){
 			logger.debug("Searching for mappers annotated with @Mapper");
 			ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
 

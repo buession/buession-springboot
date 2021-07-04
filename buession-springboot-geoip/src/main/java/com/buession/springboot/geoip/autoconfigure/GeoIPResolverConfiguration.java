@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
@@ -45,23 +45,22 @@ import java.io.File;
 @EnableConfigurationProperties(GeoIPProperties.class)
 public class GeoIPResolverConfiguration {
 
-    @Autowired
-    private GeoIPProperties geoIPProperties;
+	@Autowired
+	private GeoIPProperties geoIPProperties;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public Resolver geoIPResolver() throws Exception{
-        GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
+	@Bean
+	@ConditionalOnMissingBean
+	public Resolver geoIPResolver() throws Exception{
+		GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
 
-        if(Validate.hasText(geoIPProperties.getDbPath())){
-            factory.setDbPath(new File(geoIPProperties.getDbPath()));
-        }
+		if(Validate.hasText(geoIPProperties.getDbPath())){
+			factory.setDbPath(new File(geoIPProperties.getDbPath()));
+		}
 
-        factory.setEnableCache(geoIPProperties.isEnableCache());
+		factory.setEnableCache(geoIPProperties.isEnableCache());
+		factory.afterPropertiesSet();
 
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
-    }
+		return factory.getObject();
+	}
 
 }
