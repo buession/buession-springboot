@@ -22,10 +22,31 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;/**
- * 
+package com.buession.springboot.shiro.autoconfigure;
+
+import com.buession.security.shiro.Cookie;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
+
+/**
+ * Shiro RememberMe 配置
  *
  * @author Yong.Teng
  * @since 1.2.2
- */public class RememberMe {
+ */
+public class RememberMe {
+
+	/**
+	 * Remember Me Cookie
+	 */
+	private Cookie cookie = new Cookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME,
+			org.apache.shiro.web.servlet.Cookie.ONE_YEAR, false);
+
+	public Cookie getCookie(){
+		return cookie;
+	}
+
+	public void setCookie(Cookie cookie){
+		this.cookie = cookie;
+	}
+
 }

@@ -22,10 +22,56 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.core;/**
- * 
+package com.buession.springboot.shiro.autoconfigure;
+
+import com.buession.security.shiro.cache.CacheManager;
+import com.buession.security.shiro.serializer.RedisSerializer;
+
+/**
+ * Shiro 缓存配置
  *
  * @author Yong.Teng
  * @since 1.2.2
- */public class Cache {
+ */
+class Cache {
+
+	/**
+	 * 缓存 Key 前缀
+	 */
+	private String prefix = CacheManager.DEFAULT_KEY_PREFIX;
+
+	/**
+	 * 缓存过期时间
+	 */
+	private int expire = CacheManager.DEFAULT_EXPIRE;
+
+	/**
+	 * Principal Id
+	 */
+	private String principalIdFieldName = CacheManager.DEFAULT_PRINCIPAL_ID_FIELD_NAME;
+
+	public String getPrefix(){
+		return prefix;
+	}
+
+	public void setPrefix(String prefix){
+		this.prefix = prefix;
+	}
+
+	public int getExpire(){
+		return expire;
+	}
+
+	public void setExpire(int expire){
+		this.expire = expire;
+	}
+
+	public String getPrincipalIdFieldName(){
+		return principalIdFieldName;
+	}
+
+	public void setPrincipalIdFieldName(String principalIdFieldName){
+		this.principalIdFieldName = principalIdFieldName;
+	}
+
 }

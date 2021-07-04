@@ -28,6 +28,7 @@ package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.security.shiro.Cookie;
+import com.buession.security.shiro.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
@@ -69,7 +70,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 	@PostConstruct
 	public void initialize(){
-		ShiroProperties.Session session = shiroProperties.getSession();
+		Session session = shiroProperties.getSession();
 
 		useNativeSessionManager = session.isUseNativeSessionManager();
 		sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
@@ -210,4 +211,18 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		}
 	}
 
+	@Override
+	protected SessionManager nativeSessionManager(){
+		DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
+
+		webSessionManager.setSessionIdCookieEnabled(sessionIdCookieEnabled);
+		webSessionManager.setSessionIdUrlRewritingEnabled(sessionIdUrlRewritingEnabled);
+		webSessionManager.setSessionIdCookie(sessionCookieTemplate());
+
+		webSessionManager.setSessionFactory(sessionFactory());
+		webSessionManager.setSessionDAO(sessionDAO());
+		webSessionManager.setDeleteInvalidSessions(sessionManagerDeleteInvalidSessions);
+
+		return webSessionManager;
+	}
 }

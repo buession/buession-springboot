@@ -22,10 +22,71 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro;/**
- * 
- *
+package com.buession.springboot.shiro.autoconfigure;
+
+import com.buession.core.utils.ArrayUtils;
+import com.buession.core.validator.Validate;
+import com.buession.security.pac4j.filter.CallbackFilter;
+import com.buession.security.pac4j.filter.LogoutFilter;
+import com.buession.security.pac4j.filter.SecurityFilter;
+import org.pac4j.core.config.Config;
+import org.pac4j.core.util.Pac4jConstants;
+
+/**
  * @author Yong.Teng
  * @since 1.2.2
- */public class FilterCreator {
+ */
+class FilterCreator {
+
+	final Config config;
+
+	final Pac4j pac4j;
+
+	public FilterCreator(final Config config, final Pac4j pac4j){
+		this.config = config;
+		this.pac4j = pac4j;
+	}
+
+	public SecurityFilter createSecurityFilter(){
+		final SecurityFilter filter = new SecurityFilter(config);
+
+		if(pac4j.getClients() != null){
+			filter.setClients(ArrayUtils.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		filter.setMultiProfile(pac4j.isMultiProfile());
+
+		if(Validate.isNotEmpty(pac4j.getAuthorizers())){
+			filter.setAuthorizers(ArrayUtils.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		if(Validate.isNotEmpty(pac4j.getMatchers())){
+			filter.setMatchers(ArrayUtils.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		return filter;
+	}
+
+	public CallbackFilter createCallbackFilter(){
+		final CallbackFilter callbackFilter = new CallbackFilter(config);
+
+		callbackFilter.setDefaultUrl(pac4j.getDefaultUrl());
+		callbackFilter.setMultiProfile(pac4j.isMultiProfile());
+		callbackFilter.setDefaultClient(pac4j.getDefaultClient());
+		callbackFilter.setSaveInSession(pac4j.isSaveInSession());
+
+		return callbackFilter;
+	}
+
+	public LogoutFilter createLogoutFilter(){
+		final LogoutFilter logoutFilter = new LogoutFilter(config);
+
+		logoutFilter.setDefaultUrl(pac4j.getLogoutRedirectUrl());
+		logoutFilter.setLogoutUrlPattern(pac4j.getLogoutUrlPattern());
+		logoutFilter.setLocalLogout(pac4j.isLocalLogout());
+		logoutFilter.setCentralLogout(pac4j.isCentralLogout());
+
+		return logoutFilter;
+	}
+
 }

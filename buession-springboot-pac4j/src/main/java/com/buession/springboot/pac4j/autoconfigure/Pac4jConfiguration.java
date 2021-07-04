@@ -27,6 +27,7 @@
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.security.pac4j.Constants;
+import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import com.buession.springboot.cas.autoconfigure.CasProperties;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
@@ -37,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -113,6 +115,20 @@ public class Pac4jConfiguration {
 		}
 
 		return new Config(clients);
+	}
+
+	/**
+	 * 初始化 {@link Pac4jWebMvcConfigurerAdapter} Bean
+	 *
+	 * @return {@link Pac4jWebMvcConfigurerAdapter}
+	 *
+	 * @since 1.2.2
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter(){
+		return new Pac4jWebMvcConfigurerAdapter();
 	}
 
 }
