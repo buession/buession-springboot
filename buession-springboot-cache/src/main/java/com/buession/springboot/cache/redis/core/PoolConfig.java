@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.core;
@@ -213,15 +213,15 @@ public class PoolConfig {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".min-evictable-idle" +
-			"-time-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
+			"spring.redis" + ".min-evictable-idle" + "-time-millis")
 	public long getMinEvictableIdleTimeMillis(){
 		return minEvictableIdleTimeMillis;
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".min-evictable-idle" +
-			"-time-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
+			"spring.redis" + ".min-evictable-idle" + "-time-millis")
 	public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis){
 		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
 		setMinEvictableIdleTime(minEvictableIdleTimeMillis);
@@ -236,15 +236,15 @@ public class PoolConfig {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".soft-min-evictable" +
-			"-idle-time-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
+			"spring.redis" + ".soft-min-evictable" + "-idle-time-millis")
 	public long getSoftMinEvictableIdleTimeMillis(){
 		return softMinEvictableIdleTimeMillis;
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".soft-min-evictable" +
-			"-idle-time-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
+			"spring.redis" + ".soft-min-evictable" + "-idle-time-millis")
 	public void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis){
 		this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
 		setSoftMinEvictableIdleTime(softMinEvictableIdleTimeMillis);
@@ -346,15 +346,15 @@ public class PoolConfig {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction" +
-			"-runs-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction"
+			+ "-runs-millis")
 	public long getTimeBetweenEvictionRunsMillis(){
 		return timeBetweenEvictionRunsMillis;
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction" +
-			"-runs-millis")
+	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction"
+			+ "-runs-millis")
 	public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis){
 		this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
 		setTimeBetweenEvictionRuns(timeBetweenEvictionRunsMillis);

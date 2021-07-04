@@ -73,7 +73,10 @@ public class RedisConfiguration {
 
 		template.setOptions(createOptions());
 		template.afterPropertiesSet();
-		logger.info("RedisTemplate bean initialize success.");
+
+		if(logger.isTraceEnabled()){
+			logger.trace("RedisTemplate bean initialize success.");
+		}
 
 		return template;
 	}
@@ -124,7 +127,9 @@ public class RedisConfiguration {
 			config.setMinIdle(poolConfig.getMinIdle());
 			config.setMaxIdle(poolConfig.getMaxIdle());
 
-			logger.info("JedisPoolConfig bean initialize success.");
+			if(logger.isTraceEnabled()){
+				logger.trace("JedisPoolConfig bean initialize success.");
+			}
 
 			return config;
 		}
