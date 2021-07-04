@@ -22,4 +22,4 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.web.bind;
+package com.buession.springboot.web.bind;
