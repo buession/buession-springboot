@@ -22,10 +22,20 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.boot;/**
- * 
- *
+package com.buession.springboot.boot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
  * @author Yong.Teng
  * @since 1.3.0
- */public class BootTestApplication {
+ */
+@SpringBootApplication
+public class BootTestApplication {
+
+	public static void main(String[] args){
+		SpringApplication.run(BootTestApplication.class, args);
+	}
+
 }
