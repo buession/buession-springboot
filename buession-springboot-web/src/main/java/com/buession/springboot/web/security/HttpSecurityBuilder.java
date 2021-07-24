@@ -48,7 +48,7 @@ public class HttpSecurityBuilder {
 		this.httpSecurity = httpSecurity;
 	}
 
-	public final static HttpSecurityBuilder getInstance(final HttpSecurity httpSecurity){
+	public static HttpSecurityBuilder getInstance(final HttpSecurity httpSecurity){
 		return new HttpSecurityBuilder(httpSecurity);
 	}
 
@@ -90,7 +90,7 @@ public class HttpSecurityBuilder {
 	}
 
 	public HttpSecurityBuilder frameOptions(final WebSecurityConfiguration.FrameOptions config) throws Exception{
-		HeadersConfigurer.FrameOptionsConfig frameOptionsConfig = httpSecurity.headers().frameOptions();
+		HeadersConfigurer<HttpSecurity>.FrameOptionsConfig frameOptionsConfig = httpSecurity.headers().frameOptions();
 
 		if(config.isEnable()){
 			switch(config.getMode()){
@@ -113,7 +113,7 @@ public class HttpSecurityBuilder {
 	}
 
 	public HttpSecurityBuilder hsts(final WebSecurityConfiguration.Hsts config) throws Exception{
-		HeadersConfigurer.HstsConfig hstsConfig = httpSecurity.headers().httpStrictTransportSecurity();
+		HeadersConfigurer<HttpSecurity>.HstsConfig hstsConfig = httpSecurity.headers().httpStrictTransportSecurity();
 
 		if(config.isEnable()){
 			if(config.getMatcher() == null){
@@ -129,7 +129,7 @@ public class HttpSecurityBuilder {
 	}
 
 	public HttpSecurityBuilder hpkp(final WebSecurityConfiguration.Hpkp config) throws Exception{
-		HeadersConfigurer.HpkpConfig hpkpConfig = httpSecurity.headers().httpPublicKeyPinning();
+		HeadersConfigurer<HttpSecurity>.HpkpConfig hpkpConfig = httpSecurity.headers().httpPublicKeyPinning();
 
 		if(config.isEnable()){
 			hpkpConfig.maxAgeInSeconds(config.getMaxAge()).includeSubDomains(config.getIncludeSubDomains()).reportOnly(config.isReportOnly());
@@ -154,7 +154,7 @@ public class HttpSecurityBuilder {
 
 	public HttpSecurityBuilder contentSecurityPolicy(final WebSecurityConfiguration.ContentSecurityPolicy config) throws Exception{
 		if(config.isEnable() && Validate.hasText(config.getPolicyDirectives())){
-			HeadersConfigurer.ContentSecurityPolicyConfig contentSecurityPolicyConfig =
+			HeadersConfigurer<HttpSecurity>.ContentSecurityPolicyConfig contentSecurityPolicyConfig =
 					httpSecurity.headers().contentSecurityPolicy(config.getPolicyDirectives());
 
 			if(config.isReportOnly()){
@@ -174,7 +174,7 @@ public class HttpSecurityBuilder {
 	}
 
 	public HttpSecurityBuilder xss(final WebSecurityConfiguration.Xss config) throws Exception{
-		HeadersConfigurer.XXssConfig xXssConfig = httpSecurity.headers().xssProtection();
+		HeadersConfigurer<HttpSecurity>.XXssConfig xXssConfig = httpSecurity.headers().xssProtection();
 
 		if(config.isEnable()){
 			xXssConfig.block(config.getBlock()).xssProtectionEnabled(config.isEnabledProtection());
