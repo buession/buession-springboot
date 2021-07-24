@@ -22,46 +22,10 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.httpclient.autoconfigure;
-
-import com.buession.httpclient.OkHttpClient;
-import com.buession.httpclient.conn.OkHttpClientConnectionManager;
-import okhttp3.ConnectionPool;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-/**
- * OkHttp HttpClient Auto Configuration
+package com.buession.springboot.oss.autoconfigure;/**
+ * 
  *
  * @author Yong.Teng
- * @since 1.2.2
- */
-@Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(HttpClientProperties.class)
-@ConditionalOnClass({ConnectionPool.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing =
-		true)
-public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
-
-	/**
-	 * 实例化 OkHttpClientConnectionManager 连接池管理器
-	 *
-	 * @return OkHttpClientConnectionManager 连接池管理器
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public OkHttpClientConnectionManager okHttpClientConnectionManager(){
-		return new OkHttpClientConnectionManager(httpClientProperties);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
-		return new OkHttpClient(connectionManager);
-	}
-
+ * @since 1.13.0
+ */public class AbstractOssConfiguration {
 }
