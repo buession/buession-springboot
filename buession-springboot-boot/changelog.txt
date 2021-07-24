@@ -1,4 +1,4 @@
-Buession SpringBoot Session Changelog
+Buession SpringBoot Boot Changelog
 ===========================
 
 
