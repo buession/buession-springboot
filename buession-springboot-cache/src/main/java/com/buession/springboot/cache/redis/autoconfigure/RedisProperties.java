@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "spring.redis")
-public class RedisConfigProperties {
+public class RedisProperties {
 
 	/**
 	 * Redis URI
@@ -213,7 +213,7 @@ public class RedisConfigProperties {
 
 	@ConfigurationProperties(prefix = "redis")
 	@Deprecated
-	public final static class DeprecatedRedisConfigProperties extends RedisConfigProperties {
+	public final static class DeprecatedRedisProperties extends RedisProperties {
 
 		/**
 		 * Redis URI

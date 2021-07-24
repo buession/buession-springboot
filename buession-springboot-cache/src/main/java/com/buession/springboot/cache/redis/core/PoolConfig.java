@@ -60,12 +60,12 @@ public class PoolConfig {
 	 * 连接的最小空闲时间，达到此值后且已达最大空闲连接数该空闲连接可能会被移除（单位 ：毫秒）
 	 */
 	@Deprecated
-	private long minEvictableIdleTimeMillis = GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	private long minEvictableIdleTimeMillis = 60000;
 
 	/**
 	 * 连接的最小空闲时间，达到此值后且已达最大空闲连接数该空闲连接可能会被移除（单位 ：毫秒）
 	 */
-	private long minEvictableIdleTime = GenericObjectPoolConfig.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	private long minEvictableIdleTime = 60000;
 
 	/**
 	 * 连接空闲的最小时间，达到此值后空闲链接将会被移除，且保留 minIdle 个空闲连接数（单位 ：毫秒）
@@ -99,7 +99,7 @@ public class PoolConfig {
 	 * 如果 numTestsPerEvictionRun >= 0, 则取 numTestsPerEvictionRun 和池内的连接数的较小值作为每次检测的连接数；
 	 * 如果 numTestsPerEvictionRun < 0，则每次检查的连接数是检查时池内连接的总数除以这个值的绝对值再向上取整的结果
 	 */
-	private int numTestsPerEvictionRun = GenericObjectPoolConfig.DEFAULT_NUM_TESTS_PER_EVICTION_RUN;
+	private int numTestsPerEvictionRun = -1;
 
 	/**
 	 * 在创建对象时检测对象是否有效，配置 true 会降低性能
@@ -119,18 +119,18 @@ public class PoolConfig {
 	/**
 	 * 在检测空闲对象线程检测到对象不需要移除时，是否检测对象的有效性。建议配置为 true，不影响性能，并且保证安全性；
 	 */
-	private boolean testWhileIdle = GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
+	private boolean testWhileIdle = true;
 
 	/**
 	 * 空闲连接检测的周期，如果为负值，表示不运行检测线程（单位 ：毫秒）
 	 */
 	@Deprecated
-	private long timeBetweenEvictionRunsMillis = GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+	private long timeBetweenEvictionRunsMillis = 30000;
 
 	/**
 	 * 空闲连接检测的周期，如果为负值，表示不运行检测线程（单位 ：毫秒）
 	 */
-	private long timeBetweenEvictionRuns = GenericObjectPoolConfig.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+	private long timeBetweenEvictionRuns = 30000;
 
 	/**
 	 * 当对象池没有空闲对象时，新的获取对象的请求是否阻塞（true 阻塞，maxWaitMillis 才生效； false 连接池没有资源立马抛异常）

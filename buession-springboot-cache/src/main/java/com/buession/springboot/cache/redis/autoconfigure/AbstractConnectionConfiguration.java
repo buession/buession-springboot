@@ -22,10 +22,19 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.autoconfigure;/**
- * 
+package com.buession.springboot.cache.redis.autoconfigure;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * Redis 连接对象 AutoConfiguration 抽象类
  *
  * @author Yong.Teng
- * @since 1.2.3
- */public class AbstractConnectionConfiguration {
+ * @since 1.3.0
+ */
+public abstract class AbstractConnectionConfiguration {
+
+	@Autowired
+	protected RedisProperties redisProperties;
+
 }
