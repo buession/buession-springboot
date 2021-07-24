@@ -48,25 +48,25 @@ public class FileUtils {
 
 	}
 
-	public final static String byteCountToDisplaySize(final long size){
+	public static String byteCountToDisplaySize(final long size){
 		return byteCountToDisplaySize(BigInteger.valueOf(size));
 	}
 
 	public static String byteCountToDisplaySize(final BigInteger size){
 		if(size.divide(ONE_EB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_EB_BI)) + " EB";
+			return size.divide(ONE_EB_BI) + " EB";
 		}else if(size.divide(ONE_PB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_PB_BI)) + " PB";
+			return size.divide(ONE_PB_BI) + " PB";
 		}else if(size.divide(ONE_TB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_TB_BI)) + " TB";
+			return size.divide(ONE_TB_BI) + " TB";
 		}else if(size.divide(ONE_GB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_GB_BI)) + " GB";
+			return size.divide(ONE_GB_BI) + " GB";
 		}else if(size.divide(ONE_MB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_MB_BI)) + " MB";
+			return size.divide(ONE_MB_BI) + " MB";
 		}else if(size.divide(ONE_KB_BI).compareTo(BigInteger.ZERO) > 0){
-			return String.valueOf(size.divide(ONE_KB_BI)) + " KB";
+			return size.divide(ONE_KB_BI) + " KB";
 		}else{
-			return String.valueOf(size) + " bytes";
+			return size + " bytes";
 		}
 	}
 

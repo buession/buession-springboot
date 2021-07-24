@@ -36,7 +36,7 @@ public class JceUtils {
 
 	}
 
-	public final static boolean isJceInstalled(){
+	public static boolean isJceInstalled(){
 		try{
 			return Cipher.getMaxAllowedKeyLength("AES") == 2147483647;
 		}catch(Exception e){
