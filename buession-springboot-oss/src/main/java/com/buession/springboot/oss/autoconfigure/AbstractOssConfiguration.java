@@ -22,10 +22,19 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.oss.autoconfigure;/**
- * 
+package com.buession.springboot.oss.autoconfigure;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * OSS Auto Configuration 抽象类
  *
  * @author Yong.Teng
  * @since 1.13.0
- */public class AbstractOssConfiguration {
+ */
+public abstract class AbstractOssConfiguration {
+
+	@Autowired
+	protected OssProperties ossProperties;
+
 }

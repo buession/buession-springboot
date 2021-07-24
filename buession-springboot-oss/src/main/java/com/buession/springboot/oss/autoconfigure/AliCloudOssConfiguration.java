@@ -22,10 +22,33 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.oss.autoconfigure;/**
- * 
+package com.buession.springboot.oss.autoconfigure;
+
+import com.aliyun.oss.OSS;
+import com.buession.oss.AliCloudOSSClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+/**
+ * 阿里云 OSS Auto Configuration
  *
  * @author Yong.Teng
  * @since 1.13.0
- */public class AliCloudOssConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({OSS.class})
+@Import({AliCloudOssConfiguration.class})
+@EnableConfigurationProperties(OssProperties.class)
+public class AliCloudOssConfiguration extends AbstractOssConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public AliCloudOSSClient aliCloudOSSClient(){
+		return new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getKey(), ossProperties.getSecret());
+	}
+
 }
