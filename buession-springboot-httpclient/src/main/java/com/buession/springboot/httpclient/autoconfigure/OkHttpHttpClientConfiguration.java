@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnClass(name = {"okhttp3.ConnectionPool"})
 @ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing =

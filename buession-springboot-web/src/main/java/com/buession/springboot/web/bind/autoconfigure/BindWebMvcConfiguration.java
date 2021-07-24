@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class BindWebMvcConfiguration extends BindWebMvcConfigurerConfiguration {
 
 }

@@ -79,7 +79,7 @@ import java.util.stream.Collectors;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @ConditionalOnBean({DataSource.class})
@@ -98,7 +98,7 @@ public class MybatisConfiguration {
 
 	private final List<ConfigurationCustomizer> configurationCustomizers;
 
-	private static final Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
+	private final static Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
 	public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
 								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
@@ -167,11 +167,9 @@ public class MybatisConfiguration {
 			configuration = new org.apache.ibatis.session.Configuration();
 		}
 
-		if(configuration != null && Validate.isEmpty(configurationCustomizers) == false){
-			Iterator<ConfigurationCustomizer> iterator = configurationCustomizers.iterator();
-
-			while(iterator.hasNext()){
-				iterator.next().customize(configuration);
+		if(configuration != null && Validate.isNotEmpty(configurationCustomizers)){
+			for(ConfigurationCustomizer configurationCustomizer : configurationCustomizers){
+				configurationCustomizer.customize(configuration);
 			}
 		}
 

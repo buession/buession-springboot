@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Import;
  * @author Yong.Teng
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Import(RedisConfiguration.class)
 public class ManagerConfiguration {
 

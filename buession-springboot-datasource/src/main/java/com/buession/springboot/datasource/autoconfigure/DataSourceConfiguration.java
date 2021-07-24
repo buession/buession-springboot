@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -42,49 +42,52 @@ import java.util.stream.Collectors;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({javax.sql.DataSource.class, EmbeddedDatabaseType.class})
 public class DataSourceConfiguration {
 
-    @Autowired
-    private DataSourceProperties dataSourceProperties;
+	@Autowired
+	private DataSourceProperties dataSourceProperties;
 
-    private final static Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
+	private final static Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
 
-    @Bean
-    @ConditionalOnMissingBean
-    public DataSource dataSource(){
-        logger.info("Create master datasource: by driver {}, type {}", dataSourceProperties.getDriverClassName(),
-                dataSourceProperties.getType().getName());
-        javax.sql.DataSource masterDataSource = createDataSource(dataSourceProperties.getMaster(),
-                dataSourceProperties.getType());
+	@Bean
+	@ConditionalOnMissingBean
+	public DataSource dataSource(){
+		if(logger.isInfoEnabled()){
+			logger.info("Create master datasource: by driver {}, type {}", dataSourceProperties.getDriverClassName(),
+					dataSourceProperties.getType().getName());
+		}
 
-        List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slavesDatasourceProperties =
-                dataSourceProperties.getSlaves();
-        List<javax.sql.DataSource> slavesDtaSources;
+		javax.sql.DataSource masterDataSource = createDataSource(dataSourceProperties.getMaster(),
+				dataSourceProperties.getType());
 
-        if(slavesDatasourceProperties == null){
-            javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties.getMaster(),
-                    dataSourceProperties.getType());
+		List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slavesDatasourceProperties =
+				dataSourceProperties.getSlaves();
+		List<javax.sql.DataSource> slavesDtaSources;
 
-            slavesDtaSources = new ArrayList<>(1);
-            slavesDtaSources.add(slaveDataSource);
-        }else{
-            slavesDtaSources = slavesDatasourceProperties.stream().map(properties->createDataSource(properties,
-                    dataSourceProperties.getType())).collect(Collectors.toList());
-        }
+		if(slavesDatasourceProperties == null){
+			javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties.getMaster(),
+					dataSourceProperties.getType());
 
-        logger.info("Create {} size slave datasource: by driver {}, type {}", slavesDtaSources.size(),
-                dataSourceProperties.getDriverClassName(), dataSourceProperties.getType().getName());
+			slavesDtaSources = new ArrayList<>(1);
+			slavesDtaSources.add(slaveDataSource);
+		}else{
+			slavesDtaSources = slavesDatasourceProperties.stream().map(properties->createDataSource(properties,
+					dataSourceProperties.getType())).collect(Collectors.toList());
+		}
 
-        return new DataSource(masterDataSource, slavesDtaSources);
-    }
+		if(logger.isInfoEnabled()){
+			logger.info("Create {} size slave datasource: by driver {}, type {}", slavesDtaSources.size(),
+					dataSourceProperties.getDriverClassName(), dataSourceProperties.getType().getName());
+		}
 
-    protected final static javax.sql.DataSource createDataSource(org.springframework.boot.autoconfigure.jdbc
-                                                                         .DataSourceProperties properties, Class<?
-            extends javax.sql.DataSource> type){
-        return properties.initializeDataSourceBuilder().type(type).build();
-    }
+		return new DataSource(masterDataSource, slavesDtaSources);
+	}
+
+	protected static javax.sql.DataSource createDataSource(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties, Class<? extends javax.sql.DataSource> type){
+		return properties.initializeDataSourceBuilder().type(type).build();
+	}
 
 }

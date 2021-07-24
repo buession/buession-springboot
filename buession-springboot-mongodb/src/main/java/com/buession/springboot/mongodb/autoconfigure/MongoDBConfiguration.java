@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -36,12 +37,10 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
-import javax.annotation.PostConstruct;
-
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(MongoDBProperties.class)
 @AutoConfigureAfter(MongoDataAutoConfiguration.class)
 @Import({MongoDataAutoConfiguration.class})
@@ -50,27 +49,18 @@ public class MongoDBConfiguration {
 	@Autowired
 	private MongoDBProperties mongoDBProperties;
 
-	@Autowired
-	private MongoMappingContext mongoMappingContext;
-
-	@Autowired
-	private MappingMongoConverter mappingMongoConverter;
-
-	@PostConstruct
-	public void initialize(){
-		setTypeMapper();
-	}
-
-	protected void setTypeMapper(){
+	public MongoDBConfiguration(ObjectProvider<MongoMappingContext> mongoMappingContext,
+								ObjectProvider<MappingMongoConverter> mappingMongoConverter){
 		MongoTypeMapper mongoTypeMapper;
 
 		if(mongoDBProperties.getTypeMapper() != null){
 			mongoTypeMapper = BeanUtils.instantiateClass(mongoDBProperties.getTypeMapper());
 		}else{
-			mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(), mongoMappingContext);
+			mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(),
+					mongoMappingContext.getIfAvailable());
 		}
 
-		mappingMongoConverter.setTypeMapper(mongoTypeMapper);
+		mappingMongoConverter.getIfAvailable().setTypeMapper(mongoTypeMapper);
 	}
 
 }

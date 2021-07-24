@@ -40,7 +40,7 @@ import java.io.File;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({DatabaseReader.class})
 @EnableConfigurationProperties(GeoIPProperties.class)
 public class GeoIPResolverConfiguration {

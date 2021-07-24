@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Import;
  * @author Yong.Teng
  * @since 1.2.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
 @Import(ManagerConfiguration.class)
 @AutoConfigureAfter(ManagerConfiguration.class)

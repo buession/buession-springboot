@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Import;
 /**
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(GeetestProperties.class)
 @ConditionalOnClass({GeetestClient.class})
 @Import({HttpClientConfiguration.class})

@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(OssProperties.class)
 public class OssConfiguration {
 

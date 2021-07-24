@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ServerProperties.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveServerConfiguration extends AbstractServerConfiguration {

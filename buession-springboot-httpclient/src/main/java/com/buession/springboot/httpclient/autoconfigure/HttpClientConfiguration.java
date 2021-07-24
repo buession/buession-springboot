@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @AutoConfigureAfter({ApacheHttpClientConfiguration.class, OkHttpHttpClientConfiguration.class})
 @Deprecated

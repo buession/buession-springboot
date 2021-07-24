@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.autoconfigure;
@@ -35,26 +35,26 @@ import org.springframework.context.annotation.DependsOn;
 /**
  * @author Yong.Teng
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.aop", name = "enabled", havingValue = "true")
 public class AopConfiguration {
 
-    @Bean
-    @DependsOn("lifecycleBeanPostProcessor")
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing
-            = false)
-    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
-        return new DefaultAdvisorAutoProxyCreator();
-    }
+	@Bean
+	@DependsOn("lifecycleBeanPostProcessor")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing =
+			false)
+	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+		return new DefaultAdvisorAutoProxyCreator();
+	}
 
-    @Bean
-    @DependsOn("lifecycleBeanPostProcessor")
-    @ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing =
-            true)
-    @ConditionalOnMissingBean
-    public AspectJAwareAdvisorAutoProxyCreator aspectJAwareAdvisorAutoProxyCreator(){
-        return new AspectJAwareAdvisorAutoProxyCreator();
-    }
+	@Bean
+	@DependsOn("lifecycleBeanPostProcessor")
+	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing =
+			true)
+	@ConditionalOnMissingBean
+	public AspectJAwareAdvisorAutoProxyCreator aspectJAwareAdvisorAutoProxyCreator(){
+		return new AspectJAwareAdvisorAutoProxyCreator();
+	}
 
 }

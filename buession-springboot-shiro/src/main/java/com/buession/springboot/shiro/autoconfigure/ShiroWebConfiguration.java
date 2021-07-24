@@ -183,15 +183,12 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 		DefaultShiroFilterChainDefinition shiroFilterChainDefinition = new DefaultShiroFilterChainDefinition();
 
-		section.forEach((antPath, definition)->{
-			shiroFilterChainDefinition.addPathDefinition(antPath, definition);
-		});
+		section.forEach(shiroFilterChainDefinition::addPathDefinition);
 
 		return shiroFilterChainDefinition;
 	}
 
-	protected final static void buildShiroCookie(final Cookie cookie,
-												 final org.apache.shiro.web.servlet.Cookie shiroCookie){
+	protected static void buildShiroCookie(final Cookie cookie, final org.apache.shiro.web.servlet.Cookie shiroCookie){
 		shiroCookie.setHttpOnly(cookie.isHttpOnly());
 
 		if(cookie.getSameSite() != null){

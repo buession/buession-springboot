@@ -49,7 +49,7 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
 @AutoConfigureBefore(ShiroWebFilterConfiguration.class)
 @ConditionalOnClass(Config.class)
