@@ -42,8 +42,40 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 
 	private final static Logger logger = LoggerFactory.getLogger(AbstractCliApplication.class);
 
+	/**
+	 * 构造函数
+	 */
 	protected AbstractCliApplication(){
 		super();
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 类
+	 *
+	 * @throws InstantiationException
+	 * 		反射异常
+	 * @throws IllegalAccessException
+	 * 		没有访问权限的异常
+	 * @since 1.3.1
+	 */
+	protected AbstractCliApplication(final Class<? extends Banner> banner) throws InstantiationException,
+			IllegalAccessException{
+		super(banner);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 实例
+	 *
+	 * @since 1.3.1
+	 */
+	protected AbstractCliApplication(final Banner banner){
+		super(banner);
 	}
 
 	@Override

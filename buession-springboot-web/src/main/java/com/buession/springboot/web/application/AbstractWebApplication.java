@@ -39,11 +39,85 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 
 	private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
 
+	/**
+	 * 构造函数
+	 */
 	protected AbstractWebApplication(){
 		super();
 	}
 
-	protected AbstractWebApplication(WebApplicationType webApplicationType){
+	/**
+	 * 构造函数
+	 *
+	 * @param webApplicationType
+	 * 		Web 应用类型
+	 */
+	protected AbstractWebApplication(final WebApplicationType webApplicationType){
+		this.webApplicationType = webApplicationType;
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 类
+	 *
+	 * @throws InstantiationException
+	 * 		反射异常
+	 * @throws IllegalAccessException
+	 * 		没有访问权限的异常
+	 * @since 1.3.1
+	 */
+	protected AbstractWebApplication(final Class<? extends Banner> banner) throws InstantiationException,
+			IllegalAccessException{
+		super(banner);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param webApplicationType
+	 * 		Web 应用类型
+	 * @param banner
+	 * 		Banner 类
+	 *
+	 * @throws InstantiationException
+	 * 		反射异常
+	 * @throws IllegalAccessException
+	 * 		没有访问权限的异常
+	 * @since 1.3.1
+	 */
+	protected AbstractWebApplication(final WebApplicationType webApplicationType,
+									 final Class<? extends Banner> banner) throws InstantiationException,
+			IllegalAccessException{
+		super(banner);
+		this.webApplicationType = webApplicationType;
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 实例
+	 *
+	 * @since 1.3.1
+	 */
+	public AbstractWebApplication(final Banner banner){
+		super(banner);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param webApplicationType
+	 * 		Web 应用类型
+	 * @param banner
+	 * 		Banner 实例
+	 *
+	 * @since 1.3.1
+	 */
+	public AbstractWebApplication(final WebApplicationType webApplicationType, final Banner banner){
+		super(banner);
 		this.webApplicationType = webApplicationType;
 	}
 

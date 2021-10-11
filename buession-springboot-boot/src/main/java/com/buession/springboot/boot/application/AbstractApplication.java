@@ -21,11 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2021 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
 
+import com.buession.core.utils.Assert;
 import com.buession.springboot.boot.config.RuntimeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,51 @@ public abstract class AbstractApplication implements Application {
 
 	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
+	/**
+	 * Banner
+	 *
+	 * @since 1.3.1
+	 */
+	private Banner banner;
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	/**
+	 * 构造函数
+	 */
+	protected AbstractApplication(){
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 类
+	 *
+	 * @throws InstantiationException
+	 * 		反射异常
+	 * @throws IllegalAccessException
+	 * 		没有访问权限的异常
+	 * @since 1.3.1
+	 */
+	protected AbstractApplication(final Class<? extends Banner> banner) throws InstantiationException,
+			IllegalAccessException{
+		Assert.isNull(banner, "Banner class cloud not be null.");
+		this.banner = banner.newInstance();
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 * 		Banner 实例
+	 *
+	 * @since 1.3.1
+	 */
+	protected AbstractApplication(final Banner banner){
+		Assert.isNull(banner, "Banner cloud not be null.");
+		this.banner = banner;
+	}
 
 	@Override
 	public Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext(){
@@ -47,8 +92,7 @@ public abstract class AbstractApplication implements Application {
 	}
 
 	@Override
-	public void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
-															  configurableApplicationContext){
+	public void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext> configurableApplicationContext){
 		this.configurableApplicationContext = configurableApplicationContext;
 	}
 
@@ -66,7 +110,9 @@ public abstract class AbstractApplication implements Application {
 	 *
 	 * @return Banner
 	 */
-	protected abstract Banner getBanner();
+	protected Banner getBanner(){
+		return banner;
+	}
 
 	protected RuntimeProperties createRuntimeProperties(){
 		return new RuntimeProperties();
