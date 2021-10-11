@@ -24,20 +24,21 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache;
+package com.buession.springboot.httpclient;
 
-import com.buession.springboot.cache.redis.ConfigurationTest;
+import com.buession.springboot.httpclient.apache.ApacheHttpClientTest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author Yong.Teng
+ * @since 1.3.1
  */
 @SpringBootApplication
 public class SpringBootTestApplication {
 
 	public static void main(String[] args){
-		SpringApplication.run(ConfigurationTest.class, args);
+		SpringApplication.run(ApacheHttpClientTest.class, args);
 	}
 
 }
