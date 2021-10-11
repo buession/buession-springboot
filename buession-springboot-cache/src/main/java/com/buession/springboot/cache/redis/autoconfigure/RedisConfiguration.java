@@ -71,9 +71,9 @@ public class RedisConfiguration {
 	protected Options createOptions(){
 		final Options options = new Options();
 
-		options.setEnableTransactionSupport(redisProperties.isEnableTransactionSupport());
-		options.setPrefix(options.getPrefix());
+		options.setPrefix(redisProperties.getKeyPrefix());
 		options.setSerializer(redisProperties.getSerializer());
+		options.setEnableTransactionSupport(redisProperties.isEnableTransactionSupport());
 
 		return options;
 	}
