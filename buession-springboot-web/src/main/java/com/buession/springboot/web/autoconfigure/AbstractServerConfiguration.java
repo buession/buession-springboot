@@ -44,7 +44,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 	@Autowired(required = false)
 	protected ServerProperties serverProperties;
 
-	protected final static Map<String, String> buildHeaders(final Map<String, String> headers){
+	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
 		final Map<String, String> result = new HashMap<>(headers.size());
 
 		headers.forEach((key, value)->{
@@ -67,7 +67,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 		return result;
 	}
 
-	protected final static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
+	protected static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
 		String s = serverName;
 		StringBuffer sb = new StringBuffer();
 
