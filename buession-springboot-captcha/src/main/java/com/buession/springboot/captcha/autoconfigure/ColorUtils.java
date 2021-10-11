@@ -50,7 +50,7 @@ class ColorUtils {
 		}
 	}
 
-	public final static ColorFactory createColorFactory(final Image.Color color){
+	public static ColorFactory createColorFactory(final Image.Color color){
 		return createColorFactory(color.getMinColor(), color.getMaxColor());
 	}
 

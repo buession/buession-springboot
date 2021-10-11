@@ -61,7 +61,7 @@ class ImageCaptchaFactoryBuilder {
 		this.config = config;
 	}
 
-	public final static ImageCaptchaFactoryBuilder getInstance(final Image config){
+	public static ImageCaptchaFactoryBuilder getInstance(final Image config){
 		return new ImageCaptchaFactoryBuilder(config);
 	}
 

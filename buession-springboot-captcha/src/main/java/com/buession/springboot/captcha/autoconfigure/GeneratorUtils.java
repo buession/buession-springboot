@@ -36,7 +36,7 @@ class GeneratorUtils {
 
 	}
 
-	public final static Generator createGenerator(ImageType imageType){
+	public static Generator createGenerator(ImageType imageType){
 		switch(imageType){
 			case JPG:
 			case JPEG:
