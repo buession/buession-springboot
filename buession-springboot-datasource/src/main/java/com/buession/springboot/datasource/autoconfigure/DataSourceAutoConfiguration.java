@@ -21,10 +21,33 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.core;/**
- * 
+ */
+package com.buession.springboot.mybatis.autoconfigure;
+
+import com.buession.springboot.datasource.autoconfigure.DataSourceProperties;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import javax.sql.DataSource;
+
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
  *
  * @author Yong.Teng
- * @since 
- */public class DataSource {
+ * @since 1.3.2
+ */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class})
+@ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
+@EnableConfigurationProperties(DataSourceProperties.class)
+@Import({DataSourcePoolMetadataProvidersConfiguration.class})
+public class DataSourceAutoConfiguration {
+
 }

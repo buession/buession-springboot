@@ -21,10 +21,9 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.core;/**
+ *//**
  * 
  *
  * @author Yong.Teng
- * @since 
- */public class DataSource {
-}
+ * @since 1.3.2
+ */package com.buession.springboot.datasource.metadata;

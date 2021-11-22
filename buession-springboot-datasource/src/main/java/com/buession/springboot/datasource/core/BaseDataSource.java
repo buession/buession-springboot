@@ -25,6 +25,6 @@
  * 
  *
  * @author Yong.Teng
- * @since 
- */public class DataSource {
+ * @since 1.3.2
+ */public interface BaseDataSource {
 }
