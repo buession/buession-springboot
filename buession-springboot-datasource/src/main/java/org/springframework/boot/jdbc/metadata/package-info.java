@@ -21,9 +21,9 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- *//**
- * 
- *
+ */
+/**
  * @author Yong.Teng
  * @since 1.3.2
- */package org.springframework.boot.jdbc.metadata;
+ */
+package org.springframework.boot.jdbc.metadata;

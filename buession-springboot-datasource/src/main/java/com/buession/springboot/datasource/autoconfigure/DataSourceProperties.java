@@ -24,6 +24,11 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.jdbc.datasource.config.Dbcp2PoolConfiguration;
+import com.buession.jdbc.datasource.config.DruidPoolConfiguration;
+import com.buession.jdbc.datasource.config.GenericPoolConfiguration;
+import com.buession.jdbc.datasource.config.HikariPoolConfiguration;
+import com.buession.jdbc.datasource.config.TomcatPoolConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -55,14 +60,53 @@ public class DataSourceProperties {
 	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
 	 */
 	@NestedConfigurationProperty
-	private org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master =
-			new org.springframework.boot.autoconfigure.jdbc.DataSourceProperties();
+	private org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master = new org.springframework.boot.autoconfigure.jdbc.DataSourceProperties();
 
 	/**
 	 * Slaves 配置
 	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
 	 */
 	private List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves = new ArrayList<>();
+
+	/**
+	 * Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	@NestedConfigurationProperty
+	private Hikari hikari = new Hikari();
+
+	/**
+	 * Dbcp2 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	@NestedConfigurationProperty
+	private Dbcp2 dbcp2 = new Dbcp2();
+
+	/**
+	 * Druid 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	@NestedConfigurationProperty
+	private Druid druid = new Druid();
+
+	/**
+	 * Tomcat 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	@NestedConfigurationProperty
+	private Tomcat tomcat = new Tomcat();
+
+	/**
+	 * Generic 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	@NestedConfigurationProperty
+	private Generic generic = new Generic();
 
 	public Class<? extends DataSource> getType(){
 		return type;
@@ -91,20 +135,190 @@ public class DataSourceProperties {
 		this.driverClassName = driverClassName;
 	}
 
+	/**
+	 * 返回 Master 配置
+	 *
+	 * @return Master 配置
+	 */
 	public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster(){
 		return master;
 	}
 
+	/**
+	 * 设置 Master 配置
+	 *
+	 * @param master
+	 * 		Master 配置
+	 */
 	public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master){
 		this.master = master;
 	}
 
+	/**
+	 * 返回 Slaves 配置
+	 *
+	 * @return Slaves 配置
+	 */
 	public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves(){
 		return slaves;
 	}
 
+	/**
+	 * 设置 Slaves 配置
+	 *
+	 * @param slaves
+	 * 		Slaves 配置
+	 */
 	public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves){
 		this.slaves = slaves;
+	}
+
+	/**
+	 * 返回 Hikari 数据源配置
+	 *
+	 * @return Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public Hikari getHikari(){
+		return hikari;
+	}
+
+	/**
+	 * 设置 Hikari 数据源配置
+	 *
+	 * @param hikari
+	 * 		Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public void setHikari(Hikari hikari){
+		this.hikari = hikari;
+	}
+
+	/**
+	 * 返回 Dbcp2 数据源配置
+	 *
+	 * @return Dbcp2 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public Dbcp2 getDbcp2(){
+		return dbcp2;
+	}
+
+	/**
+	 * 设置 Dbcp2 数据源配置
+	 *
+	 * @param dbcp2
+	 * 		Dbcp2 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public void setDbcp2(Dbcp2 dbcp2){
+		this.dbcp2 = dbcp2;
+	}
+
+	/**
+	 * 返回 Druid 数据源配置
+	 *
+	 * @return Druid 数据源配置
+	 */
+	public Druid getDruid(){
+		return druid;
+	}
+
+	/**
+	 * 设置 Druid 数据源配置
+	 *
+	 * @param druid
+	 * 		Druid 数据源配置
+	 */
+	public void setDruid(Druid druid){
+		this.druid = druid;
+	}
+
+	/**
+	 * 返回 Tomcat 数据源配置
+	 *
+	 * @return Tomcat 数据源配置
+	 */
+	public Tomcat getTomcat(){
+		return tomcat;
+	}
+
+	/**
+	 * 设置 Tomcat 数据源配置
+	 *
+	 * @param tomcat
+	 * 		Tomcat 数据源配置
+	 */
+	public void setTomcat(Tomcat tomcat){
+		this.tomcat = tomcat;
+	}
+
+	/**
+	 * 返回 Generic 数据源配置
+	 *
+	 * @return Generic 数据源配置
+	 */
+	public Generic getGeneric(){
+		return generic;
+	}
+
+	/**
+	 * 设置 Generic 数据源配置
+	 *
+	 * @param generic
+	 * 		Generic 数据源配置
+	 */
+	public void setGeneric(Generic generic){
+		this.generic = generic;
+	}
+
+	/**
+	 * Hikari DataSource 配置
+	 *
+	 * @since 1.3.2
+	 */
+	public final static class Hikari extends HikariPoolConfiguration {
+
+	}
+
+	/**
+	 * Dbcp2 DataSource 配置
+	 *
+	 * @since 1.3.2
+	 */
+	public final static class Dbcp2 extends Dbcp2PoolConfiguration {
+
+	}
+
+	/**
+	 * Druid DataSource 配置
+	 *
+	 * @since 1.3.2
+	 */
+	public final static class Druid extends DruidPoolConfiguration {
+
+	}
+
+	/**
+	 * Tomcat DataSource 配置
+	 *
+	 * @since 1.3.2
+	 */
+	public final static class Tomcat extends TomcatPoolConfiguration {
+
+	}
+
+	/**
+	 * Generic DataSource 配置
+	 *
+	 * @since 1.3.2
+	 */
+	public final static class Generic extends GenericPoolConfiguration {
+
 	}
 
 }

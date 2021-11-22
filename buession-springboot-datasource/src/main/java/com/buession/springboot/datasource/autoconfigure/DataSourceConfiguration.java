@@ -24,70 +24,175 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.core.validator.Validate;
+import com.buession.jdbc.datasource.config.PoolConfiguration;
+import com.buession.springboot.datasource.core.BaseDataSource;
 import com.buession.springboot.datasource.core.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
+ * DataSource Auto Configuration
+ *
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(DataSourceProperties.class)
-@ConditionalOnClass({javax.sql.DataSource.class, EmbeddedDatabaseType.class})
+@ConditionalOnProperty(name = "spring.datasource")
 public class DataSourceConfiguration {
 
-	@Autowired
-	private DataSourceProperties dataSourceProperties;
+	protected final DataSourceProperties properties;
 
-	private final static Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
-
-	@Bean
-	@ConditionalOnMissingBean
-	public DataSource dataSource(){
-		if(logger.isInfoEnabled()){
-			logger.info("Create master datasource: by driver {}, type {}", dataSourceProperties.getDriverClassName(),
-					dataSourceProperties.getType().getName());
-		}
-
-		javax.sql.DataSource masterDataSource = createDataSource(dataSourceProperties.getMaster(),
-				dataSourceProperties.getType());
-
-		List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slavesDatasourceProperties =
-				dataSourceProperties.getSlaves();
-		List<javax.sql.DataSource> slavesDtaSources;
-
-		if(slavesDatasourceProperties == null){
-			javax.sql.DataSource slaveDataSource = createDataSource(dataSourceProperties.getMaster(),
-					dataSourceProperties.getType());
-
-			slavesDtaSources = new ArrayList<>(1);
-			slavesDtaSources.add(slaveDataSource);
-		}else{
-			slavesDtaSources = slavesDatasourceProperties.stream().map(properties->createDataSource(properties,
-					dataSourceProperties.getType())).collect(Collectors.toList());
-		}
-
-		if(logger.isInfoEnabled()){
-			logger.info("Create {} size slave datasource: by driver {}, type {}", slavesDtaSources.size(),
-					dataSourceProperties.getDriverClassName(), dataSourceProperties.getType().getName());
-		}
-
-		return new DataSource(masterDataSource, slavesDtaSources);
+	public DataSourceConfiguration(DataSourceProperties properties){
+		this.properties = properties;
 	}
 
-	protected static javax.sql.DataSource createDataSource(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties, Class<? extends javax.sql.DataSource> type){
-		return properties.initializeDataSourceBuilder().type(type).build();
+	protected static <S extends javax.sql.DataSource, P extends PoolConfiguration, T extends BaseDataSource.IDataSource<P, S>> DataSource createDataSource(final Class<T> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties){
+		return createDataSource(type, poolConfiguration, dataSourceProperties, (dataSource, properties)->dataSource);
+	}
+
+	protected static <S extends javax.sql.DataSource, P extends PoolConfiguration, T extends BaseDataSource.IDataSource<P, S>> DataSource createDataSource(final Class<T> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties, final Callback<S> callback){
+		final DataSourceInitializer<S, P, T> dataSourceInitializer = new DataSourceInitializer<>(type, poolConfiguration, dataSourceProperties);
+		return dataSourceInitializer.initialize(callback);
+	}
+
+	/**
+	 * Hikari DataSource Configuration.
+	 *
+	 * @since 1.3.2
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	@ConditionalOnClass(com.zaxxer.hikari.HikariDataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
+	public static class Hikari extends DataSourceConfiguration {
+
+		public Hikari(DataSourceProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.datasource.hikari")
+		public DataSource dataSource(){
+			return createDataSource(BaseDataSource.HikariDataSource.class, properties.getHikari(), properties, (dataSource, properties)->{
+				if(Validate.hasText(properties.getName())){
+					dataSource.setPoolName(properties.getName());
+				}
+
+				return dataSource;
+			});
+		}
+
+	}
+
+	/**
+	 * DBCP2 DataSource Configuration.
+	 *
+	 * @since 1.3.2
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
+	public static class Dbcp2 extends DataSourceConfiguration {
+
+		public Dbcp2(DataSourceProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
+		public DataSource dataSource(){
+			return createDataSource(BaseDataSource.Dbcp2DataSource.class, properties.getDbcp2(), properties);
+		}
+
+	}
+
+	/**
+	 * Druid DataSource Configuration.
+	 *
+	 * @since 1.3.2
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	@ConditionalOnClass(com.alibaba.druid.pool.DruidDataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.alibaba.druid.pool.DruidDataSource", matchIfMissing = true)
+	public static class Druid extends DataSourceConfiguration {
+
+		public Druid(DataSourceProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.datasource.druid")
+		public DataSource dataSource(){
+			return createDataSource(BaseDataSource.DruidDataSource.class, properties.getDruid(), properties);
+		}
+
+	}
+
+	/**
+	 * Tomcat DataSource Configuration.
+	 *
+	 * @since 1.3.2
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
+	public static class Tomcat extends DataSourceConfiguration {
+
+		public Tomcat(DataSourceProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
+		public DataSource dataSource(){
+			return createDataSource(BaseDataSource.TomcatDataSource.class, properties.getTomcat(), properties, (dataSource, properties)->{
+				DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+				String validationQuery = databaseDriver.getValidationQuery();
+
+				if(validationQuery != null){
+					dataSource.setTestOnBorrow(true);
+					dataSource.setValidationQuery(validationQuery);
+				}
+
+				return dataSource;
+			});
+		}
+
+	}
+
+	/**
+	 * Generic DataSource Configuration.
+	 *
+	 * @since 1.3.2
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type")
+	public static class Generic extends DataSourceConfiguration {
+
+		public Generic(DataSourceProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		public DataSource dataSource(){
+			return createDataSource(BaseDataSource.GenericDataSource.class, properties.getGeneric(), properties);
+		}
+
 	}
 
 }

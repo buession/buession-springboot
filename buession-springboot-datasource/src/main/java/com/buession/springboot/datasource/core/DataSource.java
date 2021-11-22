@@ -19,12 +19,44 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2020 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.core;/**
- * 
- *
+ */
+package com.buession.springboot.datasource.core;
+
+import java.util.List;
+
+/**
  * @author Yong.Teng
- * @since 
- */public class DataSource {
+ */
+public class DataSource {
+
+	private javax.sql.DataSource master;
+
+	private List<javax.sql.DataSource> slaves;
+
+	public DataSource(){
+	}
+
+	public DataSource(javax.sql.DataSource master, List<javax.sql.DataSource> slaves){
+		this.master = master;
+		this.slaves = slaves;
+	}
+
+	public javax.sql.DataSource getMaster(){
+		return master;
+	}
+
+	public void setMaster(javax.sql.DataSource master){
+		this.master = master;
+	}
+
+	public List<javax.sql.DataSource> getSlaves(){
+		return slaves;
+	}
+
+	public void setSlaves(List<javax.sql.DataSource> slaves){
+		this.slaves = slaves;
+	}
+
 }

@@ -23,8 +23,6 @@
  * +-------------------------------------------------------------------------------------------------------+
  */
 /**
- * 
- *
  * @author Yong.Teng
- * @since 
- */package com.buession.springboot.datasource.core;
+ */
+package com.buession.springboot.datasource.core;

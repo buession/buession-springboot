@@ -21,10 +21,30 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.autoconfigure;/**
- * 
+ */
+package com.buession.springboot.datasource.autoconfigure;
+
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+
+/**
+ * {@link javax.sql.DataSource} 初始化回调
  *
  * @author Yong.Teng
  * @since 1.3.2
- */public interface Callback {
+ */
+@FunctionalInterface
+interface Callback<T extends javax.sql.DataSource> {
+
+	/**
+	 * {@link javax.sql.DataSource} 初始化回调
+	 *
+	 * @param dataSource
+	 *        {@link javax.sql.DataSource} 实例
+	 * @param properties
+	 *        {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties} 配置
+	 *
+	 * @return {@link javax.sql.DataSource} 实例
+	 */
+	T apply(T dataSource, DataSourceProperties properties);
+
 }

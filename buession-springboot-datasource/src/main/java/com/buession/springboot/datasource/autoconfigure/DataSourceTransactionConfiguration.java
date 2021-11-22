@@ -25,8 +25,10 @@
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.springboot.datasource.core.DataSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,8 +46,10 @@ public class DataSourceTransactionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataSourceTransactionManager masterTransactionManager(DataSource dataSource){
-		return new DataSourceTransactionManager(dataSource.getMaster());
+	public DataSourceTransactionManager masterTransactionManager(DataSource dataSource, ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers){
+		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource.getMaster());
+		transactionManagerCustomizers.ifAvailable((customizers)->customizers.customize(transactionManager));
+		return transactionManager;
 	}
 
 }

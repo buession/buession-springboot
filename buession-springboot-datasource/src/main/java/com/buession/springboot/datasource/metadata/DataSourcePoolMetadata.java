@@ -21,10 +21,66 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.metadata;/**
- * 
+ */
+package com.buession.springboot.datasource.metadata;
+
+import java.util.List;
+
+/**
+ * Provides access meta-data that is commonly available from most pooled
+ * {@link javax.sql.DataSource} implementations.
  *
  * @author Yong.Teng
  * @since 1.3.2
- */public interface DataSourcePoolMetadata {
+ */
+public class DataSourcePoolMetadata {
+
+	/**
+	 * Master 库连接池 Metadata
+	 */
+	private org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata master;
+
+	/**
+	 * Slave 库连接池 Metadata
+	 */
+	private List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> slaves;
+
+	/**
+	 * 获取 Master 库连接池 Metadata
+	 *
+	 * @return Master 库连接池 Metadata
+	 */
+	public org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata getMaster(){
+		return master;
+	}
+
+	/**
+	 * 设置 Master 库连接池 Metadata
+	 *
+	 * @param master
+	 * 		Master 库连接池 Metadata
+	 */
+	public void setMaster(org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata master){
+		this.master = master;
+	}
+
+	/**
+	 * 获取 Slave 库连接池 Metadata
+	 *
+	 * @return Slave 库连接池 Metadata
+	 */
+	public List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> getSlaves(){
+		return slaves;
+	}
+
+	/**
+	 * 设置 Slave 库连接池 Metadata
+	 *
+	 * @param slaves
+	 * 		Slave 库连接池 Metadata
+	 */
+	public void setSlaves(List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> slaves){
+		this.slaves = slaves;
+	}
+
 }
