@@ -27,7 +27,6 @@ package com.buession.springboot.shiro.autoconfigure;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.cache.RedisCacheManager;
 import org.apache.shiro.cache.CacheManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,16 +44,18 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureAfter(ManagerConfiguration.class)
 public class CacheConfiguration {
 
-	@Autowired
 	protected ShiroProperties shiroProperties;
+
+	public CacheConfiguration(ShiroProperties shiroProperties){
+		this.shiroProperties = shiroProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(RedisManager.class)
 	public CacheManager cacheManager(RedisManager redisManager){
 		Cache cache = shiroProperties.getCache();
-		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(),
-				cache.getPrincipalIdFieldName());
+		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(), cache.getPrincipalIdFieldName());
 	}
 
 }

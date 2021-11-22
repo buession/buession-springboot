@@ -24,17 +24,19 @@
  */
 package com.buession.springboot.oss.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * OSS Auto Configuration 抽象类
  *
  * @author Yong.Teng
  * @since 1.13.0
  */
+@Deprecated
 public abstract class AbstractOssConfiguration {
 
-	@Autowired
-	protected OssProperties ossProperties;
+	protected OssProperties properties;
+
+	public AbstractOssConfiguration(OssProperties properties){
+		this.properties = properties;
+	}
 
 }

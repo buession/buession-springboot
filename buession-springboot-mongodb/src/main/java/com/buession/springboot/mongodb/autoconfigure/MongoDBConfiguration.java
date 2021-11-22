@@ -26,7 +26,6 @@ package com.buession.springboot.mongodb.autoconfigure;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,18 +45,16 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Import({MongoDataAutoConfiguration.class})
 public class MongoDBConfiguration {
 
-	@Autowired
-	private MongoDBProperties mongoDBProperties;
+	private MongoDBProperties properties;
 
-	public MongoDBConfiguration(ObjectProvider<MongoMappingContext> mongoMappingContext,
-								ObjectProvider<MappingMongoConverter> mappingMongoConverter){
+	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext, ObjectProvider<MappingMongoConverter> mappingMongoConverter){
+		this.properties = properties;
 		MongoTypeMapper mongoTypeMapper;
 
-		if(mongoDBProperties.getTypeMapper() != null){
-			mongoTypeMapper = BeanUtils.instantiateClass(mongoDBProperties.getTypeMapper());
+		if(this.properties.getTypeMapper() != null){
+			mongoTypeMapper = BeanUtils.instantiateClass(this.properties.getTypeMapper());
 		}else{
-			mongoTypeMapper = new DefaultMongoTypeMapper(mongoDBProperties.getTypeKey(),
-					mongoMappingContext.getIfAvailable());
+			mongoTypeMapper = new DefaultMongoTypeMapper(this.properties.getTypeKey(), mongoMappingContext.getIfAvailable());
 		}
 
 		mappingMongoConverter.getIfAvailable().setTypeMapper(mongoTypeMapper);

@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
@@ -60,16 +61,21 @@ import java.util.Set;
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass({JedisConnection.class, Jedis.class})
 public class JedisConnectionConfiguration extends AbstractConnectionConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(JedisConnectionConfiguration.class);
 
+	public JedisConnectionConfiguration(RedisProperties properties){
+		super(properties);
+	}
+
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.redis", name = "mode", havingValue = "sharded")
 	@ConditionalOnMissingBean
 	public ShardedJedisPoolConfig poolConfig(){
-		PoolConfig poolConfig = redisProperties.getPool();
+		PoolConfig poolConfig = properties.getPool();
 
 		ShardedJedisPoolConfig config = new ShardedJedisPoolConfig();
 		buildPoolConfig(poolConfig, config);
@@ -84,7 +90,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	@Bean
 	@ConditionalOnMissingBean
 	public JedisPoolConfig jedisPoolConfig(){
-		PoolConfig poolConfig = redisProperties.getPool();
+		PoolConfig poolConfig = properties.getPool();
 
 		JedisPoolConfig config = new JedisPoolConfig();
 		buildPoolConfig(poolConfig, config);
@@ -115,18 +121,17 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	@Bean
 	@ConditionalOnMissingBean
 	public JedisRedisConnectionFactoryBean jedisRedisConnectionFactoryBean(JedisPoolConfig poolConfig){
-		com.buession.redis.spring.jedis.JedisConfiguration configuration =
-				new com.buession.redis.spring.jedis.JedisConfiguration();
+		com.buession.redis.spring.jedis.JedisConfiguration configuration = new com.buession.redis.spring.jedis.JedisConfiguration();
 
-		if(Validate.hasText(redisProperties.getHost())){
-			configuration.setHost(redisProperties.getHost());
-			configuration.setPort(redisProperties.getPort());
-			configuration.setPassword(redisProperties.getPassword());
-			configuration.setDatabase(redisProperties.getDatabase());
-			configuration.setClientName(redisProperties.getClientName());
+		if(Validate.hasText(properties.getHost())){
+			configuration.setHost(properties.getHost());
+			configuration.setPort(properties.getPort());
+			configuration.setPassword(properties.getPassword());
+			configuration.setDatabase(properties.getDatabase());
+			configuration.setClientName(properties.getClientName());
 		}else{
-			if(Validate.hasText(redisProperties.getUri())){
-				RedisURI redisURI = RedisURI.create(redisProperties.getUri());
+			if(Validate.hasText(properties.getUri())){
+				RedisURI redisURI = RedisURI.create(properties.getUri());
 
 				configuration.setHost(redisURI.getHost());
 				configuration.setPort(redisURI.getPort());
@@ -151,8 +156,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 		return connectionFactory.getObject();
 	}
 
-	protected static <T extends JedisCommands> void buildPoolConfig(PoolConfig poolConfig,
-																	GenericObjectPoolConfig<T> config){
+	protected static <T extends JedisCommands> void buildPoolConfig(PoolConfig poolConfig, GenericObjectPoolConfig<T> config){
 		config.setLifo(poolConfig.getLifo());
 		config.setFairness(poolConfig.getFairness());
 		config.setMaxWaitMillis(poolConfig.getMaxWait());
@@ -176,8 +180,8 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	}
 
 	protected void setTimeout(final com.buession.redis.spring.RedisConfiguration configuration){
-		configuration.setConnectTimeout(redisProperties.getConnectTimeout());
-		configuration.setSoTimeout(redisProperties.getSoTimeout());
+		configuration.setConnectTimeout(properties.getConnectTimeout());
+		configuration.setSoTimeout(properties.getSoTimeout());
 	}
 
 	protected static Set<ShardedRedisNode> parseShardedRedisNode(final String url) throws URISyntaxException{
@@ -191,8 +195,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 
 		for(String part : parts){
 			redisURI = RedisURI.create(part);
-			nodes.add(new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getPassword(),
-					redisURI.getDatabase(), redisURI.getClientName(), redisURI.getWeight()));
+			nodes.add(new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getPassword(), redisURI.getDatabase(), redisURI.getClientName(), redisURI.getWeight()));
 		}
 
 		return nodes;
@@ -205,7 +208,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 		setTimeout(configuration);
 
 		try{
-			configuration.setNodes(parseShardedRedisNode(redisProperties.getNodes()));
+			configuration.setNodes(parseShardedRedisNode(properties.getNodes()));
 
 			return new JedisRedisConnectionFactoryBean(configuration);
 		}catch(URISyntaxException e){

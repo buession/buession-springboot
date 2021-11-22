@@ -27,7 +27,6 @@
 package com.buession.springboot.oss.autoconfigure;
 
 import com.buession.oss.AliCloudOSSClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,17 +37,29 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(OssProperties.class)
 public class OssConfiguration {
 
-	@Autowired
-	private OssProperties ossProperties;
+	protected OssProperties properties;
 
-	@Bean
-	@ConditionalOnClass(name = {"com.aliyun.oss.OSS"})
-	@ConditionalOnMissingBean
-	public AliCloudOSSClient aliCloudOSSClient(){
-		return new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getKey(), ossProperties.getSecret());
+	public OssConfiguration(OssProperties properties){
+		this.properties = properties;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(OssProperties.class)
+	public static class Alicloud extends OssConfiguration {
+
+		public Alicloud(OssProperties properties){
+			super(properties);
+		}
+
+		@Bean
+		@ConditionalOnClass(com.aliyun.oss.OSS.class)
+		@ConditionalOnMissingBean
+		public AliCloudOSSClient OSSClient(){
+			return new AliCloudOSSClient(properties.getEndpoint(), properties.getKey(), properties.getSecret());
+		}
+
 	}
 
 }

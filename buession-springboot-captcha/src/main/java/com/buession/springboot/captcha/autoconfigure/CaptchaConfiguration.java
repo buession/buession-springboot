@@ -40,7 +40,6 @@ import com.buession.security.captcha.handler.DefaultHandler;
 import com.buession.security.captcha.handler.Handler;
 import com.buession.security.captcha.handler.generator.Generator;
 import com.buession.security.captcha.servlet.CaptchaFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -62,16 +61,18 @@ import java.util.List;
 @ConditionalOnClass({Handler.class})
 public class CaptchaConfiguration {
 
-	@Autowired
-	protected CaptchaProperties captchaProperties;
+	protected CaptchaProperties properties;
+
+	public CaptchaConfiguration(CaptchaProperties properties){
+		this.properties = properties;
+	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "Configurable")
 	public FilterFactory configurableFilterFactory() throws IllegalAccessException, InstantiationException{
 		ConfigurableFilterFactory filterFactory = new ConfigurableFilterFactory();
-		List<Class<? extends BufferedImageOp>> filterClass =
-				captchaProperties.getImage().getFilter().getConfigurable().getFilterClass();
+		List<Class<? extends BufferedImageOp>> filterClass = properties.getImage().getFilter().getConfigurable().getFilterClass();
 
 		if(filterClass != null){
 			List<BufferedImageOp> filters = new ArrayList<>(filterClass.size());
@@ -81,15 +82,14 @@ public class CaptchaConfiguration {
 
 				if(clazz.isAssignableFrom(CurvesImageOp.class)){
 					CurvesImageOp curvesImageOp = ((CurvesImageOp) bufferedImageOp);
-					Image.Filter.CurvesRipple curvesRipple =
-							captchaProperties.getImage().getFilter().getCurvesRipple();
+					Image.Filter.CurvesRipple curvesRipple = properties.getImage().getFilter().getCurvesRipple();
 
 					curvesImageOp.setStrokeMin(curvesRipple.getStrokeMin());
 					curvesImageOp.setStrokeMax(curvesRipple.getStrokeMax());
 					curvesImageOp.setColorFactory(ColorUtils.createColorFactory(curvesRipple.getColor()));
 				}else if(clazz.isAssignableFrom(OvalImageOp.class)){
 					OvalImageOp ovalImageOp = ((OvalImageOp) bufferedImageOp);
-					Image.Filter.Oval oval = captchaProperties.getImage().getFilter().getOval();
+					Image.Filter.Oval oval = properties.getImage().getFilter().getOval();
 
 					ovalImageOp.setStrokeMin(oval.getStrokeMin());
 					ovalImageOp.setStrokeMax(oval.getStrokeMax());
@@ -106,53 +106,53 @@ public class CaptchaConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "DiffuseRipple")
 	public FilterFactory diffuseRippleFilterFactory(){
 		return new DiffuseRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "BlurRipple")
 	public FilterFactory blurRippleFilterFactory(){
 		return new BlurRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "DoubleRipple")
 	public FilterFactory doubleRippleFilterFactory(){
 		return new DoubleRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "MarbleRipple")
 	public FilterFactory marbleRippleFilterFactory(){
 		return new MarbleRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "SoftenRipple")
 	public FilterFactory softenRippleFilterFactory(){
 		return new SoftenRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "WobbleRipple")
 	public FilterFactory wobbleRippleFilterFactory(){
 		return new WobbleRippleFilterFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(FilterFactory.class)
 	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "CurvesRipple")
 	public FilterFactory curvesRippleFilterFactory(){
 		CurvesRippleFilterFactory filterFactory = new CurvesRippleFilterFactory();
-		Image.Filter.CurvesRipple curvesRipple = captchaProperties.getImage().getFilter().getCurvesRipple();
+		Image.Filter.CurvesRipple curvesRipple = properties.getImage().getFilter().getCurvesRipple();
 
 		filterFactory.setStrokeMin(curvesRipple.getStrokeMin());
 		filterFactory.setStrokeMax(curvesRipple.getStrokeMax());
@@ -162,12 +162,11 @@ public class CaptchaConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "Oval",
-			matchIfMissing = true)
+	@ConditionalOnMissingBean(FilterFactory.class)
+	@ConditionalOnProperty(prefix = "spring.captcha.image.filter", name = "mode", havingValue = "Oval", matchIfMissing = true)
 	public FilterFactory ovalFilterFactory(){
 		OvalFilterFactory filterFactory = new OvalFilterFactory();
-		Image.Filter.Oval oval = captchaProperties.getImage().getFilter().getOval();
+		Image.Filter.Oval oval = properties.getImage().getFilter().getOval();
 
 		filterFactory.setStrokeMin(oval.getStrokeMin());
 		filterFactory.setStrokeMax(oval.getStrokeMax());
@@ -179,7 +178,7 @@ public class CaptchaConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Handler handler(FilterFactory filterFactory) throws InstantiationException, IllegalAccessException{
-		Image image = captchaProperties.getImage();
+		Image image = properties.getImage();
 		Generator generator = GeneratorUtils.createGenerator(image.getType());
 
 		generator.setWidth(image.getWidth());
@@ -193,22 +192,17 @@ public class CaptchaConfiguration {
 		return new DefaultHandler(generator);
 	}
 
-	@Configuration
+	@Bean
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	public static class ServletCaptchaConfiguration extends CaptchaConfiguration {
+	public FilterRegistrationBean<CaptchaFilter> registerServletAuthFilter(Handler handler){
+		FilterRegistrationBean<CaptchaFilter> registration = new FilterRegistrationBean<>();
 
-		@Bean
-		public FilterRegistrationBean<CaptchaFilter> registerAuthFilter(Handler handler){
-			FilterRegistrationBean<CaptchaFilter> registration = new FilterRegistrationBean<>();
+		registration.setFilter(new CaptchaFilter(handler, properties.getSessionKey()));
+		registration.addUrlPatterns(properties.getVerifyCodePath());
+		registration.setName(CaptchaFilter.class.getName());
+		registration.setOrder(1);
 
-			registration.setFilter(new CaptchaFilter(handler, captchaProperties.getSessionKey()));
-			registration.addUrlPatterns(captchaProperties.getVerifyCodePath());
-			registration.setName(CaptchaFilter.class.getName());
-			registration.setOrder(1);
-
-			return registration;
-		}
-
+		return registration;
 	}
 
 }

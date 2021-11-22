@@ -29,7 +29,6 @@ import com.buession.redis.client.connection.RedisConnection;
 import com.buession.redis.core.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,10 +46,13 @@ import org.springframework.context.annotation.Import;
 @Import({JedisConnectionConfiguration.class})
 public class RedisConfiguration {
 
-	@Autowired
-	protected RedisProperties redisProperties;
+	protected RedisProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
+
+	public RedisConfiguration(RedisProperties properties){
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnBean(RedisConnection.class)
@@ -71,9 +73,9 @@ public class RedisConfiguration {
 	protected Options createOptions(){
 		final Options options = new Options();
 
-		options.setPrefix(redisProperties.getKeyPrefix());
-		options.setSerializer(redisProperties.getSerializer());
-		options.setEnableTransactionSupport(redisProperties.isEnableTransactionSupport());
+		options.setPrefix(properties.getKeyPrefix());
+		options.setSerializer(properties.getSerializer());
+		options.setEnableTransactionSupport(properties.isEnableTransactionSupport());
 
 		return options;
 	}

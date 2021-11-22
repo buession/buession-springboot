@@ -45,19 +45,22 @@ import java.io.File;
 @EnableConfigurationProperties(GeoIPProperties.class)
 public class GeoIPResolverConfiguration {
 
-	@Autowired
-	private GeoIPProperties geoIPProperties;
+	private GeoIPProperties properties;
+
+	public GeoIPResolverConfiguration(GeoIPProperties properties){
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public Resolver geoIPResolver() throws Exception{
 		GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
 
-		if(Validate.hasText(geoIPProperties.getDbPath())){
-			factory.setDbPath(new File(geoIPProperties.getDbPath()));
+		if(Validate.hasText(properties.getDbPath())){
+			factory.setDbPath(new File(properties.getDbPath()));
 		}
 
-		factory.setEnableCache(geoIPProperties.isEnableCache());
+		factory.setEnableCache(properties.isEnableCache());
 		factory.afterPropertiesSet();
 
 		return factory.getObject();

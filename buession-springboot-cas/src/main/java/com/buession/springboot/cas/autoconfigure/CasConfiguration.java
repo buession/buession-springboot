@@ -31,7 +31,6 @@ import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,24 +48,22 @@ import org.springframework.context.annotation.Configuration;
 @Deprecated
 public class CasConfiguration {
 
-	@Autowired
-	private CasProperties casProperties;
+	private CasProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(CasConfiguration.class);
 
-	public CasConfiguration(){
-		logger.warn("com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration instead of {}.",
-				CasConfiguration.class.getName());
+	public CasConfiguration(CasProperties properties){
+		this.properties = properties;
+		logger.warn("com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration instead of {}.", CasConfiguration.class.getName());
 	}
 
 	@Bean(name = "casConfiguration")
 	@ConditionalOnMissingBean
 	@Deprecated
 	public org.pac4j.cas.config.CasConfiguration casConfiguration(){
-		org.pac4j.cas.config.CasConfiguration casConfiguration =
-				new org.pac4j.cas.config.CasConfiguration(casProperties.getLoginUrl(), casProperties.getPrefixUrl());
+		org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration(properties.getLoginUrl(), properties.getPrefixUrl());
 
-		casConfiguration.setProtocol(casProperties.getProtocol());
+		casConfiguration.setProtocol(properties.getProtocol());
 
 		return casConfiguration;
 	}
@@ -82,7 +79,7 @@ public class CasConfiguration {
 
 		casClient.setName(Constants.CAS);
 		casClient.setConfiguration(casConfiguration);
-		casClient.setCallbackUrl(casProperties.getCallbackUrl());
+		casClient.setCallbackUrl(properties.getCallbackUrl());
 
 		return casClient;
 	}

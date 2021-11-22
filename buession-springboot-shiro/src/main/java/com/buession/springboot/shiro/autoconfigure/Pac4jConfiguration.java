@@ -30,7 +30,6 @@ import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
 import com.buession.springboot.shiro.ShiroFilters;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.pac4j.core.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,8 +55,11 @@ import java.util.Map;
 @Import({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 public class Pac4jConfiguration {
 
-	@Autowired
 	protected ShiroProperties shiroProperties;
+
+	public Pac4jConfiguration(ShiroProperties shiroProperties){
+		this.shiroProperties = shiroProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

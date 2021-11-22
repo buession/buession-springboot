@@ -27,7 +27,7 @@ package com.buession.springboot.captcha.autoconfigure;
 import com.buession.httpclient.HttpClient;
 import com.buession.security.geetest.GeetestClient;
 import com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,14 +44,19 @@ import org.springframework.context.annotation.Import;
 @Import({HttpClientConfiguration.class})
 public class GeetestConfiguration {
 
-	@Autowired
-	private GeetestProperties geetestProperties;
+	private GeetestProperties properties;
+
+	private HttpClient httpClient;
+
+	public GeetestConfiguration(GeetestProperties properties, ObjectProvider<HttpClient> httpClient){
+		this.properties = properties;
+		this.httpClient = httpClient.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GeetestClient geetestClient(HttpClient httpClient){
-		return new GeetestClient(geetestProperties.getGeetestId(), geetestProperties.getGeetestKey(),
-				geetestProperties.isNewFailback(), httpClient);
+	public GeetestClient geetestClient(){
+		return new GeetestClient(properties.getGeetestId(), properties.getGeetestKey(), properties.isNewFailback(), httpClient);
 	}
 
 }

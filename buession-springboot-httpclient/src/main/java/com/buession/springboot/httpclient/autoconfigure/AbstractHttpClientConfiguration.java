@@ -24,8 +24,6 @@
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * HttpClient Auto Configuration 抽象类
  *
@@ -34,7 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractHttpClientConfiguration {
 
-	@Autowired
-	protected HttpClientProperties httpClientProperties;
+	protected HttpClientProperties properties;
+
+	public AbstractHttpClientConfiguration(HttpClientProperties properties){
+		this.properties = properties;
+	}
 
 }

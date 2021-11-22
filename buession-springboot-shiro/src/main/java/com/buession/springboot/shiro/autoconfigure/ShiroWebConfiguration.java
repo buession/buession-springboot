@@ -42,7 +42,6 @@ import org.apache.shiro.spring.boot.autoconfigure.ShiroAutoConfiguration;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,7 +51,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -65,12 +63,11 @@ import java.util.List;
 @ConditionalOnWebApplication
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
-	@Autowired
-	protected ShiroProperties shiroProperties;
+	protected ShiroProperties properties;
 
-	@PostConstruct
-	public void initialize(){
-		Session session = shiroProperties.getSession();
+	public ShiroWebConfiguration(ShiroProperties properties){
+		this.properties = properties;
+		Session session = properties.getSession();
 
 		useNativeSessionManager = session.isUseNativeSessionManager();
 		sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
@@ -86,7 +83,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		sessionIdCookieSecure = cookie.isSecure();
 
 		// RememberMe Cookie info
-		Cookie rememberMeCookie = shiroProperties.getRememberMe().getCookie();
+		Cookie rememberMeCookie = properties.getRememberMe().getCookie();
 		rememberMeCookieName = rememberMeCookie.getName();
 		rememberMeCookieDomain = rememberMeCookie.getDomain();
 		rememberMeCookiePath = rememberMeCookie.getPath();
@@ -142,7 +139,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
 		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
 
-		buildShiroCookie(shiroProperties.getSession().getCookie(), cookie);
+		buildShiroCookie(properties.getSession().getCookie(), cookie);
 
 		return cookie;
 	}
@@ -160,7 +157,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
 		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
 
-		buildShiroCookie(shiroProperties.getRememberMe().getCookie(), cookie);
+		buildShiroCookie(properties.getRememberMe().getCookie(), cookie);
 
 		return cookie;
 	}

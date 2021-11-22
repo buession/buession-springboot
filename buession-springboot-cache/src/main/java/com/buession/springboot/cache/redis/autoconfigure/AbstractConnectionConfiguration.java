@@ -24,8 +24,6 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * Redis 连接对象 AutoConfiguration 抽象类
  *
@@ -34,7 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractConnectionConfiguration {
 
-	@Autowired
-	protected RedisProperties redisProperties;
+	protected RedisProperties properties;
+
+	public AbstractConnectionConfiguration(RedisProperties properties){
+		this.properties = properties;
+	}
 
 }

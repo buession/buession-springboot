@@ -31,7 +31,6 @@ import com.buession.security.web.xss.servlet.XssFilter;
 import com.buession.springboot.web.security.HttpSecurityBuilder;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -52,40 +51,47 @@ import java.io.IOException;
  * @author Yong.Teng
  * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnClass({HttpSecurity.class})
 @ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private WebSecurityProperties webSecurityProperties;
+	private WebSecurityProperties properties;
+
+	public WebSecurityConfiguration(WebSecurityProperties properties){
+		super();
+		this.properties = properties;
+	}
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
-		HttpSecurityBuilder.getInstance(httpSecurity).httpBasic(webSecurityProperties.getHttpBasic()).csrf(webSecurityProperties.getCsrf()).frameOptions(webSecurityProperties.getFrameOptions()).hsts(webSecurityProperties.getHsts()).hpkp(webSecurityProperties.getHpkp()).contentSecurityPolicy(webSecurityProperties.getContentSecurityPolicy()).referrerPolicy(webSecurityProperties.getReferrerPolicy()).xss(webSecurityProperties.getXss());
+		HttpSecurityBuilder.getInstance(httpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
 	@ConditionalOnClass({Policy.class})
 	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
 	public static class XssConfiguration {
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@EnableConfigurationProperties(WebSecurityProperties.class)
 		@ConditionalOnClass({XssFilter.class})
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 		public static class ServletXssConfiguration {
 
-			@Autowired
-			protected WebSecurityProperties webSecurityProperties;
+			protected WebSecurityProperties properties;
+
+			public ServletXssConfiguration(WebSecurityProperties properties){
+				this.properties = properties;
+			}
 
 			@Bean
 			public XssFilter xssFilter() throws PolicyException, IOException{
 				XssFilter xssFilter = new XssFilter();
-				String policyConfigLocation = webSecurityProperties.getXss().getPolicyConfigLocation();
+				String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
 
 				if(Validate.hasText(policyConfigLocation)){
 					PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();

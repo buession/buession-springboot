@@ -49,7 +49,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -72,7 +71,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,12 +82,14 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @ConditionalOnBean({DataSource.class})
-@Import({DataSourceConfiguration.class})
-@AutoConfigureAfter({DataSourceConfiguration.class})
+@AutoConfigureAfter({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Dbcp2.class,
+		DataSourceConfiguration.Druid.class, DataSourceConfiguration.Tomcat.class,
+		DataSourceConfiguration.Generic.class})
 public class MybatisConfiguration {
 
-	@Autowired
-	private MybatisProperties properties;
+	private final MybatisProperties properties;
+
+	private final DataSource dataSource;
 
 	private final Interceptor[] interceptors;
 
@@ -100,9 +101,9 @@ public class MybatisConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
-	public MybatisConfiguration(ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
-								ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+	public MybatisConfiguration(MybatisProperties properties, ObjectProvider<DataSource> dataSource, ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader, ObjectProvider<DatabaseIdProvider> databaseIdProvider, ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+		this.properties = properties;
+		this.dataSource = dataSource.getIfAvailable();
 		this.interceptors = interceptorsProvider.getIfAvailable();
 		this.resourceLoader = resourceLoader;
 		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
@@ -116,7 +117,7 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SqlSessionFactory masterSqlSessionFactory(DataSource dataSource) throws Exception{
+	public SqlSessionFactory masterSqlSessionFactory() throws Exception{
 		return createSqlSessionFactory(dataSource.getMaster());
 	}
 
@@ -128,7 +129,7 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public List<SqlSessionFactory> slaveSqlSessionFactories(DataSource dataSource) throws Exception{
+	public List<SqlSessionFactory> slaveSqlSessionFactories() throws Exception{
 		if(Validate.isEmpty(dataSource.getSlaves())){
 			throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
 		}
@@ -149,7 +150,7 @@ public class MybatisConfiguration {
 			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
 		}
 
-		return slaveSqlSessionFactories.stream().map(sqlSessionFactory->createSqlSessionTemplate(sqlSessionFactory)).collect(Collectors.toList());
+		return slaveSqlSessionFactories.stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
 	}
 
 	private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
@@ -212,9 +213,9 @@ public class MybatisConfiguration {
 
 		factory.setFailFast(properties.getFailFast());
 
-		Resource[] resolveMapperLocations = resolveMapperLocations();
+		List<Resource> resolveMapperLocations = resolveMapperLocations();
 		if(Validate.isNotEmpty(resolveMapperLocations)){
-			factory.setMapperLocations(resolveMapperLocations);
+			factory.setMapperLocations(resolveMapperLocations.toArray(new Resource[]{}));
 		}
 
 		return factory.getObject();
@@ -223,34 +224,41 @@ public class MybatisConfiguration {
 	private void checkConfigFileExists(){
 		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
 			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
-			Assert.isFalse(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
-					"autoconfigure file or check your Mybatis configuration)");
+			Assert.isFalse(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " + "autoconfigure file or check your Mybatis configuration)");
 		}
 	}
 
-	private Resource[] resolveMapperLocations(){
-		if(Validate.isEmpty(properties.getMapperLocations())){
-			return new Resource[]{};
-		}
+	private List<Resource> resolveMapperLocations(){
+		if(properties.getMapperLocations() == null){
+			return null;
+		}else{
+			int mapperLocationsSize = properties.getMapperLocations().length;
 
-		PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-		ArrayList<Resource> resources = new ArrayList<>(properties.getMapperLocations().length);
+			if(mapperLocationsSize == 0){
+				return Collections.emptyList();
+			}else{
+				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+				ArrayList<Resource> resources = new ArrayList<>(mapperLocationsSize);
 
-		for(String mapperLocation : properties.getMapperLocations()){
-			try{
-				Resource[] mappers = resourceResolver.getResources(mapperLocation);
-				resources.addAll(Arrays.asList(mappers));
-			}catch(IOException e){
+				for(String mapperLocation : properties.getMapperLocations()){
+					try{
+						Resource[] mappers = resourceResolver.getResources(mapperLocation);
+						resources.addAll(Arrays.asList(mappers));
+					}catch(IOException e){
+						if(logger.isErrorEnabled()){
+							logger.error("Get mapper resource error: {}.", e.getMessage());
+						}
+					}
+				}
+
+				return resources;
 			}
 		}
-
-		return resources.toArray(new Resource[resources.size()]);
 	}
 
 	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
 		ExecutorType executorType = properties.getExecutorType();
-		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) :
-				new SqlSessionTemplate(sqlSessionFactory);
+		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate(sqlSessionFactory);
 	}
 
 	@Configuration
@@ -265,16 +273,14 @@ public class MybatisConfiguration {
 
 	}
 
-	public static class MapperScannerRegistrarAutoConfigured implements BeanFactoryAware,
-			ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+	public static class MapperScannerRegistrarAutoConfigured implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
 		private BeanFactory beanFactory;
 
 		private ResourceLoader resourceLoader;
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-											BeanDefinitionRegistry registry){
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry){
 			logger.debug("Searching for mappers annotated with @Mapper");
 			ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
 

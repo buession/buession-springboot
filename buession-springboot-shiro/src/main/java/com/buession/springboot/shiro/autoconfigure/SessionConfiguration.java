@@ -24,11 +24,9 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.security.shiro.DefaultRedisManager;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.session.RedisSessionDAO;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,16 +45,18 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureAfter(ManagerConfiguration.class)
 public class SessionConfiguration {
 
-	@Autowired
 	protected ShiroProperties shiroProperties;
+
+	public SessionConfiguration(ShiroProperties shiroProperties){
+		this.shiroProperties = shiroProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(RedisManager.class)
 	public SessionDAO sessionDAO(RedisManager redisManager){
 		Session session = shiroProperties.getSession();
-		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
-				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(), session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
 	}
 
 }

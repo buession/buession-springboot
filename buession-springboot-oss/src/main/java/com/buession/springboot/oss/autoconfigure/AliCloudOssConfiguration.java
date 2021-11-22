@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * 阿里云 OSS Auto Configuration
@@ -41,14 +40,18 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({OSS.class})
-@Import({AliCloudOssConfiguration.class})
 @EnableConfigurationProperties(OssProperties.class)
+@Deprecated
 public class AliCloudOssConfiguration extends AbstractOssConfiguration {
+
+	public AliCloudOssConfiguration(OssProperties properties){
+		super(properties);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public AliCloudOSSClient aliCloudOSSClient(){
-		return new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getKey(), ossProperties.getSecret());
+		return new AliCloudOSSClient(properties.getEndpoint(), properties.getKey(), properties.getSecret());
 	}
 
 }

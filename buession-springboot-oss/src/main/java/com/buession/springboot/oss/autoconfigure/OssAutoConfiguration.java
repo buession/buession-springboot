@@ -26,38 +26,46 @@
  */
 package com.buession.springboot.oss.autoconfigure;
 
-import com.buession.oss.AliCloudOSSClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import com.buession.oss.OSSClient;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link OSSClient}.
+ *
  * @author Yong.Teng
+ * @since 1.3.2
  */
 @Configuration(proxyBeanMethods = false)
-public class OssConfiguration {
-
-	protected OssProperties ossProperties;
-
-	public OssConfiguration(OssProperties ossProperties){
-		this.ossProperties = ossProperties;
-	}
+@EnableConfigurationProperties(OssProperties.class)
+public class OssAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(OssProperties.class)
-	public static class Alicloud extends OssConfiguration {
+	@Conditional(OSSCondition.class)
+	@ConditionalOnMissingBean({OSSClient.class})
+	@Import({OssConfiguration.Alicloud.class})
+	protected static class PooledDataSourceConfiguration {
 
-		public Alicloud(OssProperties ossProperties){
-			super(ossProperties);
+	}
+
+	/**
+	 * {@link AnyNestedCondition} that checks that either {@code spring.oss}
+	 */
+	static class OSSCondition extends AnyNestedCondition {
+
+		OSSCondition(){
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@Bean
-		@ConditionalOnClass(com.aliyun.oss.OSS.class)
-		@ConditionalOnMissingBean
-		public AliCloudOSSClient OSSClient(){
-			return new AliCloudOSSClient(ossProperties.getEndpoint(), ossProperties.getKey(), ossProperties.getSecret());
+		@ConditionalOnProperty(name = "spring.oss")
+		static class ExplicitType {
+
 		}
 
 	}

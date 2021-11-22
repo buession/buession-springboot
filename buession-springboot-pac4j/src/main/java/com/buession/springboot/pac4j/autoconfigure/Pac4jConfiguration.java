@@ -54,7 +54,6 @@ import java.util.List;
 @ConditionalOnClass({CasClient.class, CasRestFormClient.class})
 public class Pac4jConfiguration {
 
-	@Autowired
 	private CasProperties casProperties;
 
 	@Autowired(required = false)
@@ -63,11 +62,14 @@ public class Pac4jConfiguration {
 	@Autowired(required = false)
 	private CasRestFormClient casRestFormClient;
 
+	public Pac4jConfiguration(CasProperties casProperties){
+		this.casProperties = casProperties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
 	public CasConfiguration casConfiguration(){
-		CasConfiguration casConfiguration = new CasConfiguration(casProperties.getLoginUrl(),
-				casProperties.getPrefixUrl());
+		CasConfiguration casConfiguration = new CasConfiguration(casProperties.getLoginUrl(), casProperties.getPrefixUrl());
 
 		casConfiguration.setProtocol(casProperties.getProtocol());
 

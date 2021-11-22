@@ -34,11 +34,11 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnWebApplication
 public class SessionConfiguration {
 
 	@Configuration
 	@EnableRedisHttpSession
-	@ConditionalOnWebApplication
 	@ConditionalOnBean({RedisTemplate.class})
 	public static class RedisSessionConfiguration extends SessionConfiguration {
 

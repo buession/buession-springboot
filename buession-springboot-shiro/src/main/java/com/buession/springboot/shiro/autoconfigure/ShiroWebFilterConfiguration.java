@@ -32,7 +32,7 @@ import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 
 /**
@@ -51,27 +50,24 @@ import javax.servlet.DispatcherType;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
-@ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "shiro.web", name = "enabled", matchIfMissing = true)
 @Import({Pac4jConfiguration.class})
 @ConditionalOnWebApplication
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
-	@Autowired
-	protected ShiroProperties shiroProperties;
+	protected ShiroProperties properties;
 
 	protected SubjectFactory subjectFactory;
 
-	public ShiroWebFilterConfiguration(SubjectFactory subjectFactory){
-		this.subjectFactory = subjectFactory;
-	}
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory){
+		this.properties = properties;
+		this.subjectFactory = subjectFactory.getIfAvailable();
 
-	@PostConstruct
-	public void initialize(){
-		loginUrl = shiroProperties.getLoginUrl();
-		successUrl = shiroProperties.getSuccessUrl();
-		unauthorizedUrl = shiroProperties.getUnauthorizedUrl();
+		loginUrl = properties.getLoginUrl();
+		successUrl = properties.getSuccessUrl();
+		unauthorizedUrl = properties.getUnauthorizedUrl();
 
-		((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory);
+		((DefaultSecurityManager) securityManager).setSubjectFactory(this.subjectFactory);
 	}
 
 	@Bean(name = "shiroFilterRegistrationBean")
@@ -101,8 +97,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	protected FilterRegistrationBean<AbstractShiroFilter> createShiroFilterRegistrationBean(){
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 
-		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
-				DispatcherType.INCLUDE, DispatcherType.ERROR);
+		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;

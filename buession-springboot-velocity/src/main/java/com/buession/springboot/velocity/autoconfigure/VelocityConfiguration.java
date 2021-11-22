@@ -33,7 +33,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -68,13 +68,13 @@ public class VelocityConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	@Autowired
 	private VelocityProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
 
-	public VelocityConfiguration(ApplicationContext applicationContext){
-		this.applicationContext = applicationContext;
+	public VelocityConfiguration(VelocityProperties properties, ObjectProvider<ApplicationContext> applicationContext){
+		this.properties = properties;
+		this.applicationContext = applicationContext.getIfAvailable();
 	}
 
 	@PostConstruct
@@ -82,17 +82,18 @@ public class VelocityConfiguration {
 		if(properties.isCheckTemplateLocation()){
 			TemplateLocation location = new TemplateLocation(properties.getResourceLoaderPath());
 			if(location.exists(applicationContext) == false){
-				logger.warn("Cannot find template location: {} (please add some templates, check your Velocity " +
-						"configuration, or set {}.checkTemplateLocation=false)", location,
-						VelocityProperties.class.getName());
+				logger.warn("Cannot find template location: {} (please add some templates, check your Velocity " + "configuration, or set {}.checkTemplateLocation=false)", location, VelocityProperties.class.getName());
 			}
 		}
 	}
 
 	static abstract class AbstractVelocityConfiguration {
 
-		@Autowired
 		protected VelocityProperties properties;
+
+		public AbstractVelocityConfiguration(VelocityProperties properties){
+			this.properties = properties;
+		}
 
 		protected VelocityConfigurer velocityConfigurer(){
 			VelocityConfigurer configurer = new VelocityConfigurer();
@@ -103,8 +104,7 @@ public class VelocityConfiguration {
 		protected void applyProperties(VelocityEngineFactory factory){
 			Properties velocityProperties = new Properties();
 
-			velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName() == null ?
-					RuntimeConstants.ENCODING_DEFAULT : properties.getCharsetName());
+			velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName() == null ? RuntimeConstants.ENCODING_DEFAULT : properties.getCharsetName());
 			velocityProperties.setProperty(RuntimeConstants.VM_LIBRARY, properties.getVelocityMacro().getLibrary());
 			velocityProperties.putAll(properties.getProperties());
 
@@ -116,10 +116,15 @@ public class VelocityConfiguration {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@ConditionalOnClass({Servlet.class})
 	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 	public class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
+
+		public VelocityServletWebConfiguration(VelocityProperties properties){
+			super(properties);
+		}
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -131,8 +136,7 @@ public class VelocityConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		public com.buession.velocity.servlet.VelocityViewResolver velocityViewResolver(){
-			com.buession.velocity.servlet.VelocityViewResolver resolver =
-					new com.buession.velocity.servlet.VelocityViewResolver();
+			com.buession.velocity.servlet.VelocityViewResolver resolver = new com.buession.velocity.servlet.VelocityViewResolver();
 
 			resolver.setEncoding(properties.getCharset().name());
 			resolver.setToolboxConfigLocation(properties.getToolboxConfigLocation());
@@ -148,8 +152,7 @@ public class VelocityConfiguration {
 		@ConditionalOnEnabledResourceChain
 		@ConditionalOnMissingFilterBean(ResourceUrlEncodingFilter.class)
 		public FilterRegistrationBean<ResourceUrlEncodingFilter> resourceUrlEncodingFilter(){
-			FilterRegistrationBean<ResourceUrlEncodingFilter> registration =
-					new FilterRegistrationBean<>(new ResourceUrlEncodingFilter());
+			FilterRegistrationBean<ResourceUrlEncodingFilter> registration = new FilterRegistrationBean<>(new ResourceUrlEncodingFilter());
 			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
 			return registration;
 		}
@@ -157,22 +160,31 @@ public class VelocityConfiguration {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	@ConditionalOnClass(WebFluxConfigurer.class)
 	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
 	public class VelocityReactiveWebConfiguration extends AbstractVelocityConfiguration {
 
+		public VelocityReactiveWebConfiguration(VelocityProperties properties){
+			super(properties);
+		}
+
 		@PostConstruct
 		public void initialize(){
-			logger.error("{} cloud not support on {}", VelocityEngine.class.getName(),
-					ConditionalOnWebApplication.Type.REACTIVE.name());
+			logger.error("{} cloud not support on {}", VelocityEngine.class.getName(), ConditionalOnWebApplication.Type.REACTIVE.name());
 		}
 
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnNotWebApplication
 	public class VelocityNonWebConfiguration extends AbstractVelocityConfiguration {
+
+		public VelocityNonWebConfiguration(VelocityProperties properties){
+			super(properties);
+		}
 
 		@Bean
 		@ConditionalOnMissingBean

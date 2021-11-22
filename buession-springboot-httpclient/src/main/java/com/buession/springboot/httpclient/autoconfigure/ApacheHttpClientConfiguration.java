@@ -43,9 +43,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnClass({HttpClientConnectionManager.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true", matchIfMissing = true)
 public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
+
+	public ApacheHttpClientConfiguration(HttpClientProperties properties){
+		super(properties);
+	}
 
 	/**
 	 * 实例化 ApacheClientConnectionManager 连接池管理器
@@ -55,7 +58,7 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@Bean
 	@ConditionalOnMissingBean
 	public ApacheClientConnectionManager apacheClientConnectionManager(){
-		return new ApacheClientConnectionManager(httpClientProperties);
+		return new ApacheClientConnectionManager(properties);
 	}
 
 	@Bean

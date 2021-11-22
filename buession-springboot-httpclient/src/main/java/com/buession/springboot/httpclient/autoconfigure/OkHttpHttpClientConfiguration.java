@@ -43,9 +43,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnClass({ConnectionPool.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing =
-		true)
+@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
 public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
+
+	public OkHttpHttpClientConfiguration(HttpClientProperties properties){
+		super(properties);
+	}
 
 	/**
 	 * 实例化 OkHttpClientConnectionManager 连接池管理器
@@ -55,7 +58,7 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@Bean
 	@ConditionalOnMissingBean
 	public OkHttpClientConnectionManager okHttpClientConnectionManager(){
-		return new OkHttpClientConnectionManager(httpClientProperties);
+		return new OkHttpClientConnectionManager(properties);
 	}
 
 	@Bean
