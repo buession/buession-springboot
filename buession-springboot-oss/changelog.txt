@@ -8,6 +8,7 @@ Changes in version 1.3.2 (2021-11-10)
 *【变化】ConfigurationProperties 通过 Auto Configuration 构造函数注入
 *【变化】统一化 ConfigurationProperties 属性命名
 *【优化】Auto Configuration 依赖 bean 通过构造函数 ObjectProvider 注入
+*【安全】apache log4j 版本升级至 2.17.1 ，修复 CVE-2019-17571、CVE-2021-23463、CVE-2021-35516、CVE-2021-35517、CVE-2021-36090、CVE-2021-4104、CVE-2021-42550、CVE-2021-44228、CVE-2021-44832、CVE-2021-45046、CVE-2021-45105 安全漏洞
 
 
 Changes in version 1.3.1 (2021-07-27)
