@@ -1,0 +1,4 @@
+com.buession.springboot.datasource.autoconfigure
+com.buession.springboot.datasource.core
+com.buession.springboot.datasource.metadata
+org.springframework.boot.jdbc.metadata
