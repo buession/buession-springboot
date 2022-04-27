@@ -21,14 +21,13 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.velocity.autoconfigure;
 
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.HashMap;
@@ -88,12 +87,6 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	 */
 	@NestedConfigurationProperty
 	private VelocityMacro velocityMacro = new VelocityMacro();
-
-	/**
-	 * 是否开启缓存
-	 */
-	@Deprecated
-	private boolean enableCache = true;
 
 	private boolean preferFileSystemAccess = true;
 
@@ -181,156 +174,7 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
-	public boolean isEnableCache(){
-		return getEnableCache();
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
-	public boolean getEnableCache(){
-		return enableCache;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.cache")
-	public void setEnableCache(boolean enableCache){
-		setCache(enableCache);
-		this.enableCache = enableCache;
-	}
-
-	@ConfigurationProperties(prefix = "velocity")
-	@Deprecated
-	public final static class DeprecatedVelocityProperties extends VelocityProperties {
-
-		/**
-		 * 模板前缀
-		 */
-		@Deprecated
-		private String prefix = DEFAULT_PREFIX;
-
-		/**
-		 * 模板后缀
-		 */
-		@Deprecated
-		private String suffix = DEFAULT_SUFFIX;
-
-		/**
-		 * 日期时间工具属性
-		 */
-		@Deprecated
-		private String dateToolAttribute;
-
-		/**
-		 * 数字工具属性
-		 */
-		@Deprecated
-		private String numberToolAttribute;
-
-		/**
-		 * Velocity 属性
-		 */
-		@Deprecated
-		private Map<String, String> properties = new HashMap<>(16, 0.8F);
-
-		/**
-		 * 模板目录路径
-		 */
-		@Deprecated
-		private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
-
-		/**
-		 * toolbox 配置文件路径
-		 */
-		@Deprecated
-		private String toolboxConfigLocation;
-
-		/**
-		 * 宏配置
-		 */
-		@Deprecated
-		@NestedConfigurationProperty
-		private VelocityMacro velocityMacro = new VelocityMacro();
-
-		@Deprecated
-		private boolean preferFileSystemAccess = true;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.prefix")
-		@Override
-		public void setPrefix(String prefix){
-			super.setPrefix(prefix);
-			this.prefix = prefix;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.suffix")
-		@Override
-		public void setSuffix(String suffix){
-			super.setSuffix(suffix);
-			this.suffix = suffix;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.date-tool-attribute")
-		@Override
-		public void setDateToolAttribute(String dateToolAttribute){
-			super.setDateToolAttribute(dateToolAttribute);
-			this.dateToolAttribute = dateToolAttribute;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.number-tool-attribute")
-		@Override
-		public void setNumberToolAttribute(String numberToolAttribute){
-			super.setNumberToolAttribute(numberToolAttribute);
-			this.numberToolAttribute = numberToolAttribute;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.properties")
-		@Override
-		public void setProperties(Map<String, String> properties){
-			super.setProperties(properties);
-			this.properties = properties;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.resource-loader-path")
-		@Override
-		public void setResourceLoaderPath(String resourceLoaderPath){
-			super.setResourceLoaderPath(resourceLoaderPath);
-			this.resourceLoaderPath = resourceLoaderPath;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.toolbox-config-location")
-		@Override
-		public void setToolboxConfigLocation(String toolboxConfigLocation){
-			super.setToolboxConfigLocation(toolboxConfigLocation);
-			this.toolboxConfigLocation = toolboxConfigLocation;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.velocity-macro")
-		@Override
-		public void setVelocityMacro(VelocityMacro velocityMacro){
-			super.setVelocityMacro(velocityMacro);
-			this.velocityMacro = velocityMacro;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.velocity.prefer-file-system-access")
-		@Override
-		public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
-			super.setPreferFileSystemAccess(preferFileSystemAccess);
-			this.preferFileSystemAccess = preferFileSystemAccess;
-		}
-
-	}
-
-	public class VelocityMacro {
+	public static class VelocityMacro {
 
 		private String library;
 

@@ -19,11 +19,14 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
 
+import com.buession.core.validator.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -47,17 +50,29 @@ public class MongoDBConfiguration {
 
 	private MongoDBProperties properties;
 
+	private final static Logger logger = LoggerFactory.getLogger(MongoDBConfiguration.class);
+
 	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext, ObjectProvider<MappingMongoConverter> mappingMongoConverter){
 		this.properties = properties;
-		MongoTypeMapper mongoTypeMapper;
+		MongoTypeMapper mongoTypeMapper = null;
 
 		if(this.properties.getTypeMapper() != null){
-			mongoTypeMapper = BeanUtils.instantiateClass(this.properties.getTypeMapper());
+			try{
+				mongoTypeMapper = this.properties.getTypeMapper().newInstance();
+			}catch(InstantiationException e){
+				logger.error("Failed to instantiate [{}]: {}", this.properties.getTypeMapper().getName(), e.getMessage(), e);
+			}catch(IllegalAccessException e){
+				logger.error("Failed to instantiate [{}]: {}", this.properties.getTypeMapper().getName(), e.getMessage(), e);
+			}
 		}else{
-			mongoTypeMapper = new DefaultMongoTypeMapper(this.properties.getTypeKey(), mongoMappingContext.getIfAvailable());
+			if(Validate.hasText(this.properties.getTypeKey())){
+				mongoTypeMapper = new DefaultMongoTypeMapper(this.properties.getTypeKey(), mongoMappingContext.getIfAvailable());
+			}
 		}
 
-		mappingMongoConverter.getIfAvailable().setTypeMapper(mongoTypeMapper);
+		if(mongoTypeMapper != null){
+			mappingMongoConverter.getIfAvailable().setTypeMapper(mongoTypeMapper);
+		}
 	}
 
 }

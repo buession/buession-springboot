@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -27,12 +27,14 @@ package com.buession.springboot.cache.redis.autoconfigure;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.redis.client.connection.RedisConnection;
-import com.buession.redis.client.connection.jedis.JedisConnection;
+import com.buession.redis.core.RedisNode;
 import com.buession.redis.core.RedisURI;
-import com.buession.redis.core.ShardedRedisNode;
-import com.buession.redis.exception.RedisException;
-import com.buession.redis.spring.JedisRedisConnectionFactoryBean;
-import com.buession.redis.spring.jedis.ShardedRedisConfiguration;
+import com.buession.redis.spring.JedisConnectionFactoryBean;
+import com.buession.redis.spring.RedisConfiguration;
+import com.buession.redis.spring.jedis.JedisClusterConfiguration;
+import com.buession.redis.spring.jedis.JedisConfiguration;
+import com.buession.redis.spring.jedis.JedisRedisConfiguration;
+import com.buession.redis.spring.jedis.JedisSentinelConfiguration;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
@@ -41,18 +43,16 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.ShardedJedisPoolConfig;
-import redis.clients.jedis.commands.JedisCommands;
 
-import java.net.URISyntaxException;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Jedis 连接对象 AutoConfiguration 抽象类
@@ -62,7 +62,7 @@ import java.util.Set;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
-@ConditionalOnClass({JedisConnection.class, Jedis.class})
+@ConditionalOnClass({Jedis.class, JedisCluster.class})
 public class JedisConnectionConfiguration extends AbstractConnectionConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(JedisConnectionConfiguration.class);
@@ -72,28 +72,26 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.redis", name = "mode", havingValue = "sharded")
 	@ConditionalOnMissingBean
-	public ShardedJedisPoolConfig poolConfig(){
-		PoolConfig poolConfig = properties.getPool();
+	@ConditionalOnProperty(prefix = "spring.redis", name = "cluster")
+	public ConnectionPoolConfig jedisConnectionPoolConfig(){
+		ConnectionPoolConfig config = new ConnectionPoolConfig();
 
-		ShardedJedisPoolConfig config = new ShardedJedisPoolConfig();
-		buildPoolConfig(poolConfig, config);
+		initPoolConfig(config, properties.getPool());
 
 		if(logger.isTraceEnabled()){
-			logger.trace("ShardedJedisPoolConfig bean initialize success.");
+			logger.trace("ConnectionPoolConfig bean initialize success.");
 		}
 
 		return config;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(value = {ConnectionPoolConfig.class, JedisPoolConfig.class})
 	public JedisPoolConfig jedisPoolConfig(){
-		PoolConfig poolConfig = properties.getPool();
-
 		JedisPoolConfig config = new JedisPoolConfig();
-		buildPoolConfig(poolConfig, config);
+
+		initPoolConfig(config, properties.getPool());
 
 		if(logger.isTraceEnabled()){
 			logger.trace("JedisPoolConfig bean initialize success.");
@@ -104,24 +102,41 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.redis", name = "mode", havingValue = "sharded")
-	public JedisRedisConnectionFactoryBean shardedJedisRedisConnectionFactory(ShardedJedisPoolConfig poolConfig){
-		return createShardedJedisRedisConnectionFactory(poolConfig);
+	public JedisConnectionFactoryBean jedisConnectionFactoryBean(ConnectionPoolConfig poolConfig){
+		JedisRedisConfiguration configuration = createJedisClusterConfiguration(poolConfig);
+
+		applyConfigurationTimeout(configuration);
+
+		return new JedisConnectionFactoryBean(configuration);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "redis", name = "mode", havingValue = "sharded")
-	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.redis.mode")
-	@Deprecated
-	public JedisRedisConnectionFactoryBean deprecatedShardedJedisRedisConnectionFactory(ShardedJedisPoolConfig poolConfig){
-		return createShardedJedisRedisConnectionFactory(poolConfig);
+	public JedisConnectionFactoryBean jedisConnectionFactoryBean(JedisPoolConfig poolConfig){
+		JedisRedisConfiguration configuration;
+
+		if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
+			configuration = createJedisSentinelConfiguration(poolConfig);
+		}else{
+			configuration = createJedisConfiguration(poolConfig);
+		}
+
+		applyConfigurationTimeout(configuration);
+
+		return new JedisConnectionFactoryBean(configuration);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JedisRedisConnectionFactoryBean jedisRedisConnectionFactoryBean(JedisPoolConfig poolConfig){
-		com.buession.redis.spring.jedis.JedisConfiguration configuration = new com.buession.redis.spring.jedis.JedisConfiguration();
+	public RedisConnection jedisConnection(JedisConnectionFactoryBean connectionFactory) throws Exception{
+		connectionFactory.afterPropertiesSet();
+		return connectionFactory.getObject();
+	}
+
+	private JedisRedisConfiguration createJedisConfiguration(final JedisPoolConfig poolConfig){
+		final JedisConfiguration configuration = new JedisConfiguration();
+
+		configuration.setPoolConfig(poolConfig);
 
 		if(Validate.hasText(properties.getHost())){
 			configuration.setHost(properties.getHost());
@@ -143,79 +158,111 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 			}
 		}
 
+		return configuration;
+	}
+
+	private JedisRedisConfiguration createJedisSentinelConfiguration(final JedisPoolConfig poolConfig){
+		RedisProperties.Sentinel sentinel = properties.getSentinel();
+
+		List<RedisNode> sentinelNodes = new ArrayList<>(sentinel.getNodes().size());
+
+		for(String node : sentinel.getNodes()){
+			String[] hostAndPort = StringUtils.split(node, ':');
+
+			if(hostAndPort.length == 1){
+				sentinelNodes.add(new RedisNode(hostAndPort[0], RedisNode.DEFAULT_SENTINEL_PORT));
+			}else if(hostAndPort.length == 2){
+				try{
+					sentinelNodes.add(new RedisNode(hostAndPort[0], Integer.parseInt(hostAndPort[1])));
+				}catch(Exception e){
+					throw new BeanInitializationException("Illegal redis host and port: " + node + ".");
+				}
+			}else{
+				throw new BeanInitializationException("Illegal redis host and port: " + node + ".");
+			}
+		}
+
+		final JedisSentinelConfiguration configuration = new JedisSentinelConfiguration();
+
+		configuration.setMasterName(sentinel.getMasterName());
+		configuration.setSentinelConnectTimeout(durationToInteger(sentinel.getConnectTimeout()));
+		configuration.setSentinelSoTimeout(durationToInteger(sentinel.getSoTimeout()));
+		configuration.setSentinelClientName(sentinel.getClientName());
+		configuration.setSentinels(sentinelNodes);
+		configuration.setClientName(properties.getClientName());
 		configuration.setPoolConfig(poolConfig);
-		setTimeout(configuration);
 
-		return new JedisRedisConnectionFactoryBean(configuration);
+		return configuration;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public RedisConnection jedisConnection(JedisRedisConnectionFactoryBean connectionFactory) throws Exception{
-		connectionFactory.afterPropertiesSet();
-		return connectionFactory.getObject();
-	}
+	private JedisRedisConfiguration createJedisClusterConfiguration(final ConnectionPoolConfig poolConfig){
+		RedisProperties.Cluster cluster = properties.getCluster();
 
-	protected static <T extends JedisCommands> void buildPoolConfig(PoolConfig poolConfig, GenericObjectPoolConfig<T> config){
-		config.setLifo(poolConfig.getLifo());
-		config.setFairness(poolConfig.getFairness());
-		config.setMaxWaitMillis(poolConfig.getMaxWait());
-		config.setMinEvictableIdleTimeMillis(poolConfig.getMinEvictableIdleTime());
-		config.setSoftMinEvictableIdleTimeMillis(poolConfig.getSoftMinEvictableIdleTime());
-		config.setEvictionPolicyClassName(poolConfig.getEvictionPolicyClassName());
-		config.setEvictorShutdownTimeoutMillis(poolConfig.getEvictorShutdownTimeout());
-		config.setNumTestsPerEvictionRun(poolConfig.getNumTestsPerEvictionRun());
-		config.setTestOnCreate(poolConfig.getTestOnCreate());
-		config.setTestOnBorrow(poolConfig.getTestOnBorrow());
-		config.setTestOnReturn(poolConfig.getTestOnReturn());
-		config.setTestWhileIdle(poolConfig.getTestWhileIdle());
-		config.setTimeBetweenEvictionRunsMillis(poolConfig.getTimeBetweenEvictionRuns());
-		config.setBlockWhenExhausted(poolConfig.getBlockWhenExhausted());
-		config.setJmxEnabled(poolConfig.getJmxEnabled());
-		config.setJmxNamePrefix(poolConfig.getJmxNamePrefix());
-		config.setJmxNameBase(poolConfig.getJmxNameBase());
-		config.setMaxTotal(poolConfig.getMaxTotal());
-		config.setMinIdle(poolConfig.getMinIdle());
-		config.setMaxIdle(poolConfig.getMaxIdle());
-	}
+		List<RedisNode> nodes = new ArrayList<>(cluster.getNodes().size());
 
-	protected void setTimeout(final com.buession.redis.spring.RedisConfiguration configuration){
-		configuration.setConnectTimeout(properties.getConnectTimeout());
-		configuration.setSoTimeout(properties.getSoTimeout());
-	}
+		for(String node : cluster.getNodes()){
+			String[] hostAndPort = StringUtils.split(node, ':');
 
-	protected static Set<ShardedRedisNode> parseShardedRedisNode(final String url) throws URISyntaxException{
-		if(Validate.hasText(url)){
-			return null;
+			if(hostAndPort.length == 1){
+				nodes.add(new RedisNode(hostAndPort[0], RedisNode.DEFAULT_SENTINEL_PORT));
+			}else if(hostAndPort.length == 2){
+				try{
+					nodes.add(new RedisNode(hostAndPort[0], Integer.parseInt(hostAndPort[1])));
+				}catch(Exception e){
+					throw new BeanInitializationException("Illegal redis host and port: " + node + ".");
+				}
+			}else{
+				throw new BeanInitializationException("Illegal redis host and port: " + node + ".");
+			}
 		}
 
-		String[] parts = StringUtils.splitByWholeSeparatorPreserveAllTokens(url, ";");
-		Set<ShardedRedisNode> nodes = new LinkedHashSet<>(parts.length);
-		RedisURI redisURI;
+		final JedisClusterConfiguration configuration = new JedisClusterConfiguration();
 
-		for(String part : parts){
-			redisURI = RedisURI.create(part);
-			nodes.add(new ShardedRedisNode(redisURI.getHost(), redisURI.getPort(), redisURI.getPassword(), redisURI.getDatabase(), redisURI.getClientName(), redisURI.getWeight()));
-		}
-
-		return nodes;
-	}
-
-	private JedisRedisConnectionFactoryBean createShardedJedisRedisConnectionFactory(final ShardedJedisPoolConfig poolConfig){
-		ShardedRedisConfiguration configuration = new ShardedRedisConfiguration();
-
+		configuration.setNodes(nodes);
+		configuration.setUsername(configuration.getUsername());
+		configuration.setPassword(configuration.getPassword());
+		configuration.setClientName(properties.getClientName());
 		configuration.setPoolConfig(poolConfig);
-		setTimeout(configuration);
 
-		try{
-			configuration.setNodes(parseShardedRedisNode(properties.getNodes()));
-
-			return new JedisRedisConnectionFactoryBean(configuration);
-		}catch(URISyntaxException e){
-			throw new RedisException(e.getMessage());
-		}catch(Exception e){
-			throw e;
+		if(cluster.getMaxRedirects() != null){
+			configuration.setMaxRedirects(cluster.getMaxRedirects());
 		}
+
+		if(cluster.getMaxTotalRetriesDuration() != null){
+			configuration.setMaxTotalRetriesDuration(durationToInteger(cluster.getMaxTotalRetriesDuration()));
+		}
+
+
+		return configuration;
+	}
+
+	private <T> void initPoolConfig(final GenericObjectPoolConfig<T> poolConfig, final PoolConfig config){
+		poolConfig.setLifo(config.getLifo());
+		poolConfig.setFairness(config.getFairness());
+		poolConfig.setMaxWait(config.getMaxWait());
+		poolConfig.setMinEvictableIdleTime(config.getMinEvictableIdleTime());
+		poolConfig.setSoftMinEvictableIdleTime(config.getSoftMinEvictableIdleTime());
+		poolConfig.setEvictionPolicyClassName(config.getEvictionPolicyClassName());
+		poolConfig.setEvictorShutdownTimeout(config.getEvictorShutdownTimeout());
+		poolConfig.setNumTestsPerEvictionRun(config.getNumTestsPerEvictionRun());
+		poolConfig.setTestOnCreate(config.getTestOnCreate());
+		poolConfig.setTestOnBorrow(config.getTestOnBorrow());
+		poolConfig.setTestOnReturn(config.getTestOnReturn());
+		poolConfig.setTestWhileIdle(config.getTestWhileIdle());
+		poolConfig.setTimeBetweenEvictionRuns(config.getTimeBetweenEvictionRuns());
+		poolConfig.setBlockWhenExhausted(config.getBlockWhenExhausted());
+		poolConfig.setJmxEnabled(config.getJmxEnabled());
+		poolConfig.setJmxNamePrefix(config.getJmxNamePrefix());
+		poolConfig.setJmxNameBase(config.getJmxNameBase());
+		poolConfig.setMaxTotal(config.getMaxTotal());
+		poolConfig.setMinIdle(config.getMinIdle());
+		poolConfig.setMaxIdle(config.getMaxIdle());
+	}
+
+	private void applyConfigurationTimeout(final RedisConfiguration configuration){
+		configuration.setConnectTimeout(durationToInteger(properties.getConnectTimeout()));
+		configuration.setSoTimeout(durationToInteger(properties.getSoTimeout()));
+		configuration.setInfiniteSoTimeout(durationToInteger(properties.getInfiniteSoTimeout()));
 	}
 
 }

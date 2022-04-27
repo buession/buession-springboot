@@ -21,12 +21,13 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.jwt.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
+import com.buession.security.pac4j.Constants;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -43,12 +44,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Yong.Teng
@@ -56,17 +54,16 @@ import javax.annotation.PostConstruct;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JwtProperties.class)
 @ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
+@ConditionalOnProperty(prefix = "spring.pac4j.client", name = Constants.JWT, havingValue = "on")
 public class JwtConfiguration {
-
-	private final static String JWT = "jwt";
 
 	private final static int PAD_SIZE = 32;
 
 	private JwtProperties properties;
 
-	private SignatureConfiguration signatureConfiguration;
+	private final SignatureConfiguration signatureConfiguration;
 
-	private SecretEncryptionConfiguration secretEncryptionConfiguration;
+	private final SecretEncryptionConfiguration secretEncryptionConfiguration;
 
 	private final static Logger logger = LoggerFactory.getLogger(JwtConfiguration.class);
 
@@ -86,12 +83,11 @@ public class JwtConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.pac4j.client", name = JWT, havingValue = "on")
 	@ConditionalOnMissingBean
 	public ParameterClient jwtClient(){
 		ParameterClient parameterClient = new ParameterClient();
 
-		parameterClient.setName(JWT);
+		parameterClient.setName(Constants.JWT);
 		parameterClient.setParameterName(properties.getParameterName());
 		parameterClient.setSupportGetRequest(properties.isSupportGetRequest());
 		parameterClient.setSupportPostRequest(properties.isSupportPostRequest());
@@ -99,18 +95,10 @@ public class JwtConfiguration {
 		parameterClient.setCredentialsExtractor(new HeaderExtractor(properties.getParameterName(), properties.getPrefixHeader()));
 
 		if(logger.isDebugEnabled()){
-			logger.debug("initialize {} [name: {}, encryption key: {}, parameter name: {}, prefix header: {}.", ParameterClient.class.getName(), JWT, properties.getEncryptionKey(), properties.getParameterName(), properties.getPrefixHeader());
+			logger.debug("initialize {} [name: {}, encryption key: {}, parameter name: {}, prefix header: {}.", ParameterClient.class.getName(), Constants.JWT, properties.getEncryptionKey(), properties.getParameterName(), properties.getPrefixHeader());
 		}
 
 		return parameterClient;
-	}
-
-	@Bean
-	@ConditionalOnProperty(prefix = "pac4j.client", name = JWT, havingValue = "on")
-	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.pac4j.client.jwt")
-	@ConditionalOnMissingBean
-	public ParameterClient deprecatedJwtClient(){
-		return jwtClient();
 	}
 
 }

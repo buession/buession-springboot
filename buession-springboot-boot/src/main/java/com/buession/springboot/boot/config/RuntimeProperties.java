@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.config;
@@ -36,19 +36,27 @@ import java.util.Properties;
  */
 public class RuntimeProperties extends Properties {
 
+	private static final long serialVersionUID = 7179944252788268602L;
+
 	public RuntimeProperties(){
-		put("EmbeddedContainerConfigurationActive", true);
-		put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
+		putDefaults();
 	}
 
 	public RuntimeProperties(Properties properties){
 		super(properties);
+		putDefaults();
 	}
 
 	public RuntimeProperties(Map<String, Object> m){
 		if(m != null){
 			putAll(m);
 		}
+		putDefaults();
+	}
+
+	protected void putDefaults(){
+		put("EmbeddedContainerConfigurationActive", true);
+		put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
 	}
 
 }

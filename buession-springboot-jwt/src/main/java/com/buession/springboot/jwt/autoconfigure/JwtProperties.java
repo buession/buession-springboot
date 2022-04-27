@@ -19,14 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.jwt.autoconfigure;
 
 import com.buession.lang.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * JWT 配置
@@ -107,54 +106,6 @@ public class JwtProperties {
 
 	public void setSupportPostRequest(boolean supportPostRequest){
 		this.supportPostRequest = supportPostRequest;
-	}
-
-	@ConfigurationProperties(prefix = "jwt")
-	@Deprecated
-	public final static class DeprecatedJwtProperties extends JwtProperties {
-
-		/**
-		 * 参数名
-		 */
-		@Deprecated
-		private String parameterName;
-
-		/**
-		 * HTTP 头前缀
-		 */
-		@Deprecated
-		private String prefixHeader;
-
-		/**
-		 * 加密 Key
-		 */
-		@Deprecated
-		private String encryptionKey;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.parameter-name")
-		@Override
-		public void setParameterName(String parameterName){
-			super.setParameterName(parameterName);
-			this.parameterName = parameterName;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.prefix-header")
-		@Override
-		public void setPrefixHeader(String prefixHeader){
-			super.setPrefixHeader(prefixHeader);
-			this.prefixHeader = prefixHeader;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.jwt.encryption-key")
-		@Override
-		public void setEncryptionKey(String encryptionKey){
-			super.setEncryptionKey(encryptionKey);
-			this.encryptionKey = encryptionKey;
-		}
-
 	}
 
 }

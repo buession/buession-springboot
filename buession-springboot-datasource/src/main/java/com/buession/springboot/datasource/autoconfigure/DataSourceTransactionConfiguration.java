@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -46,7 +46,8 @@ public class DataSourceTransactionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataSourceTransactionManager masterTransactionManager(DataSource dataSource, ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers){
+	public DataSourceTransactionManager transactionManager(DataSource dataSource,
+														   ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers){
 		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource.getMaster());
 		transactionManagerCustomizers.ifAvailable((customizers)->customizers.customize(transactionManager));
 		return transactionManager;

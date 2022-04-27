@@ -21,13 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.security.pac4j.subject.Pac4jSubjectFactory;
-import com.buession.springboot.shiro.ShiroFilters;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.pac4j.core.config.Config;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -37,10 +36,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Auto-configuration pac4j for shiro
@@ -65,20 +60,6 @@ public class Pac4jConfiguration {
 	@ConditionalOnMissingBean
 	public SubjectFactory subjectFactory(){
 		return new Pac4jSubjectFactory();
-	}
-
-	@Bean
-	public ShiroFilters pac4jFilters(Config pac4jConfig){
-		Pac4j pac4j = shiroProperties.getPac4j();
-
-		FilterCreator filterCreator = new FilterCreator(pac4jConfig, pac4j);
-		Map<String, Filter> filters = new HashMap<>(3);
-
-		filters.put("securityFilter", filterCreator.createSecurityFilter());
-		filters.put("callbackFilter", filterCreator.createCallbackFilter());
-		filters.put("logoutFilter", filterCreator.createLogoutFilter());
-
-		return new ShiroFilters(filters);
 	}
 
 }

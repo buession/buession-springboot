@@ -24,13 +24,15 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.security.autoconfigure;
+package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.security.web.builders.servlet.ServletHttpSecurityBuilder;
+import com.buession.security.web.builder.servlet.ServletHttpSecurityBuilder;
 import com.buession.security.web.xss.servlet.XssFilter;
+import com.buession.springboot.web.security.WebSecurityProperties;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -39,6 +41,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,12 +53,13 @@ import java.io.IOException;
  * Spring Security Configuration
  *
  * @author Yong.Teng
- * @since 1.2.0
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnClass({HttpSecurity.class})
 @ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean({HttpSecurity.class, ObjectPostProcessor.class, AuthenticationConfiguration.class})
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -72,37 +77,30 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	@ConditionalOnClass({Policy.class})
 	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+	@ConditionalOnClass({Policy.class})
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	public static class XssConfiguration {
 
-		@Configuration(proxyBeanMethods = false)
-		@EnableConfigurationProperties(WebSecurityProperties.class)
-		@ConditionalOnClass({XssFilter.class})
-		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-		public static class ServletXssConfiguration {
+		protected WebSecurityProperties properties;
 
-			protected WebSecurityProperties properties;
+		public XssConfiguration(WebSecurityProperties properties){
+			this.properties = properties;
+		}
 
-			public ServletXssConfiguration(WebSecurityProperties properties){
-				this.properties = properties;
+		@Bean
+		public XssFilter xssFilter() throws PolicyException, IOException{
+			XssFilter xssFilter = new XssFilter();
+			String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
+
+			if(Validate.hasText(policyConfigLocation)){
+				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+				Resource[] resources = resourceResolver.getResources(policyConfigLocation);
+
+				xssFilter.setPolicy(Policy.getInstance(resources[0].getInputStream()));
 			}
 
-			@Bean
-			public XssFilter xssFilter() throws PolicyException, IOException{
-				XssFilter xssFilter = new XssFilter();
-				String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
-
-				if(Validate.hasText(policyConfigLocation)){
-					PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-					Resource[] resources = resourceResolver.getResources(policyConfigLocation);
-
-					xssFilter.setPolicy(Policy.getInstance(resources[0].getInputStream()));
-				}
-
-				return xssFilter;
-			}
-
+			return xssFilter;
 		}
 
 	}

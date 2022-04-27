@@ -1,7 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.shiro.autoconfigure.CacheConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.SessionConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.ManagerConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.Pac4jConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroConfiguration, \
   com.buession.springboot.shiro.autoconfigure.ShiroWebConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.ShiroWebFilterConfiguration
+  com.buession.springboot.shiro.autoconfigure.ShiroWebFilterConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.Pac4jConfiguration

@@ -19,13 +19,14 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.core;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+
+import java.time.Duration;
 
 /**
  * 连接池配置
@@ -46,37 +47,19 @@ public class PoolConfig {
 	private boolean fairness = GenericObjectPoolConfig.DEFAULT_FAIRNESS;
 
 	/**
-	 * 当连接池资源用尽后，调用者获取连接时的最大等待时间（单位 ：毫秒）
+	 * 当连接池资源用尽后，调用者获取连接时的最大等待时间
 	 */
-	@Deprecated
-	private long maxWaitMillis = GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+	private Duration maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT;
 
 	/**
-	 * 当连接池资源用尽后，调用者获取连接时的最大等待时间（单位 ：毫秒）
+	 * 连接的最小空闲时间，达到此值后且已达最大空闲连接数该空闲连接可能会被移除
 	 */
-	private long maxWait = GenericObjectPoolConfig.DEFAULT_MAX_WAIT_MILLIS;
+	private Duration minEvictableIdleTime = Duration.ofMillis(60000);
 
 	/**
-	 * 连接的最小空闲时间，达到此值后且已达最大空闲连接数该空闲连接可能会被移除（单位 ：毫秒）
+	 * 连接空闲的最小时间，达到此值后空闲链接将会被移除，且保留 minIdle 个空闲连接数
 	 */
-	@Deprecated
-	private long minEvictableIdleTimeMillis = 60000;
-
-	/**
-	 * 连接的最小空闲时间，达到此值后且已达最大空闲连接数该空闲连接可能会被移除（单位 ：毫秒）
-	 */
-	private long minEvictableIdleTime = 60000;
-
-	/**
-	 * 连接空闲的最小时间，达到此值后空闲链接将会被移除，且保留 minIdle 个空闲连接数（单位 ：毫秒）
-	 */
-	@Deprecated
-	private long softMinEvictableIdleTimeMillis = GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
-
-	/**
-	 * 连接空闲的最小时间，达到此值后空闲链接将会被移除，且保留 minIdle 个空闲连接数（单位 ：毫秒）
-	 */
-	private long softMinEvictableIdleTime = GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	private Duration softMinEvictableIdleTime = GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_DURATION;
 
 	/**
 	 * 驱逐策略的类名
@@ -86,13 +69,7 @@ public class PoolConfig {
 	/**
 	 * 关闭驱逐线程的超时时间
 	 */
-	@Deprecated
-	private long evictorShutdownTimeoutMillis = GenericObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
-
-	/**
-	 * 关闭驱逐线程的超时时间
-	 */
-	private long evictorShutdownTimeout = GenericObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT_MILLIS;
+	private Duration evictorShutdownTimeout = GenericObjectPoolConfig.DEFAULT_EVICTOR_SHUTDOWN_TIMEOUT;
 
 	/**
 	 * 检测空闲对象线程每次运行时检测的空闲对象的数量；
@@ -122,15 +99,9 @@ public class PoolConfig {
 	private boolean testWhileIdle = true;
 
 	/**
-	 * 空闲连接检测的周期，如果为负值，表示不运行检测线程（单位 ：毫秒）
+	 * 空闲连接检测的周期，如果为负值，表示不运行检测线程
 	 */
-	@Deprecated
-	private long timeBetweenEvictionRunsMillis = 30000;
-
-	/**
-	 * 空闲连接检测的周期，如果为负值，表示不运行检测线程（单位 ：毫秒）
-	 */
-	private long timeBetweenEvictionRuns = 30000;
+	private Duration timeBetweenEvictionRuns = Duration.ofMillis(30000);
 
 	/**
 	 * 当对象池没有空闲对象时，新的获取对象的请求是否阻塞（true 阻塞，maxWaitMillis 才生效； false 连接池没有资源立马抛异常）
@@ -191,70 +162,27 @@ public class PoolConfig {
 		this.fairness = fairness;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis.max-wait")
-	public long getMaxWaitMillis(){
-		return maxWaitMillis;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis.max-wait")
-	public void setMaxWaitMillis(long maxWaitMillis){
-		this.maxWaitMillis = maxWaitMillis;
-		setMaxWait(maxWaitMillis);
-	}
-
-	public long getMaxWait(){
+	public Duration getMaxWait(){
 		return maxWait;
 	}
 
-	public void setMaxWait(long maxWait){
+	public void setMaxWait(Duration maxWait){
 		this.maxWait = maxWait;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
-			"spring.redis" + ".min-evictable-idle" + "-time-millis")
-	public long getMinEvictableIdleTimeMillis(){
-		return minEvictableIdleTimeMillis;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
-			"spring.redis" + ".min-evictable-idle" + "-time-millis")
-	public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis){
-		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
-		setMinEvictableIdleTime(minEvictableIdleTimeMillis);
-	}
-
-	public long getMinEvictableIdleTime(){
+	public Duration getMinEvictableIdleTime(){
 		return minEvictableIdleTime;
 	}
 
-	public void setMinEvictableIdleTime(long minEvictableIdleTime){
+	public void setMinEvictableIdleTime(Duration minEvictableIdleTime){
 		this.minEvictableIdleTime = minEvictableIdleTime;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
-			"spring.redis" + ".soft-min-evictable" + "-idle-time-millis")
-	public long getSoftMinEvictableIdleTimeMillis(){
-		return softMinEvictableIdleTimeMillis;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement =
-			"spring.redis" + ".soft-min-evictable" + "-idle-time-millis")
-	public void setSoftMinEvictableIdleTimeMillis(long softMinEvictableIdleTimeMillis){
-		this.softMinEvictableIdleTimeMillis = softMinEvictableIdleTimeMillis;
-		setSoftMinEvictableIdleTime(softMinEvictableIdleTimeMillis);
-	}
-
-	public long getSoftMinEvictableIdleTime(){
+	public Duration getSoftMinEvictableIdleTime(){
 		return softMinEvictableIdleTime;
 	}
 
-	public void setSoftMinEvictableIdleTime(long softMinEvictableIdleTime){
+	public void setSoftMinEvictableIdleTime(Duration softMinEvictableIdleTime){
 		this.softMinEvictableIdleTime = softMinEvictableIdleTime;
 	}
 
@@ -266,26 +194,11 @@ public class PoolConfig {
 		this.evictionPolicyClassName = evictionPolicyClassName;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".evictor-shutdown" +
-			"-timeout-millis")
-	public long getEvictorShutdownTimeoutMillis(){
-		return evictorShutdownTimeoutMillis;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".evictor-shutdown" +
-			"-timeout-millis")
-	public void setEvictorShutdownTimeoutMillis(long evictorShutdownTimeoutMillis){
-		this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
-		setEvictorShutdownTimeout(evictorShutdownTimeoutMillis);
-	}
-
-	public long getEvictorShutdownTimeout(){
+	public Duration getEvictorShutdownTimeout(){
 		return evictorShutdownTimeout;
 	}
 
-	public void setEvictorShutdownTimeout(long evictorShutdownTimeout){
+	public void setEvictorShutdownTimeout(Duration evictorShutdownTimeout){
 		this.evictorShutdownTimeout = evictorShutdownTimeout;
 	}
 
@@ -345,26 +258,11 @@ public class PoolConfig {
 		this.testWhileIdle = testWhileIdle;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction"
-			+ "-runs-millis")
-	public long getTimeBetweenEvictionRunsMillis(){
-		return timeBetweenEvictionRunsMillis;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "移除时间属性中的 Milli", replacement = "spring.redis" + ".time-between-eviction"
-			+ "-runs-millis")
-	public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis){
-		this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-		setTimeBetweenEvictionRuns(timeBetweenEvictionRunsMillis);
-	}
-
-	public long getTimeBetweenEvictionRuns(){
+	public Duration getTimeBetweenEvictionRuns(){
 		return timeBetweenEvictionRuns;
 	}
 
-	public void setTimeBetweenEvictionRuns(long timeBetweenEvictionRuns){
+	public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns){
 		this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
 	}
 

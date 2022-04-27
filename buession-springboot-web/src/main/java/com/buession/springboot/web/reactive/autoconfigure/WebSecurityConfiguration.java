@@ -21,10 +21,85 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.web.reactive.autoconfigure;/**
- * 
- *
+ */
+package com.buession.springboot.web.reactive.autoconfigure;
+
+import com.buession.core.validator.Validate;
+import com.buession.security.web.builder.reactive.ReactiveHttpSecurityBuilder;
+import com.buession.security.web.xss.reactive.XssFilter;
+import com.buession.springboot.web.security.WebSecurityProperties;
+import org.owasp.validator.html.Policy;
+import org.owasp.validator.html.PolicyException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+
+/**
  * @author Yong.Teng
  * @since 2.0.0
- */public class WebSecurityConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(WebSecurityProperties.class)
+@ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean({ServerHttpSecurity.class})
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@EnableWebSecurity
+public class WebSecurityConfiguration {
+
+	private WebSecurityProperties properties;
+
+	private ServerHttpSecurity serverHttpSecurity;
+
+	public WebSecurityConfiguration(WebSecurityProperties properties, ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+		this.properties = properties;
+		this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
+	}
+
+	@PostConstruct
+	public void initialize() throws Exception{
+		ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WebSecurityProperties.class)
+	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+	@ConditionalOnClass({Policy.class})
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	public static class XssConfiguration {
+
+		protected WebSecurityProperties properties;
+
+		public XssConfiguration(WebSecurityProperties properties){
+			this.properties = properties;
+		}
+
+		@Bean
+		public XssFilter xssFilter() throws PolicyException, IOException{
+			XssFilter xssFilter = new XssFilter();
+			String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
+
+			if(Validate.hasText(policyConfigLocation)){
+				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+				Resource[] resources = resourceResolver.getResources(policyConfigLocation);
+
+				xssFilter.setPolicy(Policy.getInstance(resources[0].getInputStream()));
+			}
+
+			return xssFilter;
+		}
+
+	}
+
 }

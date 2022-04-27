@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.banner;
@@ -50,8 +50,7 @@ public abstract class AbstractBanner implements Banner {
 
 	private final static int SEPARATOR_REPEAT_COUNT = 60;
 
-	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY,
-			Collections.nCopies(SEPARATOR_REPEAT_COUNT, "-"));
+	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY, Collections.nCopies(SEPARATOR_REPEAT_COUNT, "-"));
 
 	private final static String BANNER_SKIP_PROPERTY_NAME = "BANNER_SKIP";
 
@@ -140,11 +139,10 @@ public abstract class AbstractBanner implements Banner {
 		}
 	}
 
-	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment,
-												   final Class<?> sourceClass){
+	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment, final Class<?> sourceClass){
 	}
 
-	private final static void closeFormatter(Formatter formatter, Throwable throwable){
+	private static void closeFormatter(Formatter formatter, Throwable throwable){
 		try{
 			formatter.close();
 		}catch(Throwable t){

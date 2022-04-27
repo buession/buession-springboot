@@ -19,14 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
 
 import com.mongodb.ReadPreference;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 
 /**
@@ -74,54 +73,6 @@ public class MongoDBProperties {
 
 	public void setReadPreference(Class<ReadPreference> readPreference){
 		this.readPreference = readPreference;
-	}
-
-	@ConfigurationProperties(prefix = "spring.data.mongodb")
-	@Deprecated
-	public final static class DeprecatedMongoDBProperties extends MongoDBProperties {
-
-		/**
-		 * Type Mapper
-		 */
-		@Deprecated
-		private Class<? extends MongoTypeMapper> typeMapper;
-
-		/**
-		 * Type Key
-		 */
-		@Deprecated
-		private String typeKey;
-
-		/**
-		 * 读偏好
-		 */
-		@Deprecated
-		private Class<ReadPreference> readPreference;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mongodb.type-mapper")
-		@Override
-		public void setTypeMapper(Class<? extends MongoTypeMapper> typeMapper){
-			super.setTypeMapper(typeMapper);
-			this.typeMapper = typeMapper;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mongodb.type-key")
-		@Override
-		public void setTypeKey(String typeKey){
-			super.setTypeKey(typeKey);
-			this.typeKey = typeKey;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.mongodb.read-preference")
-		@Override
-		public void setReadPreference(Class<ReadPreference> readPreference){
-			super.setReadPreference(readPreference);
-			this.readPreference = readPreference;
-		}
-
 	}
 
 }

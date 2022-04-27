@@ -21,23 +21,15 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import com.buession.security.shiro.Cookie;
-import com.buession.security.shiro.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.config.Ini;
-import org.apache.shiro.mgt.RememberMeManager;
-import org.apache.shiro.mgt.SessionStorageEvaluator;
-import org.apache.shiro.mgt.SessionsSecurityManager;
-import org.apache.shiro.mgt.SubjectFactory;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.session.mgt.SessionFactory;
-import org.apache.shiro.session.mgt.SessionManager;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.boot.autoconfigure.ShiroAutoConfiguration;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
@@ -51,8 +43,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 /**
  * @author Yong.Teng
  */
@@ -60,106 +50,48 @@ import java.util.List;
 @AutoConfigureBefore({ShiroAutoConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 	protected ShiroProperties properties;
 
 	public ShiroWebConfiguration(ShiroProperties properties){
 		this.properties = properties;
-		Session session = properties.getSession();
-
-		useNativeSessionManager = session.isUseNativeSessionManager();
-		sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
-		sessionIdUrlRewritingEnabled = session.isSessionIdUrlRewritingEnabled();
-		sessionManagerDeleteInvalidSessions = session.isSessionManagerDeleteInvalidSessions();
+		ShiroProperties.Session session = properties.getSession();
 
 		// Session Cookie info
 		Cookie cookie = session.getCookie();
-		sessionIdCookieName = cookie.getName();
-		sessionIdCookieDomain = cookie.getDomain();
-		sessionIdCookiePath = cookie.getPath();
-		sessionIdCookieMaxAge = cookie.getMaxAge();
-		sessionIdCookieSecure = cookie.isSecure();
 
 		// RememberMe Cookie info
 		Cookie rememberMeCookie = properties.getRememberMe().getCookie();
-		rememberMeCookieName = rememberMeCookie.getName();
-		rememberMeCookieDomain = rememberMeCookie.getDomain();
-		rememberMeCookiePath = rememberMeCookie.getPath();
-		rememberMeCookieMaxAge = rememberMeCookie.getMaxAge();
-		rememberMeCookieSecure = rememberMeCookie.isSecure();
-	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SubjectFactory subjectFactory(){
-		return super.subjectFactory();
-	}
+		SystemPropertyUtils.setProperty("shiro.userNativeSessionManager", session.isUseNativeSessionManager());
 
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionFactory sessionFactory(){
-		return super.sessionFactory();
-	}
+		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdCookieEnabled",
+				session.isSessionIdCookieEnabled());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdUrlRewritingEnabled",
+				session.isSessionIdUrlRewritingEnabled());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
+				session.isSessionManagerDeleteInvalidSessions());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.name", cookie.getName());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.domain", cookie.getDomain());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.path", cookie.getPath());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.maxAge", cookie.getMaxAge());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.secure", cookie.isSecure());
+		if(cookie.getSameSite() != null){
+			SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.sameSite",
+					cookie.getSameSite().name());
+		}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionManager sessionManager(){
-		return super.sessionManager();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionDAO sessionDAO(){
-		return super.sessionDAO();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionStorageEvaluator sessionStorageEvaluator(){
-		return super.sessionStorageEvaluator();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionsSecurityManager securityManager(List<Realm> realms){
-		return super.securityManager(realms);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
-		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
-
-		buildShiroCookie(properties.getSession().getCookie(), cookie);
-
-		return cookie;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected RememberMeManager rememberMeManager(){
-		return super.rememberMeManager();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
-		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
-
-		buildShiroCookie(properties.getRememberMe().getCookie(), cookie);
-
-		return cookie;
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.name", rememberMeCookie.getName());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.domain", rememberMeCookie.getDomain());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.path", rememberMeCookie.getPath());
+		SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.maxAge", rememberMeCookie.getMaxAge());
+		SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.secure", rememberMeCookie.isSecure());
+		if(rememberMeCookie.getSameSite() != null){
+			SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.sameSite",
+					rememberMeCookie.getSameSite().name());
+		}
 	}
 
 	@Bean
@@ -180,43 +112,9 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 		DefaultShiroFilterChainDefinition shiroFilterChainDefinition = new DefaultShiroFilterChainDefinition();
 
-		section.forEach(shiroFilterChainDefinition::addPathDefinition);
+		shiroFilterChainDefinition.addPathDefinitions(section);
 
 		return shiroFilterChainDefinition;
 	}
 
-	protected static void buildShiroCookie(final Cookie cookie, final org.apache.shiro.web.servlet.Cookie shiroCookie){
-		shiroCookie.setHttpOnly(cookie.isHttpOnly());
-
-		if(cookie.getSameSite() != null){
-			switch(cookie.getSameSite()){
-				case STRICT:
-					shiroCookie.setSameSite(org.apache.shiro.web.servlet.Cookie.SameSiteOptions.STRICT);
-					break;
-				case LAX:
-					shiroCookie.setSameSite(org.apache.shiro.web.servlet.Cookie.SameSiteOptions.LAX);
-					break;
-				case NONE:
-					shiroCookie.setSameSite(org.apache.shiro.web.servlet.Cookie.SameSiteOptions.NONE);
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
-	@Override
-	protected SessionManager nativeSessionManager(){
-		DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-
-		webSessionManager.setSessionIdCookieEnabled(sessionIdCookieEnabled);
-		webSessionManager.setSessionIdUrlRewritingEnabled(sessionIdUrlRewritingEnabled);
-		webSessionManager.setSessionIdCookie(sessionCookieTemplate());
-
-		webSessionManager.setSessionFactory(sessionFactory());
-		webSessionManager.setSessionDAO(sessionDAO());
-		webSessionManager.setDeleteInvalidSessions(sessionManagerDeleteInvalidSessions);
-
-		return webSessionManager;
-	}
 }

@@ -19,10 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
+
+import java.time.Duration;
 
 /**
  * Redis 连接对象 AutoConfiguration 抽象类
@@ -36,6 +38,10 @@ public abstract class AbstractConnectionConfiguration {
 
 	public AbstractConnectionConfiguration(RedisProperties properties){
 		this.properties = properties;
+	}
+
+	protected static int durationToInteger(final Duration duration){
+		return (int) duration.toMillis();
 	}
 
 }

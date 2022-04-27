@@ -19,116 +19,18 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.core.Configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "spring.httpclient")
 public class HttpClientProperties extends Configuration {
-
-	@ConfigurationProperties(prefix = "httpclient")
-	@Deprecated
-	public final static class DeprecatedHttpClientProperties extends HttpClientProperties {
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.max-connections")
-		@Override
-		public void setMaxConnections(int maxConnections){
-			super.setMaxConnections(maxConnections);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.max-per-route")
-		@Override
-		public void setMaxPerRoute(int maxPerRoute){
-			super.setMaxPerRoute(maxPerRoute);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.idle-connection-time")
-		@Override
-		public void setIdleConnectionTime(int idleConnectionTime){
-			super.setIdleConnectionTime(idleConnectionTime);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.connect-timeout")
-		@Override
-		public void setConnectTimeout(int connectTimeout){
-			super.setConnectTimeout(connectTimeout);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.connection-request-timeout")
-		@Override
-		public void setConnectionRequestTimeout(int connectionRequestTimeout){
-			super.setConnectionRequestTimeout(connectionRequestTimeout);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.read-timeout")
-		@Override
-		public void setReadTimeout(int readTimeout){
-			super.setReadTimeout(readTimeout);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.allow-redirects")
-		@Override
-		public void setAllowRedirects(Boolean allowRedirects){
-			super.setAllowRedirects(allowRedirects);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.allow-redirects")
-		@Override
-		public void setRelativeRedirectsAllowed(Boolean relativeRedirectsAllowed){
-			super.setRelativeRedirectsAllowed(relativeRedirectsAllowed);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.circular-redirects-allowed")
-		@Override
-		public void setCircularRedirectsAllowed(Boolean circularRedirectsAllowed){
-			super.setCircularRedirectsAllowed(circularRedirectsAllowed);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.max-redirects")
-		@Override
-		public void setMaxRedirects(Integer maxRedirects){
-			super.setMaxRedirects(maxRedirects);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.authentication-enabled")
-		@Override
-		public void setAuthenticationEnabled(boolean authenticationEnabled){
-			super.setAuthenticationEnabled(authenticationEnabled);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.contentCompression-enabled")
-		@Override
-		public void setContentCompressionEnabled(boolean contentCompressionEnabled){
-			super.setContentCompressionEnabled(contentCompressionEnabled);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.httpclient.normalize-uri")
-		@Override
-		public void setNormalizeUri(boolean normalizeUri){
-			super.setNormalizeUri(normalizeUri);
-		}
-
-	}
 
 }

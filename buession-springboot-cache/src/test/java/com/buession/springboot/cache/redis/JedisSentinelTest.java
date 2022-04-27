@@ -39,14 +39,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = SpringBootTestApplication.class)
-public class ConfigurationTest {
+public class JedisSentinelTest {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
 
 	@Test
-	public void test() throws Exception{
-
+	public void ttl(){
+		System.out.println(redisTemplate.ttl("sichuan"));
 	}
 
 }

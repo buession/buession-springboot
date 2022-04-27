@@ -101,7 +101,10 @@ public class MybatisConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
-	public MybatisConfiguration(MybatisProperties properties, ObjectProvider<DataSource> dataSource, ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader, ObjectProvider<DatabaseIdProvider> databaseIdProvider, ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
+	public MybatisConfiguration(MybatisProperties properties, ObjectProvider<DataSource> dataSource,
+								ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
+								ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+								ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider){
 		this.properties = properties;
 		this.dataSource = dataSource.getIfAvailable();
 		this.interceptors = interceptorsProvider.getIfAvailable();
@@ -224,7 +227,8 @@ public class MybatisConfiguration {
 	private void checkConfigFileExists(){
 		if(properties.isCheckConfigLocation() && Validate.hasText(properties.getConfigLocation())){
 			Resource resource = resourceLoader.getResource(properties.getConfigLocation());
-			Assert.isFalse(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " + "autoconfigure file or check your Mybatis configuration)");
+			Assert.isFalse(resource.exists(), "Cannot find autoconfigure location: " + resource + " (please add " +
+					"autoconfigure file or check your Mybatis configuration)");
 		}
 	}
 
@@ -258,7 +262,8 @@ public class MybatisConfiguration {
 
 	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
 		ExecutorType executorType = properties.getExecutorType();
-		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate(sqlSessionFactory);
+		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate(
+				sqlSessionFactory);
 	}
 
 	@Configuration
@@ -273,7 +278,8 @@ public class MybatisConfiguration {
 
 	}
 
-	public static class MapperScannerRegistrarAutoConfigured implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+	public static class MapperScannerRegistrarAutoConfigured
+			implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
 		private BeanFactory beanFactory;
 
@@ -292,7 +298,7 @@ public class MybatisConfiguration {
 				List<String> ex = AutoConfigurationPackages.get(beanFactory);
 				if(logger.isDebugEnabled()){
 					for(String s : ex){
-						logger.debug("Using auto-configuration base package \'{}\'", s);
+						logger.debug("Using auto-configuration base package '{}'", s);
 					}
 				}
 

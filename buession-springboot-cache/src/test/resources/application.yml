@@ -1,10 +1,17 @@
 spring:
   redis:
-    host: 10.101.0.36
-    port: 6379
-    password: tQP!Vf7JxL-nrH-x
+    #host: 10.101.0.36
+    #port: 6379
+    #password: tQP!Vf7JxL-nrH-x
     connect-timeout: 2000
     so-timeout: 30000
+    sentinel:
+      master-name: test_master
+      password: passwd
+      nodes:
+        - 127.0.0.1:26379
+        - 127.0.0.1:36379
+        - 127.0.0.1:46379
     pool:
       maxTotal: 10
       minIdle: 3

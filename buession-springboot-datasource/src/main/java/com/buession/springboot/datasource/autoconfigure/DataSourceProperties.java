@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -74,7 +74,7 @@ public class DataSourceProperties {
 	 * @since 1.3.2
 	 */
 	@NestedConfigurationProperty
-	private Hikari hikari = new Hikari();
+	private HikariPoolConfiguration hikari = new HikariPoolConfiguration();
 
 	/**
 	 * Dbcp2 数据源配置
@@ -82,7 +82,7 @@ public class DataSourceProperties {
 	 * @since 1.3.2
 	 */
 	@NestedConfigurationProperty
-	private Dbcp2 dbcp2 = new Dbcp2();
+	private Dbcp2PoolConfiguration dbcp2 = new Dbcp2PoolConfiguration();
 
 	/**
 	 * Druid 数据源配置
@@ -90,7 +90,7 @@ public class DataSourceProperties {
 	 * @since 1.3.2
 	 */
 	@NestedConfigurationProperty
-	private Druid druid = new Druid();
+	private DruidPoolConfiguration druid = new DruidPoolConfiguration();
 
 	/**
 	 * Tomcat 数据源配置
@@ -98,7 +98,7 @@ public class DataSourceProperties {
 	 * @since 1.3.2
 	 */
 	@NestedConfigurationProperty
-	private Tomcat tomcat = new Tomcat();
+	private TomcatPoolConfiguration tomcat = new TomcatPoolConfiguration();
 
 	/**
 	 * Generic 数据源配置
@@ -106,7 +106,7 @@ public class DataSourceProperties {
 	 * @since 1.3.2
 	 */
 	@NestedConfigurationProperty
-	private Generic generic = new Generic();
+	private GenericPoolConfiguration generic = new GenericPoolConfiguration();
 
 	public Class<? extends DataSource> getType(){
 		return type;
@@ -180,7 +180,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public Hikari getHikari(){
+	public HikariPoolConfiguration getHikari(){
 		return hikari;
 	}
 
@@ -192,7 +192,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setHikari(Hikari hikari){
+	public void setHikari(HikariPoolConfiguration hikari){
 		this.hikari = hikari;
 	}
 
@@ -203,7 +203,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public Dbcp2 getDbcp2(){
+	public Dbcp2PoolConfiguration getDbcp2(){
 		return dbcp2;
 	}
 
@@ -215,7 +215,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setDbcp2(Dbcp2 dbcp2){
+	public void setDbcp2(Dbcp2PoolConfiguration dbcp2){
 		this.dbcp2 = dbcp2;
 	}
 
@@ -224,7 +224,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Druid 数据源配置
 	 */
-	public Druid getDruid(){
+	public DruidPoolConfiguration getDruid(){
 		return druid;
 	}
 
@@ -234,7 +234,7 @@ public class DataSourceProperties {
 	 * @param druid
 	 * 		Druid 数据源配置
 	 */
-	public void setDruid(Druid druid){
+	public void setDruid(DruidPoolConfiguration druid){
 		this.druid = druid;
 	}
 
@@ -243,7 +243,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Tomcat 数据源配置
 	 */
-	public Tomcat getTomcat(){
+	public TomcatPoolConfiguration getTomcat(){
 		return tomcat;
 	}
 
@@ -253,7 +253,7 @@ public class DataSourceProperties {
 	 * @param tomcat
 	 * 		Tomcat 数据源配置
 	 */
-	public void setTomcat(Tomcat tomcat){
+	public void setTomcat(TomcatPoolConfiguration tomcat){
 		this.tomcat = tomcat;
 	}
 
@@ -262,7 +262,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Generic 数据源配置
 	 */
-	public Generic getGeneric(){
+	public GenericPoolConfiguration getGeneric(){
 		return generic;
 	}
 
@@ -272,53 +272,8 @@ public class DataSourceProperties {
 	 * @param generic
 	 * 		Generic 数据源配置
 	 */
-	public void setGeneric(Generic generic){
+	public void setGeneric(GenericPoolConfiguration generic){
 		this.generic = generic;
-	}
-
-	/**
-	 * Hikari DataSource 配置
-	 *
-	 * @since 1.3.2
-	 */
-	public final static class Hikari extends HikariPoolConfiguration {
-
-	}
-
-	/**
-	 * Dbcp2 DataSource 配置
-	 *
-	 * @since 1.3.2
-	 */
-	public final static class Dbcp2 extends Dbcp2PoolConfiguration {
-
-	}
-
-	/**
-	 * Druid DataSource 配置
-	 *
-	 * @since 1.3.2
-	 */
-	public final static class Druid extends DruidPoolConfiguration {
-
-	}
-
-	/**
-	 * Tomcat DataSource 配置
-	 *
-	 * @since 1.3.2
-	 */
-	public final static class Tomcat extends TomcatPoolConfiguration {
-
-	}
-
-	/**
-	 * Generic DataSource 配置
-	 *
-	 * @since 1.3.2
-	 */
-	public final static class Generic extends GenericPoolConfiguration {
-
 	}
 
 }

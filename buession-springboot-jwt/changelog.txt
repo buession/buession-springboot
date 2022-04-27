@@ -2,8 +2,10 @@ Buession SpringBoot JWT Changelog
 ===========================
 
 
-Changes in version 1.3.3 (2022-02-22)
+Changes in version 2.0.0 (2022-02-22)
 -------------------------------------
+*【移除】jwt 前缀的 ConfigurationProperties
+*【移除】jedis 兼容旧版本 @Bean 方法
 
 Changes in version 1.3.2 (2021-11-10)
 -------------------------------------

@@ -2,8 +2,11 @@ Buession SpringBoot Shiro Changelog
 ===========================
 
 
-Changes in version 1.3.3 (2022-02-22)
+Changes in version 2.0.0 (2022-02-22)
 -------------------------------------
+*【优化】shiro 版本升级至 1.8.0
+*【移除】shiro 前缀的 ConfigurationProperties
+*【变化】支持通过 shiro.enabled 配置项，控制 bean Auto Configuration
 
 Changes in version 1.3.2 (2021-11-10)
 -------------------------------------

@@ -19,13 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * GeoIP 配置
@@ -63,38 +62,6 @@ public class GeoIPProperties {
 
 	public void setEnableCache(boolean enableCache){
 		this.enableCache = enableCache;
-	}
-
-	@ConfigurationProperties(prefix = "geoip")
-	@Deprecated
-	public final static class DeprecatedGeoIPProperties extends GeoIPProperties {
-
-		/**
-		 * 数据文件路径
-		 */
-		private String dbPath;
-
-		/**
-		 * 是否开启缓存
-		 */
-		private boolean enableCache = true;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.geoip.db-path")
-		@Override
-		public void setDbPath(String dbPath){
-			super.setDbPath(dbPath);
-			this.dbPath = dbPath;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.geoip.enable-cache")
-		@Override
-		public void setEnableCache(boolean enableCache){
-			super.setEnableCache(enableCache);
-			this.enableCache = enableCache;
-		}
-
 	}
 
 }

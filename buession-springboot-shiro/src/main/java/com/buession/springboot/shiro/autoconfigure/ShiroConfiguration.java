@@ -21,10 +21,61 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.shiro.autoconfigure;/**
- * 
+ */
+package com.buession.springboot.shiro.autoconfigure;
+
+import com.buession.redis.RedisTemplate;
+import com.buession.security.shiro.DefaultRedisManager;
+import com.buession.security.shiro.RedisManager;
+import com.buession.security.shiro.cache.RedisCacheManager;
+import com.buession.security.shiro.session.RedisSessionDAO;
+import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Shiro Auto Configuration
  *
  * @author Yong.Teng
  * @since 2.0.0
- */public class ShiroConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(ShiroProperties.class)
+@ConditionalOnProperty(name = {"shiro.enabled"}, matchIfMissing = true)
+public class ShiroConfiguration {
+
+	protected ShiroProperties shiroProperties;
+
+	public ShiroConfiguration(ShiroProperties shiroProperties){
+		this.shiroProperties = shiroProperties;
+	}
+
+	@Bean
+	@ConditionalOnBean(RedisTemplate.class)
+	@ConditionalOnMissingBean
+	public RedisManager redisManager(RedisTemplate redisTemplate){
+		return new DefaultRedisManager(redisTemplate);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(RedisManager.class)
+	public CacheManager cacheManager(RedisManager redisManager){
+		ShiroProperties.Cache cache = shiroProperties.getCache();
+		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(), cache.getPrincipalIdFieldName());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(RedisManager.class)
+	public SessionDAO sessionDAO(RedisManager redisManager){
+		ShiroProperties.Session session = shiroProperties.getSession();
+		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(), session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+	}
+
 }

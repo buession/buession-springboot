@@ -21,29 +21,31 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.springboot.shiro.ShiroFilters;
+import com.buession.core.utils.ArrayUtils;
+import com.buession.core.utils.SystemPropertyUtils;
+import com.buession.core.validator.Validate;
+import com.buession.security.pac4j.filter.CallbackFilter;
+import com.buession.security.pac4j.filter.LogoutFilter;
+import com.buession.security.pac4j.filter.SecurityFilter;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
-import org.apache.shiro.web.servlet.AbstractShiroFilter;
+import org.pac4j.core.config.Config;
+import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.servlet.DispatcherType;
 
 /**
  * @author Yong.Teng
@@ -52,24 +54,77 @@ import javax.servlet.DispatcherType;
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = "shiro.web", name = "enabled", matchIfMissing = true)
 @Import({Pac4jConfiguration.class})
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	protected ShiroProperties properties;
 
 	protected SubjectFactory subjectFactory;
 
-	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory){
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory, ObjectProvider<SecurityManager> securityManager){
 		this.properties = properties;
 		this.subjectFactory = subjectFactory.getIfAvailable();
+		this.securityManager = securityManager.getIfAvailable();
 
-		loginUrl = properties.getLoginUrl();
-		successUrl = properties.getSuccessUrl();
-		unauthorizedUrl = properties.getUnauthorizedUrl();
+		SystemPropertyUtils.setPropertyIfPresent("shiro.loginUrl", properties.getLoginUrl());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.successUrl", properties.getSuccessUrl());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
 
-		((DefaultSecurityManager) securityManager).setSubjectFactory(this.subjectFactory);
+		((DefaultSecurityManager) this.securityManager).setSubjectFactory(this.subjectFactory);
 	}
 
+	@Bean(name = "securityFilter")
+	@ConditionalOnMissingBean
+	public SecurityFilter securityFilter(Config config){
+		final SecurityFilter filter = new SecurityFilter(config);
+		ShiroProperties.Pac4j pac4j = properties.getPac4j();
+
+		if(pac4j.getClients() != null){
+			filter.setClients(ArrayUtils.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		filter.setMultiProfile(pac4j.isMultiProfile());
+
+		if(Validate.isNotEmpty(pac4j.getAuthorizers())){
+			filter.setAuthorizers(ArrayUtils.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		if(Validate.isNotEmpty(pac4j.getMatchers())){
+			filter.setMatchers(ArrayUtils.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
+		}
+
+		return filter;
+	}
+
+	@Bean(name = "callbackFilter")
+	@ConditionalOnMissingBean
+	public CallbackFilter callbackFilter(Config config){
+		final CallbackFilter callbackFilter = new CallbackFilter(config);
+		ShiroProperties.Pac4j pac4j = properties.getPac4j();
+
+		callbackFilter.setDefaultUrl(pac4j.getDefaultUrl());
+		callbackFilter.setMultiProfile(pac4j.isMultiProfile());
+		callbackFilter.setDefaultClient(pac4j.getDefaultClient());
+		callbackFilter.setSaveInSession(pac4j.isSaveInSession());
+
+		return callbackFilter;
+	}
+
+	@Bean(name = "logoutFilter")
+	@ConditionalOnMissingBean
+	public LogoutFilter logoutFilter(Config config){
+		final LogoutFilter logoutFilter = new LogoutFilter(config);
+		ShiroProperties.Pac4j pac4j = properties.getPac4j();
+
+		logoutFilter.setDefaultUrl(pac4j.getLogoutRedirectUrl());
+		logoutFilter.setLogoutUrlPattern(pac4j.getLogoutUrlPattern());
+		logoutFilter.setLocalLogout(pac4j.isLocalLogout());
+		logoutFilter.setCentralLogout(pac4j.isCentralLogout());
+
+		return logoutFilter;
+	}
+
+	/*
 	@Bean(name = "shiroFilterRegistrationBean")
 	@ConditionalOnBean(ShiroFilters.class)
 	@ConditionalOnMissingBean
@@ -102,5 +157,6 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 		return filterRegistrationBean;
 	}
+	 */
 
 }

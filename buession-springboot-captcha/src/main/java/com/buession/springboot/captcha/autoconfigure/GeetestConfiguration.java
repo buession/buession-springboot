@@ -19,21 +19,22 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.captcha.autoconfigure;
 
 import com.buession.httpclient.HttpClient;
+import com.buession.security.geetest.DefaultGeetestClient;
 import com.buession.security.geetest.GeetestClient;
-import com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration;
+import com.buession.security.geetest.GeetestException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * @since 1.2.0
@@ -41,7 +42,7 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(GeetestProperties.class)
 @ConditionalOnClass({GeetestClient.class})
-@Import({HttpClientConfiguration.class})
+@ConditionalOnBean({HttpClient.class})
 public class GeetestConfiguration {
 
 	private GeetestProperties properties;
@@ -55,8 +56,9 @@ public class GeetestConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GeetestClient geetestClient(){
-		return new GeetestClient(properties.getGeetestId(), properties.getGeetestKey(), properties.isNewFailback(), httpClient);
+	public GeetestClient geetestClient() throws GeetestException{
+		return new DefaultGeetestClient(properties.getGeetestId(), properties.getGeetestKey(),
+				properties.getVersion(), httpClient);
 	}
 
 }

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -28,22 +28,26 @@ import com.buession.redis.core.Constants;
 import com.buession.redis.serializer.Serializer;
 import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import java.time.Duration;
+import java.util.Set;
+
 /**
+ * Redis Properties，当配置集群参数、哨兵参数、单机版参数，优先级依次：集群 &gt; 哨兵 &gt; 单机
+ *
  * @author Yong.Teng
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
 
 	/**
-	 * Redis URI
+	 * Redis URI，优先使用 host 设置的 redis 主机地址进行连接；host 的值为空，再使用该参数配置的 redis 主机地址端口、数据库信息进行连接
 	 */
 	private String uri;
 
 	/**
-	 * Redis 主机地址
+	 * Redis 主机地址，配置了此值，将使用该值作为 redis 的的主机地址进行连接
 	 */
 	private String host;
 
@@ -51,6 +55,11 @@ public class RedisProperties {
 	 * Redis 端口
 	 */
 	private int port;
+
+	/**
+	 * Redis 用户名
+	 */
+	private String username;
 
 	/**
 	 * Redis 密码
@@ -68,19 +77,21 @@ public class RedisProperties {
 	private String clientName;
 
 	/**
-	 * Redis 端口
-	 */
-	private String nodes;
-
-	/**
 	 * 连接超时
 	 */
-	private int connectTimeout = Constants.DEFAULT_CONNECT_TIMEOUT;
+	private Duration connectTimeout = Duration.ofMillis(Constants.DEFAULT_CONNECT_TIMEOUT);
 
 	/**
 	 * 读取超时
 	 */
-	private int soTimeout = Constants.DEFAULT_SO_TIMEOUT;
+	private Duration soTimeout = Duration.ofMillis(Constants.DEFAULT_SO_TIMEOUT);
+
+	/**
+	 * Infinite 读取超时
+	 *
+	 * @since 2.0.0
+	 */
+	private Duration infiniteSoTimeout = Duration.ofMillis(Constants.DEFAULT_INFINITE_SO_TIMEOUT);
 
 	/**
 	 * Key 前缀
@@ -98,326 +109,549 @@ public class RedisProperties {
 	private boolean enableTransactionSupport;
 
 	/**
-	 * 连接池
+	 * Sentinel 模式配置
+	 */
+	private Sentinel sentinel;
+
+	/**
+	 * 集群模式配置
+	 */
+	private Cluster cluster;
+
+	/**
+	 * 连接池配置
 	 */
 	@NestedConfigurationProperty
 	private PoolConfig pool = new PoolConfig();
 
+	/**
+	 * 返回 Redis URI
+	 *
+	 * @return 返回 Redis URI
+	 */
 	public String getUri(){
 		return uri;
 	}
 
+	/**
+	 * 设置 Redis URI，格式：
+	 * 1) redis://[[username]@password]:127.0.0.1:6379
+	 * 2) redis://[[username]@password]:127.0.0.1:6379[?database=1&clientName=client_name&timeout=30]
+	 * 3) redis://[[username]@password]:127.0.0.1:6379[?db=1&clientName=client_name&timeout=30]
+	 *
+	 * @param uri
+	 * 		Redis URI
+	 */
 	public void setUri(String uri){
 		this.uri = uri;
 	}
 
+	/**
+	 * 返回 Redis 主机地址
+	 *
+	 * @return Redis 主机地址
+	 */
 	public String getHost(){
 		return host;
 	}
 
+	/**
+	 * 设置 Redis 主机地址
+	 *
+	 * @param host
+	 * 		Redis 主机地址
+	 */
 	public void setHost(String host){
 		this.host = host;
 	}
 
+	/**
+	 * 返回 Redis 端口
+	 *
+	 * @return Redis 端口
+	 */
 	public int getPort(){
 		return port;
 	}
 
+	/**
+	 * 设置 Redis 端口
+	 *
+	 * @param port
+	 * 		Redis 端口
+	 */
 	public void setPort(int port){
 		this.port = port;
 	}
 
+	/**
+	 * 返回 Redis 用户名
+	 *
+	 * @return Redis 用户名
+	 */
+	public String getUsername(){
+		return username;
+	}
+
+	/**
+	 * 设置 Redis 用户名
+	 *
+	 * @param username
+	 * 		Redis 用户名
+	 */
+	public void setUsername(String username){
+		this.username = username;
+	}
+
+	/**
+	 * 返回 Redis 密码
+	 *
+	 * @return Redis 密码
+	 */
 	public String getPassword(){
 		return password;
 	}
 
+	/**
+	 * 设置 Redis 密码
+	 *
+	 * @param password
+	 * 		Redis 密码
+	 */
 	public void setPassword(String password){
 		this.password = password;
 	}
 
+	/**
+	 * 返回数据库
+	 *
+	 * @return 数据库
+	 */
 	public int getDatabase(){
 		return database;
 	}
 
+	/**
+	 * 设置数据库
+	 *
+	 * @param database
+	 * 		数据库
+	 */
 	public void setDatabase(int database){
 		this.database = database;
 	}
 
+	/**
+	 * 返回客户端名称
+	 *
+	 * @return 客户端名称
+	 */
 	public String getClientName(){
 		return clientName;
 	}
 
+	/**
+	 * 设置客户端名称
+	 *
+	 * @param clientName
+	 * 		客户端名称
+	 */
 	public void setClientName(String clientName){
 		this.clientName = clientName;
 	}
 
-	public String getNodes(){
-		return nodes;
-	}
-
-	public void setNodes(String nodes){
-		this.nodes = nodes;
-	}
-
-	public int getConnectTimeout(){
+	/**
+	 * 返回连接超时
+	 *
+	 * @return 连接超时
+	 */
+	public Duration getConnectTimeout(){
 		return connectTimeout;
 	}
 
-	public void setConnectTimeout(int connectTimeout){
+	/**
+	 * 设置连接超时
+	 *
+	 * @param connectTimeout
+	 * 		连接超时
+	 */
+	public void setConnectTimeout(Duration connectTimeout){
 		this.connectTimeout = connectTimeout;
 	}
 
-	public int getSoTimeout(){
+	/**
+	 * 返回读取超时
+	 *
+	 * @return 读取超时
+	 */
+	public Duration getSoTimeout(){
 		return soTimeout;
 	}
 
-	public void setSoTimeout(int soTimeout){
+	/**
+	 * 设置读取超时
+	 *
+	 * @param soTimeout
+	 * 		读取超时
+	 */
+	public void setSoTimeout(Duration soTimeout){
 		this.soTimeout = soTimeout;
 	}
 
+	/**
+	 * 返回 Infinite 读取超时
+	 *
+	 * @return Infinite 读取超时
+	 *
+	 * @since 2.0.0
+	 */
+	public Duration getInfiniteSoTimeout(){
+		return infiniteSoTimeout;
+	}
+
+	/**
+	 * 设置 Infinite 读取超时
+	 *
+	 * @param infiniteSoTimeout
+	 * 		Infinite 读取超时
+	 *
+	 * @since 2.0.0
+	 */
+	public void setInfiniteSoTimeout(Duration infiniteSoTimeout){
+		this.infiniteSoTimeout = infiniteSoTimeout;
+	}
+
+	/**
+	 * 返回 Key 前缀
+	 *
+	 * @return Key 前缀
+	 */
 	public String getKeyPrefix(){
 		return keyPrefix;
 	}
 
+	/**
+	 * 设置 Key 前缀
+	 *
+	 * @param keyPrefix
+	 * 		Key 前缀
+	 */
 	public void setKeyPrefix(String keyPrefix){
 		this.keyPrefix = keyPrefix;
 	}
 
+	/**
+	 * 返回序列化方式
+	 *
+	 * @return 序列化方式
+	 */
 	public Serializer getSerializer(){
 		return serializer;
 	}
 
+	/**
+	 * 设置序列化方式
+	 *
+	 * @param serializer
+	 * 		序列化方式
+	 */
 	public void setSerializer(Serializer serializer){
 		this.serializer = serializer;
 	}
 
+	/**
+	 * 返回是否开启事务
+	 *
+	 * @return 是否开启事务
+	 */
 	public boolean isEnableTransactionSupport(){
 		return getEnableTransactionSupport();
 	}
 
+	/**
+	 * 返回是否开启事务
+	 *
+	 * @return 是否开启事务
+	 */
 	public boolean getEnableTransactionSupport(){
 		return enableTransactionSupport;
 	}
 
+	/**
+	 * 事务开关
+	 *
+	 * @param enableTransactionSupport
+	 * 		是否开启事务
+	 */
 	public void setEnableTransactionSupport(boolean enableTransactionSupport){
 		this.enableTransactionSupport = enableTransactionSupport;
 	}
 
+	/**
+	 * 返回哨兵模式配置
+	 *
+	 * @return 哨兵模式配置
+	 */
+	public Sentinel getSentinel(){
+		return sentinel;
+	}
+
+	/**
+	 * 设置哨兵模式配置
+	 *
+	 * @param sentinel
+	 * 		哨兵模式配置
+	 */
+	public void setSentinel(Sentinel sentinel){
+		this.sentinel = sentinel;
+	}
+
+	/**
+	 * 返回集群模式配置
+	 *
+	 * @return 集群模式配置
+	 */
+	public Cluster getCluster(){
+		return cluster;
+	}
+
+	/**
+	 * 设置集群模式配置
+	 *
+	 * @param cluster
+	 * 		集群模式配置
+	 */
+	public void setCluster(Cluster cluster){
+		this.cluster = cluster;
+	}
+
+	/**
+	 * 返回连接池配置
+	 *
+	 * @return 连接池配置
+	 */
 	public PoolConfig getPool(){
 		return pool;
 	}
 
+	/**
+	 * 设置连接池配置
+	 *
+	 * @param pool
+	 * 		连接池配置
+	 */
 	public void setPool(PoolConfig pool){
 		this.pool = pool;
 	}
 
-	@ConfigurationProperties(prefix = "redis")
-	@Deprecated
-	public final static class DeprecatedRedisProperties extends RedisProperties {
+	/**
+	 * Redis sentinel properties
+	 *
+	 * @author yong.teng
+	 * @since 2.0.0
+	 */
+	public static class Sentinel {
 
 		/**
-		 * Redis URI
+		 * Master 名称
 		 */
-		@Deprecated
-		private String uri;
+		private String masterName;
 
 		/**
-		 * Redis 主机地址
+		 * "host:port" 格式的哨兵节点列表
 		 */
-		@Deprecated
-		private String host;
-
-		/**
-		 * Redis 端口
-		 */
-		@Deprecated
-		private int port;
-
-		/**
-		 * Redis 密码
-		 */
-		@Deprecated
-		private String password;
-
-		/**
-		 * 数据库
-		 */
-		@Deprecated
-		private int database;
-
-		/**
-		 * 客户端名称
-		 */
-		@Deprecated
-		private String clientName;
-
-		/**
-		 * Redis 端口
-		 */
-		@Deprecated
-		private String nodes;
-
-		/**
-		 * 超时时间，同时设置连接超时和读取超时
-		 */
-		@Deprecated
-		private int timeout;
+		private Set<String> nodes;
 
 		/**
 		 * 连接超时
 		 */
-		@Deprecated
-		private int connectTimeout = Constants.DEFAULT_CONNECT_TIMEOUT;
+		private Duration connectTimeout = Duration.ofMillis(Constants.DEFAULT_CONNECT_TIMEOUT);
 
 		/**
 		 * 读取超时
 		 */
-		@Deprecated
-		private int soTimeout = Constants.DEFAULT_SO_TIMEOUT;
+		private Duration soTimeout = Duration.ofMillis(Constants.DEFAULT_SO_TIMEOUT);
 
 		/**
-		 * Key 前缀
+		 * Sentinel 客户端名称
 		 */
-		@Deprecated
-		private String keyPrefix;
+		private String clientName;
 
 		/**
-		 * 序列化方式
+		 * 返回 Master 名称
+		 *
+		 * @return Master 名称
 		 */
-		@Deprecated
-		private Serializer serializer;
+		public String getMasterName(){
+			return this.masterName;
+		}
 
 		/**
-		 * 是否开启事务
+		 * 设置 Master 名称
+		 *
+		 * @param masterName
+		 * 		Master 名称
 		 */
-		@Deprecated
-		private boolean enableTransactionSupport;
+		public void setMasterName(String masterName){
+			this.masterName = masterName;
+		}
 
 		/**
-		 * 连接池
+		 * 返回 "host:port" 格式的哨兵节点列表
+		 *
+		 * @return "host:port" 格式的哨兵节点列表
 		 */
-		@NestedConfigurationProperty
-		@Deprecated
-		private PoolConfig pool = new PoolConfig();
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.uri")
-		@Override
-		public void setUri(String uri){
-			super.setUri(uri);
-			this.uri = uri;
+		public Set<String> getNodes(){
+			return this.nodes;
 		}
 
-		@Override
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.host")
-		public void setHost(String host){
-			super.setHost(host);
-			this.host = host;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.port")
-		@Override
-		public void setPort(int port){
-			super.setPort(port);
-			this.port = port;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.password")
-		@Override
-		public void setPassword(String password){
-			super.setPassword(password);
-			this.password = password;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.password")
-		@Override
-		public void setDatabase(int database){
-			super.setDatabase(database);
-			this.database = database;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.client-name")
-		@Override
-		public void setClientName(String clientName){
-			super.setClientName(clientName);
-			this.clientName = clientName;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.nodes")
-		@Override
-		public void setNodes(String nodes){
-			super.setNodes(nodes);
+		/**
+		 * 设置 "host:port" 格式的哨兵节点列表
+		 *
+		 * @param nodes
+		 * 		"host:port" 格式的哨兵节点列表
+		 */
+		public void setNodes(Set<String> nodes){
 			this.nodes = nodes;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "分别设置连接超时和读取超时", replacement =
-				"spring.redis.connect-timeout and " + "spring.redis.so-timeout")
-		public int getTimeout(){
-			return timeout;
+		/**
+		 * 返回连接超时
+		 *
+		 * @return 连接超时
+		 */
+		public Duration getConnectTimeout(){
+			return connectTimeout;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "分别设置连接超时和读取超时", replacement =
-				"spring.redis.connect-timeout and " + "spring.redis.so-timeout")
-		public void setTimeout(int timeout){
-			this.timeout = timeout;
-			setConnectTimeout(timeout);
-			setSoTimeout(timeout);
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.connect-timeout")
-		@Override
-		public void setConnectTimeout(int connectTimeout){
-			super.setConnectTimeout(connectTimeout);
+		/**
+		 * 设置连接超时
+		 *
+		 * @param connectTimeout
+		 * 		连接超时
+		 */
+		public void setConnectTimeout(Duration connectTimeout){
 			this.connectTimeout = connectTimeout;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.so-timeout")
-		@Override
-		public void setSoTimeout(int soTimeout){
-			super.setSoTimeout(soTimeout);
+		/**
+		 * 返回读取超时
+		 *
+		 * @return 读取超时
+		 */
+		public Duration getSoTimeout(){
+			return soTimeout;
+		}
+
+		/**
+		 * 设置读取超时
+		 *
+		 * @param soTimeout
+		 * 		读取超时
+		 */
+		public void setSoTimeout(Duration soTimeout){
 			this.soTimeout = soTimeout;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.key-prefix")
-		@Override
-		public void setKeyPrefix(String keyPrefix){
-			super.setKeyPrefix(keyPrefix);
-			this.keyPrefix = keyPrefix;
+		/**
+		 * 返回 Sentinel 客户端名称
+		 *
+		 * @return Sentinel 客户端名称
+		 */
+		public String getClientName(){
+			return clientName;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.serializer")
-		@Override
-		public void setSerializer(Serializer serializer){
-			super.setSerializer(serializer);
-			this.serializer = serializer;
+		/**
+		 * 设置 Sentinel 客户端名称
+		 *
+		 * @param clientName
+		 * 		Sentinel 客户端名称
+		 */
+		public void setClientName(String clientName){
+			this.clientName = clientName;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.enable-transaction-support")
-		@Override
-		public void setEnableTransactionSupport(boolean enableTransactionSupport){
-			super.setEnableTransactionSupport(enableTransactionSupport);
-			this.enableTransactionSupport = enableTransactionSupport;
+	}
+
+	/**
+	 * Redis Cluster properties
+	 *
+	 * @author yong.teng
+	 * @since 2.0.0
+	 */
+	public final static class Cluster {
+
+		/**
+		 * "host:port" 格式的集群节点列表
+		 */
+		private Set<String> nodes;
+
+		/**
+		 * 最大重试次数
+		 */
+		private Integer maxRedirects;
+
+		/**
+		 * 最大重数时长
+		 */
+		private Duration maxTotalRetriesDuration;
+
+		/**
+		 * 返回 "host:port" 格式的集群节点列表
+		 *
+		 * @return "host:port" 格式的集群节点列表
+		 */
+		public Set<String> getNodes(){
+			return nodes;
 		}
 
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.redis.pool")
-		@Override
-		public void setPool(PoolConfig pool){
-			super.setPool(pool);
-			this.pool = pool;
+		/**
+		 * 设置 "host:port" 格式的集群节点列表
+		 *
+		 * @param nodes
+		 * 		"host:port" 格式的集群节点列表
+		 */
+		public void setNodes(Set<String> nodes){
+			this.nodes = nodes;
+		}
+
+		/**
+		 * 返回最大重试次数
+		 *
+		 * @return 最大重试次数
+		 */
+		public Integer getMaxRedirects(){
+			return maxRedirects;
+		}
+
+		/**
+		 * 设置最大重试次数
+		 *
+		 * @param maxRedirects
+		 * 		最大重试次数
+		 */
+		public void setMaxRedirects(Integer maxRedirects){
+			this.maxRedirects = maxRedirects;
+		}
+
+		/**
+		 * 返回最大重试持续时长
+		 *
+		 * @return 最大重试持续时长
+		 */
+		public Duration getMaxTotalRetriesDuration(){
+			return maxTotalRetriesDuration;
+		}
+
+		/**
+		 * 设置最大重试持续时长
+		 *
+		 * @param maxTotalRetriesDuration
+		 * 		最大重试持续时长
+		 */
+		public void setMaxTotalRetriesDuration(Duration maxTotalRetriesDuration){
+			this.maxTotalRetriesDuration = maxTotalRetriesDuration;
 		}
 
 	}

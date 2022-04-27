@@ -26,7 +26,7 @@
  */
 package com.buession.springboot.cache;
 
-import com.buession.springboot.cache.redis.ConfigurationTest;
+import com.buession.springboot.cache.redis.JedisSentinelTest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringBootTestApplication {
 
 	public static void main(String[] args){
-		SpringApplication.run(ConfigurationTest.class, args);
+		SpringApplication.run(JedisSentinelTest.class, args);
 	}
 
 }

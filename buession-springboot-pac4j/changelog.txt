@@ -2,8 +2,9 @@ Buession SpringBoot Pac4j Changelog
 ===========================
 
 
-Changes in version 1.3.3 (2022-02-22)
+Changes in version 2.0.0 (2022-02-22)
 -------------------------------------
+*【重构】pac4j 与 Client 集成逻辑，与 cas 解耦
 
 Changes in version 1.3.2 (2021-11-10)
 -------------------------------------
