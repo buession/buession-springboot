@@ -19,59 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.shiro.autoconfigure;
-
-import com.buession.security.shiro.cache.CacheManager;
-import com.buession.security.shiro.serializer.RedisSerializer;
-
-/**
- * Shiro 缓存配置
+ */package com.buession.springboot.web.reactive.autoconfigure;/**
+ * 
  *
  * @author Yong.Teng
- * @since 1.2.2
- */
-class Cache {
-
-	/**
-	 * 缓存 Key 前缀
-	 */
-	private String prefix = CacheManager.DEFAULT_KEY_PREFIX;
-
-	/**
-	 * 缓存过期时间
-	 */
-	private int expire = CacheManager.DEFAULT_EXPIRE;
-
-	/**
-	 * Principal Id
-	 */
-	private String principalIdFieldName = CacheManager.DEFAULT_PRINCIPAL_ID_FIELD_NAME;
-
-	public String getPrefix(){
-		return prefix;
-	}
-
-	public void setPrefix(String prefix){
-		this.prefix = prefix;
-	}
-
-	public int getExpire(){
-		return expire;
-	}
-
-	public void setExpire(int expire){
-		this.expire = expire;
-	}
-
-	public String getPrincipalIdFieldName(){
-		return principalIdFieldName;
-	}
-
-	public void setPrincipalIdFieldName(String principalIdFieldName){
-		this.principalIdFieldName = principalIdFieldName;
-	}
-
+ * @since 2.0.0
+ */public class WebSecurityConfiguration {
 }

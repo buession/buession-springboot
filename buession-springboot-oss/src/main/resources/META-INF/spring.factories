@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-    com.buession.springboot.oss.autoconfigure.AliCloudOssConfiguration, \
-    com.buession.springboot.oss.autoconfigure.OssConfiguration, \
-    com.buession.springboot.oss.autoconfigure.OssAutoConfiguration

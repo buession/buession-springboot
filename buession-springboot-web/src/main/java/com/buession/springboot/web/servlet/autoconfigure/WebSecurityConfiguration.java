@@ -21,14 +21,14 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.security.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import com.buession.security.web.builders.servlet.ServletHttpSecurityBuilder;
 import com.buession.security.web.xss.servlet.XssFilter;
-import com.buession.springboot.web.security.HttpSecurityBuilder;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -67,7 +67,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
-		HttpSecurityBuilder.getInstance(httpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		ServletHttpSecurityBuilder.getInstance(httpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
 	}
 
 	@Configuration(proxyBeanMethods = false)

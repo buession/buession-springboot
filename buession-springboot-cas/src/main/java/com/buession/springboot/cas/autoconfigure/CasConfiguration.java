@@ -21,20 +21,29 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cas.autoconfigure;
+package com.buession.springboot.jwt.autoconfigure;
 
+import com.buession.core.utils.StringUtils;
 import com.buession.security.pac4j.Constants;
-import org.pac4j.cas.client.CasClient;
-import org.pac4j.cas.client.rest.CasRestFormClient;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import org.pac4j.core.credentials.extractor.HeaderExtractor;
+import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.http.client.direct.ParameterClient;
+import org.pac4j.jwt.config.encryption.SecretEncryptionConfiguration;
+import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
+import org.pac4j.jwt.config.signature.SignatureConfiguration;
+import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
+import org.pac4j.jwt.profile.JwtGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,60 +52,53 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(CasProperties.class)
-@ConditionalOnClass({org.pac4j.cas.config.CasConfiguration.class})
-@Deprecated
-public class CasConfiguration {
+@EnableConfigurationProperties(JwtProperties.class)
+@ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
+public class JwtConfiguration {
 
-	private CasProperties properties;
+	private final static int PAD_SIZE = 32;
 
-	private final static Logger logger = LoggerFactory.getLogger(CasConfiguration.class);
+	private JwtProperties properties;
 
-	public CasConfiguration(CasProperties properties){
+	private SignatureConfiguration signatureConfiguration;
+
+	private SecretEncryptionConfiguration secretEncryptionConfiguration;
+
+	private final static Logger logger = LoggerFactory.getLogger(JwtConfiguration.class);
+
+	public JwtConfiguration(JwtProperties properties){
 		this.properties = properties;
-		logger.warn("com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration instead of {}.", CasConfiguration.class.getName());
+		String jwtSecret = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE, properties.getEncryptionKey());
+		String jwtEncryptionKey = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE, properties.getEncryptionKey());
+
+		signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
+		secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256);
 	}
 
-	@Bean(name = "casConfiguration")
+	@Bean
 	@ConditionalOnMissingBean
-	@Deprecated
-	public org.pac4j.cas.config.CasConfiguration casConfiguration(){
-		org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration(properties.getLoginUrl(), properties.getPrefixUrl());
-
-		casConfiguration.setProtocol(properties.getProtocol());
-
-		return casConfiguration;
+	public JwtGenerator<CommonProfile> jwtGenerator(){
+		return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
 	}
 
-	@Bean(name = "casClient")
-	@ConditionalOnProperty(prefix = "pac4j.client", name = Constants.CAS, havingValue = "on")
-	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.pac4j.client.cas")
-	@ConditionalOnClass(name = "org.pac4j.cas.client.CasClient")
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.pac4j.client", name = Constants.JWT, havingValue = "on")
 	@ConditionalOnMissingBean
-	@Deprecated
-	public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
-		CasClient casClient = new CasClient();
+	public ParameterClient jwtClient(){
+		ParameterClient parameterClient = new ParameterClient();
 
-		casClient.setName(Constants.CAS);
-		casClient.setConfiguration(casConfiguration);
-		casClient.setCallbackUrl(properties.getCallbackUrl());
+		parameterClient.setName(Constants.JWT);
+		parameterClient.setParameterName(properties.getParameterName());
+		parameterClient.setSupportGetRequest(properties.isSupportGetRequest());
+		parameterClient.setSupportPostRequest(properties.isSupportPostRequest());
+		parameterClient.setAuthenticator(new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration));
+		parameterClient.setCredentialsExtractor(new HeaderExtractor(properties.getParameterName(), properties.getPrefixHeader()));
 
-		return casClient;
-	}
+		if(logger.isDebugEnabled()){
+			logger.debug("initialize {} [name: {}, encryption key: {}, parameter name: {}, prefix header: {}.", ParameterClient.class.getName(), Constants.JWT, properties.getEncryptionKey(), properties.getParameterName(), properties.getPrefixHeader());
+		}
 
-	@Bean(name = "casRestFormClient")
-	@ConditionalOnProperty(prefix = "pac4j.client", name = Constants.REST, havingValue = "on")
-	@DeprecatedConfigurationProperty(reason = "规范名称", replacement = "spring.pac4j.client.rest")
-	@ConditionalOnClass(name = "org.pac4j.cas.client.rest.CasRestFormClient")
-	@ConditionalOnMissingBean
-	@Deprecated
-	public CasRestFormClient deprecatedCasRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
-		CasRestFormClient casRestFormClient = new CasRestFormClient();
-
-		casRestFormClient.setName(Constants.REST);
-		casRestFormClient.setConfiguration(casConfiguration);
-
-		return casRestFormClient;
+		return parameterClient;
 	}
 
 }

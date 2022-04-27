@@ -21,12 +21,19 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.security.autoconfigure;
 
-import com.buession.springboot.web.security.WebSecurityConfiguration;
+import com.buession.security.web.config.ContentSecurityPolicy;
+import com.buession.security.web.config.Csrf;
+import com.buession.security.web.config.FrameOptions;
+import com.buession.security.web.config.Hpkp;
+import com.buession.security.web.config.Hsts;
+import com.buession.security.web.config.HttpBasic;
+import com.buession.security.web.config.ReferrerPolicy;
+import com.buession.security.web.config.Xss;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -43,57 +50,56 @@ public class WebSecurityProperties {
 	 * Http Basic 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.HttpBasic httpBasic = new WebSecurityConfiguration.HttpBasic();
+	private HttpBasic httpBasic = new HttpBasic();
 
 	/**
 	 * Csrf 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.Csrf csrf = new WebSecurityConfiguration.Csrf();
+	private Csrf csrf = new Csrf();
 
 	/**
 	 * Frame Options 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.FrameOptions frameOptions = new WebSecurityConfiguration.FrameOptions();
+	private FrameOptions frameOptions = new FrameOptions();
 
 	/**
 	 * Hsts 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.Hsts hsts = new WebSecurityConfiguration.Hsts();
+	private Hsts hsts = new Hsts();
 
 	/**
 	 * Hpkp 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.Hpkp hpkp = new WebSecurityConfiguration.Hpkp();
+	private Hpkp hpkp = new Hpkp();
 
 	/**
 	 * Content Security Policy 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.ContentSecurityPolicy contentSecurityPolicy =
-			new WebSecurityConfiguration.ContentSecurityPolicy();
+	private ContentSecurityPolicy contentSecurityPolicy = new ContentSecurityPolicy();
 
 	/**
 	 * Referrer Policy 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.ReferrerPolicy referrerPolicy = new WebSecurityConfiguration.ReferrerPolicy();
+	private ReferrerPolicy referrerPolicy = new ReferrerPolicy();
 
 	/**
 	 * XSS 配置
 	 */
 	@NestedConfigurationProperty
-	private WebSecurityConfiguration.Xss xss = new WebSecurityConfiguration.Xss();
+	private Xss xss = new Xss();
 
 	/**
 	 * 返回 Http Basic 配置
 	 *
 	 * @return Http Basic 配置
 	 */
-	public WebSecurityConfiguration.HttpBasic getHttpBasic(){
+	public HttpBasic getHttpBasic(){
 		return httpBasic;
 	}
 
@@ -103,7 +109,7 @@ public class WebSecurityProperties {
 	 * @param httpBasic
 	 * 		Http Basic 配置
 	 */
-	public void setHttpBasic(WebSecurityConfiguration.HttpBasic httpBasic){
+	public void setHttpBasic(HttpBasic httpBasic){
 		this.httpBasic = httpBasic;
 	}
 
@@ -112,7 +118,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Csrf 配置
 	 */
-	public WebSecurityConfiguration.Csrf getCsrf(){
+	public Csrf getCsrf(){
 		return csrf;
 	}
 
@@ -122,7 +128,7 @@ public class WebSecurityProperties {
 	 * @param csrf
 	 * 		Csrf 配置
 	 */
-	public void setCsrf(WebSecurityConfiguration.Csrf csrf){
+	public void setCsrf(Csrf csrf){
 		this.csrf = csrf;
 	}
 
@@ -131,7 +137,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Frame Options 配置
 	 */
-	public WebSecurityConfiguration.FrameOptions getFrameOptions(){
+	public FrameOptions getFrameOptions(){
 		return frameOptions;
 	}
 
@@ -141,7 +147,7 @@ public class WebSecurityProperties {
 	 * @param frameOptions
 	 * 		Frame Options 配置
 	 */
-	public void setFrameOptions(WebSecurityConfiguration.FrameOptions frameOptions){
+	public void setFrameOptions(FrameOptions frameOptions){
 		this.frameOptions = frameOptions;
 	}
 
@@ -150,7 +156,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Hsts 配置
 	 */
-	public WebSecurityConfiguration.Hsts getHsts(){
+	public Hsts getHsts(){
 		return hsts;
 	}
 
@@ -160,7 +166,7 @@ public class WebSecurityProperties {
 	 * @param hsts
 	 * 		Hsts 配置
 	 */
-	public void setHsts(WebSecurityConfiguration.Hsts hsts){
+	public void setHsts(Hsts hsts){
 		this.hsts = hsts;
 	}
 
@@ -169,7 +175,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Hpkp 配置
 	 */
-	public WebSecurityConfiguration.Hpkp getHpkp(){
+	public Hpkp getHpkp(){
 		return hpkp;
 	}
 
@@ -179,7 +185,7 @@ public class WebSecurityProperties {
 	 * @param hpkp
 	 * 		Hpkp 配置
 	 */
-	public void setHpkp(WebSecurityConfiguration.Hpkp hpkp){
+	public void setHpkp(Hpkp hpkp){
 		this.hpkp = hpkp;
 	}
 
@@ -188,7 +194,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Content Security Policy 配置
 	 */
-	public WebSecurityConfiguration.ContentSecurityPolicy getContentSecurityPolicy(){
+	public ContentSecurityPolicy getContentSecurityPolicy(){
 		return contentSecurityPolicy;
 	}
 
@@ -198,7 +204,7 @@ public class WebSecurityProperties {
 	 * @param contentSecurityPolicy
 	 * 		Content Security Policy 配置
 	 */
-	public void setContentSecurityPolicy(WebSecurityConfiguration.ContentSecurityPolicy contentSecurityPolicy){
+	public void setContentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy){
 		this.contentSecurityPolicy = contentSecurityPolicy;
 	}
 
@@ -207,7 +213,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Referrer Policy 配置
 	 */
-	public WebSecurityConfiguration.ReferrerPolicy getReferrerPolicy(){
+	public ReferrerPolicy getReferrerPolicy(){
 		return referrerPolicy;
 	}
 
@@ -217,7 +223,7 @@ public class WebSecurityProperties {
 	 * @param referrerPolicy
 	 * 		Referrer Policy 配置
 	 */
-	public void setReferrerPolicy(WebSecurityConfiguration.ReferrerPolicy referrerPolicy){
+	public void setReferrerPolicy(ReferrerPolicy referrerPolicy){
 		this.referrerPolicy = referrerPolicy;
 	}
 
@@ -226,7 +232,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return XSS 配置
 	 */
-	public WebSecurityConfiguration.Xss getXss(){
+	public Xss getXss(){
 		return xss;
 	}
 
@@ -236,7 +242,7 @@ public class WebSecurityProperties {
 	 * @param xss
 	 * 		XSS 配置
 	 */
-	public void setXss(WebSecurityConfiguration.Xss xss){
+	public void setXss(Xss xss){
 		this.xss = xss;
 	}
 

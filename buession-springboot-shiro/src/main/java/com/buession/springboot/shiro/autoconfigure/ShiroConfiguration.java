@@ -19,24 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.oss.autoconfigure;
-
-/**
- * OSS Auto Configuration 抽象类
+ */package com.buession.springboot.shiro.autoconfigure;/**
+ * 
  *
  * @author Yong.Teng
- * @since 1.13.0
- */
-@Deprecated
-public abstract class AbstractOssConfiguration {
-
-	protected OssProperties properties;
-
-	public AbstractOssConfiguration(OssProperties properties){
-		this.properties = properties;
-	}
-
+ * @since 2.0.0
+ */public class ShiroConfiguration {
 }
