@@ -40,6 +40,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -101,6 +102,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	}
 
 	@Bean
+	@ConditionalOnBean(value = {ConnectionPoolConfig.class})
 	@ConditionalOnMissingBean
 	public JedisConnectionFactoryBean jedisConnectionFactoryBean(ConnectionPoolConfig poolConfig){
 		JedisRedisConfiguration configuration = createJedisClusterConfiguration(poolConfig);
@@ -111,6 +113,7 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 	}
 
 	@Bean
+	@ConditionalOnBean(value = {JedisPoolConfig.class})
 	@ConditionalOnMissingBean
 	public JedisConnectionFactoryBean jedisConnectionFactoryBean(JedisPoolConfig poolConfig){
 		JedisRedisConfiguration configuration;
@@ -231,7 +234,6 @@ public class JedisConnectionConfiguration extends AbstractConnectionConfiguratio
 		if(cluster.getMaxTotalRetriesDuration() != null){
 			configuration.setMaxTotalRetriesDuration(durationToInteger(cluster.getMaxTotalRetriesDuration()));
 		}
-
 
 		return configuration;
 	}
