@@ -24,6 +24,8 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.redis.client.connection.datasource.DataSource;
+
 import java.time.Duration;
 
 /**
@@ -32,16 +34,22 @@ import java.time.Duration;
  * @author Yong.Teng
  * @since 1.3.0
  */
-public abstract class AbstractConnectionConfiguration {
+public abstract class AbstractDataSourceConfiguration {
 
 	protected RedisProperties properties;
 
-	public AbstractConnectionConfiguration(RedisProperties properties){
+	public AbstractDataSourceConfiguration(RedisProperties properties){
 		this.properties = properties;
 	}
 
 	protected static int durationToInteger(final Duration duration){
 		return (int) duration.toMillis();
+	}
+
+	protected void applyConfigurationTimeout(final DataSource dataSource){
+		dataSource.setConnectTimeout(durationToInteger(properties.getConnectTimeout()));
+		dataSource.setSoTimeout(durationToInteger(properties.getSoTimeout()));
+		dataSource.setInfiniteSoTimeout(durationToInteger(properties.getInfiniteSoTimeout()));
 	}
 
 }

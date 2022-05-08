@@ -25,10 +25,9 @@
 package com.buession.springboot.cache.redis.autoconfigure;
 
 import com.buession.redis.core.Constants;
+import com.buession.redis.core.PoolConfig;
 import com.buession.redis.serializer.Serializer;
-import com.buession.springboot.cache.redis.core.PoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.time.Duration;
 import java.util.Set;
@@ -121,8 +120,7 @@ public class RedisProperties {
 	/**
 	 * 连接池配置
 	 */
-	@NestedConfigurationProperty
-	private PoolConfig pool = new PoolConfig();
+	private PoolConfig pool;
 
 	/**
 	 * 返回 Redis URI
@@ -136,8 +134,8 @@ public class RedisProperties {
 	/**
 	 * 设置 Redis URI，格式：
 	 * 1) redis://[[username]@password]:127.0.0.1:6379
-	 * 2) redis://[[username]@password]:127.0.0.1:6379[?database=1&clientName=client_name&timeout=30]
-	 * 3) redis://[[username]@password]:127.0.0.1:6379[?db=1&clientName=client_name&timeout=30]
+	 * 2) redis://[[username]@password]:127.0.0.1:6379[?database=1&amp;clientName=client_name&amp;timeout=30]
+	 * 3) redis://[[username]@password]:127.0.0.1:6379[?db=1&amp;clientName=client_name&amp;timeout=30]
 	 *
 	 * @param uri
 	 * 		Redis URI

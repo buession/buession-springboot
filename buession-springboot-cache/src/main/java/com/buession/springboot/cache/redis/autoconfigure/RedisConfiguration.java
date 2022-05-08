@@ -19,13 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
 import com.buession.redis.RedisTemplate;
-import com.buession.redis.client.connection.RedisConnection;
+import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.core.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass({RedisTemplate.class})
-@Import({JedisConnectionConfiguration.class})
+@Import({JedisDataSourceConfiguration.class})
 public class RedisConfiguration {
 
 	protected RedisProperties properties;
@@ -55,10 +55,10 @@ public class RedisConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(RedisConnection.class)
+	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(RedisConnection redisConnection){
-		RedisTemplate template = new RedisTemplate(redisConnection);
+	public RedisTemplate redisTemplate(DataSource dataSource){
+		RedisTemplate template = new RedisTemplate(dataSource);
 
 		template.setOptions(createOptions());
 		template.afterPropertiesSet();
