@@ -57,8 +57,12 @@ public class GeetestConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GeetestClient geetestClient() throws GeetestException{
-		return new DefaultGeetestClient(properties.getGeetestId(), properties.getGeetestKey(),
+		final GeetestClient client = new DefaultGeetestClient(properties.getGeetestId(), properties.getGeetestKey(),
 				properties.getVersion(), httpClient);
+
+		client.setJavaScript(properties.getJavascript());
+
+		return client;
 	}
 
 }

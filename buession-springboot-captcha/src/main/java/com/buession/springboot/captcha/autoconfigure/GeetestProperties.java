@@ -50,27 +50,85 @@ public class GeetestProperties {
 	 */
 	private String version = "v4";
 
+	/**
+	 * 前端 JavaScript 库地址
+	 */
+	private String javascript;
+
+	/**
+	 * 返回公钥
+	 *
+	 * @return 公钥
+	 */
 	public String getGeetestId(){
 		return geetestId;
 	}
 
+	/**
+	 * 设置公钥
+	 *
+	 * @param geetestId
+	 * 		公钥
+	 */
 	public void setGeetestId(String geetestId){
 		this.geetestId = geetestId;
 	}
 
+	/**
+	 * 返回私钥
+	 *
+	 * @return 私钥
+	 */
 	public String getGeetestKey(){
 		return geetestKey;
 	}
 
+	/**
+	 * 设置私钥
+	 *
+	 * @param geetestKey
+	 * 		私钥
+	 */
 	public void setGeetestKey(String geetestKey){
 		this.geetestKey = geetestKey;
 	}
 
+	/**
+	 * 返回版本
+	 *
+	 * @return 版本
+	 */
 	public String getVersion(){
 		return version;
 	}
 
+	/**
+	 * 设置版本
+	 *
+	 * @param version
+	 * 		版本
+	 */
 	public void setVersion(String version){
 		this.version = version;
 	}
+
+	/**
+	 * 返回前端 JavaScript 库地址
+	 *
+	 * @return 前端 JavaScript 库地址
+	 */
+	public String getJavascript(){
+		return javascript;
+	}
+
+	/**
+	 * 设置前端 JavaScript 库地址
+	 *
+	 * @param javascript
+	 * 		前端 JavaScript 库地址
+	 */
+	public void setJavascript(String javascript){
+		this.javascript = javascript;
+	}
+
 }
