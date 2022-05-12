@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.ApacheHttpClient;
+import com.buession.httpclient.HttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -43,18 +44,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnClass({HttpClientConnectionManager.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean({HttpClient.class})
+@ConditionalOnProperty(prefix = "spring.httpclient.apache-client", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
 	public ApacheHttpClientConfiguration(HttpClientProperties properties){
 		super(properties);
 	}
 
-	/**
-	 * 实例化 ApacheClientConnectionManager 连接池管理器
-	 *
-	 * @return ApacheClientConnectionManager 连接池管理器
-	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public ApacheClientConnectionManager apacheClientConnectionManager(){

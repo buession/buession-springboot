@@ -19,11 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
+import com.buession.httpclient.HttpClient;
 import com.buession.httpclient.OkHttpClient;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import okhttp3.ConnectionPool;
@@ -43,21 +44,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnClass({ConnectionPool.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnMissingBean({HttpClient.class})
+@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
 	public OkHttpHttpClientConfiguration(HttpClientProperties properties){
 		super(properties);
 	}
 
-	/**
-	 * 实例化 OkHttpClientConnectionManager 连接池管理器
-	 *
-	 * @return OkHttpClientConnectionManager 连接池管理器
-	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public OkHttpClientConnectionManager okHttpClientConnectionManager(){
+	public OkHttpClientConnectionManager connectionManager(){
 		return new OkHttpClientConnectionManager(properties);
 	}
 
