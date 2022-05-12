@@ -95,7 +95,7 @@ public class Pac4jConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({CasClient.class})
-	class CasClientConfiguration extends AbstractClientConfiguration<CasClient> {
+	static class CasClientConfiguration extends AbstractClientConfiguration<CasClient> {
 
 		public CasClientConfiguration(ObjectProvider<Config> config, ObjectProvider<CasClient> casClient){
 			super(config, casClient);
@@ -105,9 +105,10 @@ public class Pac4jConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({CasRestFormClient.class})
-	class CasRestFormClientConfiguration extends AbstractClientConfiguration<CasRestFormClient> {
+	static class CasRestFormClientConfiguration extends AbstractClientConfiguration<CasRestFormClient> {
 
-		public CasRestFormClientConfiguration(ObjectProvider<Config> config, ObjectProvider<CasRestFormClient> casRestFormClient){
+		public CasRestFormClientConfiguration(ObjectProvider<Config> config,
+											  ObjectProvider<CasRestFormClient> casRestFormClient){
 			super(config, casRestFormClient);
 		}
 
@@ -115,9 +116,10 @@ public class Pac4jConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({CasRestBasicAuthClient.class})
-	class CasRestBasicAuthClientConfiguration extends AbstractClientConfiguration<CasRestBasicAuthClient> {
+	static class CasRestBasicAuthClientConfiguration extends AbstractClientConfiguration<CasRestBasicAuthClient> {
 
-		public CasRestBasicAuthClientConfiguration(ObjectProvider<Config> config, ObjectProvider<CasRestBasicAuthClient> casRestBasicAuthClient){
+		public CasRestBasicAuthClientConfiguration(ObjectProvider<Config> config,
+												   ObjectProvider<CasRestBasicAuthClient> casRestBasicAuthClient){
 			super(config, casRestBasicAuthClient);
 		}
 
@@ -125,9 +127,10 @@ public class Pac4jConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({CasOAuthWrapperClient.class})
-	class CasOAuthWrapperClientConfiguration extends AbstractClientConfiguration<CasOAuthWrapperClient> {
+	static class CasOAuthWrapperClientConfiguration extends AbstractClientConfiguration<CasOAuthWrapperClient> {
 
-		public CasOAuthWrapperClientConfiguration(ObjectProvider<Config> config, ObjectProvider<CasOAuthWrapperClient> casOAuthWrapperClient){
+		public CasOAuthWrapperClientConfiguration(ObjectProvider<Config> config,
+												  ObjectProvider<CasOAuthWrapperClient> casOAuthWrapperClient){
 			super(config, casOAuthWrapperClient);
 		}
 
@@ -135,9 +138,10 @@ public class Pac4jConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({CasProxyReceptor.class})
-	class CasProxyReceptorConfiguration extends AbstractClientConfiguration<CasProxyReceptor> {
+	static class CasProxyReceptorConfiguration extends AbstractClientConfiguration<CasProxyReceptor> {
 
-		public CasProxyReceptorConfiguration(ObjectProvider<Config> config, ObjectProvider<CasProxyReceptor> casProxyReceptor){
+		public CasProxyReceptorConfiguration(ObjectProvider<Config> config,
+											 ObjectProvider<CasProxyReceptor> casProxyReceptor){
 			super(config, casProxyReceptor);
 		}
 
