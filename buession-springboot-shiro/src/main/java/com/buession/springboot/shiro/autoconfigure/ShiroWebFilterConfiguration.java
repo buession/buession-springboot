@@ -26,7 +26,7 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.core.utils.ArrayUtils;
+import com.buession.core.collect.Arrays;
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import com.buession.security.pac4j.filter.CallbackFilter;
@@ -61,7 +61,8 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 	protected SubjectFactory subjectFactory;
 
-	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory, ObjectProvider<SecurityManager> securityManager){
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory,
+									   ObjectProvider<SecurityManager> securityManager){
 		this.properties = properties;
 		this.subjectFactory = subjectFactory.getIfAvailable();
 		this.securityManager = securityManager.getIfAvailable();
@@ -80,17 +81,17 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		ShiroProperties.Pac4j pac4j = properties.getPac4j();
 
 		if(pac4j.getClients() != null){
-			filter.setClients(ArrayUtils.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+			filter.setClients(Arrays.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		filter.setMultiProfile(pac4j.isMultiProfile());
 
 		if(Validate.isNotEmpty(pac4j.getAuthorizers())){
-			filter.setAuthorizers(ArrayUtils.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
+			filter.setAuthorizers(Arrays.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		if(Validate.isNotEmpty(pac4j.getMatchers())){
-			filter.setMatchers(ArrayUtils.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
+			filter.setMatchers(Arrays.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		return filter;

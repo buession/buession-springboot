@@ -21,11 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.velocity.autoconfigure;
 
+import com.buession.core.validator.Validate;
 import com.buession.velocity.spring.VelocityConfigurer;
 import com.buession.velocity.spring.VelocityEngineFactory;
 import com.buession.velocity.spring.VelocityEngineFactoryBean;
@@ -106,8 +107,9 @@ public class VelocityConfiguration {
 		protected void applyProperties(VelocityEngineFactory factory){
 			Properties velocityProperties = new Properties();
 
-			velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING, properties.getCharsetName() ==
-					null ? RuntimeConstants.ENCODING_DEFAULT : properties.getCharsetName());
+			velocityProperties.setProperty(RuntimeConstants.INPUT_ENCODING,
+					Validate.hasText(properties.getCharsetName()) ? properties.getCharsetName() :
+							RuntimeConstants.ENCODING_DEFAULT);
 			velocityProperties.setProperty(RuntimeConstants.VM_LIBRARY, properties.getVelocityMacro().getLibrary());
 			velocityProperties.putAll(properties.getProperties());
 

@@ -35,17 +35,18 @@ import org.springframework.util.ClassUtils;
  */
 public class VelocityTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
-    private final static String CLASS_NAME = "org.apache.velocity.app.VelocityEngine";
+	private final static String CLASS_NAME = "org.apache.velocity.app.VelocityEngine";
 
-    @Override
-    public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader
-            resourceLoader){
-        if(ClassUtils.isPresent(CLASS_NAME, classLoader)){
-            String prefix = environment.getProperty("velocity.prefix", VelocityProperties.DEFAULT_PREFIX);
-            String suffix = environment.getProperty("velocity.suffix", VelocityProperties.DEFAULT_SUFFIX);
-            return resourceLoader.getResource(prefix + view + suffix).exists();
-        }
-        return false;
-    }
+	@Override
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader
+			resourceLoader){
+		if(ClassUtils.isPresent(CLASS_NAME, classLoader)){
+			String prefix = environment.getProperty("velocity.prefix", VelocityProperties.DEFAULT_PREFIX);
+			String suffix = environment.getProperty("velocity.suffix", VelocityProperties.DEFAULT_SUFFIX);
+			return resourceLoader.getResource(prefix + view + suffix).exists();
+		}
+
+		return false;
+	}
 
 }
