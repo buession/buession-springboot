@@ -29,9 +29,9 @@ import com.buession.security.geetest.DefaultGeetestClient;
 import com.buession.security.geetest.GeetestClient;
 import com.buession.security.geetest.GeetestException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,16 +40,16 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(GeetestProperties.class)
+@EnableConfigurationProperties(CaptchaProperties.class)
 @ConditionalOnClass({GeetestClient.class})
-@ConditionalOnBean({HttpClient.class})
+@ConditionalOnProperty(prefix = "spring.captcha", name = "geetest", matchIfMissing = true)
 public class GeetestConfiguration {
 
-	private GeetestProperties properties;
+	private CaptchaProperties properties;
 
 	private HttpClient httpClient;
 
-	public GeetestConfiguration(GeetestProperties properties, ObjectProvider<HttpClient> httpClient){
+	public GeetestConfiguration(CaptchaProperties properties, ObjectProvider<HttpClient> httpClient){
 		this.properties = properties;
 		this.httpClient = httpClient.getIfAvailable();
 	}
@@ -57,8 +57,8 @@ public class GeetestConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GeetestClient geetestClient() throws GeetestException{
-		final GeetestClient client = new DefaultGeetestClient(properties.getGeetestId(), properties.getGeetestKey(),
-				properties.getVersion(), httpClient);
+		final GeetestClient client = new DefaultGeetestClient(properties.getGeetest().getGeetestId(),
+				properties.getGeetest().getGeetestKey(), properties.getGeetest().getVersion(), httpClient);
 
 		client.setJavaScript(properties.getJavascript());
 

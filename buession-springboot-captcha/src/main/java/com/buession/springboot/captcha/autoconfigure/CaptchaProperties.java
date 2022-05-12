@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.captcha")
-public class GeetestProperties {
+public class CaptchaProperties {
 
 	/**
 	 * 前端 JavaScript 库地址

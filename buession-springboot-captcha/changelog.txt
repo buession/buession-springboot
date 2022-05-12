@@ -5,7 +5,10 @@ Buession SpringBoot Captcha Changelog
 Changes in version 2.0.0 (2022-02-22)
 -------------------------------------
 *【移除】captcha 前缀的 ConfigurationProperties
+*【变化】各行为验证产品配置修改 CaptchaProperties 的内嵌配置
 *【移除】类 com.buession.springboot.captcha.Geetest
+*【新增】新增极验 V4 版本支持
+*【新增】设置和返回前端 JavaScript 库地址
 
 Changes in version 1.3.2 (2021-11-10)
 -------------------------------------
