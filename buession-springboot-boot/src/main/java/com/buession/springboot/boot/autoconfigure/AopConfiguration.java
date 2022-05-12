@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.autoconfigure;
@@ -37,10 +37,10 @@ import org.springframework.context.annotation.DependsOn;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.aop", name = "enabled", havingValue = "true")
+@DependsOn("lifecycleBeanPostProcessor")
 public class AopConfiguration {
 
 	@Bean
-	@DependsOn("lifecycleBeanPostProcessor")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing =
 			false)
@@ -49,7 +49,6 @@ public class AopConfiguration {
 	}
 
 	@Bean
-	@DependsOn("lifecycleBeanPostProcessor")
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing =
 			true)
 	@ConditionalOnMissingBean

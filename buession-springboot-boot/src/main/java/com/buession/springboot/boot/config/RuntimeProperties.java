@@ -55,7 +55,6 @@ public class RuntimeProperties extends Properties {
 	}
 
 	protected void putDefaults(){
-		put("EmbeddedContainerConfigurationActive", true);
 		put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
 	}
 

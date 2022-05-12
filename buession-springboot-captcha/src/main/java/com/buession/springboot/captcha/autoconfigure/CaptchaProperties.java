@@ -32,23 +32,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Yong.Teng
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.captcha.geetest")
+@ConfigurationProperties(prefix = "spring.captcha")
 public class GeetestProperties {
-
-	/**
-	 * 公钥
-	 */
-	private String geetestId;
-
-	/**
-	 * 私钥
-	 */
-	private String geetestKey;
-
-	/**
-	 * 版本
-	 */
-	private String version = "v4";
 
 	/**
 	 * 前端 JavaScript 库地址
@@ -56,61 +41,9 @@ public class GeetestProperties {
 	private String javascript;
 
 	/**
-	 * 返回公钥
-	 *
-	 * @return 公钥
+	 * 极验行为验证配置
 	 */
-	public String getGeetestId(){
-		return geetestId;
-	}
-
-	/**
-	 * 设置公钥
-	 *
-	 * @param geetestId
-	 * 		公钥
-	 */
-	public void setGeetestId(String geetestId){
-		this.geetestId = geetestId;
-	}
-
-	/**
-	 * 返回私钥
-	 *
-	 * @return 私钥
-	 */
-	public String getGeetestKey(){
-		return geetestKey;
-	}
-
-	/**
-	 * 设置私钥
-	 *
-	 * @param geetestKey
-	 * 		私钥
-	 */
-	public void setGeetestKey(String geetestKey){
-		this.geetestKey = geetestKey;
-	}
-
-	/**
-	 * 返回版本
-	 *
-	 * @return 版本
-	 */
-	public String getVersion(){
-		return version;
-	}
-
-	/**
-	 * 设置版本
-	 *
-	 * @param version
-	 * 		版本
-	 */
-	public void setVersion(String version){
-		this.version = version;
-	}
+	private Geetest geetest;
 
 	/**
 	 * 返回前端 JavaScript 库地址
@@ -129,6 +62,107 @@ public class GeetestProperties {
 	 */
 	public void setJavascript(String javascript){
 		this.javascript = javascript;
+	}
+
+	/**
+	 * 返回极验行为验证配置
+	 *
+	 * @return 极验行为验证配置
+	 */
+	public Geetest getGeetest(){
+		return geetest;
+	}
+
+	/**
+	 * 设置极验行为验证配置
+	 *
+	 * @param geetest
+	 * 		极验行为验证配置
+	 */
+	public void setGeetest(Geetest geetest){
+		this.geetest = geetest;
+	}
+
+	/**
+	 * 极验验证
+	 *
+	 * @author yong.teng
+	 * @since 2.0.0
+	 */
+	public static class Geetest {
+
+		/**
+		 * 公钥
+		 */
+		private String geetestId;
+
+		/**
+		 * 私钥
+		 */
+		private String geetestKey;
+
+		/**
+		 * 版本
+		 */
+		private String version = "v4";
+
+		/**
+		 * 返回公钥
+		 *
+		 * @return 公钥
+		 */
+		public String getGeetestId(){
+			return geetestId;
+		}
+
+		/**
+		 * 设置公钥
+		 *
+		 * @param geetestId
+		 * 		公钥
+		 */
+		public void setGeetestId(String geetestId){
+			this.geetestId = geetestId;
+		}
+
+		/**
+		 * 返回私钥
+		 *
+		 * @return 私钥
+		 */
+		public String getGeetestKey(){
+			return geetestKey;
+		}
+
+		/**
+		 * 设置私钥
+		 *
+		 * @param geetestKey
+		 * 		私钥
+		 */
+		public void setGeetestKey(String geetestKey){
+			this.geetestKey = geetestKey;
+		}
+
+		/**
+		 * 返回版本
+		 *
+		 * @return 版本
+		 */
+		public String getVersion(){
+			return version;
+		}
+
+		/**
+		 * 设置版本
+		 *
+		 * @param version
+		 * 		版本
+		 */
+		public void setVersion(String version){
+			this.version = version;
+		}
+
 	}
 
 }
