@@ -52,7 +52,7 @@ import java.io.IOException;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean({ServerHttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableWebSecurity
@@ -62,19 +62,23 @@ public class WebSecurityConfiguration {
 
 	private ServerHttpSecurity serverHttpSecurity;
 
-	public WebSecurityConfiguration(WebSecurityProperties properties, ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+	public WebSecurityConfiguration(WebSecurityProperties properties,
+									ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
 		this.properties = properties;
 		this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
 	}
 
 	@PostConstruct
 	public void initialize() throws Exception{
-		ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic())
+				.csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts())
+				.hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy())
+				.referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enabled", havingValue = "true")
 	@ConditionalOnClass({Policy.class})
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	public static class XssConfiguration {

@@ -66,17 +66,19 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
 	protected static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
 		String s = serverName;
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 
 		if(Validate.hasText(serverProperties.getServerInfoPrefix())){
 			sb.append(serverProperties.getServerInfoPrefix());
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) && s.startsWith(serverProperties.getStripServerInfoPrefix())){
+		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) &&
+				s.startsWith(serverProperties.getStripServerInfoPrefix())){
 			s = s.substring(serverProperties.getStripServerInfoPrefix().length());
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) && s.endsWith(serverProperties.getStripServerInfoSuffix())){
+		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) &&
+				s.endsWith(serverProperties.getStripServerInfoSuffix())){
 			s = s.substring(0, s.length() - serverProperties.getStripServerInfoSuffix().length());
 		}
 

@@ -57,7 +57,7 @@ import java.io.IOException;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnProperty(prefix = "spring.security", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean({HttpSecurity.class, ObjectPostProcessor.class, AuthenticationConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
@@ -72,12 +72,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
-		ServletHttpSecurityBuilder.getInstance(httpSecurity).httpBasic(properties.getHttpBasic()).csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts()).hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy()).referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		ServletHttpSecurityBuilder.getInstance(httpSecurity).httpBasic(properties.getHttpBasic())
+				.csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts())
+				.hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy())
+				.referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enable", havingValue = "true")
+	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enabled", havingValue = "true")
 	@ConditionalOnClass({Policy.class})
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	public static class XssConfiguration {

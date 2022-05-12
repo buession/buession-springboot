@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
@@ -63,14 +63,14 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.poweredby", name = "enable", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.poweredby", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public PoweredByHeaderFilter poweredByHeaderFilter(){
 		return new PoweredByHeaderFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.server-info", name = "enable", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.server-info", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public ServerInfoFilter serverInfoFilter(){
 		final ServerInfoFilter serverInfoFilter = new com.buession.web.reactive.filter.ServerInfoFilter() {
 
@@ -90,7 +90,7 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.print-url", name = "enable", havingValue = "true")
+	@ConditionalOnProperty(prefix = "server.print-url", name = "enabled", havingValue = "true")
 	public PrintUrlFilter printUrlFilter(){
 		return new PrintUrlFilter();
 	}
