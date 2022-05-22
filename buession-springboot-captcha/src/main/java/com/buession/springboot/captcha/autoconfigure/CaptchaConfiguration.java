@@ -24,12 +24,14 @@
  */
 package com.buession.springboot.captcha.autoconfigure;
 
+import com.buession.core.validator.Validate;
 import com.buession.httpclient.HttpClient;
-import com.buession.security.geetest.DefaultGeetestClient;
-import com.buession.security.geetest.GeetestClient;
-import com.buession.security.geetest.GeetestException;
+import com.buession.security.captcha.CaptchaClient;
+import com.buession.security.captcha.aliyun.AliYunCaptchaClient;
+import com.buession.security.captcha.geetest.GeetestCaptchaClient;
+import com.buession.security.captcha.netease.NetEaseCaptchaClient;
+import com.buession.security.captcha.tencent.TencentCaptchaClient;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,28 +43,72 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CaptchaProperties.class)
-@ConditionalOnClass({GeetestClient.class})
-@ConditionalOnProperty(prefix = "spring.captcha", name = "geetest", matchIfMissing = true)
-public class GeetestConfiguration {
+public class CaptchaConfiguration {
 
 	private CaptchaProperties properties;
 
 	private HttpClient httpClient;
 
-	public GeetestConfiguration(CaptchaProperties properties, ObjectProvider<HttpClient> httpClient){
+	public CaptchaConfiguration(CaptchaProperties properties, ObjectProvider<HttpClient> httpClient){
 		this.properties = properties;
 		this.httpClient = httpClient.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GeetestClient geetestClient() throws GeetestException{
-		final GeetestClient client = new DefaultGeetestClient(properties.getGeetest().getGeetestId(),
-				properties.getGeetest().getGeetestKey(), properties.getGeetest().getVersion(), httpClient);
+	@ConditionalOnProperty(prefix = "spring.captcha", name = "aliyun")
+	public AliYunCaptchaClient aliYunCaptchaClient(){
+		final CaptchaProperties.Aliyun config = properties.getAliyun();
+		final AliYunCaptchaClient client = Validate.hasText(config.getRegionId()) ? new AliYunCaptchaClient(
+				config.getAccessKeyId(), config.getAccessKeySecret(), config.getRegionId(),
+				httpClient) : new AliYunCaptchaClient(config.getAccessKeyId(), config.getAccessKeySecret(), httpClient);
 
-		client.setJavaScript(properties.getJavascript());
+		afterInitialized(client);
 
 		return client;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "spring.captcha", name = "geetest")
+	public GeetestCaptchaClient geetestCaptchaClient(){
+		final CaptchaProperties.Geetest config = properties.getGeetest();
+		final GeetestCaptchaClient client = new GeetestCaptchaClient(config.getAppId(), config.getSecretKey(),
+				config.getVersion(), httpClient);
+
+		afterInitialized(client);
+
+		return client;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "spring.captcha", name = "netease")
+	public NetEaseCaptchaClient netEaseCaptchaClient(){
+		final CaptchaProperties.Netease config = properties.getNetease();
+		final NetEaseCaptchaClient client = new NetEaseCaptchaClient(config.getAppId(), config.getSecretKey(),
+				httpClient);
+
+		afterInitialized(client);
+
+		return client;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "spring.captcha", name = "tencent")
+	public TencentCaptchaClient tencentCaptchaClient(){
+		final CaptchaProperties.Tencent config = properties.getTencent();
+		final TencentCaptchaClient client = new TencentCaptchaClient(config.getAppId(), config.getSecretKey(),
+				httpClient);
+
+		afterInitialized(client);
+
+		return client;
+	}
+
+	private void afterInitialized(final CaptchaClient captchaClient){
+		captchaClient.setJavaScript(properties.getJavascript());
 	}
 
 }

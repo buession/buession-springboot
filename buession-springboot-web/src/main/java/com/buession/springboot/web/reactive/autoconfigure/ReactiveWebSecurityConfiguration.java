@@ -40,7 +40,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 
 import javax.annotation.PostConstruct;
@@ -55,7 +54,6 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean({ServerHttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@EnableWebSecurity
 public class WebSecurityConfiguration {
 
 	private WebSecurityProperties properties;

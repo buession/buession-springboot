@@ -55,7 +55,7 @@
 
 		<dependency>
 			<groupId>com.buession.security</groupId>
-			<artifactId>buession-security-geetest</artifactId>
+			<artifactId>buession-security-captcha</artifactId>
 			<version>${buession.security.version}</version>
 			<scope>compile</scope>
 		</dependency>

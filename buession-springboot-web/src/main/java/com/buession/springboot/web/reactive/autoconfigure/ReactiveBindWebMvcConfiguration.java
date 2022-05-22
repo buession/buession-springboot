@@ -22,4 +22,18 @@
  * | Copyright @ 2013-2021 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.bind;
+package com.buession.springboot.web.servlet.autoconfigure;
+
+import com.buession.web.servlet.config.BindWebMvcConfigurerConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @author Yong.Teng
+ * @since 2.0.0
+ */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class ServletBindWebMvcConfiguration extends BindWebMvcConfigurerConfiguration {
+
+}
