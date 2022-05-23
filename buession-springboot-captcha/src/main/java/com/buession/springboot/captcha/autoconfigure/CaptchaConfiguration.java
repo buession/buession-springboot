@@ -56,7 +56,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.captcha", name = "aliyun")
+	@ConditionalOnProperty(prefix = "spring.captcha.aliyun", name = "enabled", havingValue = "true")
 	public AliYunCaptchaClient aliYunCaptchaClient(){
 		final CaptchaProperties.Aliyun config = properties.getAliyun();
 		final AliYunCaptchaClient client = Validate.hasText(config.getRegionId()) ? new AliYunCaptchaClient(
@@ -70,7 +70,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.captcha", name = "geetest")
+	@ConditionalOnProperty(prefix = "spring.captcha.geetest", name = "enabled", havingValue = "true")
 	public GeetestCaptchaClient geetestCaptchaClient(){
 		final CaptchaProperties.Geetest config = properties.getGeetest();
 		final GeetestCaptchaClient client = new GeetestCaptchaClient(config.getAppId(), config.getSecretKey(),
@@ -83,7 +83,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.captcha", name = "netease")
+	@ConditionalOnProperty(prefix = "spring.captcha.netease", name = "enabled", havingValue = "true")
 	public NetEaseCaptchaClient netEaseCaptchaClient(){
 		final CaptchaProperties.Netease config = properties.getNetease();
 		final NetEaseCaptchaClient client = new NetEaseCaptchaClient(config.getAppId(), config.getSecretKey(),
@@ -96,7 +96,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.captcha", name = "tencent")
+	@ConditionalOnProperty(prefix = "spring.captcha.tencent", name = "enabled", havingValue = "true")
 	public TencentCaptchaClient tencentCaptchaClient(){
 		final CaptchaProperties.Tencent config = properties.getTencent();
 		final TencentCaptchaClient client = new TencentCaptchaClient(config.getAppId(), config.getSecretKey(),
