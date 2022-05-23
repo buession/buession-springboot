@@ -29,7 +29,9 @@ package com.buession.springboot.web.servlet.autoconfigure;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractServerConfiguration;
 import com.buession.springboot.web.web.ServerProperties;
-import com.buession.web.servlet.aop.advice.aopalliance.ServletHttpAttributeSourcePointcutAdvisor;
+import com.buession.web.http.CorsConfig;
+import com.buession.web.servlet.aop.aopalliance.interceptor.ServletHttpAttributeSourcePointcutAdvisor;
+import com.buession.web.servlet.filter.CorsFilter;
 import com.buession.web.servlet.filter.PoweredByHeaderFilter;
 import com.buession.web.servlet.filter.PrintUrlFilter;
 import com.buession.web.servlet.filter.ResponseHeadersFilter;
@@ -93,6 +95,23 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@ConditionalOnProperty(prefix = "server.print-url", name = "enabled", havingValue = "true")
 	public PrintUrlFilter printUrlFilter(){
 		return new PrintUrlFilter();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "server.cors", name = "enabled", havingValue = "true")
+	public CorsFilter corsFilter(){
+		CorsConfig corsConfig = serverProperties.getCors();
+		CorsFilter corsFilter = new CorsFilter();
+
+		corsFilter.setOrigins(corsConfig.getOrigins());
+		corsFilter.setAllowedMethods(corsConfig.getAllowedMethods());
+		corsFilter.setAllowedHeaders(corsConfig.getAllowedHeaders());
+		corsFilter.setExposedHeaders(corsConfig.getExposedHeaders());
+		corsFilter.setAllowCredentials(corsConfig.getAllowCredentials());
+		corsFilter.setMaxAge(corsConfig.getMaxAge());
+
+		return corsFilter;
 	}
 
 	@Bean

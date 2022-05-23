@@ -19,19 +19,21 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.bind.autoconfigure;
+package com.buession.springboot.web.servlet.autoconfigure;
 
-import com.buession.web.bind.converter.BindWebMvcConfigurerConfiguration;
+import com.buession.web.servlet.config.ServletBindWebMvcConfigurerConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
- * @since 1.2.2
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-public class BindWebMvcConfiguration extends BindWebMvcConfigurerConfiguration {
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class ServletBindWebMvcConfiguration extends ServletBindWebMvcConfigurerConfiguration {
 
 }

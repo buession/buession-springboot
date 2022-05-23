@@ -55,11 +55,11 @@ import java.io.IOException;
 @EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class ServletWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private WebSecurityProperties properties;
 
-	public WebSecurityConfiguration(WebSecurityProperties properties){
+	public ServletWebSecurityConfiguration(WebSecurityProperties properties){
 		super();
 		this.properties = properties;
 	}

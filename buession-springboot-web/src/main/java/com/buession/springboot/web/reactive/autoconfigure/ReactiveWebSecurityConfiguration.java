@@ -54,14 +54,14 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnBean({ServerHttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-public class WebSecurityConfiguration {
+public class ReactiveWebSecurityConfiguration {
 
 	private WebSecurityProperties properties;
 
 	private ServerHttpSecurity serverHttpSecurity;
 
-	public WebSecurityConfiguration(WebSecurityProperties properties,
-									ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+	public ReactiveWebSecurityConfiguration(WebSecurityProperties properties,
+											ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
 		this.properties = properties;
 		this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
 	}

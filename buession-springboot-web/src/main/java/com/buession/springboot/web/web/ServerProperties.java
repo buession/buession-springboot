@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.web.web;
 
+import com.buession.web.http.CorsConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.LinkedHashMap;
@@ -68,6 +69,13 @@ public class ServerProperties {
 	 * 删除 Server 信息响应头后缀
 	 */
 	private String stripServerInfoSuffix;
+
+	/**
+	 * CORS 配置
+	 *
+	 * @since 2.0.0
+	 */
+	private CorsConfig cors;
 
 	public Map<String, String> getResponseHeaders(){
 		return responseHeaders;
@@ -115,6 +123,14 @@ public class ServerProperties {
 
 	public void setStripServerInfoSuffix(String stripServerInfoSuffix){
 		this.stripServerInfoSuffix = stripServerInfoSuffix;
+	}
+
+	public CorsConfig getCors(){
+		return cors;
+	}
+
+	public void setCors(CorsConfig cors){
+		this.cors = cors;
 	}
 
 }
