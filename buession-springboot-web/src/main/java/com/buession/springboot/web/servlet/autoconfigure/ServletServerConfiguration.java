@@ -28,14 +28,14 @@ package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractServerConfiguration;
-import com.buession.springboot.web.web.ServerProperties;
+import com.buession.springboot.web.autoconfigure.ServerProperties;
+import com.buession.springboot.web.servlet.filter.ServerInfoFilter;
 import com.buession.web.http.CorsConfig;
 import com.buession.web.servlet.aop.aopalliance.interceptor.ServletHttpAttributeSourcePointcutAdvisor;
 import com.buession.web.servlet.filter.CorsFilter;
-import com.buession.web.servlet.filter.PoweredByHeaderFilter;
+import com.buession.web.servlet.filter.PoweredByFilter;
 import com.buession.web.servlet.filter.PrintUrlFilter;
 import com.buession.web.servlet.filter.ResponseHeadersFilter;
-import com.buession.web.servlet.filter.ServerInfoFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -50,6 +50,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ServletServerConfiguration extends AbstractServerConfiguration {
+
+	public ServletServerConfiguration(ServerProperties serverProperties){
+		super(serverProperties);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -66,28 +70,17 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.poweredby", name = "enabled", havingValue = "true", matchIfMissing = true)
-	public PoweredByHeaderFilter poweredByHeaderFilter(){
-		return new PoweredByHeaderFilter();
+	public PoweredByFilter poweredByFilter(){
+		return new PoweredByFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.server-info", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public ServerInfoFilter serverInfoFilter(){
-		final ServerInfoFilter serverInfoFilter = new com.buession.web.servlet.filter.ServerInfoFilter() {
-
-			@Override
-			protected String format(String computerName){
-				return buildServerInfo(serverProperties, computerName);
-			}
-
-		};
-
-		if(Validate.hasText(serverProperties.getServerInfoName())){
-			serverInfoFilter.setHeaderName(serverProperties.getServerInfoName());
-		}
-
-		return serverInfoFilter;
+		return new ServerInfoFilter(serverProperties.getServerInfoName(), serverProperties.getServerInfoPrefix(),
+				serverProperties.getServerInfoSuffix(), serverProperties.getStripServerInfoPrefix(),
+				serverProperties.getStripServerInfoSuffix());
 	}
 
 	@Bean
@@ -96,27 +89,20 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	public PrintUrlFilter printUrlFilter(){
 		return new PrintUrlFilter();
 	}
-	
+
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "server.cors", name = "enabled", havingValue = "true")
 	public CorsFilter corsFilter(){
 		CorsConfig corsConfig = serverProperties.getCors();
-		CorsFilter corsFilter = new CorsFilter();
-
-		corsFilter.setOrigins(corsConfig.getOrigins());
-		corsFilter.setAllowedMethods(corsConfig.getAllowedMethods());
-		corsFilter.setAllowedHeaders(corsConfig.getAllowedHeaders());
-		corsFilter.setExposedHeaders(corsConfig.getExposedHeaders());
-		corsFilter.setAllowCredentials(corsConfig.getAllowCredentials());
-		corsFilter.setMaxAge(corsConfig.getMaxAge());
-
-		return corsFilter;
+		return new CorsFilter(corsConfig.getOrigins(), corsConfig.getAllowedMethods(),
+				corsConfig.getAllowedHeaders(), corsConfig.getExposedHeaders(), corsConfig.getAllowCredentials(),
+				corsConfig.getMaxAge());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServletHttpAttributeSourcePointcutAdvisor servletHttpAttributeSourcePointcutAdvisor(){
+	public ServletHttpAttributeSourcePointcutAdvisor httpAttributeSourcePointcutAdvisor(){
 		return new ServletHttpAttributeSourcePointcutAdvisor();
 	}
 

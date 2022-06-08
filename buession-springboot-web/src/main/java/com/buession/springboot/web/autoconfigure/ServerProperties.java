@@ -24,7 +24,7 @@
  * | Copyright @ 2013-2020 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.web;
+package com.buession.springboot.web.autoconfigure;
 
 import com.buession.web.http.CorsConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;

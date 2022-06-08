@@ -19,58 +19,94 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web;
+package com.buession.springboot.web.reactive.filter;
 
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.autoconfigure.ServerProperties;
-import org.junit.Test;
 
 /**
+ * Server 信息 Filter
+ *
  * @author Yong.Teng
+ * @see com.buession.web.reactive.filter.ServerInfoFilter
+ * @since 2.0.0
  */
-public class StringUtils {
+public class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInfoFilter {
 
-	@Test
-	public void substr(){
-		ServerProperties serverProperties = new ServerProperties();
-		String str = "liangvi-web-s-6fb77bc686-qsnj4";
+	/**
+	 * 前缀
+	 */
+	private final String prefix;
 
-		// httpProperties.setServerInfoPrefix("test-");
-		//httpProperties.setServerInfoSuffix("-aaa");
+	/**
+	 * 后缀
+	 */
+	private final String suffix;
 
-		serverProperties.setStripServerInfoPrefix("liangvi-web-s-");
-		serverProperties.setStripServerInfoSuffix("j4");
+	/**
+	 * 删除前缀
+	 */
+	private final String stripPrefix;
 
-		System.out.println(buildServerInfo(serverProperties, str));
+	/**
+	 * 删除后缀
+	 */
+	private final String stripSuffix;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param headerName
+	 * 		响应头名称
+	 * @param prefix
+	 * 		前缀
+	 * @param suffix
+	 * 		后缀
+	 * @param stripPrefix
+	 * 		删除前缀
+	 * @param stripSuffix
+	 * 		删除后缀
+	 */
+	public ServerInfoFilter(final String headerName, final String prefix, final String suffix, final String stripPrefix,
+							final String stripSuffix){
+		super();
+
+		if(Validate.hasText(headerName)){
+			setHeaderName(headerName);
+		}
+
+		this.prefix = prefix;
+		this.suffix = suffix;
+		this.stripPrefix = stripPrefix;
+		this.stripSuffix = stripSuffix;
 	}
 
-	private final static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
+	@Override
+	protected String format(String serverName){
 		String s = serverName;
-		StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder(serverName.length());
 
-		if(Validate.hasText(serverProperties.getServerInfoPrefix())){
-			sb.append(serverProperties.getServerInfoPrefix());
+		if(Validate.hasText(prefix)){
+			sb.append(prefix);
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) && s.startsWith(serverProperties.getStripServerInfoPrefix())){
-			s = s.substring(serverProperties.getStripServerInfoPrefix().length());
+		if(Validate.hasText(stripPrefix) && s.startsWith(stripPrefix)){
+			s = s.substring(stripPrefix.length());
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) && s.endsWith(serverProperties.getStripServerInfoSuffix())){
-			s = s.substring(0, s.length() - serverProperties.getStripServerInfoSuffix().length());
+		if(Validate.hasText(stripSuffix) && s.endsWith(stripSuffix)){
+			s = s.substring(0, s.length() - stripSuffix.length());
 		}
 
 		sb.append(s);
 
-		if(Validate.hasText(serverProperties.getServerInfoSuffix())){
-			sb.append(serverProperties.getServerInfoSuffix());
+		if(Validate.hasText(suffix)){
+			sb.append(suffix);
 		}
 
 		return sb.toString();
 	}
-
 
 }

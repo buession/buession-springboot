@@ -27,8 +27,6 @@ package com.buession.springboot.web.autoconfigure;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
-import com.buession.springboot.web.web.ServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +40,11 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
 	protected final static char HEADER_VARIABLE_IDENTIFIER_CHAR = '$';
 
-	@Autowired(required = false)
 	protected ServerProperties serverProperties;
+
+	public AbstractServerConfiguration(ServerProperties serverProperties){
+		this.serverProperties = serverProperties;
+	}
 
 	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
 		final Map<String, String> result = new HashMap<>(headers.size());

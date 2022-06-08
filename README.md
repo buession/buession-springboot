@@ -9,7 +9,9 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Java support](https://img.shields.io/badge/Java-8+-green?logo=java&logoColor=white)](https://openjdk.java.net/)
 
-<img src="docs/images/logo.png" alt="Buession Spring Boot" title="Buession Spring Boot" width="280px" />
+<p align="center">
+	<img src="docs/images/logo.png" alt="Buession Spring Boot" title="Buession Spring Boot" width="280px" />
+</p>
 
 ## Requirements
 
