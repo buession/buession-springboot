@@ -25,14 +25,17 @@
 package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.web.servlet.config.WebMvcConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass({WebMvcConfigurer.class})
 public class ServletWebMvcConfiguration extends WebMvcConfiguration {
 
 }

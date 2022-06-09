@@ -24,45 +24,14 @@
  */
 package com.buession.springboot.web.autoconfigure;
 
-import com.buession.core.utils.StringUtils;
-import com.buession.core.utils.SystemPropertyUtils;
-import com.buession.core.validator.Validate;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.core.Ordered;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-public abstract class AbstractServerConfiguration implements ServerConfiguration {
+public abstract class AbstractWebSecurityConfiguration {
 
-	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
-
-	protected final static char HEADER_VARIABLE_IDENTIFIER_CHAR = '$';
-
-	protected ServerProperties serverProperties;
-
-	public AbstractServerConfiguration(ServerProperties serverProperties){
-		this.serverProperties = serverProperties;
-	}
-
-	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
-		final Map<String, String> result = new HashMap<>(headers.size());
-
-		headers.forEach((key, value)->{
-			if(StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
-				String propertyName = value.substring(1);
-				String propertyValue = SystemPropertyUtils.getProperty(propertyName);
-
-				if(Validate.hasText(propertyValue)){
-					result.put(key, propertyValue);
-				}
-			}else{
-				result.put(key, value);
-			}
-		});
-
-		return result;
-	}
+	public final static int ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 }

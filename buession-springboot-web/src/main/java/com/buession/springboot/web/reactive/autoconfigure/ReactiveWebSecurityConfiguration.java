@@ -26,7 +26,9 @@ package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.security.web.builder.reactive.ReactiveHttpSecurityBuilder;
+import com.buession.security.web.utils.PolicyUtils;
 import com.buession.security.web.xss.reactive.XssFilter;
+import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
@@ -38,8 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 
@@ -51,36 +52,41 @@ import java.io.IOException;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnClass({WebSecurityConfigurerAdapter.class})
 @ConditionalOnBean({ServerHttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-public class ReactiveWebSecurityConfiguration {
+@Order(ReactiveWebSecurityConfiguration.ORDER)
+public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
 
-	private WebSecurityProperties properties;
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WebSecurityProperties.class)
+	static class DefaultWebSecurityConfigurerAdapter {
 
-	private ServerHttpSecurity serverHttpSecurity;
+		private WebSecurityProperties properties;
 
-	public ReactiveWebSecurityConfiguration(WebSecurityProperties properties,
-											ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
-		this.properties = properties;
-		this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
-	}
+		private ServerHttpSecurity serverHttpSecurity;
 
-	@PostConstruct
-	public void initialize() throws Exception{
-		ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic())
-				.csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts())
-				.hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy())
-				.referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		public DefaultWebSecurityConfigurerAdapter(WebSecurityProperties properties,
+												   ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+			this.properties = properties;
+			this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
+		}
+
+		@PostConstruct
+		public void initialize() throws Exception{
+			ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic())
+					.csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts())
+					.hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy())
+					.referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
 	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enabled", havingValue = "true")
 	@ConditionalOnClass({Policy.class})
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	public static class XssConfiguration {
 
 		protected WebSecurityProperties properties;
@@ -95,10 +101,7 @@ public class ReactiveWebSecurityConfiguration {
 			String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
 
 			if(Validate.hasText(policyConfigLocation)){
-				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-				Resource[] resources = resourceResolver.getResources(policyConfigLocation);
-
-				xssFilter.setPolicy(Policy.getInstance(resources[0].getInputStream()));
+				xssFilter.setPolicy(PolicyUtils.createFromConfigFile(policyConfigLocation));
 			}
 
 			return xssFilter;
