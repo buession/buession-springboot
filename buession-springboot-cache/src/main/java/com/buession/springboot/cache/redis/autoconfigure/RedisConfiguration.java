@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Import;
 @Import({JedisDataSourceConfiguration.class})
 public class RedisConfiguration {
 
-	protected RedisProperties properties;
+	private RedisProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 

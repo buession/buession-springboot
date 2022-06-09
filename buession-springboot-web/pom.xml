@@ -61,11 +61,6 @@
 
 		<dependency>
 			<groupId>com.buession.security</groupId>
-			<artifactId>buession-security-spring</artifactId>
-			<version>${buession.security.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.buession.security</groupId>
 			<artifactId>buession-security-web</artifactId>
 			<version>${buession.security.version}</version>
 			<exclusions>
@@ -87,8 +82,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webflux</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- springframework boot start -->
@@ -101,6 +95,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<!-- springframework boot end -->
 
