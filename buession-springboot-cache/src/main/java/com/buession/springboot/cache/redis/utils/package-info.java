@@ -22,34 +22,8 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.autoconfigure;
-
-import com.buession.redis.client.connection.datasource.DataSource;
-
-import java.time.Duration;
-
 /**
- * Redis 连接对象 AutoConfiguration 抽象类
- *
  * @author Yong.Teng
- * @since 1.3.0
+ * @since 2.0.0
  */
-public abstract class AbstractDataSourceConfiguration {
-
-	protected RedisProperties properties;
-
-	public AbstractDataSourceConfiguration(RedisProperties properties){
-		this.properties = properties;
-	}
-
-	protected static int durationToInteger(final Duration duration){
-		return (int) duration.toMillis();
-	}
-
-	protected void applyConfigurationTimeout(final DataSource dataSource){
-		dataSource.setConnectTimeout(durationToInteger(properties.getConnectTimeout()));
-		dataSource.setSoTimeout(durationToInteger(properties.getSoTimeout()));
-		dataSource.setInfiniteSoTimeout(durationToInteger(properties.getInfiniteSoTimeout()));
-	}
-
-}
+package com.buession.springboot.cache.redis.utils;

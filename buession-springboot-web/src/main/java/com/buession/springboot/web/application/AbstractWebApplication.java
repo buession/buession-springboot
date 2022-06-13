@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.application;
@@ -30,13 +30,17 @@ import com.buession.springboot.boot.application.AbstractApplication;
 import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
+ * Web 应用抽象类
+ *
  * @author Yong.Teng
  */
-public abstract class AbstractWebApplication extends AbstractApplication {
+public abstract class AbstractWebApplication extends AbstractApplication implements WebApplication {
 
+	/**
+	 * WEB 应用类型
+	 */
 	private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
 
 	/**
@@ -51,16 +55,20 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 	 *
 	 * @param webApplicationType
 	 * 		Web 应用类型
+	 *
+	 * @see WebApplicationType
 	 */
 	protected AbstractWebApplication(final WebApplicationType webApplicationType){
-		this.webApplicationType = webApplicationType;
+		if(webApplicationType != null){
+			this.webApplicationType = webApplicationType;
+		}
 	}
 
 	/**
 	 * 构造函数
 	 *
 	 * @param banner
-	 * 		Banner 类
+	 *        {@link Banner} 类
 	 *
 	 * @throws InstantiationException
 	 * 		反射异常
@@ -79,26 +87,29 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 	 * @param webApplicationType
 	 * 		Web 应用类型
 	 * @param banner
-	 * 		Banner 类
+	 *        {@link Banner} 类
 	 *
 	 * @throws InstantiationException
 	 * 		反射异常
 	 * @throws IllegalAccessException
 	 * 		没有访问权限的异常
+	 * @see WebApplicationType
 	 * @since 1.3.1
 	 */
 	protected AbstractWebApplication(final WebApplicationType webApplicationType,
 									 final Class<? extends Banner> banner) throws InstantiationException,
 			IllegalAccessException{
 		super(banner);
-		this.webApplicationType = webApplicationType;
+		if(webApplicationType != null){
+			this.webApplicationType = webApplicationType;
+		}
 	}
 
 	/**
 	 * 构造函数
 	 *
 	 * @param banner
-	 * 		Banner 实例
+	 *        {@link Banner} 实例
 	 *
 	 * @since 1.3.1
 	 */
@@ -112,33 +123,26 @@ public abstract class AbstractWebApplication extends AbstractApplication {
 	 * @param webApplicationType
 	 * 		Web 应用类型
 	 * @param banner
-	 * 		Banner 实例
+	 *        {@link Banner} 实例
 	 *
+	 * @see WebApplicationType
 	 * @since 1.3.1
 	 */
 	public AbstractWebApplication(final WebApplicationType webApplicationType, final Banner banner){
 		super(banner);
-		this.webApplicationType = webApplicationType;
+		if(webApplicationType != null){
+			this.webApplicationType = webApplicationType;
+		}
 	}
 
-	protected WebApplicationType getWebApplicationType(){
+	@Override
+	public WebApplicationType getWebApplicationType(){
 		return webApplicationType;
 	}
 
 	@Override
 	public void startup(final Class<? extends Application> clazz, final String[] args){
-		final Banner banner = getBanner();
-		SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
-
-		if(banner != null){
-			springApplicationBuilder.banner(banner);
-		}
-
-		if(getConfigurableApplicationContext() != null){
-			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
-		}
-
-		springApplicationBuilder.web(getWebApplicationType()).properties(createRuntimeProperties()).logStartupInfo(true).run(args);
+		doStartup(clazz, getWebApplicationType(), args);
 	}
 
 }

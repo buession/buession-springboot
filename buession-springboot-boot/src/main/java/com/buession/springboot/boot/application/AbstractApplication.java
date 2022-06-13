@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
@@ -31,13 +31,22 @@ import com.buession.springboot.boot.config.RuntimeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Date;
+
 /**
+ * 应用抽象类
+ *
  * @author Yong.Teng
  */
 public abstract class AbstractApplication implements Application {
 
+	/**
+	 * 可配置的应用上下文类
+	 */
 	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
 	/**
@@ -59,7 +68,7 @@ public abstract class AbstractApplication implements Application {
 	 * 构造函数
 	 *
 	 * @param banner
-	 * 		Banner 类
+	 *        {@link Banner} 类
 	 *
 	 * @throws InstantiationException
 	 * 		反射异常
@@ -77,7 +86,7 @@ public abstract class AbstractApplication implements Application {
 	 * 构造函数
 	 *
 	 * @param banner
-	 * 		Banner 实例
+	 *        {@link Banner} 实例
 	 *
 	 * @since 1.3.1
 	 */
@@ -92,7 +101,8 @@ public abstract class AbstractApplication implements Application {
 	}
 
 	@Override
-	public void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext> configurableApplicationContext){
+	public void setConfigurableApplicationContext(
+			Class<? extends ConfigurableApplicationContext> configurableApplicationContext){
 		this.configurableApplicationContext = configurableApplicationContext;
 	}
 
@@ -101,8 +111,25 @@ public abstract class AbstractApplication implements Application {
 		startup(getClass(), args);
 
 		if(logger.isInfoEnabled()){
-			logger.info("Startup {} width arguments: {}", getClass().getSimpleName(), args);
+			logger.info("Startup {} width arguments: {} at {}", getClass().getSimpleName(), args, new Date());
 		}
+	}
+
+	public void doStartup(final Class<? extends Application> clazz, final WebApplicationType webApplicationType,
+						  final String[] args){
+		final Banner banner = getBanner();
+		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
+
+		if(banner != null){
+			springApplicationBuilder.banner(banner);
+		}
+
+		if(getConfigurableApplicationContext() != null){
+			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
+		}
+
+		springApplicationBuilder.web(webApplicationType).properties(createRuntimeProperties()).logStartupInfo(true)
+				.run(args);
 	}
 
 	/**

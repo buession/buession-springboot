@@ -22,64 +22,26 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cli.application;
+package com.buession.springboot.web.application;
 
-import com.buession.springboot.boot.application.AbstractApplication;
 import com.buession.springboot.boot.application.Application;
-import org.springframework.boot.Banner;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 
 /**
- * 命令行应用抽象类
+ * Web 应用接口
  *
  * @author Yong.Teng
+ * @see 2.0.0
  */
-public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
+public interface WebApplication extends Application {
 
 	/**
-	 * 构造函数
+	 * 返回 WEB 应用类型
+	 *
+	 * @return WEB 应用类型
+	 *
+	 * @see WebApplicationType
 	 */
-	protected AbstractCliApplication(){
-		super();
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param banner
-	 *        {@link Banner} 类
-	 *
-	 * @throws InstantiationException
-	 * 		反射异常
-	 * @throws IllegalAccessException
-	 * 		没有访问权限的异常
-	 * @since 1.3.1
-	 */
-	protected AbstractCliApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
-		super(banner);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param banner
-	 *        {@link Banner} 实例
-	 *
-	 * @since 1.3.1
-	 */
-	protected AbstractCliApplication(final Banner banner){
-		super(banner);
-	}
-
-	@Override
-	public void startup(Class<? extends Application> clazz, String[] args){
-		doStartup(clazz, WebApplicationType.NONE, args);
-	}
-
-	@Override
-	public final void run(final String[] args){
-	}
+	WebApplicationType getWebApplicationType();
 
 }

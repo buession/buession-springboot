@@ -22,64 +22,47 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cli.application;
+package com.buession.springboot.cache.redis.utils;
 
-import com.buession.springboot.boot.application.AbstractApplication;
-import com.buession.springboot.boot.application.Application;
-import org.springframework.boot.Banner;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.WebApplicationType;
+import com.buession.core.utils.StringUtils;
+import com.buession.redis.core.RedisNode;
+import org.springframework.beans.factory.BeanInitializationException;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * 命令行应用抽象类
- *
  * @author Yong.Teng
+ * @since 2.0.0
  */
-public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
+public class RedisNodeUtils {
 
-	/**
-	 * 构造函数
-	 */
-	protected AbstractCliApplication(){
-		super();
+	public static RedisNode parse(final String str, final int defaultPort) throws ParseException{
+		String[] hostAndPort = StringUtils.split(str, ':');
+
+		if(hostAndPort.length == 1){
+			return new RedisNode(hostAndPort[0], defaultPort);
+		}else if(hostAndPort.length == 2){
+			try{
+				return new RedisNode(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
+			}catch(Exception e){
+				throw new ParseException("Illegal redis host and port: " + str + ".", -1);
+			}
+		}else{
+			throw new ParseException("Illegal redis host and port: " + str + ".", -1);
+		}
 	}
 
-	/**
-	 * 构造函数
-	 *
-	 * @param banner
-	 *        {@link Banner} 类
-	 *
-	 * @throws InstantiationException
-	 * 		反射异常
-	 * @throws IllegalAccessException
-	 * 		没有访问权限的异常
-	 * @since 1.3.1
-	 */
-	protected AbstractCliApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
-		super(banner);
-	}
+	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException{
+		List<RedisNode> nodes = new ArrayList<>(str.size());
 
-	/**
-	 * 构造函数
-	 *
-	 * @param banner
-	 *        {@link Banner} 实例
-	 *
-	 * @since 1.3.1
-	 */
-	protected AbstractCliApplication(final Banner banner){
-		super(banner);
-	}
+		for(String s : str){
+			nodes.add(parse(s, defaultPort));
+		}
 
-	@Override
-	public void startup(Class<? extends Application> clazz, String[] args){
-		doStartup(clazz, WebApplicationType.NONE, args);
-	}
-
-	@Override
-	public final void run(final String[] args){
+		return nodes;
 	}
 
 }

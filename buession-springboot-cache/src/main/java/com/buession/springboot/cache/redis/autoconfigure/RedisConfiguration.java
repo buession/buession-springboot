@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass({RedisTemplate.class})
-@Import({JedisDataSourceConfiguration.class})
+@Import({DataSourceConfiguration.class})
 public class RedisConfiguration {
 
 	private RedisProperties properties;
