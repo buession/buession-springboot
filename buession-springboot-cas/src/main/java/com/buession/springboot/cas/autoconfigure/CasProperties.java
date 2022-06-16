@@ -19,14 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cas.autoconfigure;
 
 import org.pac4j.cas.config.CasProtocol;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * CAS 客户端配置
@@ -86,68 +85,6 @@ public class CasProperties {
 
 	public void setCallbackUrl(String callbackUrl){
 		this.callbackUrl = callbackUrl;
-	}
-
-	@ConfigurationProperties(prefix = "cas")
-	@Deprecated
-	public final static class DeprecatedCasProperties extends CasProperties {
-
-		/**
-		 * CAS 版本
-		 */
-		@Deprecated
-		private CasProtocol protocol = CasProtocol.CAS30;
-
-		/**
-		 * CAS 登录地址
-		 */
-		@Deprecated
-		private String loginUrl;
-
-		/**
-		 * CAS URL 前缀
-		 */
-		@Deprecated
-		private String prefixUrl;
-
-		/**
-		 * CAS 登录成功跳转地址
-		 */
-		@Deprecated
-		private String callbackUrl;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.cas.protocol")
-		@Override
-		public void setProtocol(CasProtocol protocol){
-			super.setProtocol(protocol);
-			this.protocol = protocol;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.cas.login-url")
-		@Override
-		public void setLoginUrl(String loginUrl){
-			super.setLoginUrl(loginUrl);
-			this.loginUrl = loginUrl;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.cas.prefix-url")
-		@Override
-		public void setPrefixUrl(String prefixUrl){
-			super.setPrefixUrl(prefixUrl);
-			this.prefixUrl = prefixUrl;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(reason = "规范命名", replacement = "spring.cas.callback-url")
-		@Override
-		public void setCallbackUrl(String callbackUrl){
-			super.setCallbackUrl(callbackUrl);
-			this.callbackUrl = callbackUrl;
-		}
-
 	}
 
 }

@@ -31,7 +31,7 @@ import org.springframework.boot.WebApplicationType;
  * Web 应用接口
  *
  * @author Yong.Teng
- * @see 2.0.0
+ * @since 2.0.0
  */
 public interface WebApplication extends Application {
 

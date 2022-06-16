@@ -70,10 +70,12 @@ public class JwtConfiguration {
 	public JwtConfiguration(JwtProperties properties){
 		this.properties = properties;
 		String jwtSecret = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE, properties.getEncryptionKey());
-		String jwtEncryptionKey = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE, properties.getEncryptionKey());
+		String jwtEncryptionKey = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE,
+				properties.getEncryptionKey());
 
 		signatureConfiguration = new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.HS256);
-		secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256);
+		secretEncryptionConfiguration = new SecretEncryptionConfiguration(jwtEncryptionKey, JWEAlgorithm.DIR,
+				EncryptionMethod.A128CBC_HS256);
 	}
 
 	@Bean
@@ -82,7 +84,7 @@ public class JwtConfiguration {
 		return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
 	}
 
-	@Bean
+	@Bean(name = "jwtClient")
 	@ConditionalOnMissingBean
 	public ParameterClient jwtClient(){
 		ParameterClient parameterClient = new ParameterClient();
@@ -92,10 +94,13 @@ public class JwtConfiguration {
 		parameterClient.setSupportGetRequest(properties.isSupportGetRequest());
 		parameterClient.setSupportPostRequest(properties.isSupportPostRequest());
 		parameterClient.setAuthenticator(new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration));
-		parameterClient.setCredentialsExtractor(new HeaderExtractor(properties.getParameterName(), properties.getPrefixHeader()));
+		parameterClient.setCredentialsExtractor(
+				new HeaderExtractor(properties.getParameterName(), properties.getPrefixHeader()));
 
 		if(logger.isDebugEnabled()){
-			logger.debug("initialize {} [name: {}, encryption key: {}, parameter name: {}, prefix header: {}.", ParameterClient.class.getName(), Constants.JWT, properties.getEncryptionKey(), properties.getParameterName(), properties.getPrefixHeader());
+			logger.debug("initialize {} [name: {}, encryption key: {}, parameter name: {}, prefix header: {}.",
+					ParameterClient.class.getName(), Constants.JWT, properties.getEncryptionKey(),
+					properties.getParameterName(), properties.getPrefixHeader());
 		}
 
 		return parameterClient;

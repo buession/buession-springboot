@@ -39,7 +39,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
  */
 public class BaseDataSource {
 
-	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties, final Class<T> type){
+	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties,
+																		 final Class<T> type){
 		return properties.initializeDataSourceBuilder().type(type).build();
 	}
 
@@ -53,7 +54,8 @@ public class BaseDataSource {
 
 	}
 
-	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource implements IDataSource<HikariPoolConfiguration, com.zaxxer.hikari.HikariDataSource> {
+	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource
+			implements IDataSource<HikariPoolConfiguration, com.zaxxer.hikari.HikariDataSource> {
 
 		private DataSourceProperties properties;
 
@@ -68,15 +70,18 @@ public class BaseDataSource {
 
 		@Override
 		public com.zaxxer.hikari.HikariDataSource createDataSource(){
-			com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties, com.zaxxer.hikari.HikariDataSource.class);
+			com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties,
+					com.zaxxer.hikari.HikariDataSource.class);
 
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
 		}
+
 	}
 
-	public final static class Dbcp2DataSource extends com.buession.jdbc.datasource.Dbcp2DataSource implements IDataSource<Dbcp2PoolConfiguration, BasicDataSource> {
+	public final static class Dbcp2DataSource extends com.buession.jdbc.datasource.Dbcp2DataSource
+			implements IDataSource<Dbcp2PoolConfiguration, BasicDataSource> {
 
 		private DataSourceProperties properties;
 
@@ -91,15 +96,18 @@ public class BaseDataSource {
 
 		@Override
 		public BasicDataSource createDataSource(){
-			BasicDataSource dataSource = BaseDataSource.createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
+			BasicDataSource dataSource = BaseDataSource.createDataSource(properties,
+					org.apache.commons.dbcp2.BasicDataSource.class);
 
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
 		}
+
 	}
 
-	public final static class DruidDataSource extends com.buession.jdbc.datasource.DruidDataSource implements IDataSource<DruidPoolConfiguration, com.alibaba.druid.pool.DruidDataSource> {
+	public final static class DruidDataSource extends com.buession.jdbc.datasource.DruidDataSource
+			implements IDataSource<DruidPoolConfiguration, com.alibaba.druid.pool.DruidDataSource> {
 
 		private DataSourceProperties properties;
 
@@ -114,15 +122,18 @@ public class BaseDataSource {
 
 		@Override
 		public com.alibaba.druid.pool.DruidDataSource createDataSource(){
-			com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties, com.alibaba.druid.pool.DruidDataSource.class);
+			com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties,
+					com.alibaba.druid.pool.DruidDataSource.class);
 
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
 		}
+
 	}
 
-	public final static class TomcatDataSource extends com.buession.jdbc.datasource.TomcatDataSource implements IDataSource<TomcatPoolConfiguration, org.apache.tomcat.jdbc.pool.DataSource> {
+	public final static class TomcatDataSource extends com.buession.jdbc.datasource.TomcatDataSource
+			implements IDataSource<TomcatPoolConfiguration, org.apache.tomcat.jdbc.pool.DataSource> {
 
 		private DataSourceProperties properties;
 
@@ -137,15 +148,18 @@ public class BaseDataSource {
 
 		@Override
 		public org.apache.tomcat.jdbc.pool.DataSource createDataSource(){
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties, org.apache.tomcat.jdbc.pool.DataSource.class);
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties,
+					org.apache.tomcat.jdbc.pool.DataSource.class);
 
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
 		}
+
 	}
 
-	public final static class GenericDataSource extends com.buession.jdbc.datasource.GenericDataSource implements IDataSource<GenericPoolConfiguration, javax.sql.DataSource> {
+	public final static class GenericDataSource extends com.buession.jdbc.datasource.GenericDataSource
+			implements IDataSource<GenericPoolConfiguration, javax.sql.DataSource> {
 
 		private DataSourceProperties properties;
 
@@ -166,6 +180,7 @@ public class BaseDataSource {
 
 			return dataSource;
 		}
+
 	}
 
 }

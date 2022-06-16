@@ -27,7 +27,6 @@
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
-import com.buession.springboot.cas.autoconfigure.CasConfiguration;
 import com.buession.springboot.cas.autoconfigure.CasProperties;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.CasProxyReceptor;
@@ -47,13 +46,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CasProperties.class)
-@ConditionalOnBean({CasConfiguration.class})
 @ConditionalOnClass({Config.class})
 public class Pac4jConfiguration {
 
@@ -80,7 +79,7 @@ public class Pac4jConfiguration {
 	abstract static class AbstractClientConfiguration<C extends Client> {
 
 		protected AbstractClientConfiguration(ObjectProvider<Config> config, ObjectProvider<C> client){
-			Clients clients = config.getIfAvailable().getClients();
+			Clients clients = Objects.requireNonNull(config.getIfAvailable()).getClients();
 
 			if(clients != null){
 				if(clients.getClients() == null){

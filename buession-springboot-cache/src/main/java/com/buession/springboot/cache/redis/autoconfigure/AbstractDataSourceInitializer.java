@@ -22,18 +22,24 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.cache.redis.autoconfigure;
 
-import com.buession.web.servlet.config.ServletBindWebMvcConfigurerConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Configuration;
+import java.time.Duration;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletBindWebMvcConfiguration extends ServletBindWebMvcConfigurerConfiguration {
+public abstract class AbstractDataSourceInitializer implements DataSourceInitializer {
+
+	protected final RedisProperties properties;
+
+	public AbstractDataSourceInitializer(final RedisProperties properties){
+		this.properties = properties;
+	}
+
+	protected static int durationToMillis(final Duration duration){
+		return (int) duration.toMillis();
+	}
 
 }

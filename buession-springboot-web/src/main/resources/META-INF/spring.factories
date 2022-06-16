@@ -1,9 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.web.servlet.autoconfigure.ServletBindWebMvcConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletServerConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletWebMvcConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletWebSecurityConfiguration,\
-  com.buession.springboot.web.reactive.autoconfigure.ReactiveBindWebMvcConfiguration,\
   com.buession.springboot.web.reactive.autoconfigure.ReactiveServerConfiguration,\
   com.buession.springboot.web.reactive.autoconfigure.ReactiveWebFluxConfiguration,\
   com.buession.springboot.web.reactive.autoconfigure.ReactiveWebSecurityConfiguration

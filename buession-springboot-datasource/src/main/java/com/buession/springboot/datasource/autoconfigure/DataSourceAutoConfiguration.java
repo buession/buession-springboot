@@ -64,7 +64,7 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnMissingBean({DataSource.class, XADataSource.class})
 	@Import({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
 			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class})
-	protected static class PooledDataSourceConfiguration {
+	static class PooledDataSourceConfiguration {
 
 	}
 

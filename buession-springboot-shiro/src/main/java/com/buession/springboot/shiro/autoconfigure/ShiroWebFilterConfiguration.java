@@ -39,13 +39,18 @@ import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yong.Teng
@@ -53,7 +58,8 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = "shiro.web", name = "enabled", matchIfMissing = true)
-@Import({Pac4jConfiguration.class})
+@AutoConfigureBefore({org.apache.shiro.spring.web.config.ShiroWebFilterConfiguration.class,
+		org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
@@ -75,6 +81,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Bean(name = "securityFilter")
+	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public SecurityFilter securityFilter(Config config){
 		final SecurityFilter filter = new SecurityFilter(config);
@@ -98,6 +105,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Bean(name = "callbackFilter")
+	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public CallbackFilter callbackFilter(Config config){
 		final CallbackFilter callbackFilter = new CallbackFilter(config);
@@ -112,6 +120,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Bean(name = "logoutFilter")
+	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public LogoutFilter logoutFilter(Config config){
 		final LogoutFilter logoutFilter = new LogoutFilter(config);
@@ -125,39 +134,28 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		return logoutFilter;
 	}
 
-	/*
-	@Bean(name = "shiroFilterRegistrationBean")
-	@ConditionalOnBean(ShiroFilters.class)
-	@ConditionalOnMissingBean
-	public FilterRegistrationBean shiroFilterRegistrationBean(ShiroFilters shiroFilters) throws Exception{
-		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = createShiroFilterRegistrationBean();
+	@Bean
+	public Map<String, Filter> filterMap(ObjectProvider<SecurityFilter> securityFilterObjectProvider,
+										 ObjectProvider<CallbackFilter> callbackFilterObjectProvider,
+										 ObjectProvider<LogoutFilter> logoutFilterObjectProvider){
+		Map<String, Filter> filters = new HashMap<>(3);
 
-		ShiroFilterFactoryBean shiroFilterFactoryBean = super.shiroFilterFactoryBean();
-		shiroFilterFactoryBean.setFilters(shiroFilters.getFilters());
+		SecurityFilter securityFilter = securityFilterObjectProvider.getIfAvailable();
+		if(securityFilter != null){
+			filters.put("securityFilter", securityFilter);
+		}
 
-		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean.getObject());
+		CallbackFilter callbackFilter = callbackFilterObjectProvider.getIfAvailable();
+		if(callbackFilter != null){
+			filters.put("callbackFilter", callbackFilter);
+		}
 
-		return filterRegistrationBean;
+		LogoutFilter logoutFilter = logoutFilterObjectProvider.getIfAvailable();
+		if(logoutFilter != null){
+			filters.put("logoutFilter", logoutFilter);
+		}
+
+		return filters;
 	}
-
-	@Bean(name = "shiroFilterRegistrationBean")
-	@ConditionalOnMissingBean
-	public FilterRegistrationBean shiroFilterRegistrationBean() throws Exception{
-		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = createShiroFilterRegistrationBean();
-
-		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
-
-		return filterRegistrationBean;
-	}
-
-	protected FilterRegistrationBean<AbstractShiroFilter> createShiroFilterRegistrationBean(){
-		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-
-		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
-		filterRegistrationBean.setOrder(1);
-
-		return filterRegistrationBean;
-	}
-	 */
 
 }

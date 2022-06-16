@@ -66,6 +66,18 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-oauth</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-http</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>pac4j-jwt</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
 					<artifactId>spring-webmvc-pac4j</artifactId>
 				</exclusion>
 			</exclusions>

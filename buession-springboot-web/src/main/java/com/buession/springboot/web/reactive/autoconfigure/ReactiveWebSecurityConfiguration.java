@@ -25,7 +25,8 @@
 package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.security.web.builder.reactive.ReactiveHttpSecurityBuilder;
+import com.buession.security.web.config.Configurer;
+import com.buession.security.web.reactive.config.ReactiveWebSecurityConfigurerAdapterConfiguration;
 import com.buession.security.web.utils.PolicyUtils;
 import com.buession.security.web.xss.reactive.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
@@ -44,7 +45,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 /**
@@ -61,24 +61,15 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	static class DefaultWebSecurityConfigurerAdapter {
+	@Order(100)
+	static class DefaultWebSecurityConfigurerAdapterConfiguration extends
+			ReactiveWebSecurityConfigurerAdapterConfiguration {
 
-		private WebSecurityProperties properties;
-
-		private ServerHttpSecurity serverHttpSecurity;
-
-		public DefaultWebSecurityConfigurerAdapter(WebSecurityProperties properties,
-												   ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
-			this.properties = properties;
-			this.serverHttpSecurity = serverHttpSecurity.getIfAvailable();
-		}
-
-		@PostConstruct
-		public void initialize() throws Exception{
-			ReactiveHttpSecurityBuilder.getInstance(serverHttpSecurity).httpBasic(properties.getHttpBasic())
-					.csrf(properties.getCsrf()).frameOptions(properties.getFrameOptions()).hsts(properties.getHsts())
-					.hpkp(properties.getHpkp()).contentSecurityPolicy(properties.getContentSecurityPolicy())
-					.referrerPolicy(properties.getReferrerPolicy()).xss(properties.getXss());
+		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties,
+																ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getFrameOptions(),
+					properties.getHsts(), properties.getHpkp(), properties.getContentSecurityPolicy(),
+					properties.getReferrerPolicy(), properties.getXss()), serverHttpSecurity.getIfAvailable());
 		}
 
 	}
@@ -87,7 +78,7 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 	@EnableConfigurationProperties(WebSecurityProperties.class)
 	@ConditionalOnProperty(prefix = "spring.security.xss", name = "enabled", havingValue = "true")
 	@ConditionalOnClass({Policy.class})
-	public static class XssConfiguration {
+	static class XssConfiguration {
 
 		protected WebSecurityProperties properties;
 

@@ -1,4 +1,4 @@
- Buession Framework Changelog
+ Buession SpringBoot Changelog
 ===========================
 
 
@@ -28,7 +28,6 @@
 - **buession-springboot-cas：** CasConfiguration 中初始化 Cas Client bean
 - **buession-springboot-geoip：** 移除 geoip 前缀的 ConfigurationProperties
 - **buession-springboot-httpclient：** 移除 httpclient 前缀的 ConfigurationProperties
-- **buession-springboot-httpclient：** 移除 AutoConfiguration 类 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
 - **buession-springboot-jwt：** 移除 jwt 前缀的 ConfigurationProperties
 - **buession-springboot-mongodb：** MongoDBProperties typeMapper、typeKey 均为 null，修改 spring-data-mongodb 生成 typeKey 的行为
 - **buession-springboot-mongodb：** 移除 spring.data.mongodb 前缀的 ConfigurationProperties

@@ -19,23 +19,32 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.httpclient.autoconfigure;
+package com.buession.springboot.cache.redis.autoconfigure;
+
+import com.buession.redis.client.connection.datasource.DataSource;
 
 /**
- * HttpClient Auto Configuration 抽象类
+ * {@link DataSource} 初始化回调
  *
  * @author Yong.Teng
- * @since 1.2.2
+ * @since 2.0.0
  */
-public abstract class AbstractHttpClientConfiguration {
+@FunctionalInterface
+interface Callback {
 
-	protected HttpClientProperties properties;
-
-	public AbstractHttpClientConfiguration(HttpClientProperties properties){
-		this.properties = properties;
-	}
+	/**
+	 * {@link DataSource} 初始化回调
+	 *
+	 * @param dataSource
+	 *        {@link DataSource} 实例
+	 * @param properties
+	 *        {@link RedisProperties} 配置
+	 *
+	 * @return {@link DataSource} 实例
+	 */
+	DataSource apply(DataSource dataSource, RedisProperties properties);
 
 }

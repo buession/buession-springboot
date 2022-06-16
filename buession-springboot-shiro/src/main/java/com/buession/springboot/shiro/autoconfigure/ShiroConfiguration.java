@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
-@ConditionalOnProperty(name = {"shiro.enabled"}, matchIfMissing = true)
+@ConditionalOnProperty(prefix = "shiro", name = "enabled", matchIfMissing = true)
 public class ShiroConfiguration {
 
 	protected ShiroProperties shiroProperties;
@@ -64,18 +64,18 @@ public class ShiroConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(RedisManager.class)
 	public CacheManager cacheManager(RedisManager redisManager){
 		ShiroProperties.Cache cache = shiroProperties.getCache();
-		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(), cache.getPrincipalIdFieldName());
+		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(),
+				cache.getPrincipalIdFieldName());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(RedisManager.class)
 	public SessionDAO sessionDAO(RedisManager redisManager){
 		ShiroProperties.Session session = shiroProperties.getSession();
-		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(), session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
+				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
 	}
 
 }

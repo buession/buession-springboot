@@ -49,7 +49,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureBefore({ShiroAutoConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
-@ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "shiro.web", name = "enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 

@@ -22,46 +22,16 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.httpclient.autoconfigure;
+package com.buession.springboot.cache.redis.autoconfigure;
 
-import com.buession.httpclient.HttpClient;
-import com.buession.httpclient.OkHttpClient;
-import com.buession.httpclient.conn.OkHttpClientConnectionManager;
-import okhttp3.ConnectionPool;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.buession.redis.client.connection.datasource.DataSource;
 
 /**
- * OkHttp HttpClient Auto Configuration
- *
  * @author Yong.Teng
- * @since 1.2.2
+ * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(HttpClientProperties.class)
-@ConditionalOnClass({ConnectionPool.class})
-@ConditionalOnMissingBean({HttpClient.class})
-@ConditionalOnProperty(prefix = "spring.httpclient.okhttp", name = "enabled", havingValue = "true", matchIfMissing = true)
-public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
+interface DataSourceInitializer {
 
-	public OkHttpHttpClientConfiguration(HttpClientProperties properties){
-		super(properties);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public OkHttpClientConnectionManager connectionManager(){
-		return new OkHttpClientConnectionManager(properties);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
-		return new OkHttpClient(connectionManager);
-	}
+	DataSource initialize(final Callback callback);
 
 }

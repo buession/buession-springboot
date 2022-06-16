@@ -32,10 +32,8 @@ import org.pac4j.core.config.Config;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Auto-configuration pac4j for shiro
@@ -44,17 +42,9 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(ShiroProperties.class)
 @AutoConfigureBefore(ShiroWebFilterConfiguration.class)
 @ConditionalOnClass(Config.class)
-@Import({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 public class Pac4jConfiguration {
-
-	protected ShiroProperties shiroProperties;
-
-	public Pac4jConfiguration(ShiroProperties shiroProperties){
-		this.shiroProperties = shiroProperties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

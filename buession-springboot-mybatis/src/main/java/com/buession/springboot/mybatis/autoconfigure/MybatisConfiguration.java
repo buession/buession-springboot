@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2021 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -82,9 +82,7 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @ConditionalOnBean({DataSource.class})
-@AutoConfigureAfter({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Dbcp2.class,
-		DataSourceConfiguration.Druid.class, DataSourceConfiguration.Tomcat.class,
-		DataSourceConfiguration.Generic.class})
+@AutoConfigureAfter({DataSourceConfiguration.class})
 public class MybatisConfiguration {
 
 	private final MybatisProperties properties;
@@ -269,7 +267,7 @@ public class MybatisConfiguration {
 	@Configuration
 	@Import({MapperScannerRegistrarAutoConfigured.class})
 	@ConditionalOnMissingBean({MapperFactoryBean.class})
-	public static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
+	static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
 		@Override
 		public void afterPropertiesSet() throws Exception{

@@ -24,58 +24,74 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
-import com.buession.redis.RedisTemplate;
+import com.buession.redis.client.connection.datasource.ClusterDataSource;
 import com.buession.redis.client.connection.datasource.DataSource;
-import com.buession.redis.core.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import com.buession.redis.client.connection.datasource.StandaloneDataSource;
+import com.buession.redis.client.connection.datasource.SentinelDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisClusterDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisRedisDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import java.time.Duration;
 
 /**
+ * Redis {@link DataSource} 连接对象 AutoConfiguration 抽象类
+ *
  * @author Yong.Teng
+ * @see DataSource
+ * @see StandaloneDataSource
+ * @see SentinelDataSource
+ * @see ClusterDataSource
+ * @see JedisRedisDataSource
+ * @see JedisDataSource
+ * @see JedisSentinelDataSource
+ * @see JedisClusterDataSource
+ * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
-@ConditionalOnClass({RedisTemplate.class})
-@Import({RedisDataSourceConfiguration.class})
-public class RedisConfiguration {
+public class RedisDataSourceConfiguration {
 
-	private RedisProperties properties;
+	protected RedisProperties properties;
 
-	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
-
-	public RedisConfiguration(RedisProperties properties){
+	public RedisDataSourceConfiguration(RedisProperties properties){
 		this.properties = properties;
 	}
 
-	@Bean
-	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(DataSource dataSource){
-		RedisTemplate template = new RedisTemplate(dataSource);
-
-		template.setOptions(createOptions());
-		template.afterPropertiesSet();
-
-		if(logger.isTraceEnabled()){
-			logger.trace("RedisTemplate bean initialized success.");
-		}
-
-		return template;
+	protected static int durationToMillis(final Duration duration){
+		return (int) duration.toMillis();
 	}
 
-	protected Options createOptions(){
-		return Options.Builder.getInstance()
-				.prefix(properties.getKeyPrefix())
-				.serializer(properties.getSerializer())
-				.enableTransactionSupport(properties.isEnableTransactionSupport())
-				.build();
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(RedisProperties.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnClass({redis.clients.jedis.Jedis.class})
+	static class Jedis extends RedisDataSourceConfiguration {
+
+		public Jedis(RedisProperties properties){
+			super(properties);
+		}
+
+		@Bean(name = "redisDataSource")
+		public DataSource dataSource(){
+			JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
+			return dataSourceInitializer.initialize((dataSource, props)->{
+				dataSource.setConnectTimeout(durationToMillis(properties.getConnectTimeout()));
+				dataSource.setSoTimeout(durationToMillis(properties.getSoTimeout()));
+				dataSource.setInfiniteSoTimeout(durationToMillis(properties.getInfiniteSoTimeout()));
+
+				dataSource.setPoolConfig(properties.getPool());
+
+				return dataSource;
+			});
+		}
+
 	}
 
 }
