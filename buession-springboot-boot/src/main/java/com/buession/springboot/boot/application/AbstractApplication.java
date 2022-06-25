@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Date;
@@ -117,16 +118,11 @@ public abstract class AbstractApplication implements Application {
 
 	public void doStartup(final Class<? extends Application> clazz, final WebApplicationType webApplicationType,
 						  final String[] args){
-		final Banner banner = getBanner();
 		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
-		if(banner != null){
-			springApplicationBuilder.banner(banner);
-		}
-
-		if(getConfigurableApplicationContext() != null){
-			springApplicationBuilder.contextClass(getConfigurableApplicationContext());
-		}
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(getBanner()).to(springApplicationBuilder::banner);
+		propertyMapper.from(getConfigurableApplicationContext()).to(springApplicationBuilder::contextClass);
 
 		springApplicationBuilder.web(webApplicationType).properties(createRuntimeProperties()).logStartupInfo(true)
 				.run(args);

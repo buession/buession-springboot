@@ -52,23 +52,11 @@
 			<artifactId>buession-springboot-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.buession.springboot</groupId>
-			<artifactId>buession-springboot-cas</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>com.buession.security</groupId>
 			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

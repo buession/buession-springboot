@@ -29,9 +29,9 @@ package com.buession.springboot.shiro.autoconfigure;
 import com.buession.core.collect.Arrays;
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
-import com.buession.security.pac4j.filter.CallbackFilter;
-import com.buession.security.pac4j.filter.LogoutFilter;
-import com.buession.security.pac4j.filter.SecurityFilter;
+import io.buji.pac4j.filter.CallbackFilter;
+import io.buji.pac4j.filter.LogoutFilter;
+import io.buji.pac4j.filter.SecurityFilter;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
@@ -47,6 +47,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ import java.util.Map;
 @AutoConfigureBefore({org.apache.shiro.spring.web.config.ShiroWebFilterConfiguration.class,
 		org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@Import({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	protected ShiroProperties properties;
@@ -84,33 +86,38 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public SecurityFilter securityFilter(Config config){
-		final SecurityFilter filter = new SecurityFilter(config);
+		final SecurityFilter securityFilter = new SecurityFilter();
+
 		ShiroProperties.Pac4j pac4j = properties.getPac4j();
 
+		securityFilter.setConfig(config);
+
 		if(pac4j.getClients() != null){
-			filter.setClients(Arrays.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+			securityFilter.setClients(Arrays.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
-		filter.setMultiProfile(pac4j.isMultiProfile());
+		securityFilter.setMultiProfile(pac4j.isMultiProfile());
 
 		if(Validate.isNotEmpty(pac4j.getAuthorizers())){
-			filter.setAuthorizers(Arrays.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
+			securityFilter.setAuthorizers(Arrays.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		if(Validate.isNotEmpty(pac4j.getMatchers())){
-			filter.setMatchers(Arrays.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
+			securityFilter.setMatchers(Arrays.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
-		return filter;
+		return securityFilter;
 	}
 
 	@Bean(name = "callbackFilter")
 	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public CallbackFilter callbackFilter(Config config){
-		final CallbackFilter callbackFilter = new CallbackFilter(config);
+		final CallbackFilter callbackFilter = new CallbackFilter();
+
 		ShiroProperties.Pac4j pac4j = properties.getPac4j();
 
+		callbackFilter.setConfig(config);
 		callbackFilter.setDefaultUrl(pac4j.getDefaultUrl());
 		callbackFilter.setMultiProfile(pac4j.isMultiProfile());
 		callbackFilter.setDefaultClient(pac4j.getDefaultClient());
@@ -123,9 +130,11 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@ConditionalOnClass(Config.class)
 	@ConditionalOnMissingBean
 	public LogoutFilter logoutFilter(Config config){
-		final LogoutFilter logoutFilter = new LogoutFilter(config);
+		final LogoutFilter logoutFilter = new LogoutFilter();
+
 		ShiroProperties.Pac4j pac4j = properties.getPac4j();
 
+		logoutFilter.setConfig(config);
 		logoutFilter.setDefaultUrl(pac4j.getLogoutRedirectUrl());
 		logoutFilter.setLogoutUrlPattern(pac4j.getLogoutUrlPattern());
 		logoutFilter.setLocalLogout(pac4j.isLocalLogout());
@@ -135,25 +144,26 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Bean
-	public Map<String, Filter> filterMap(ObjectProvider<SecurityFilter> securityFilterObjectProvider,
-										 ObjectProvider<CallbackFilter> callbackFilterObjectProvider,
-										 ObjectProvider<LogoutFilter> logoutFilterObjectProvider){
+	public Map<String, Filter> filterMap(){
 		Map<String, Filter> filters = new HashMap<>(3);
 
-		SecurityFilter securityFilter = securityFilterObjectProvider.getIfAvailable();
-		if(securityFilter != null){
-			filters.put("securityFilter", securityFilter);
+		/*
+		SecurityFilter realSecurityFilter = securityFilter.getIfAvailable();
+		if(realSecurityFilter != null){
+			filters.put("securityFilter", realSecurityFilter);
 		}
 
-		CallbackFilter callbackFilter = callbackFilterObjectProvider.getIfAvailable();
-		if(callbackFilter != null){
-			filters.put("callbackFilter", callbackFilter);
+		CallbackFilter realCallbackFilter = callbackFilter.getIfAvailable();
+		if(realCallbackFilter != null){
+			filters.put("callbackFilter", realCallbackFilter);
 		}
 
-		LogoutFilter logoutFilter = logoutFilterObjectProvider.getIfAvailable();
-		if(logoutFilter != null){
-			filters.put("logoutFilter", logoutFilter);
+		LogoutFilter realLogoutFilter = logoutFilter.getIfAvailable();
+		if(realLogoutFilter != null){
+			filters.put("logoutFilter", realLogoutFilter);
 		}
+
+		 */
 
 		return filters;
 	}

@@ -25,10 +25,10 @@
 - **buession-springboot-cache：** 默认不启用连接池
 - **buession-springboot-captcha：** 移除 captcha 前缀的 ConfigurationProperties
 - **buession-springboot-captcha：** 移除类 com.buession.springboot.captcha.Geetest
-- **buession-springboot-cas：** CasConfiguration 中初始化 Cas Client bean
+- **buession-springboot-cas：** 移除 buession-springboot-cas 模块，整合进 buession-springboot-pac4j
 - **buession-springboot-geoip：** 移除 geoip 前缀的 ConfigurationProperties
 - **buession-springboot-httpclient：** 移除 httpclient 前缀的 ConfigurationProperties
-- **buession-springboot-jwt：** 移除 jwt 前缀的 ConfigurationProperties
+- **buession-springboot-jwt：** 移除 buession-springboot-jwt 模块，整合进 buession-springboot-pac4j
 - **buession-springboot-mongodb：** MongoDBProperties typeMapper、typeKey 均为 null，修改 spring-data-mongodb 生成 typeKey 的行为
 - **buession-springboot-mongodb：** 移除 spring.data.mongodb 前缀的 ConfigurationProperties
 - **buession-springboot-mybatis：** 移除 mybatis 前缀的 ConfigurationProperties

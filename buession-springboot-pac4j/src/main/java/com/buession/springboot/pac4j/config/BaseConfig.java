@@ -22,90 +22,94 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.jwt.autoconfigure;
+package com.buession.springboot.pac4j.config;
 
-import com.buession.lang.Constants;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * JWT 配置
- *
  * @author Yong.Teng
+ * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.jwt")
-public class JwtProperties {
+public abstract class BaseConfig {
+
+	protected final static String PROPERTIES_PREFIX = "spring.pac4j";
 
 	/**
-	 * 参数名
+	 * 客户自定义参数
 	 */
-	private String parameterName = Constants.EMPTY_STRING;
+	private Map<String, Object> customProperties = new LinkedHashMap<>();
 
 	/**
-	 * HTTP 头前缀
+	 * 返回客户自定义属性
+	 *
+	 * @return 客户自定义属性
 	 */
-	private String prefixHeader = Constants.EMPTY_STRING;
+	public Map<String, Object> getCustomProperties(){
+		return customProperties;
+	}
 
 	/**
-	 * 加密 Key
+	 * 设置客户自定义属性
+	 *
+	 * @param customProperties
+	 * 		客户自定义属性
 	 */
-	private String encryptionKey;
-
-	/**
-	 * 是否支持 GET 请求
-	 */
-	private boolean supportGetRequest = false;
-
-	/**
-	 * 是否支持 POST 请求
-	 */
-	private boolean supportPostRequest = true;
-
-	public String getParameterName(){
-		return parameterName;
+	public void setCustomProperties(Map<String, Object> customProperties){
+		this.customProperties = customProperties;
 	}
 
-	public void setParameterName(String parameterName){
-		this.parameterName = parameterName;
-	}
+	public abstract static class BaseClientConfig extends BaseConfig {
 
-	public String getPrefixHeader(){
-		return prefixHeader;
-	}
+		/**
+		 * Client 名称
+		 */
+		private String name;
 
-	public void setPrefixHeader(String prefixHeader){
-		this.prefixHeader = prefixHeader;
-	}
+		/**
+		 * 默认 Client 名称
+		 */
+		private String defaultName;
 
-	public String getEncryptionKey(){
-		return encryptionKey;
-	}
+		/**
+		 * 构造函数
+		 *
+		 * @param name
+		 * 		Client 名称
+		 */
+		public BaseClientConfig(String name){
+			this.name = name;
+			this.defaultName = name;
+		}
 
-	public void setEncryptionKey(String encryptionKey){
-		this.encryptionKey = encryptionKey;
-	}
+		/**
+		 * 返回 Client 名称
+		 *
+		 * @return Client 名称
+		 */
+		public String getName(){
+			return name;
+		}
 
-	public boolean isSupportGetRequest(){
-		return getSupportGetRequest();
-	}
+		/**
+		 * 设置 Client 名称
+		 *
+		 * @param name
+		 * 		Client 名称
+		 */
+		public void setName(String name){
+			this.name = name;
+		}
 
-	public boolean getSupportGetRequest(){
-		return supportGetRequest;
-	}
+		/**
+		 * 返回默认 Client 名称
+		 *
+		 * @return 默认 Client 名称
+		 */
+		public String getDefaultName(){
+			return defaultName;
+		}
 
-	public void setSupportGetRequest(boolean supportGetRequest){
-		this.supportGetRequest = supportGetRequest;
-	}
-
-	public boolean isSupportPostRequest(){
-		return getSupportPostRequest();
-	}
-
-	public boolean getSupportPostRequest(){
-		return supportPostRequest;
-	}
-
-	public void setSupportPostRequest(boolean supportPostRequest){
-		this.supportPostRequest = supportPostRequest;
 	}
 
 }

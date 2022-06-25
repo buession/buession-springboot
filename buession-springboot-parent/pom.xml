@@ -52,12 +52,10 @@
 		<module>../buession-springboot-boot</module>
 		<module>../buession-springboot-cache</module>
 		<module>../buession-springboot-captcha</module>
-		<module>../buession-springboot-cas</module>
 		<module>../buession-springboot-cli</module>
 		<module>../buession-springboot-datasource</module>
 		<module>../buession-springboot-geoip</module>
 		<module>../buession-springboot-httpclient</module>
-		<module>../buession-springboot-jwt</module>
 		<module>../buession-springboot-mongodb</module>
 		<module>../buession-springboot-mybatis</module>
 		<module>../buession-springboot-pac4j</module>

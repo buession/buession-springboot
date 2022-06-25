@@ -19,10 +19,69 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2019 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.boot;
+
+import com.buession.lang.Gender;
+import org.junit.Test;
+import org.springframework.boot.context.properties.PropertyMapper;
+
+import java.util.StringJoiner;
+
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-package com.buession.springboot.jwt.autoconfigure;
+public class PropertyMapperTest {
+
+	@Test
+	public void test(){
+
+		User a = new User();
+		a.setUsername("user");
+
+		User b = new User();
+
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(a.getUsername()).to(b::setUsername);
+		propertyMapper.from(a.getGender()).to(b::setGender);
+
+		System.out.println(b);
+
+	}
+
+	public final static class User {
+
+		private String username;
+
+		private Gender gender;
+
+		public String getUsername(){
+			return username;
+		}
+
+		public void setUsername(String username){
+			this.username = username;
+		}
+
+		public Gender getGender(){
+			return gender;
+		}
+
+		public void setGender(Gender gender){
+			this.gender = gender;
+		}
+
+		@Override
+		public String toString(){
+			return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
+					.add("username='" + username + "'")
+					.add("gender=" + gender)
+					.toString();
+		}
+
+	}
+
+}

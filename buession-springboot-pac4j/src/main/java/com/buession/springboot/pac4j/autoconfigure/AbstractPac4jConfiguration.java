@@ -22,69 +22,40 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cas.autoconfigure;
+package com.buession.springboot.pac4j.autoconfigure;
 
-import org.pac4j.cas.config.CasProtocol;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.buession.core.validator.Validate;
+import com.buession.springboot.pac4j.config.BaseConfig;
+import org.pac4j.core.client.BaseClient;
+import org.pac4j.core.client.Clients;
+import org.pac4j.core.credentials.Credentials;
 
 /**
- * CAS 客户端配置
- *
  * @author Yong.Teng
+ * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.cas")
-public class CasProperties {
+public abstract class AbstractPac4jConfiguration<C extends BaseConfig> {
 
-	/**
-	 * CAS 版本
-	 */
-	private CasProtocol protocol = CasProtocol.CAS30;
+	protected Pac4jProperties properties;
 
-	/**
-	 * CAS 登录地址
-	 */
-	private String loginUrl;
+	protected C config;
 
-	/**
-	 * CAS URL 前缀
-	 */
-	private String prefixUrl;
+	protected Clients clients;
 
-	/**
-	 * CAS 登录成功跳转地址
-	 */
-	private String callbackUrl;
-
-	public CasProtocol getProtocol(){
-		return protocol;
+	public AbstractPac4jConfiguration(Pac4jProperties properties, Clients clients){
+		this.properties = properties;
+		this.clients = clients;
 	}
 
-	public void setProtocol(final CasProtocol protocol){
-		this.protocol = protocol;
-	}
+	protected void afterClientInitialized(final BaseClient<? extends Credentials> client,
+										  final BaseConfig.ClientBaseConfig config){
+		client.setName(Validate.hasText(config.getName()) ? config.getName() : config.getDefaultName());
 
-	public String getLoginUrl(){
-		return loginUrl;
-	}
+		if(config.getCustomProperties() != null){
+			client.setCustomProperties(config.getCustomProperties());
+		}
 
-	public void setLoginUrl(String loginUrl){
-		this.loginUrl = loginUrl;
-	}
-
-	public String getPrefixUrl(){
-		return prefixUrl;
-	}
-
-	public void setPrefixUrl(String prefixUrl){
-		this.prefixUrl = prefixUrl;
-	}
-
-	public String getCallbackUrl(){
-		return callbackUrl;
-	}
-
-	public void setCallbackUrl(String callbackUrl){
-		this.callbackUrl = callbackUrl;
+		clients.getClients().add(client);
 	}
 
 }

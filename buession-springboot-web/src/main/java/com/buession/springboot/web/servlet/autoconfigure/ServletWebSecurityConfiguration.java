@@ -56,7 +56,7 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "spring.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnClass({WebSecurityConfigurerAdapter.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Order(ServletWebSecurityConfiguration.ORDER)
+@Order(100)
 public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

@@ -27,17 +27,10 @@
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
-import com.buession.springboot.cas.autoconfigure.CasProperties;
-import org.pac4j.cas.client.CasClient;
-import org.pac4j.cas.client.CasProxyReceptor;
-import org.pac4j.cas.client.rest.CasRestBasicAuthClient;
-import org.pac4j.cas.client.rest.CasRestFormClient;
-import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
-import org.pac4j.oauth.client.CasOAuthWrapperClient;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.pac4j.core.http.ajax.AjaxRequestResolver;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -45,21 +38,57 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
 /**
+ * Pac4j 基础配置自动加载类
+ *
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(CasProperties.class)
+@EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({Config.class})
 public class Pac4jConfiguration {
 
+	private Pac4jProperties properties;
+
+	public Pac4jConfiguration(Pac4jProperties properties){
+		this.properties = properties;
+	}
+
+	/**
+	 * 初始化 Pac4j {@link Clients} Bean
+	 *
+	 * @return Pac4j {@link Clients} Bean
+	 *
+	 * @since 2.0.0
+	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config pac4jConfig(){
-		return new Config(new ArrayList<>());
+	public Clients clients(){
+		final Clients clients = new Clients();
+
+		if(properties.getAjaxRequestResolverClass() != null){
+			AjaxRequestResolver ajaxRequestResolver = BeanUtils.instantiateClass(
+					properties.getAjaxRequestResolverClass());
+
+			clients.setAjaxRequestResolver(ajaxRequestResolver);
+		}
+
+		return clients;
+	}
+
+	/**
+	 * 初始化 Pac4j {@link Config} Bean
+	 *
+	 * @param clients
+	 *        {@link Clients} 实例
+	 *
+	 * @return Pac4j {@link Config} Bean
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public Config pac4jConfig(Clients clients){
+		final Config config = new Config(clients);
+		return config;
 	}
 
 	/**
@@ -74,76 +103,6 @@ public class Pac4jConfiguration {
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter(){
 		return new Pac4jWebMvcConfigurerAdapter();
-	}
-
-	abstract static class AbstractClientConfiguration<C extends Client> {
-
-		protected AbstractClientConfiguration(ObjectProvider<Config> config, ObjectProvider<C> client){
-			Clients clients = Objects.requireNonNull(config.getIfAvailable()).getClients();
-
-			if(clients != null){
-				if(clients.getClients() == null){
-					clients.setClients(client.getIfAvailable());
-				}else{
-					clients.getClients().add(client.getIfAvailable());
-				}
-			}
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({CasClient.class})
-	static class CasClientConfiguration extends AbstractClientConfiguration<CasClient> {
-
-		public CasClientConfiguration(ObjectProvider<Config> config, ObjectProvider<CasClient> casClient){
-			super(config, casClient);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({CasRestFormClient.class})
-	static class CasRestFormClientConfiguration extends AbstractClientConfiguration<CasRestFormClient> {
-
-		public CasRestFormClientConfiguration(ObjectProvider<Config> config,
-											  ObjectProvider<CasRestFormClient> casRestFormClient){
-			super(config, casRestFormClient);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({CasRestBasicAuthClient.class})
-	static class CasRestBasicAuthClientConfiguration extends AbstractClientConfiguration<CasRestBasicAuthClient> {
-
-		public CasRestBasicAuthClientConfiguration(ObjectProvider<Config> config,
-												   ObjectProvider<CasRestBasicAuthClient> casRestBasicAuthClient){
-			super(config, casRestBasicAuthClient);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({CasOAuthWrapperClient.class})
-	static class CasOAuthWrapperClientConfiguration extends AbstractClientConfiguration<CasOAuthWrapperClient> {
-
-		public CasOAuthWrapperClientConfiguration(ObjectProvider<Config> config,
-												  ObjectProvider<CasOAuthWrapperClient> casOAuthWrapperClient){
-			super(config, casOAuthWrapperClient);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({CasProxyReceptor.class})
-	static class CasProxyReceptorConfiguration extends AbstractClientConfiguration<CasProxyReceptor> {
-
-		public CasProxyReceptorConfiguration(ObjectProvider<Config> config,
-											 ObjectProvider<CasProxyReceptor> casProxyReceptor){
-			super(config, casProxyReceptor);
-		}
-
 	}
 
 }

@@ -25,8 +25,8 @@
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.security.shiro.Cookie;
-import com.buession.security.shiro.cache.CacheManager;
-import com.buession.security.shiro.session.SessionDAO;
+import com.buession.security.shiro.cache.AbstractCacheManager;
+import com.buession.security.shiro.session.AbstractSessionDAO;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.servlet.ShiroHttpSession;
 import org.apache.shiro.web.servlet.SimpleCookie;
@@ -164,22 +164,22 @@ public class ShiroProperties {
 		/**
 		 * 是否开启 Session 在内存中保存
 		 */
-		private boolean sessionInMemoryEnabled = SessionDAO.DEFAULT_SESSION_IN_MEMORY_ENABLED;
+		private boolean sessionInMemoryEnabled = AbstractSessionDAO.DEFAULT_SESSION_IN_MEMORY_ENABLED;
 
 		/**
 		 * Session 在内存中保存超时时间（单位：毫秒）
 		 */
-		private long sessionInMemoryTimeout = SessionDAO.DEFAULT_SESSION_IN_MEMORY_TIMEOUT;
+		private long sessionInMemoryTimeout = AbstractSessionDAO.DEFAULT_SESSION_IN_MEMORY_TIMEOUT;
 
 		/**
 		 * Session 前缀
 		 */
-		private String prefix = SessionDAO.DEFAULT_SESSION_KEY_PREFIX;
+		private String prefix = AbstractSessionDAO.DEFAULT_SESSION_KEY_PREFIX;
 
 		/**
 		 * Session 有效期，当为 -2 时，则为 Session timeout 的值；为 -1 时，表示永不过期
 		 */
-		private int expire = SessionDAO.DEFAULT_EXPIRE;
+		private int expire = AbstractSessionDAO.DEFAULT_EXPIRE;
 
 		/**
 		 * 如果 Session 过期或者无效后，是否删除
@@ -189,7 +189,8 @@ public class ShiroProperties {
 		/**
 		 * Session Cookie
 		 */
-		private Cookie cookie = new Cookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, SimpleCookie.DEFAULT_MAX_AGE, false);
+		private Cookie cookie = new Cookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, SimpleCookie.DEFAULT_MAX_AGE,
+				false);
 
 		public boolean isUseNativeSessionManager(){
 			return getUseNativeSessionManager();
@@ -296,17 +297,17 @@ public class ShiroProperties {
 		/**
 		 * 缓存 Key 前缀
 		 */
-		private String prefix = CacheManager.DEFAULT_KEY_PREFIX;
+		private String prefix = AbstractCacheManager.DEFAULT_KEY_PREFIX;
 
 		/**
 		 * 缓存过期时间
 		 */
-		private int expire = CacheManager.DEFAULT_EXPIRE;
+		private int expire = AbstractCacheManager.DEFAULT_EXPIRE;
 
 		/**
 		 * Principal Id
 		 */
-		private String principalIdFieldName = CacheManager.DEFAULT_PRINCIPAL_ID_FIELD_NAME;
+		private String principalIdFieldName = AbstractCacheManager.DEFAULT_PRINCIPAL_ID_FIELD_NAME;
 
 		public String getPrefix(){
 			return prefix;
@@ -345,7 +346,8 @@ public class ShiroProperties {
 		/**
 		 * Remember Me Cookie
 		 */
-		private Cookie cookie = new Cookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME, org.apache.shiro.web.servlet.Cookie.ONE_YEAR, false);
+		private Cookie cookie = new Cookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME,
+				org.apache.shiro.web.servlet.Cookie.ONE_YEAR, false);
 
 		public Cookie getCookie(){
 			return cookie;

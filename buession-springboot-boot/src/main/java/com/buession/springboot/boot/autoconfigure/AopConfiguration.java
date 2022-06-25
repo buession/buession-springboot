@@ -42,8 +42,7 @@ public class AopConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing =
-			false)
+	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false")
 	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
 		return new DefaultAdvisorAutoProxyCreator();
 	}
