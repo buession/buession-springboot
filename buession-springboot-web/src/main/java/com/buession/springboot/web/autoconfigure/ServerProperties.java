@@ -21,12 +21,11 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2020 Buession.com Inc.														|
+ * | Copyright @ 2013-2022 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.autoconfigure;
 
-import com.buession.web.http.CorsConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.LinkedHashMap;
@@ -37,8 +36,10 @@ import java.util.Map;
  *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "server")
+@ConfigurationProperties(prefix = ServerProperties.PREFIX)
 public class ServerProperties {
+
+	public final static String PREFIX = "server";
 
 	/**
 	 * 自定义响应头
@@ -69,13 +70,6 @@ public class ServerProperties {
 	 * 删除 Server 信息响应头后缀
 	 */
 	private String stripServerInfoSuffix;
-
-	/**
-	 * CORS 配置
-	 *
-	 * @since 2.0.0
-	 */
-	private CorsConfig cors;
 
 	public Map<String, String> getResponseHeaders(){
 		return responseHeaders;
@@ -123,14 +117,6 @@ public class ServerProperties {
 
 	public void setStripServerInfoSuffix(String stripServerInfoSuffix){
 		this.stripServerInfoSuffix = stripServerInfoSuffix;
-	}
-
-	public CorsConfig getCors(){
-		return cors;
-	}
-
-	public void setCors(CorsConfig cors){
-		this.cors = cors;
 	}
 
 }

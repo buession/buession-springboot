@@ -19,14 +19,47 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
+
+import org.apache.shiro.event.EventBus;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.ShiroEventBusBeanPostProcessor;
+import org.apache.shiro.spring.config.AbstractShiroBeanConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-public interface ServerConfiguration {
+@Configuration
+@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "enabled", matchIfMissing = true)
+public class ShiroBeanConfiguration extends AbstractShiroBeanConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
+		return super.lifecycleBeanPostProcessor();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected EventBus eventBus(){
+		return super.eventBus();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	public ShiroEventBusBeanPostProcessor shiroEventBusAwareBeanPostProcessor(){
+		return super.shiroEventBusAwareBeanPostProcessor();
+	}
 
 }

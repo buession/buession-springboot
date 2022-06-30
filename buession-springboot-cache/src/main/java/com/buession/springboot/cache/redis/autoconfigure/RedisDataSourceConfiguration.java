@@ -70,8 +70,8 @@ public class RedisDataSourceConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(RedisProperties.class)
-	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnClass({redis.clients.jedis.Jedis.class})
+	@ConditionalOnMissingBean(DataSource.class)
 	static class Jedis extends RedisDataSourceConfiguration {
 
 		public Jedis(RedisProperties properties){

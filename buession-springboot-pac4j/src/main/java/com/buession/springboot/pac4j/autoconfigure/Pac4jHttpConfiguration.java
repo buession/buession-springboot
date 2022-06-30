@@ -59,12 +59,12 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 
 	public Pac4jHttpConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
 		super(properties, clients.getIfAvailable());
-		this.config = properties.getHttp();
+		this.config = properties.getClient().getHttp();
 	}
 
 	@Bean(name = "formClient")
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "true")
 	public FormClient formClient(){
 		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 		final FormClient formClient = new FormClient(config.getForm().getLoginUrl(), usernamePasswordAuthenticator);
@@ -83,9 +83,9 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 	}
 
 	@Bean(name = "indirectBasicAuthClient")
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"indirectBasicAuth.enabled",
-			"indirect-basic-auth.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"indirectBasicAuth.enabled",
+			"indirect-basic-auth.enabled"}, havingValue = "true")
 	public IndirectBasicAuthClient indirectBasicAuthClient(){
 		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 		final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
@@ -101,9 +101,9 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 	}
 
 	@Bean(name = "directBasicAuthClient")
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"directBasicAuth.enabled",
-			"direct-basic-auth.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"directBasicAuth.enabled",
+			"direct-basic-auth.enabled"}, havingValue = "true")
 	public DirectBasicAuthClient directBasicAuthClient(){
 		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(usernamePasswordAuthenticator);
@@ -118,7 +118,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 	}
 
 	protected void initHttpIndirectClient(final IndirectClient<? extends Credentials> client,
-										  final BaseConfig.ClientBaseConfig config){
+										  final BaseConfig.BaseClientConfig config){
 		if(Validate.hasText(this.config.getCallbackUrl())){
 			client.setCallbackUrl(this.config.getCallbackUrl());
 		}
@@ -127,7 +127,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 	}
 
 	protected void initHttpDirectClient(final DirectClient<? extends Credentials> client,
-										final BaseConfig.ClientBaseConfig config){
+										final BaseConfig.BaseClientConfig config){
 		afterClientInitialized(client, config);
 	}
 

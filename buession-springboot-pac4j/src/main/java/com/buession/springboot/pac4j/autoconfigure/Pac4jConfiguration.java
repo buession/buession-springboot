@@ -31,7 +31,6 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnClass({Config.class})
 public class Pac4jConfiguration {
 
 	private Pac4jProperties properties;
@@ -86,8 +84,11 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config pac4jConfig(Clients clients){
-		final Config config = new Config(clients);
+	public Config config(Clients clients){
+		final Config config = Config.INSTANCE;
+
+		config.setClients(clients);
+
 		return config;
 	}
 
@@ -101,7 +102,7 @@ public class Pac4jConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter(){
+	public Pac4jWebMvcConfigurerAdapter webMvcConfigurerAdapter(){
 		return new Pac4jWebMvcConfigurerAdapter();
 	}
 

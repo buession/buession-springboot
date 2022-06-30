@@ -22,17 +22,39 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.web.servlet.config.WebMvcConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.config.AbstractShiroAnnotationProcessorConfiguration;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletWebMvcConfiguration extends WebMvcConfiguration {
+@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "annotations.enabled", matchIfMissing = true)
+public class ShiroAnnotationProcessorAutoConfiguration extends AbstractShiroAnnotationProcessorConfiguration {
+
+	@Bean
+	@DependsOn("lifecycleBeanPostProcessor")
+	@ConditionalOnMissingBean
+	@Override
+	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+		return super.defaultAdvisorAutoProxyCreator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+		return super.authorizationAttributeSourceAdvisor(securityManager);
+	}
 
 }

@@ -22,17 +22,46 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.web.servlet.config.WebMvcConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import com.buession.redis.RedisTemplate;
+import com.buession.security.shiro.DefaultRedisManager;
+import com.buession.security.shiro.RedisManager;
+import com.buession.security.shiro.cache.RedisCacheManager;
+import org.apache.shiro.cache.CacheManager;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletWebMvcConfiguration extends WebMvcConfiguration {
+@EnableConfigurationProperties(ShiroProperties.class)
+public class ShiroBaseConfiguration {
+
+	protected ShiroProperties properties;
+
+	public ShiroBaseConfiguration(ShiroProperties properties){
+		this.properties = properties;
+	}
+
+	@Bean
+	@ConditionalOnBean(RedisTemplate.class)
+	@ConditionalOnMissingBean
+	public RedisManager redisManager(RedisTemplate redisTemplate){
+		return new DefaultRedisManager(redisTemplate);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CacheManager cacheManager(RedisManager redisManager){
+		ShiroProperties.Cache cache = properties.getCache();
+		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(),
+				cache.getPrincipalIdFieldName());
+	}
 
 }

@@ -68,7 +68,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jConfiguration<Jwt> {
 
 	public Pac4jJwtConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
 		super(properties, clients.getIfAvailable());
-		this.config = properties.getJwt();
+		this.config = properties.getClient().getJwt();
 	}
 
 	@Bean
@@ -110,8 +110,8 @@ public class Pac4jJwtConfiguration extends AbstractPac4jConfiguration<Jwt> {
 	}
 
 	@Bean(name = "jwtParameterClient")
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
 	public HeaderClient headerClient(JwtAuthenticator jwtAuthenticator){
 		final HeaderClient headerClient = new HeaderClient(config.getHeader().getHeaderName(),
 				config.getHeader().getPrefixHeader(), jwtAuthenticator);
@@ -122,8 +122,8 @@ public class Pac4jJwtConfiguration extends AbstractPac4jConfiguration<Jwt> {
 	}
 
 	@Bean(name = "jwtCookieClient")
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "cookie.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "cookie.enabled", havingValue = "true")
 	public CookieClient cookieClient(JwtAuthenticator jwtAuthenticator){
 		final CookieClient cookieClient = new CookieClient(config.getCookie().getCookieName(), jwtAuthenticator);
 
@@ -133,8 +133,8 @@ public class Pac4jJwtConfiguration extends AbstractPac4jConfiguration<Jwt> {
 	}
 
 	@Bean(name = "jwtParameterClient")
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
 	public ParameterClient parameterClient(JwtAuthenticator jwtAuthenticator){
 		final ParameterClient parameterClient = new ParameterClient(config.getParameter().getParameterName(),
 				jwtAuthenticator);

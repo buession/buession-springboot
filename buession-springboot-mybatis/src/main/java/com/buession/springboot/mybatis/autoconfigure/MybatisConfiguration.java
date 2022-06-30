@@ -80,8 +80,8 @@ import java.util.stream.Collectors;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(MybatisProperties.class)
-@ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @ConditionalOnBean({DataSource.class})
+@ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
 @AutoConfigureAfter({DataSourceConfiguration.class})
 public class MybatisConfiguration {
 
@@ -265,8 +265,8 @@ public class MybatisConfiguration {
 	}
 
 	@Configuration
-	@Import({MapperScannerRegistrarAutoConfigured.class})
 	@ConditionalOnMissingBean({MapperFactoryBean.class})
+	@Import({MapperScannerRegistrarAutoConfigured.class})
 	static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
 		@Override

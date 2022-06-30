@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.web.autoconfigure;
 
-import org.springframework.core.Ordered;
+import com.buession.springboot.web.security.WebSecurityProperties;
 
 /**
  * @author Yong.Teng
@@ -32,6 +32,10 @@ import org.springframework.core.Ordered;
  */
 public abstract class AbstractWebSecurityConfiguration {
 
-	public final static int ORDER = Ordered.HIGHEST_PRECEDENCE;
+	protected WebSecurityProperties properties;
+
+	public AbstractWebSecurityConfiguration(WebSecurityProperties properties){
+		this.properties = properties;
+	}
 
 }

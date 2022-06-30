@@ -22,17 +22,23 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.shiro;
 
-import com.buession.web.servlet.config.WebMvcConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Configuration;
+import com.buession.security.shiro.exception.NoRealmBeanConfiguredException;
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletWebMvcConfiguration extends WebMvcConfiguration {
+public class ShiroNoRealmConfiguredFailureAnalyzer extends AbstractFailureAnalyzer<NoRealmBeanConfiguredException> {
+
+	@Override
+	protected FailureAnalysis analyze(Throwable rootFailure, NoRealmBeanConfiguredException cause){
+		return new FailureAnalysis("No bean of type 'org.apache.shiro.realm.Realm' found.",
+				"Please create bean of type 'Realm' or add a shiro.ini in the root classpath (src/main/resources/shiro.ini) or in the META-INF folder (src/main/resources/META-INF/shiro.ini).",
+				cause);
+	}
 
 }

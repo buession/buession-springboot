@@ -48,7 +48,7 @@ public abstract class AbstractPac4jConfiguration<C extends BaseConfig> {
 	}
 
 	protected void afterClientInitialized(final BaseClient<? extends Credentials> client,
-										  final BaseConfig.ClientBaseConfig config){
+										  final BaseConfig.BaseClientConfig config){
 		client.setName(Validate.hasText(config.getName()) ? config.getName() : config.getDefaultName());
 
 		if(config.getCustomProperties() != null){

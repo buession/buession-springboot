@@ -22,17 +22,25 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.servlet.autoconfigure;
+package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.web.servlet.config.WebMvcConfiguration;
+import org.apache.shiro.spring.web.config.ShiroRequestMappingConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
+@ConditionalOnClass(RequestMappingHandlerMapping.class)
+@Import(ShiroRequestMappingConfig.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class ServletWebMvcConfiguration extends WebMvcConfiguration {
+@ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+public class ShiroWebMvcConfiguration {
 
 }

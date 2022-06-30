@@ -28,8 +28,6 @@ import com.buession.core.utils.EnumUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.OAuth;
 import org.pac4j.core.client.Clients;
-import org.pac4j.http.client.direct.ParameterClient;
-import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 import org.pac4j.oauth.client.*;
 import org.pac4j.oauth.config.OAuth10Configuration;
 import org.pac4j.oauth.config.OAuth20Configuration;
@@ -51,14 +49,14 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
+@ConditionalOnClass({OAuth10Client.class, OAuth20Client.class})
 @ConditionalOnProperty(name = OAuth.PREFIX)
 @Import({Pac4jConfiguration.class})
 public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 
 	public Pac4jOAuthConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
 		super(properties, clients.getIfAvailable());
-		this.config = properties.getOAuth();
+		this.config = properties.getClient().getOAuth();
 	}
 
 	// *********************************************** //
@@ -66,8 +64,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	// *********************************************** //
 
 	@Bean(name = "bitbucketClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "true")
 	public BitbucketClient bitbucketClient(){
 		final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret());
 
@@ -77,8 +75,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "twitterClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "twitter.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "twitter.enabled", havingValue = "true")
 	public TwitterClient twitterClient(){
 		final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret());
 
@@ -91,8 +89,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "yahooClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "true")
 	public YahooClient yahooClient(){
 		final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret());
 
@@ -111,8 +109,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	// *********************************************** //
 
 	@Bean(name = "genericOAuth20Client")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "generic.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "generic.enabled", havingValue = "true")
 	public GenericOAuth20Client genericOAuth20Client(){
 		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client();
 
@@ -137,8 +135,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "casOAuthWrapperClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "cas.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "cas.enabled", havingValue = "true")
 	public CasOAuthWrapperClient casOAuthWrapperClient(){
 		final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
 				config.getSecret(), config.getCas().getCasOAuthUrl());
@@ -156,8 +154,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "dropboxClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "true")
 	public DropBoxClient dropboxClient(){
 		final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret());
 
@@ -167,8 +165,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "facebookClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "facebook.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "facebook.enabled", havingValue = "true")
 	public FacebookClient facebookClient(){
 		final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret());
 
@@ -181,8 +179,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "figShareClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"figShare.enabled", "fig-share.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"figShare.enabled",
+			"fig-share.enabled"}, havingValue = "true")
 	public FigShareClient figShareClient(){
 		final FigShareClient figShareClient = new FigShareClient();
 
@@ -195,8 +194,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "foursquareClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "true")
 	public FoursquareClient foursquareClient(){
 		final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret());
 
@@ -206,8 +205,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "githubClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "true")
 	public GitHubClient githubClient(){
 		final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret());
 
@@ -217,8 +216,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "google2Client")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
 	public Google2Client google2Client(){
 		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
 
@@ -237,8 +236,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "google2Client")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
 	public HiOrgServerClient hiOrgServerClient(){
 		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret());
 
@@ -248,8 +247,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "linkedin2Client")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "true")
 	public LinkedIn2Client linkedin2Client(){
 		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret());
 
@@ -259,8 +258,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "okClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "true")
 	public OkClient okClient(){
 		final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
 
@@ -270,8 +269,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "paypalClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "true")
 	public PayPalClient paypalClient(){
 		final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret());
 
@@ -281,8 +280,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "qqClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "true")
 	public QQClient qqClient(){
 		final QQClient qqClient = new QQClient(config.getKey(), config.getSecret());
 
@@ -296,8 +295,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "stravaClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "true")
 	public StravaClient stravaClient(){
 		final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret());
 
@@ -311,8 +310,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "vkClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "true")
 	public VkClient vkClient(){
 		final VkClient vkClient = new VkClient(config.getKey(), config.getSecret());
 
@@ -322,8 +321,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "weiboClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "true")
 	public WeiboClient weiboClient(){
 		final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret());
 
@@ -342,8 +341,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "wechatClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "true")
 	public WechatClient wechatClient(){
 		final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret());
 
@@ -357,9 +356,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "windowsLiveClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"windowsLive.enabled",
-			"windows-live.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"windowsLive.enabled",
+			"windows-live.enabled"}, havingValue = "true")
 	public WindowsLiveClient windowsLiveClient(){
 		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
 
@@ -369,9 +368,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 	}
 
 	@Bean(name = "wordpressClient")
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"wordPress.enabled",
-			"word-press.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"wordPress.enabled",
+			"word-press.enabled"}, havingValue = "true")
 	public WordPressClient wordPressClient(){
 		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
 

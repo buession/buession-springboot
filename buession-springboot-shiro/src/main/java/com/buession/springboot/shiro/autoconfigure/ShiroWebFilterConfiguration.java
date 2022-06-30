@@ -1,171 +1,115 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the License. You may obtain
- * a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ * See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
  *
- * =================================================================================================
+ * =========================================================================================================
  *
  * This software consists of voluntary contributions made by many individuals on behalf of the
  * Apache Software Foundation. For more information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- * +------------------------------------------------------------------------------------------------+
- * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
- * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
- * +------------------------------------------------------------------------------------------------+
+ * +-------------------------------------------------------------------------------------------------------+
+ * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
+ * | Author: Yong.Teng <webmaster@buession.com> 													       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.core.collect.Arrays;
-import com.buession.core.utils.SystemPropertyUtils;
-import com.buession.core.validator.Validate;
-import io.buji.pac4j.filter.CallbackFilter;
-import io.buji.pac4j.filter.LogoutFilter;
-import io.buji.pac4j.filter.SecurityFilter;
-import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.mgt.SubjectFactory;
+import com.buession.springboot.shiro.ShiroFilters;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
-import org.pac4j.core.config.Config;
-import org.pac4j.core.util.Pac4jConstants;
+import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
-import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.DispatcherType;
+import java.util.List;
 
 /**
  * @author Yong.Teng
+ * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @EnableConfigurationProperties(ShiroProperties.class)
-@ConditionalOnProperty(prefix = "shiro.web", name = "enabled", matchIfMissing = true)
-@AutoConfigureBefore({org.apache.shiro.spring.web.config.ShiroWebFilterConfiguration.class,
-		org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration.class})
+@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
+
+	public final static String REGISTRATION_BEAN_NAME = "filterShiroFilterRegistrationBean";
+
+	public final static String FILTER_NAME = "shiroFilter";
 
 	protected ShiroProperties properties;
 
-	protected SubjectFactory subjectFactory;
+	private ShiroFilters shiroFilters;
 
-	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<SubjectFactory> subjectFactory,
-									   ObjectProvider<SecurityManager> securityManager){
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<ShiroFilters> shiroFilters){
 		this.properties = properties;
-		this.subjectFactory = subjectFactory.getIfAvailable();
-		this.securityManager = securityManager.getIfAvailable();
+		this.shiroFilters = shiroFilters.getIfAvailable();
 
-		SystemPropertyUtils.setPropertyIfPresent("shiro.loginUrl", properties.getLoginUrl());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.successUrl", properties.getSuccessUrl());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
+		if(this.properties.getLoginUrl() != null){
+			this.loginUrl = this.properties.getLoginUrl();
+		}
 
-		((DefaultSecurityManager) this.securityManager).setSubjectFactory(this.subjectFactory);
+		if(this.properties.getSuccessUrl() != null){
+			this.successUrl = this.properties.getSuccessUrl();
+		}
+
+		if(this.properties.getUnauthorizedUrl() != null){
+			this.unauthorizedUrl = this.properties.getUnauthorizedUrl();
+		}
 	}
 
-	@Bean(name = "securityFilter")
-	@ConditionalOnClass(Config.class)
+	@Override
+	protected ShiroFilterFactoryBean shiroFilterFactoryBean(){
+		ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
+
+		filterFactoryBean.setLoginUrl(loginUrl);
+		filterFactoryBean.setSuccessUrl(successUrl);
+		filterFactoryBean.setUnauthorizedUrl(unauthorizedUrl);
+
+		filterFactoryBean.setSecurityManager(securityManager);
+		filterFactoryBean.setGlobalFilters(globalFilters());
+		filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition.getFilterChainMap());
+		filterFactoryBean.setFilters(shiroFilters.getFilters());
+
+		return filterFactoryBean;
+	}
+
+	@Bean(name = REGISTRATION_BEAN_NAME)
+	@ConditionalOnMissingBean(name = REGISTRATION_BEAN_NAME)
+	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception{
+
+		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
+				DispatcherType.INCLUDE, DispatcherType.ERROR);
+		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
+		filterRegistrationBean.setName(FILTER_NAME);
+		filterRegistrationBean.setOrder(1);
+
+		return filterRegistrationBean;
+	}
+
+	@Bean(name = "globalFilters")
 	@ConditionalOnMissingBean
-	public SecurityFilter securityFilter(Config config){
-		final SecurityFilter securityFilter = new SecurityFilter();
-
-		ShiroProperties.Pac4j pac4j = properties.getPac4j();
-
-		securityFilter.setConfig(config);
-
-		if(pac4j.getClients() != null){
-			securityFilter.setClients(Arrays.toString(pac4j.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
-		}
-
-		securityFilter.setMultiProfile(pac4j.isMultiProfile());
-
-		if(Validate.isNotEmpty(pac4j.getAuthorizers())){
-			securityFilter.setAuthorizers(Arrays.toString(pac4j.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
-		}
-
-		if(Validate.isNotEmpty(pac4j.getMatchers())){
-			securityFilter.setMatchers(Arrays.toString(pac4j.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
-		}
-
-		return securityFilter;
-	}
-
-	@Bean(name = "callbackFilter")
-	@ConditionalOnClass(Config.class)
-	@ConditionalOnMissingBean
-	public CallbackFilter callbackFilter(Config config){
-		final CallbackFilter callbackFilter = new CallbackFilter();
-
-		ShiroProperties.Pac4j pac4j = properties.getPac4j();
-
-		callbackFilter.setConfig(config);
-		callbackFilter.setDefaultUrl(pac4j.getDefaultUrl());
-		callbackFilter.setMultiProfile(pac4j.isMultiProfile());
-		callbackFilter.setDefaultClient(pac4j.getDefaultClient());
-		callbackFilter.setSaveInSession(pac4j.isSaveInSession());
-
-		return callbackFilter;
-	}
-
-	@Bean(name = "logoutFilter")
-	@ConditionalOnClass(Config.class)
-	@ConditionalOnMissingBean
-	public LogoutFilter logoutFilter(Config config){
-		final LogoutFilter logoutFilter = new LogoutFilter();
-
-		ShiroProperties.Pac4j pac4j = properties.getPac4j();
-
-		logoutFilter.setConfig(config);
-		logoutFilter.setDefaultUrl(pac4j.getLogoutRedirectUrl());
-		logoutFilter.setLogoutUrlPattern(pac4j.getLogoutUrlPattern());
-		logoutFilter.setLocalLogout(pac4j.isLocalLogout());
-		logoutFilter.setCentralLogout(pac4j.isCentralLogout());
-
-		return logoutFilter;
-	}
-
-	@Bean
-	public Map<String, Filter> filterMap(){
-		Map<String, Filter> filters = new HashMap<>(3);
-
-		/*
-		SecurityFilter realSecurityFilter = securityFilter.getIfAvailable();
-		if(realSecurityFilter != null){
-			filters.put("securityFilter", realSecurityFilter);
-		}
-
-		CallbackFilter realCallbackFilter = callbackFilter.getIfAvailable();
-		if(realCallbackFilter != null){
-			filters.put("callbackFilter", realCallbackFilter);
-		}
-
-		LogoutFilter realLogoutFilter = logoutFilter.getIfAvailable();
-		if(realLogoutFilter != null){
-			filters.put("logoutFilter", realLogoutFilter);
-		}
-
-		 */
-
-		return filters;
+	@Override
+	protected List<String> globalFilters(){
+		return super.globalFilters();
 	}
 
 }

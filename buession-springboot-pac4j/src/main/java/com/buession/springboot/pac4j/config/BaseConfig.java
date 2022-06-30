@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public abstract class BaseConfig {
 
-	protected final static String PROPERTIES_PREFIX = "spring.pac4j";
+	protected final static String PROPERTIES_PREFIX = "spring.pac4j.client";
 
 	/**
 	 * 客户自定义参数

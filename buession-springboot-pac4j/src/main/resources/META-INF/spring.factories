@@ -3,4 +3,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.pac4j.autoconfigure.Pac4jCasConfiguration, \
   com.buession.springboot.pac4j.autoconfigure.Pac4jHttpConfiguration, \
   com.buession.springboot.pac4j.autoconfigure.Pac4jJwtConfiguration, \
-  com.buession.springboot.pac4j.autoconfigure.Pac4jOAuthConfiguration
+  com.buession.springboot.pac4j.autoconfigure.Pac4jOAuthConfiguration, \
+  com.buession.springboot.pac4j.autoconfigure.Pac4jWebFilterConfiguration

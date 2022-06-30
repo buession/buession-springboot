@@ -24,19 +24,30 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.redis.RedisTemplate;
-import com.buession.security.shiro.DefaultRedisManager;
 import com.buession.security.shiro.RedisManager;
-import com.buession.security.shiro.cache.RedisCacheManager;
+import com.buession.security.shiro.exception.NoRealmBeanConfiguredException;
 import com.buession.security.shiro.session.RedisSessionDAO;
-import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.pam.AuthenticationStrategy;
+import org.apache.shiro.authz.Authorizer;
+import org.apache.shiro.mgt.SessionStorageEvaluator;
+import org.apache.shiro.mgt.SessionsSecurityManager;
+import org.apache.shiro.mgt.SubjectDAO;
+import org.apache.shiro.mgt.SubjectFactory;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.mgt.SessionFactory;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.spring.config.AbstractShiroConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Shiro Auto Configuration
@@ -46,36 +57,110 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
-@ConditionalOnProperty(prefix = "shiro", name = "enabled", matchIfMissing = true)
-public class ShiroConfiguration {
+@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "enabled", matchIfMissing = true)
+public class ShiroConfiguration extends AbstractShiroConfiguration {
 
-	protected ShiroProperties shiroProperties;
+	protected ShiroProperties properties;
 
-	public ShiroConfiguration(ShiroProperties shiroProperties){
-		this.shiroProperties = shiroProperties;
-	}
-
-	@Bean
-	@ConditionalOnBean(RedisTemplate.class)
-	@ConditionalOnMissingBean
-	public RedisManager redisManager(RedisTemplate redisTemplate){
-		return new DefaultRedisManager(redisTemplate);
+	public ShiroConfiguration(ShiroProperties properties){
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CacheManager cacheManager(RedisManager redisManager){
-		ShiroProperties.Cache cache = shiroProperties.getCache();
-		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(),
-				cache.getPrincipalIdFieldName());
+	@Override
+	protected AuthenticationStrategy authenticationStrategy(){
+		return super.authenticationStrategy();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SessionDAO sessionDAO(RedisManager redisManager){
-		ShiroProperties.Session session = shiroProperties.getSession();
+	@Override
+	protected Authenticator authenticator(){
+		return super.authenticator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected Authorizer authorizer(){
+		return super.authorizer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SubjectDAO subjectDAO(){
+		return super.subjectDAO();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionStorageEvaluator sessionStorageEvaluator(){
+		return super.sessionStorageEvaluator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SubjectFactory subjectFactory(){
+		return super.subjectFactory();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionFactory sessionFactory(){
+		return super.sessionFactory();
+	}
+
+	@Bean
+	@ConditionalOnBean({RedisManager.class})
+	@ConditionalOnMissingBean
+	protected SessionDAO sessionDAO(RedisManager redisManager){
+		ShiroProperties.Session session = properties.getSession();
 		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionDAO sessionDAO(){
+		return super.sessionDAO();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionManager sessionManager(){
+		return super.sessionManager();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionsSecurityManager securityManager(List<Realm> realms){
+		return super.securityManager(realms);
+	}
+
+	@Bean
+	@ConditionalOnResource(resources = "classpath:shiro.ini")
+	protected Realm iniClasspathRealm(){
+		return iniRealmFromLocation("classpath:shiro.ini");
+	}
+
+	@Bean
+	@ConditionalOnResource(resources = "classpath:META-INF/shiro.ini")
+	protected Realm iniMetaInfClasspathRealm(){
+		return iniRealmFromLocation("classpath:META-INF/shiro.ini");
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(Realm.class)
+	protected Realm missingRealm(){
+		throw new NoRealmBeanConfiguredException();
 	}
 
 }

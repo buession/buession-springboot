@@ -27,6 +27,7 @@
 package com.buession.springboot.web.security;
 
 import com.buession.security.web.config.ContentSecurityPolicy;
+import com.buession.security.web.config.Cors;
 import com.buession.security.web.config.Csrf;
 import com.buession.security.web.config.FrameOptions;
 import com.buession.security.web.config.Hpkp;
@@ -43,8 +44,15 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Yong.Teng
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.security")
+@ConfigurationProperties(prefix = WebSecurityProperties.PREFIX)
 public class WebSecurityProperties {
+
+	public final static String PREFIX = "spring.security";
+
+	/**
+	 * 是否禁用默认配置
+	 */
+	private boolean disableDefaults;
 
 	/**
 	 * Http Basic 配置
@@ -93,6 +101,33 @@ public class WebSecurityProperties {
 	 */
 	@NestedConfigurationProperty
 	private Xss xss = new Xss();
+
+	/**
+	 * CORS 配置
+	 *
+	 * @since 2.0.0
+	 */
+	@NestedConfigurationProperty
+	private Cors cors = new Cors();
+
+	/**
+	 * 返回是否禁用默认配置
+	 *
+	 * @return 是否禁用默认配置
+	 */
+	public boolean isDisableDefaults(){
+		return disableDefaults;
+	}
+
+	/**
+	 * 设置是否禁用默认配置
+	 *
+	 * @param disableDefaults
+	 * 		是否禁用默认配置
+	 */
+	public void setDisableDefaults(boolean disableDefaults){
+		this.disableDefaults = disableDefaults;
+	}
 
 	/**
 	 * 返回 Http Basic 配置
@@ -244,6 +279,25 @@ public class WebSecurityProperties {
 	 */
 	public void setXss(Xss xss){
 		this.xss = xss;
+	}
+
+	/**
+	 * 返回 CORS 配置
+	 *
+	 * @return CORS 配置
+	 */
+	public Cors getCors(){
+		return cors;
+	}
+
+	/**
+	 * 设置 CORS 配置
+	 *
+	 * @param cors
+	 * 		CORS 配置
+	 */
+	public void setCors(Cors cors){
+		this.cors = cors;
 	}
 
 }

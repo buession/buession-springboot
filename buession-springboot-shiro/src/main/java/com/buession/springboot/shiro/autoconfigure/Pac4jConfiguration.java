@@ -24,15 +24,32 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.springboot.pac4j.autoconfigure.Pac4jWebFilterConfiguration;
+import com.buession.springboot.shiro.ShiroFilters;
+import io.buji.pac4j.filter.CallbackFilter;
+import io.buji.pac4j.filter.LogoutFilter;
+import io.buji.pac4j.filter.SecurityFilter;
 import io.buji.pac4j.realm.Pac4jRealm;
 import io.buji.pac4j.subject.Pac4jSubjectFactory;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
 import org.pac4j.core.config.Config;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Pac4j for shiro 自动加载类
@@ -40,22 +57,50 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 2.0.0
  */
-
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Config.class})
+@ConditionalOnClass({Config.class, Pac4jRealm.class, SubjectFactory.class})
+@AutoConfigureAfter({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
+@Import({Pac4jWebFilterConfiguration.class})
 public class Pac4jConfiguration {
 
 	@Bean
-	@ConditionalOnClass({Realm.class})
 	@ConditionalOnMissingBean
+	@Lazy
 	public Realm pac4jRealm(){
 		return new Pac4jRealm();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	@Lazy
 	public SubjectFactory subjectFactory(){
 		return new Pac4jSubjectFactory();
+	}
+
+	@Bean
+	@ConditionalOnBean({SecurityFilter.class, CallbackFilter.class, LogoutFilter.class})
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	public ShiroFilters filterMap(SecurityFilter securityFilter, CallbackFilter callbackFilter,
+								  LogoutFilter logoutFilter){
+		Map<String, Filter> filters = new HashMap<>(3);
+
+		filters.put("securityFilter", securityFilter);
+		filters.put("callbackFilter", callbackFilter);
+		filters.put("logoutFilter", logoutFilter);
+
+		return new ShiroFilters(filters);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean({SecurityManager.class, SubjectFactory.class})
+	static class ShiroAutoConfiguration {
+
+		public ShiroAutoConfiguration(ObjectProvider<SecurityManager> securityManager,
+									  ObjectProvider<SubjectFactory> subjectFactory){
+			((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory.getIfAvailable());
+
+		}
+
 	}
 
 }

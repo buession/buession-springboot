@@ -122,8 +122,8 @@ public class VelocityConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(VelocityProperties.class)
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@ConditionalOnClass({Servlet.class})
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 	static class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
 
@@ -167,8 +167,8 @@ public class VelocityConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(VelocityProperties.class)
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	@ConditionalOnClass(WebFluxConfigurer.class)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
 	static class VelocityReactiveWebConfiguration extends AbstractVelocityConfiguration {
 

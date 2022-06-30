@@ -48,9 +48,9 @@ public class AopConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing =
 			true)
-	@ConditionalOnMissingBean
 	public AspectJAwareAdvisorAutoProxyCreator aspectJAwareAdvisorAutoProxyCreator(){
 		return new AspectJAwareAdvisorAutoProxyCreator();
 	}

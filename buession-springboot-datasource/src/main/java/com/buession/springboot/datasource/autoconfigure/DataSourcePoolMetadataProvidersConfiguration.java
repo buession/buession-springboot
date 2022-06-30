@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -57,13 +57,14 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(HikariDataSource.class)
-	public static class HikariPoolDataSourceMetadataProviderConfiguration {
+	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(), HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
+				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(),
+						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
 
 				if(hikariDataSource != null){
 					dataSourcePoolMetadata.setMaster(new HikariDataSourcePoolMetadata(hikariDataSource));
@@ -73,7 +74,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
 
 					for(javax.sql.DataSource ds : dataSource.getSlaves()){
-						hikariDataSource = DataSourceUnwrapper.unwrap(ds, HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
+						hikariDataSource = DataSourceUnwrapper.unwrap(ds, HikariConfigMXBean.class,
+								com.zaxxer.hikari.HikariDataSource.class);
 						if(hikariDataSource != null){
 							dataSourcePoolMetadata.getSlaves().add(new HikariDataSourcePoolMetadata(hikariDataSource));
 						}
@@ -88,13 +90,15 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Dbcp2DataSource.class)
-	public static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
+	static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				org.apache.commons.dbcp2.BasicDataSource dbcp2DataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(), BasicDataSourceMXBean.class, org.apache.commons.dbcp2.BasicDataSource.class);
+				org.apache.commons.dbcp2.BasicDataSource dbcp2DataSource = DataSourceUnwrapper.unwrap(
+						dataSource.getMaster(), BasicDataSourceMXBean.class,
+						org.apache.commons.dbcp2.BasicDataSource.class);
 
 				if(dbcp2DataSource != null){
 					dataSourcePoolMetadata.setMaster(new CommonsDbcp2DataSourcePoolMetadata(dbcp2DataSource));
@@ -104,9 +108,11 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
 
 					for(javax.sql.DataSource ds : dataSource.getSlaves()){
-						dbcp2DataSource = DataSourceUnwrapper.unwrap(ds, BasicDataSourceMXBean.class, org.apache.commons.dbcp2.BasicDataSource.class);
+						dbcp2DataSource = DataSourceUnwrapper.unwrap(ds, BasicDataSourceMXBean.class,
+								org.apache.commons.dbcp2.BasicDataSource.class);
 						if(dbcp2DataSource != null){
-							dataSourcePoolMetadata.getSlaves().add(new CommonsDbcp2DataSourcePoolMetadata(dbcp2DataSource));
+							dataSourcePoolMetadata.getSlaves()
+									.add(new CommonsDbcp2DataSourcePoolMetadata(dbcp2DataSource));
 						}
 					}
 				}
@@ -119,13 +125,15 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DruidDataSource.class)
-	public static class DruidPoolDataSourceMetadataProviderConfiguration {
+	static class DruidPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				com.alibaba.druid.pool.DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(), DruidDataSourceMBean.class, com.alibaba.druid.pool.DruidDataSource.class);
+				com.alibaba.druid.pool.DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(
+						dataSource.getMaster(), DruidDataSourceMBean.class,
+						com.alibaba.druid.pool.DruidDataSource.class);
 
 				if(druidDataSource != null){
 					dataSourcePoolMetadata.setMaster(new DruidDataSourcePoolMetadata(druidDataSource));
@@ -135,7 +143,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
 
 					for(javax.sql.DataSource ds : dataSource.getSlaves()){
-						druidDataSource = DataSourceUnwrapper.unwrap(ds, DruidDataSourceMBean.class, com.alibaba.druid.pool.DruidDataSource.class);
+						druidDataSource = DataSourceUnwrapper.unwrap(ds, DruidDataSourceMBean.class,
+								com.alibaba.druid.pool.DruidDataSource.class);
 						if(druidDataSource != null){
 							dataSourcePoolMetadata.getSlaves().add(new DruidDataSourcePoolMetadata(druidDataSource));
 						}
@@ -150,13 +159,15 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TomcatDataSource.class)
-	public static class TomcatDataSourcePoolMetadataProviderConfiguration {
+	static class TomcatDataSourcePoolMetadataProviderConfiguration {
 
 		@Bean
 		public DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(), ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
+				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(
+						dataSource.getMaster(), ConnectionPoolMBean.class,
+						org.apache.tomcat.jdbc.pool.DataSource.class);
 
 				if(tomcatDataSource != null){
 					dataSourcePoolMetadata.setMaster(new TomcatDataSourcePoolMetadata(tomcatDataSource));
@@ -166,7 +177,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
 
 					for(javax.sql.DataSource ds : dataSource.getSlaves()){
-						tomcatDataSource = DataSourceUnwrapper.unwrap(ds, ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
+						tomcatDataSource = DataSourceUnwrapper.unwrap(ds, ConnectionPoolMBean.class,
+								org.apache.tomcat.jdbc.pool.DataSource.class);
 						if(tomcatDataSource != null){
 							dataSourcePoolMetadata.getSlaves().add(new TomcatDataSourcePoolMetadata(tomcatDataSource));
 						}

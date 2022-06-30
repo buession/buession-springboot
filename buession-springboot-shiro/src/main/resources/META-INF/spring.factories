@@ -1,5 +1,11 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.shiro.autoconfigure.Pac4jConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.ShiroConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroBaseConfiguration, \
   com.buession.springboot.shiro.autoconfigure.ShiroWebConfiguration, \
-  com.buession.springboot.shiro.autoconfigure.ShiroWebFilterConfiguration
+  com.buession.springboot.shiro.autoconfigure.ShiroWebFilterConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroWebMvcConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroBeanConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroConfiguration, \
+  com.buession.springboot.shiro.autoconfigure.ShiroAnnotationProcessorAutoConfiguration
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  com.buession.springboot.shiro.ShiroNoRealmConfiguredFailureAnalyzer

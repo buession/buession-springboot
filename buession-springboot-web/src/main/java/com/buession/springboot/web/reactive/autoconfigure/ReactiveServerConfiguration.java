@@ -30,9 +30,6 @@ import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractServerConfiguration;
 import com.buession.springboot.web.autoconfigure.ServerProperties;
 import com.buession.springboot.web.reactive.filter.ServerInfoFilter;
-import com.buession.web.http.CorsConfig;
-import com.buession.web.reactive.aop.aopalliance.interceptor.ReactiveHttpAttributeSourcePointcutAdvisor;
-import com.buession.web.reactive.filter.CorsFilter;
 import com.buession.web.reactive.filter.PoweredByFilter;
 import com.buession.web.reactive.filter.PrintUrlFilter;
 import com.buession.web.reactive.filter.ResponseHeadersFilter;
@@ -60,8 +57,8 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 	public ResponseHeadersFilter responseHeadersFilter(){
 		final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
 
-		if(Validate.isNotEmpty(serverProperties.getResponseHeaders())){
-			responseHeadersFilter.setHeaders(buildHeaders(serverProperties.getResponseHeaders()));
+		if(Validate.isNotEmpty(properties.getResponseHeaders())){
+			responseHeadersFilter.setHeaders(buildHeaders(properties.getResponseHeaders()));
 		}
 
 		return responseHeadersFilter;
@@ -69,41 +66,33 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.poweredby", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "poweredby.enabled", havingValue = "true", matchIfMissing = true)
 	public PoweredByFilter poweredByFilter(){
 		return new PoweredByFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.server-info", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = {"serverInfo.enabled",
+			"server-info.enabled"}, havingValue = "true", matchIfMissing = true)
 	public ServerInfoFilter serverInfoFilter(){
-		return new ServerInfoFilter(serverProperties.getServerInfoName(), serverProperties.getServerInfoPrefix(),
-				serverProperties.getServerInfoSuffix(), serverProperties.getStripServerInfoPrefix(),
-				serverProperties.getStripServerInfoSuffix());
+		return new ServerInfoFilter(properties.getServerInfoName(), properties.getServerInfoPrefix(),
+				properties.getServerInfoSuffix(), properties.getStripServerInfoPrefix(),
+				properties.getStripServerInfoSuffix());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.print-url", name = "enabled", havingValue = "true")
+	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = {"printUrl.enabled",
+			"print-url.enabled"}, havingValue = "true")
 	public PrintUrlFilter printUrlFilter(){
 		return new PrintUrlFilter();
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "server.cors", name = "enabled", havingValue = "true")
-	public CorsFilter corsFilter(){
-		CorsConfig corsConfig = serverProperties.getCors();
-		return new CorsFilter(corsConfig.getOrigins(), corsConfig.getAllowedMethods(),
-				corsConfig.getAllowedHeaders(), corsConfig.getExposedHeaders(), corsConfig.getAllowCredentials(),
-				corsConfig.getMaxAge());
-	}
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotationProcessorConfiguration
+			extends com.buession.web.reactive.config.WebFluxAnnotationProcessorConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ReactiveHttpAttributeSourcePointcutAdvisor httpAttributeSourcePointcutAdvisor(){
-		return new ReactiveHttpAttributeSourcePointcutAdvisor();
 	}
 
 }

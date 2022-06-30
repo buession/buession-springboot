@@ -32,6 +32,7 @@ import org.pac4j.cas.client.direct.DirectCasClient;
 import org.pac4j.cas.client.direct.DirectCasProxyClient;
 import org.pac4j.cas.client.rest.CasRestBasicAuthClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
+import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.core.client.Clients;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -52,19 +53,19 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnClass({org.pac4j.cas.config.CasConfiguration.class})
+@ConditionalOnClass({CasConfiguration.class})
 @ConditionalOnProperty(name = Cas.PREFIX)
 @Import({Pac4jConfiguration.class})
 public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 
 	public Pac4jCasConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
 		super(properties, clients.getIfAvailable());
-		this.config = properties.getCas();
+		this.config = properties.getClient().getCas();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = Cas.PREFIX + ".proxy", name = "enabled", havingValue = "on")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = Cas.PREFIX + ".proxy", name = "enabled", havingValue = "true")
 	public CasProxyReceptor proxyReceptor(){
 		CasProxyReceptor proxyReceptor = new CasProxyReceptor();
 		proxyReceptor.setCallbackUrl(config.getCallbackUrl());
@@ -74,9 +75,8 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 	@Bean
 	@ConditionalOnBean({CasProxyReceptor.class})
 	@ConditionalOnMissingBean
-	public org.pac4j.cas.config.CasConfiguration casConfiguration(
-			ObjectProvider<CasProxyReceptor> proxyReceptorProvider){
-		org.pac4j.cas.config.CasConfiguration casConfiguration = createCasConfiguration();
+	public CasConfiguration casConfiguration(ObjectProvider<CasProxyReceptor> proxyReceptorProvider){
+		CasConfiguration casConfiguration = createCasConfiguration();
 
 		CasProxyReceptor casProxyReceptor = proxyReceptorProvider.getIfAvailable();
 
@@ -89,14 +89,14 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public org.pac4j.cas.config.CasConfiguration casConfiguration(){
+	public CasConfiguration casConfiguration(){
 		return createCasConfiguration();
 	}
 
 	@Bean(name = "casClient")
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
-	public CasClient casClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
+	public CasClient casClient(CasConfiguration casConfiguration){
 		final CasClient casClient = new CasClient(casConfiguration);
 
 		if(config.getCallbackUrl() != null){
@@ -109,9 +109,9 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 	}
 
 	@Bean(name = "casRestFormClient")
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"restForm.enabled", "rest-form.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
-	public CasRestFormClient casRestFormClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"restForm.enabled", "rest-form.enabled"}, havingValue = "true")
+	public CasRestFormClient casRestFormClient(CasConfiguration casConfiguration){
 		final CasRestFormClient casRestFormClient = new CasRestFormClient();
 
 		casRestFormClient.setConfiguration(casConfiguration);
@@ -130,9 +130,9 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 	}
 
 	@Bean(name = "directCasClient")
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "on")
 	@ConditionalOnMissingBean
-	public DirectCasClient directCasClient(org.pac4j.cas.config.CasConfiguration casConfiguration){
+	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
+	public DirectCasClient directCasClient(CasConfiguration casConfiguration){
 		final DirectCasClient directCasClient = new DirectCasClient(casConfiguration);
 
 		afterClientInitialized(directCasClient, config.getDirect());
@@ -141,10 +141,10 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 	}
 
 	@Bean(name = "directCasProxyClient")
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"directProxy.enabled",
-			"direct-proxy.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
-	public DirectCasProxyClient directCasProxyClient(org.pac4j.cas.config.CasConfiguration configuration){
+	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"directProxy.enabled",
+			"direct-proxy.enabled"}, havingValue = "true")
+	public DirectCasProxyClient directCasProxyClient(CasConfiguration configuration){
 		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(configuration,
 				config.getPrefixUrl());
 
@@ -154,10 +154,10 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 	}
 
 	@Bean(name = "casRestBasicAuthClient")
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"restBasicAuth.enabled",
-			"rest-basic-auth.enabled"}, havingValue = "on")
 	@ConditionalOnMissingBean
-	public CasRestBasicAuthClient casRestBasicAuthClient(org.pac4j.cas.config.CasConfiguration configuration){
+	@ConditionalOnProperty(prefix = Cas.PREFIX, name = {"restBasicAuth.enabled",
+			"rest-basic-auth.enabled"}, havingValue = "true")
+	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration configuration){
 		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient();
 
 		casRestBasicAuthClient.setConfiguration(configuration);
@@ -175,8 +175,8 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 		return casRestBasicAuthClient;
 	}
 
-	private org.pac4j.cas.config.CasConfiguration createCasConfiguration(){
-		org.pac4j.cas.config.CasConfiguration casConfiguration = new org.pac4j.cas.config.CasConfiguration();
+	private CasConfiguration createCasConfiguration(){
+		CasConfiguration casConfiguration = new CasConfiguration();
 
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 

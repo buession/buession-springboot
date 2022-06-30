@@ -34,23 +34,23 @@ import java.util.Map;
 /**
  * @author Yong.Teng
  */
-public abstract class AbstractServerConfiguration implements ServerConfiguration {
+public abstract class AbstractServerConfiguration {
 
 	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
 
 	protected final static char HEADER_VARIABLE_IDENTIFIER_CHAR = '$';
 
-	protected ServerProperties serverProperties;
+	protected ServerProperties properties;
 
-	public AbstractServerConfiguration(ServerProperties serverProperties){
-		this.serverProperties = serverProperties;
+	public AbstractServerConfiguration(ServerProperties properties){
+		this.properties = properties;
 	}
 
 	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
 		final Map<String, String> result = new HashMap<>(headers.size());
 
 		headers.forEach((key, value)->{
-			if(StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
+			if(value != null && value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
 				String propertyName = value.substring(1);
 				String propertyValue = SystemPropertyUtils.getProperty(propertyName);
 
