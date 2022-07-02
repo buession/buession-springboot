@@ -82,9 +82,9 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 
 		public WebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties){
 			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
-							properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
-							properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss()),
-					properties.isDisableDefaults());
+					properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
+					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),
+					properties.getFormLogin()), properties.isDisableDefaults());
 		}
 
 	}

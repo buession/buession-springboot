@@ -7,7 +7,6 @@
 ### 🔨依赖升级
 
 -
-- [shiro](https://github.com/apache/shiro) 版本升级至 1.8.0
 
 
 ### ⭐ 新特性
@@ -18,6 +17,7 @@
 
 ### 🔔 变化
 
+- **buession-springboot-boot：** 移除 AopConfiguration
 - **buession-springboot-cache：** 移除 redis 前缀的 ConfigurationProperties
 - **buession-springboot-cache：** RedisProperties 配置项中，时间值由 int 类型变更为 java.time.Duration
 - **buession-springboot-cache：** 移除 jedis 兼容旧版本 @Bean 方法

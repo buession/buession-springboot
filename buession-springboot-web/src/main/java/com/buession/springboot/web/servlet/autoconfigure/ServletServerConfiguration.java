@@ -73,8 +73,7 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = {"serverInfo.enabled",
-			"server-info.enabled"}, havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "server-info.enabled", havingValue = "true", matchIfMissing = true)
 	public ServerInfoFilter serverInfoFilter(){
 		return new ServerInfoFilter(properties.getServerInfoName(), properties.getServerInfoPrefix(),
 				properties.getServerInfoSuffix(), properties.getStripServerInfoPrefix(),
@@ -83,8 +82,7 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = {"printUrl.enabled",
-			"print-url.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "print-url.enabled", havingValue = "true")
 	public PrintUrlFilter printUrlFilter(){
 		return new PrintUrlFilter();
 	}

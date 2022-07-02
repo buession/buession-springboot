@@ -29,6 +29,7 @@ package com.buession.springboot.web.security;
 import com.buession.security.web.config.ContentSecurityPolicy;
 import com.buession.security.web.config.Cors;
 import com.buession.security.web.config.Csrf;
+import com.buession.security.web.config.FormLogin;
 import com.buession.security.web.config.FrameOptions;
 import com.buession.security.web.config.Hpkp;
 import com.buession.security.web.config.Hsts;
@@ -109,6 +110,12 @@ public class WebSecurityProperties {
 	 */
 	@NestedConfigurationProperty
 	private Cors cors = new Cors();
+
+	/**
+	 * 登录表单配置
+	 */
+	@NestedConfigurationProperty
+	private FormLogin formLogin = new FormLogin();
 
 	/**
 	 * 返回是否禁用默认配置
@@ -298,6 +305,25 @@ public class WebSecurityProperties {
 	 */
 	public void setCors(Cors cors){
 		this.cors = cors;
+	}
+
+	/**
+	 * 返回登录表单配置
+	 *
+	 * @return 登录表单配置
+	 */
+	public FormLogin getFormLogin(){
+		return formLogin;
+	}
+
+	/**
+	 * 设置登录表单配置
+	 *
+	 * @param formLogin
+	 * 		登录表单配置
+	 */
+	public void setFormLogin(FormLogin formLogin){
+		this.formLogin = formLogin;
 	}
 
 }

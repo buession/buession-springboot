@@ -30,7 +30,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.httpclient")
+@ConfigurationProperties(prefix = HttpClientProperties.PREFIX)
 public class HttpClientProperties extends Configuration {
+
+	public final static String PREFIX = "spring.httpclient";
 
 }

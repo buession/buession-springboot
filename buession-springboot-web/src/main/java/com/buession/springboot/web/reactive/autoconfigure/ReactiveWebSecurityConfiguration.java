@@ -83,9 +83,9 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties,
 																ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
 			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
-							properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
-							properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss()),
-					serverHttpSecurity.getIfAvailable());
+					properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
+					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),
+					properties.getFormLogin()), serverHttpSecurity.getIfAvailable());
 		}
 
 	}

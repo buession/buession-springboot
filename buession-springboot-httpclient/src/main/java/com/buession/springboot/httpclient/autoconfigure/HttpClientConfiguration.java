@@ -65,8 +65,7 @@ public class HttpClientConfiguration {
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass({HttpClientConnectionManager.class})
 	@ConditionalOnMissingBean({HttpClient.class})
-	@ConditionalOnProperty(prefix = "spring.httpclient", name = {
-			"apacheClient.enabled", "apache-client.enabled"}, havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
 	class ApacheHttpClientConfiguration extends HttpClientConfiguration {
 
 		public ApacheHttpClientConfiguration(HttpClientProperties properties){
@@ -91,7 +90,7 @@ public class HttpClientConfiguration {
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass({ConnectionPool.class})
 	@ConditionalOnMissingBean({HttpClient.class})
-	@ConditionalOnProperty(prefix = "spring.httpclient", name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
 	class OkHttpHttpClientConfiguration extends HttpClientConfiguration {
 
 		public OkHttpHttpClientConfiguration(HttpClientProperties properties){

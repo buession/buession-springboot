@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author Yong.Teng
@@ -41,7 +40,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean({DataSourceConfiguration.class, DataSource.class})
 @Import({DataSourceConfiguration.class})
-@EnableTransactionManagement
 public class DataSourceTransactionConfiguration {
 
 	@Bean
