@@ -27,6 +27,7 @@
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
+import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
@@ -36,6 +37,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Pac4j 基础配置自动加载类
@@ -55,14 +58,17 @@ public class Pac4jConfiguration {
 	/**
 	 * 初始化 Pac4j {@link Clients} Bean
 	 *
+	 * @param clientList
+	 * 		客户端 {@link Client} 列表
+	 *
 	 * @return Pac4j {@link Clients} Bean
 	 *
 	 * @since 2.0.0
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Clients clients(){
-		final Clients clients = new Clients();
+	public Clients clients(List<Client> clientList){
+		final Clients clients = new Clients(clientList);
 
 		if(properties.getAjaxRequestResolverClass() != null){
 			AjaxRequestResolver ajaxRequestResolver = BeanUtils.instantiateClass(

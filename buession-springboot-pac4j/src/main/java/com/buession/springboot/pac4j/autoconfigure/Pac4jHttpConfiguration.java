@@ -53,77 +53,84 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({FormClient.class})
 @ConditionalOnProperty(prefix = Http.PREFIX, name = "enabled", havingValue = "true")
 @AutoConfigureBefore({Pac4jConfiguration.class})
-public class Pac4JHttpClientConfiguration extends AbstractPac4jClientConfiguration<Http> {
+public class Pac4jHttpConfiguration {
 
-	public Pac4JHttpClientConfiguration(Pac4jProperties properties){
-		super(properties, properties.getClient().getHttp());
-	}
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(Pac4jProperties.class)
+	static class Pac4JHttpClientConfiguration extends AbstractPac4jClientConfiguration<Http> {
 
-	@Bean(name = "formClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "true")
-	public FormClient formClient(){
-		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
-		final FormClient formClient = new FormClient(config.getForm().getLoginUrl(), usernamePasswordAuthenticator);
-
-		if(Validate.hasText(config.getForm().getUsernameParameter())){
-			formClient.setUsernameParameter(config.getForm().getUsernameParameter());
+		public Pac4JHttpClientConfiguration(Pac4jProperties properties){
+			super(properties, properties.getClient().getHttp());
 		}
 
-		if(Validate.hasText(config.getForm().getPasswordParameter())){
-			formClient.setPasswordParameter(config.getForm().getPasswordParameter());
+		@Bean(name = "formClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "true")
+		public FormClient formClient(){
+			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
+			final FormClient formClient = new FormClient(config.getForm().getLoginUrl(), usernamePasswordAuthenticator);
+
+			if(Validate.hasText(config.getForm().getUsernameParameter())){
+				formClient.setUsernameParameter(config.getForm().getUsernameParameter());
+			}
+
+			if(Validate.hasText(config.getForm().getPasswordParameter())){
+				formClient.setPasswordParameter(config.getForm().getPasswordParameter());
+			}
+
+			initHttpIndirectClient(formClient, config.getForm());
+
+			return formClient;
 		}
 
-		initHttpIndirectClient(formClient, config.getForm());
+		@Bean(name = "indirectBasicAuthClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled", havingValue = "true")
+		public IndirectBasicAuthClient indirectBasicAuthClient(){
+			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
+			final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
+					usernamePasswordAuthenticator);
 
-		return formClient;
-	}
+			if(Validate.hasText(config.getIndirectBasicAuth().getRealmName())){
+				indirectBasicAuthClient.setRealmName(config.getIndirectBasicAuth().getRealmName());
+			}
 
-	@Bean(name = "indirectBasicAuthClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled", havingValue = "true")
-	public IndirectBasicAuthClient indirectBasicAuthClient(){
-		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
-		final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
-				usernamePasswordAuthenticator);
+			initHttpIndirectClient(indirectBasicAuthClient, config.getIndirectBasicAuth());
 
-		if(Validate.hasText(config.getIndirectBasicAuth().getRealmName())){
-			indirectBasicAuthClient.setRealmName(config.getIndirectBasicAuth().getRealmName());
+			return indirectBasicAuthClient;
 		}
 
-		initHttpIndirectClient(indirectBasicAuthClient, config.getIndirectBasicAuth());
+		@Bean(name = "directBasicAuthClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled", havingValue = "true")
+		public DirectBasicAuthClient directBasicAuthClient(){
+			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
+			final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(
+					usernamePasswordAuthenticator);
 
-		return indirectBasicAuthClient;
-	}
+			if(Validate.hasText(config.getDirectBasicAuth().getRealmName())){
+				directBasicAuthClient.setRealmName(config.getDirectBasicAuth().getRealmName());
+			}
 
-	@Bean(name = "directBasicAuthClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled", havingValue = "true")
-	public DirectBasicAuthClient directBasicAuthClient(){
-		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
-		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(usernamePasswordAuthenticator);
+			initHttpDirectClient(directBasicAuthClient, config.getDirectBasicAuth());
 
-		if(Validate.hasText(config.getDirectBasicAuth().getRealmName())){
-			directBasicAuthClient.setRealmName(config.getDirectBasicAuth().getRealmName());
+			return directBasicAuthClient;
 		}
 
-		initHttpDirectClient(directBasicAuthClient, config.getDirectBasicAuth());
+		protected void initHttpIndirectClient(final IndirectClient<? extends Credentials> client,
+											  final BaseConfig.BaseClientConfig config){
+			if(Validate.hasText(this.config.getCallbackUrl())){
+				client.setCallbackUrl(this.config.getCallbackUrl());
+			}
 
-		return directBasicAuthClient;
-	}
-
-	protected void initHttpIndirectClient(final IndirectClient<? extends Credentials> client,
-										  final BaseConfig.BaseClientConfig config){
-		if(Validate.hasText(this.config.getCallbackUrl())){
-			client.setCallbackUrl(this.config.getCallbackUrl());
+			afterClientInitialized(client, config);
 		}
 
-		afterClientInitialized(client, config);
-	}
+		protected void initHttpDirectClient(final DirectClient<? extends Credentials> client,
+											final BaseConfig.BaseClientConfig config){
+			afterClientInitialized(client, config);
+		}
 
-	protected void initHttpDirectClient(final DirectClient<? extends Credentials> client,
-										final BaseConfig.BaseClientConfig config){
-		afterClientInitialized(client, config);
 	}
 
 }

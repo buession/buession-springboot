@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.collect.Arrays;
+import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import io.buji.pac4j.filter.CallbackFilter;
 import io.buji.pac4j.filter.LogoutFilter;
@@ -69,7 +69,7 @@ public class Pac4jWebFilterConfiguration {
 		securityFilter.setConfig(config);
 
 		if(properties.getClients() != null){
-			securityFilter.setClients(Arrays.toString(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+			securityFilter.setClients(StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		securityFilter.setMultiProfile(properties.isMultiProfile());
@@ -78,11 +78,12 @@ public class Pac4jWebFilterConfiguration {
 
 		if(Validate.isNotEmpty(securityConfig.getAuthorizers())){
 			securityFilter.setAuthorizers(
-					Arrays.toString(securityConfig.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
+					StringUtils.join(securityConfig.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		if(Validate.isNotEmpty(securityConfig.getMatchers())){
-			securityFilter.setMatchers(Arrays.toString(securityConfig.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
+			securityFilter.setMatchers(
+					StringUtils.join(securityConfig.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
 		return securityFilter;

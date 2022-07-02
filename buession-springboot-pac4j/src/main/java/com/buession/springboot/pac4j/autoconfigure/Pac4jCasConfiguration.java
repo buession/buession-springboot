@@ -35,7 +35,6 @@ import org.pac4j.cas.client.rest.CasRestFormClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -55,124 +54,31 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({CasConfiguration.class})
 @ConditionalOnProperty(prefix = Cas.PREFIX, name = "enabled", havingValue = "true")
 @AutoConfigureBefore({Pac4jConfiguration.class})
-public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
+public class Pac4jCasConfiguration {
+
+	protected Pac4jProperties properties;
 
 	public Pac4jCasConfiguration(Pac4jProperties properties){
-		super(properties, properties.getClient().getCas());
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "proxy.enabled", havingValue = "true")
-	public CasProxyReceptor proxyReceptor(){
-		CasProxyReceptor proxyReceptor = new CasProxyReceptor();
-		proxyReceptor.setCallbackUrl(config.getCallbackUrl());
+	public CasProxyReceptor casProxyReceptor(){
+		final CasProxyReceptor proxyReceptor = new CasProxyReceptor();
+
+		proxyReceptor.setCallbackUrl(properties.getClient().getCas().getCallbackUrl());
+
 		return proxyReceptor;
 	}
 
 	@Bean
-	@ConditionalOnBean({CasProxyReceptor.class})
 	@ConditionalOnMissingBean
-	public CasConfiguration casConfiguration(ObjectProvider<CasProxyReceptor> proxyReceptorProvider){
-		CasConfiguration casConfiguration = createCasConfiguration();
+	public CasConfiguration casConfiguration(ObjectProvider<CasProxyReceptor> casProxyReceptor){
+		final CasConfiguration casConfiguration = new CasConfiguration();
 
-		CasProxyReceptor casProxyReceptor = proxyReceptorProvider.getIfAvailable();
-
-		if(casProxyReceptor != null){
-			casConfiguration.setProxyReceptor(casProxyReceptor);
-		}
-
-		return casConfiguration;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public CasConfiguration casConfiguration(){
-		return createCasConfiguration();
-	}
-
-	@Bean(name = "casClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
-	public CasClient casClient(ObjectProvider<CasConfiguration> casConfiguration){
-		final CasClient casClient = new CasClient(casConfiguration.getIfAvailable());
-
-		if(config.getCallbackUrl() != null){
-			casClient.setCallbackUrl(config.getCallbackUrl());
-		}
-
-		afterClientInitialized(casClient, config.getGeneral());
-
-		return casClient;
-	}
-
-	@Bean(name = "casRestFormClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
-	public CasRestFormClient casRestFormClient(ObjectProvider<CasConfiguration> casConfiguration){
-		final CasRestFormClient casRestFormClient = new CasRestFormClient();
-
-		casRestFormClient.setConfiguration(casConfiguration.getIfAvailable());
-
-		if(Validate.hasText(config.getRestForm().getUsernameParameter())){
-			casRestFormClient.setUsernameParameter(config.getRestForm().getUsernameParameter());
-		}
-
-		if(Validate.hasText(config.getRestForm().getPasswordParameter())){
-			casRestFormClient.setPasswordParameter(config.getRestForm().getPasswordParameter());
-		}
-
-		afterClientInitialized(casRestFormClient, config.getRestForm());
-
-		return casRestFormClient;
-	}
-
-	@Bean(name = "directCasClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
-	public DirectCasClient directCasClient(ObjectProvider<CasConfiguration> casConfiguration){
-		final DirectCasClient directCasClient = new DirectCasClient(casConfiguration.getIfAvailable());
-
-		afterClientInitialized(directCasClient, config.getDirect());
-
-		return directCasClient;
-	}
-
-	@Bean(name = "directCasProxyClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
-	public DirectCasProxyClient directCasProxyClient(ObjectProvider<CasConfiguration> configuration){
-		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(configuration.getIfAvailable(),
-				config.getPrefixUrl());
-
-		afterClientInitialized(directCasProxyClient, config.getDirectProxy());
-
-		return directCasProxyClient;
-	}
-
-	@Bean(name = "casRestBasicAuthClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
-	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration configuration){
-		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient();
-
-		casRestBasicAuthClient.setConfiguration(configuration);
-
-		if(Validate.hasText(config.getRestBasicAuth().getHeaderName())){
-			casRestBasicAuthClient.setHeaderName(config.getRestBasicAuth().getHeaderName());
-		}
-
-		if(Validate.hasText(config.getRestBasicAuth().getPrefixHeader())){
-			casRestBasicAuthClient.setPrefixHeader(config.getRestBasicAuth().getPrefixHeader());
-		}
-
-		afterClientInitialized(casRestBasicAuthClient, config.getRestBasicAuth());
-
-		return casRestBasicAuthClient;
-	}
-
-	private CasConfiguration createCasConfiguration(){
-		CasConfiguration casConfiguration = new CasConfiguration();
+		Cas config = properties.getClient().getCas();
 
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
@@ -191,7 +97,103 @@ public class Pac4jCasConfiguration extends AbstractPac4jConfiguration<Cas> {
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setLogoutHandler);
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setUrlResolver);
 
+		casConfiguration.setProxyReceptor(casProxyReceptor.getIfAvailable());
+
 		return casConfiguration;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(Pac4jProperties.class)
+	static class Pac4jCasClientConfiguration extends AbstractPac4jClientConfiguration<Cas> {
+
+		private CasConfiguration casConfiguration;
+
+		public Pac4jCasClientConfiguration(Pac4jProperties properties,
+										   ObjectProvider<CasConfiguration> casConfiguration){
+			super(properties, properties.getClient().getCas());
+			this.casConfiguration = casConfiguration.getIfAvailable();
+		}
+
+		@Bean(name = "casClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
+		public CasClient casClient(){
+			final CasClient casClient = new CasClient(casConfiguration);
+
+			if(config.getCallbackUrl() != null){
+				casClient.setCallbackUrl(config.getCallbackUrl());
+			}
+
+			afterClientInitialized(casClient, config.getGeneral());
+
+			return casClient;
+		}
+
+		@Bean(name = "casRestFormClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
+		public CasRestFormClient casRestFormClient(){
+			final CasRestFormClient casRestFormClient = new CasRestFormClient();
+
+			casRestFormClient.setConfiguration(casConfiguration);
+
+			if(Validate.hasText(config.getRestForm().getUsernameParameter())){
+				casRestFormClient.setUsernameParameter(config.getRestForm().getUsernameParameter());
+			}
+
+			if(Validate.hasText(config.getRestForm().getPasswordParameter())){
+				casRestFormClient.setPasswordParameter(config.getRestForm().getPasswordParameter());
+			}
+
+			afterClientInitialized(casRestFormClient, config.getRestForm());
+
+			return casRestFormClient;
+		}
+
+		@Bean(name = "directCasClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
+		public DirectCasClient directCasClient(){
+			final DirectCasClient directCasClient = new DirectCasClient(casConfiguration);
+
+			afterClientInitialized(directCasClient, config.getDirect());
+
+			return directCasClient;
+		}
+
+		@Bean(name = "directCasProxyClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
+		public DirectCasProxyClient directCasProxyClient(){
+			final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(casConfiguration,
+					config.getPrefixUrl());
+
+			afterClientInitialized(directCasProxyClient, config.getDirectProxy());
+
+			return directCasProxyClient;
+		}
+
+		@Bean(name = "casRestBasicAuthClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
+		public CasRestBasicAuthClient casRestBasicAuthClient(){
+			final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient();
+
+			casRestBasicAuthClient.setConfiguration(casConfiguration);
+
+			if(Validate.hasText(config.getRestBasicAuth().getHeaderName())){
+				casRestBasicAuthClient.setHeaderName(config.getRestBasicAuth().getHeaderName());
+			}
+
+			if(Validate.hasText(config.getRestBasicAuth().getPrefixHeader())){
+				casRestBasicAuthClient.setPrefixHeader(config.getRestBasicAuth().getPrefixHeader());
+			}
+
+			afterClientInitialized(casRestBasicAuthClient, config.getRestBasicAuth());
+
+			return casRestBasicAuthClient;
+		}
+
 	}
 
 }

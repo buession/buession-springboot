@@ -33,13 +33,13 @@ import org.pac4j.core.credentials.Credentials;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public abstract class AbstractPac4jConfiguration<C extends BaseConfig> {
+public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 
 	protected Pac4jProperties properties;
 
 	protected C config;
 
-	public AbstractPac4jConfiguration(Pac4jProperties properties, C config){
+	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config){
 		this.properties = properties;
 		this.config = config;
 	}

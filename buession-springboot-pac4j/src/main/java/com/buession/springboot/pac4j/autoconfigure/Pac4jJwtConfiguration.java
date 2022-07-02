@@ -41,6 +41,7 @@ import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -60,17 +61,20 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
 @ConditionalOnProperty(prefix = Jwt.PREFIX, name = "enabled", havingValue = "true")
 @AutoConfigureBefore({Pac4jConfiguration.class})
-public class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguration<Jwt> {
+public class Pac4jJwtConfiguration {
 
 	private final static int PAD_SIZE = 32;
 
-	public Pac4JJwtClientConfiguration(Pac4jProperties properties){
-		super(properties, properties.getClient().getJwt());
+	protected Pac4jProperties properties;
+
+	public Pac4jJwtConfiguration(Pac4jProperties properties){
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SecretSignatureConfiguration secretSignatureConfiguration(){
+		Jwt config = properties.getClient().getJwt();
 		String jwtSecret = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
 		return new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.parse(config.getSecretSignatureAlgorithm()));
 	}
@@ -78,6 +82,7 @@ public class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguratio
 	@Bean
 	@ConditionalOnMissingBean
 	public SecretEncryptionConfiguration secretEncryptionConfiguration(){
+		Jwt config = properties.getClient().getJwt();
 		String jwtEncryptionKey = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE,
 				config.getEncryptionKey());
 		return new SecretEncryptionConfiguration(jwtEncryptionKey,
@@ -96,6 +101,7 @@ public class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguratio
 	@ConditionalOnMissingBean
 	public JwtAuthenticator jwtAuthenticator(SecretSignatureConfiguration signatureConfiguration,
 											 SecretEncryptionConfiguration secretEncryptionConfiguration){
+		Jwt config = properties.getClient().getJwt();
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
 
 		if(config.getIdentifierGenerator() != null){
@@ -106,44 +112,58 @@ public class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguratio
 		return jwtAuthenticator;
 	}
 
-	@Bean(name = "jwtParameterClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
-	public HeaderClient headerClient(JwtAuthenticator jwtAuthenticator){
-		final HeaderClient headerClient = new HeaderClient(config.getHeader().getHeaderName(),
-				config.getHeader().getPrefixHeader(), jwtAuthenticator);
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(Pac4jProperties.class)
+	static class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguration<Jwt> {
 
-		afterClientInitialized(headerClient, config.getHeader());
+		private JwtAuthenticator jwtAuthenticator;
 
-		return headerClient;
-	}
+		public Pac4JJwtClientConfiguration(Pac4jProperties properties,
+										   ObjectProvider<JwtAuthenticator> jwtAuthenticator){
+			super(properties, properties.getClient().getJwt());
+			this.jwtAuthenticator = jwtAuthenticator.getIfAvailable();
+		}
 
-	@Bean(name = "jwtCookieClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "cookie.enabled", havingValue = "true")
-	public CookieClient cookieClient(JwtAuthenticator jwtAuthenticator){
-		final CookieClient cookieClient = new CookieClient(config.getCookie().getCookieName(), jwtAuthenticator);
+		@Bean(name = "jwtParameterClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
+		public HeaderClient headerClient(){
+			final HeaderClient headerClient = new HeaderClient(config.getHeader().getHeaderName(),
+					config.getHeader().getPrefixHeader(), jwtAuthenticator);
 
-		afterClientInitialized(cookieClient, config.getCookie());
+			afterClientInitialized(headerClient, config.getHeader());
 
-		return cookieClient;
-	}
+			return headerClient;
+		}
 
-	@Bean(name = "jwtParameterClient")
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
-	public ParameterClient parameterClient(JwtAuthenticator jwtAuthenticator){
-		final ParameterClient parameterClient = new ParameterClient(config.getParameter().getParameterName(),
-				jwtAuthenticator);
+		@Bean(name = "jwtCookieClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "cookie.enabled", havingValue = "true")
+		public CookieClient cookieClient(){
+			final CookieClient cookieClient = new CookieClient(config.getCookie().getCookieName(), jwtAuthenticator);
 
-		parameterClient.setSupportGetRequest(config.isSupportGetRequest());
-		parameterClient.setSupportPostRequest(config.isSupportPostRequest());
-		//parameterClient.setCredentialsExtractor(
-		//new HeaderExtractor(config.getParameter().getParameterName(), config.getPrefixHeader()));
+			afterClientInitialized(cookieClient, config.getCookie());
 
-		afterClientInitialized(parameterClient, config.getParameter());
+			return cookieClient;
+		}
 
-		return parameterClient;
+		@Bean(name = "jwtParameterClient")
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
+		public ParameterClient parameterClient(){
+			final ParameterClient parameterClient = new ParameterClient(config.getParameter().getParameterName(),
+					jwtAuthenticator);
+
+			parameterClient.setSupportGetRequest(config.isSupportGetRequest());
+			parameterClient.setSupportPostRequest(config.isSupportPostRequest());
+			//parameterClient.setCredentialsExtractor(
+			//new HeaderExtractor(config.getParameter().getParameterName(), config.getPrefixHeader()));
+
+			afterClientInitialized(parameterClient, config.getParameter());
+
+			return parameterClient;
+		}
+
 	}
 
 }
