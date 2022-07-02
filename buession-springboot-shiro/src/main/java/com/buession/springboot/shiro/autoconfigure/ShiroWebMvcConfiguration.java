@@ -36,11 +36,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RequestMappingHandlerMapping.class)
-@Import(ShiroRequestMappingConfig.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(name = "shiro.web.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
+@Import(ShiroRequestMappingConfig.class)
 public class ShiroWebMvcConfiguration {
 
 }

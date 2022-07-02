@@ -82,7 +82,6 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		filterFactoryBean.setLoginUrl(loginUrl);
 		filterFactoryBean.setSuccessUrl(successUrl);
 		filterFactoryBean.setUnauthorizedUrl(unauthorizedUrl);
-
 		filterFactoryBean.setSecurityManager(securityManager);
 		filterFactoryBean.setGlobalFilters(globalFilters());
 		filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition.getFilterChainMap());
@@ -94,12 +93,12 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@Bean(name = REGISTRATION_BEAN_NAME)
 	@ConditionalOnMissingBean(name = REGISTRATION_BEAN_NAME)
 	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception{
-
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+
+		filterRegistrationBean.setName(FILTER_NAME);
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);
 		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
-		filterRegistrationBean.setName(FILTER_NAME);
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;

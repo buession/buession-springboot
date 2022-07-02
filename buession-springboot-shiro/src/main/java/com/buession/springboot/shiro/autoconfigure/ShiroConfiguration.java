@@ -39,6 +39,7 @@ import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.config.AbstractShiroConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -118,7 +119,7 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean
-	protected SessionDAO sessionDAO(RedisManager redisManager){
+	protected SessionDAO redisSessionDAO(RedisManager redisManager){
 		ShiroProperties.Session session = properties.getSession();
 		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());

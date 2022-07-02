@@ -140,44 +140,6 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		if(rememberMeCookie.getSameSite() != null){
 			this.rememberMeSameSite = sameSiteConverter.convert(rememberMeCookie.getSameSite());
 		}
-
-		/*
-		SystemPropertyUtils.setProperty("shiro.userNativeSessionManager", session.isUseNativeSessionManager());
-
-		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdCookieEnabled",
-				session.isSessionIdCookieEnabled());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdUrlRewritingEnabled",
-				session.isSessionIdUrlRewritingEnabled());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
-				session.isSessionManagerDeleteInvalidSessions());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.name", cookie.getName());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.domain", cookie.getDomain());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.path", cookie.getPath());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.maxAge", cookie.getMaxAge());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.secure", cookie.isSecure());
-		if(cookie.getSameSite() != null){
-			SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.sameSite",
-					cookie.getSameSite().name());
-		}
-
-		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.name", rememberMeCookie.getName());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.domain", rememberMeCookie.getDomain());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.path", rememberMeCookie.getPath());
-		SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.maxAge", rememberMeCookie.getMaxAge());
-		SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.secure", rememberMeCookie.isSecure());
-		if(rememberMeCookie.getSameSite() != null){
-			SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.sameSite",
-					rememberMeCookie.getSameSite().name());
-		}
-
-		 */
-
-		/*
-		SystemPropertyUtils.setPropertyIfPresent("shiro.loginUrl", properties.getLoginUrl());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.successUrl", properties.getSuccessUrl());
-		SystemPropertyUtils.setPropertyIfPresent("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
-
-		 */
 	}
 
 	@Bean
@@ -232,7 +194,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean
-	protected SessionDAO sessionDAO(RedisManager redisManager){
+	protected SessionDAO redisSessionDAO(RedisManager redisManager){
 		ShiroProperties.Session session = properties.getSession();
 		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
