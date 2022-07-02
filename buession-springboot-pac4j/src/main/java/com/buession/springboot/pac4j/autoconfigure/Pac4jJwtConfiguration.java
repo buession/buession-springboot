@@ -31,7 +31,6 @@ import com.buession.springboot.pac4j.config.Jwt;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
-import org.pac4j.core.client.Clients;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.generator.ValueGenerator;
 import org.pac4j.http.client.direct.CookieClient;
@@ -42,14 +41,13 @@ import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Pac4j JWT 自动配置类
@@ -60,15 +58,14 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({JwtAuthenticator.class, ParameterClient.class})
-@ConditionalOnProperty(name = Jwt.PREFIX)
-@Import({Pac4jConfiguration.class})
-public class Pac4jJwtConfiguration extends AbstractPac4jConfiguration<Jwt> {
+@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "enabled", havingValue = "true")
+@AutoConfigureBefore({Pac4jConfiguration.class})
+public class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguration<Jwt> {
 
 	private final static int PAD_SIZE = 32;
 
-	public Pac4jJwtConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
-		super(properties, clients.getIfAvailable());
-		this.config = properties.getClient().getJwt();
+	public Pac4JJwtClientConfiguration(Pac4jProperties properties){
+		super(properties, properties.getClient().getJwt());
 	}
 
 	@Bean

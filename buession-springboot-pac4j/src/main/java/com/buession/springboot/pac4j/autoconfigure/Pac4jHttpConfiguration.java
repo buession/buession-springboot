@@ -27,7 +27,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import com.buession.springboot.pac4j.config.Http;
-import org.pac4j.core.client.Clients;
 import org.pac4j.core.client.DirectClient;
 import org.pac4j.core.client.IndirectClient;
 import org.pac4j.core.credentials.Credentials;
@@ -35,14 +34,13 @@ import org.pac4j.http.client.direct.DirectBasicAuthClient;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.client.indirect.IndirectBasicAuthClient;
 import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Pac4j HTTP 自动配置类
@@ -53,13 +51,12 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({FormClient.class})
-@ConditionalOnProperty(name = Http.PREFIX)
-@Import({Pac4jConfiguration.class})
-public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
+@ConditionalOnProperty(prefix = Http.PREFIX, name = "enabled", havingValue = "true")
+@AutoConfigureBefore({Pac4jConfiguration.class})
+public class Pac4JHttpClientConfiguration extends AbstractPac4jClientConfiguration<Http> {
 
-	public Pac4jHttpConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
-		super(properties, clients.getIfAvailable());
-		this.config = properties.getClient().getHttp();
+	public Pac4JHttpClientConfiguration(Pac4jProperties properties){
+		super(properties, properties.getClient().getHttp());
 	}
 
 	@Bean(name = "formClient")
@@ -84,8 +81,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 
 	@Bean(name = "indirectBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"indirectBasicAuth.enabled",
-			"indirect-basic-auth.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled", havingValue = "true")
 	public IndirectBasicAuthClient indirectBasicAuthClient(){
 		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 		final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
@@ -102,8 +98,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jConfiguration<Http> {
 
 	@Bean(name = "directBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = {"directBasicAuth.enabled",
-			"direct-basic-auth.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled", havingValue = "true")
 	public DirectBasicAuthClient directBasicAuthClient(){
 		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(usernamePasswordAuthenticator);

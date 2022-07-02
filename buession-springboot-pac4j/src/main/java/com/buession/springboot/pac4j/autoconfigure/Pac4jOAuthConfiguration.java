@@ -27,11 +27,10 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.utils.EnumUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.OAuth;
-import org.pac4j.core.client.Clients;
 import org.pac4j.oauth.client.*;
 import org.pac4j.oauth.config.OAuth10Configuration;
 import org.pac4j.oauth.config.OAuth20Configuration;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,7 +38,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Pac4j HTTP 自动配置类
@@ -50,13 +48,12 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({OAuth10Client.class, OAuth20Client.class})
-@ConditionalOnProperty(name = OAuth.PREFIX)
-@Import({Pac4jConfiguration.class})
-public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
+@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "enabled", havingValue = "true")
+@AutoConfigureBefore({Pac4jConfiguration.class})
+public class Pac4JOAuthClientConfiguration extends AbstractPac4jClientConfiguration<OAuth> {
 
-	public Pac4jOAuthConfiguration(Pac4jProperties properties, ObjectProvider<Clients> clients){
-		super(properties, clients.getIfAvailable());
-		this.config = properties.getClient().getOAuth();
+	public Pac4JOAuthClientConfiguration(Pac4jProperties properties){
+		super(properties, properties.getClient().getOAuth());
 	}
 
 	// *********************************************** //
@@ -180,8 +177,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 
 	@Bean(name = "figShareClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"figShare.enabled",
-			"fig-share.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "fig-share.enabled", havingValue = "true")
 	public FigShareClient figShareClient(){
 		final FigShareClient figShareClient = new FigShareClient();
 
@@ -357,8 +353,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 
 	@Bean(name = "windowsLiveClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"windowsLive.enabled",
-			"windows-live.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled", havingValue = "true")
 	public WindowsLiveClient windowsLiveClient(){
 		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
 
@@ -369,8 +364,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jConfiguration<OAuth> {
 
 	@Bean(name = "wordpressClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = {"wordPress.enabled",
-			"word-press.enabled"}, havingValue = "true")
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "word-press.enabled", havingValue = "true")
 	public WordPressClient wordPressClient(){
 		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
 

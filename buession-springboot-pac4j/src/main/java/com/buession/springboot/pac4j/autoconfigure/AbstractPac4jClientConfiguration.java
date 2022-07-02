@@ -27,7 +27,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import org.pac4j.core.client.BaseClient;
-import org.pac4j.core.client.Clients;
 import org.pac4j.core.credentials.Credentials;
 
 /**
@@ -40,11 +39,9 @@ public abstract class AbstractPac4jConfiguration<C extends BaseConfig> {
 
 	protected C config;
 
-	protected Clients clients;
-
-	public AbstractPac4jConfiguration(Pac4jProperties properties, Clients clients){
+	public AbstractPac4jConfiguration(Pac4jProperties properties, C config){
 		this.properties = properties;
-		this.clients = clients;
+		this.config = config;
 	}
 
 	protected void afterClientInitialized(final BaseClient<? extends Credentials> client,
@@ -54,8 +51,6 @@ public abstract class AbstractPac4jConfiguration<C extends BaseConfig> {
 		if(config.getCustomProperties() != null){
 			client.setCustomProperties(config.getCustomProperties());
 		}
-
-		clients.getClients().add(client);
 	}
 
 }
