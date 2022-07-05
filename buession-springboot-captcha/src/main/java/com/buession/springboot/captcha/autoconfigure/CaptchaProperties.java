@@ -24,7 +24,12 @@
  */
 package com.buession.springboot.captcha.autoconfigure;
 
+import com.buession.security.captcha.aliyun.AliyunParameter;
+import com.buession.security.captcha.geetest.api.v3.GeetestV3Parameter;
+import com.buession.security.captcha.geetest.api.v4.GeetestV4Parameter;
+import com.buession.security.captcha.tencent.TencentParameter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * 极验行为验证配置
@@ -32,13 +37,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Yong.Teng
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.captcha")
+@ConfigurationProperties(prefix = CaptchaProperties.PREFIX)
 public class CaptchaProperties {
+
+	public final static String PREFIX = "spring.captcha";
+
+	/**
+	 * 是否启用验证码
+	 */
+	private boolean enabled;
 
 	/**
 	 * 前端 JavaScript 库地址
 	 */
-	private String javascript;
+	private String[] javascript;
 
 	/**
 	 * 阿里云行为验证码配置
@@ -51,21 +63,35 @@ public class CaptchaProperties {
 	private Geetest geetest;
 
 	/**
-	 * 网易行为验证码配置
-	 */
-	private Netease netease;
-
-	/**
 	 * 腾讯行为验证码配置
 	 */
 	private Tencent tencent;
+
+	/**
+	 * 返回是否启用验证码
+	 *
+	 * @return 是否启用验证码
+	 */
+	public boolean isEnabled(){
+		return enabled;
+	}
+
+	/**
+	 * 设置是否启用验证码
+	 *
+	 * @param enabled
+	 * 		是否启用验证码
+	 */
+	public void setEnabled(boolean enabled){
+		this.enabled = enabled;
+	}
 
 	/**
 	 * 返回前端 JavaScript 库地址
 	 *
 	 * @return 前端 JavaScript 库地址
 	 */
-	public String getJavascript(){
+	public String[] getJavascript(){
 		return javascript;
 	}
 
@@ -75,7 +101,7 @@ public class CaptchaProperties {
 	 * @param javascript
 	 * 		前端 JavaScript 库地址
 	 */
-	public void setJavascript(String javascript){
+	public void setJavascript(String[] javascript){
 		this.javascript = javascript;
 	}
 
@@ -118,25 +144,6 @@ public class CaptchaProperties {
 	}
 
 	/**
-	 * 返回网易行为验证码配置
-	 *
-	 * @return 网易行为验证码配置
-	 */
-	public Netease getNetease(){
-		return netease;
-	}
-
-	/**
-	 * 设置网易行为验证码配置
-	 *
-	 * @param netease
-	 * 		网易行为验证码配置
-	 */
-	public void setNetease(Netease netease){
-		this.netease = netease;
-	}
-
-	/**
 	 * 返回腾讯行为验证码配置
 	 *
 	 * @return 腾讯行为验证码配置
@@ -164,14 +171,19 @@ public class CaptchaProperties {
 	public static class Aliyun {
 
 		/**
-		 * 密钥 ID
+		 * AccessKey ID
 		 */
 		private String accessKeyId;
 
 		/**
-		 * 服务使用的 App Key
+		 * AccessKey Secret
 		 */
 		private String accessKeySecret;
+
+		/**
+		 * 服务使用的 App Key
+		 */
+		private String appKey;
 
 		/**
 		 * 区域 ID
@@ -179,22 +191,47 @@ public class CaptchaProperties {
 		private String regionId;
 
 		/**
-		 * 返回密钥 ID
+		 * 提交参数配置
+		 */
+		@NestedConfigurationProperty
+		private AliyunParameter parameter = new AliyunParameter();
+
+		/**
+		 * 返回 AccessKey ID
 		 *
-		 * @return 密钥 ID
+		 * @return AccessKey ID
 		 */
 		public String getAccessKeyId(){
 			return accessKeyId;
 		}
 
 		/**
-		 * 设置密钥 ID
+		 * 设置 AccessKey ID
 		 *
 		 * @param accessKeyId
-		 * 		密钥 ID
+		 * 		AccessKey ID
 		 */
 		public void setAccessKeyId(String accessKeyId){
 			this.accessKeyId = accessKeyId;
+		}
+
+		/**
+		 * 返回 AccessKey Secret
+		 *
+		 * @return AccessKey Secret
+		 */
+		public String getAccessKeySecret(){
+			return accessKeySecret;
+		}
+
+		/**
+		 * 设置 AccessKey Secret
+		 *
+		 * @param accessKeySecret
+		 * 		AccessKey Secret
+		 */
+		public void setAccessKeySecret(String accessKeySecret){
+			this.accessKeySecret = accessKeySecret;
 		}
 
 		/**
@@ -202,18 +239,18 @@ public class CaptchaProperties {
 		 *
 		 * @return 服务使用的 App Key
 		 */
-		public String getAccessKeySecret(){
-			return accessKeySecret;
+		public String getAppKey(){
+			return appKey;
 		}
 
 		/**
 		 * 设置服务使用的 App Key
 		 *
-		 * @param accessKeySecret
+		 * @param appKey
 		 * 		服务使用的 App Key
 		 */
-		public void setAccessKeySecret(String accessKeySecret){
-			this.accessKeySecret = accessKeySecret;
+		public void setAppKey(String appKey){
+			this.appKey = appKey;
 		}
 
 		/**
@@ -233,6 +270,25 @@ public class CaptchaProperties {
 		 */
 		public void setRegionId(String regionId){
 			this.regionId = regionId;
+		}
+
+		/**
+		 * 返回提交参数配置
+		 *
+		 * @return 提交参数配置
+		 */
+		public AliyunParameter getParameter(){
+			return parameter;
+		}
+
+		/**
+		 * 设置提交参数配置
+		 *
+		 * @param parameter
+		 * 		提交参数配置
+		 */
+		public void setParameter(AliyunParameter parameter){
+			this.parameter = parameter;
 		}
 
 	}
@@ -259,6 +315,18 @@ public class CaptchaProperties {
 		 * 版本
 		 */
 		private String version = "v4";
+
+		/**
+		 * V3 版本配置
+		 */
+		@NestedConfigurationProperty
+		private V3 v3 = new V3();
+
+		/**
+		 * V4 版本配置
+		 */
+		@NestedConfigurationProperty
+		private V4 v4 = new V4();
 
 		/**
 		 * 返回应用 ID
@@ -317,62 +385,98 @@ public class CaptchaProperties {
 			this.version = version;
 		}
 
-	}
-
-	/**
-	 * 网易行为验证码配置
-	 *
-	 * @author yong.teng
-	 * @since 2.0.0
-	 */
-	public static class Netease {
-
 		/**
-		 * 应用 ID
-		 */
-		private String appId;
-
-		/**
-		 * 密钥
-		 */
-		private String secretKey;
-
-		/**
-		 * 返回应用 ID
+		 * 返回 V3 版本配置
 		 *
-		 * @return 应用 ID
+		 * @return V3 版本配置
 		 */
-		public String getAppId(){
-			return appId;
+		public V3 getV3(){
+			return v3;
 		}
 
 		/**
-		 * 设置应用 ID
+		 * 设置 V3 版本配置
 		 *
-		 * @param appId
-		 * 		应用 ID
+		 * @param v3
+		 * 		V3 版本配置
 		 */
-		public void setAppId(String appId){
-			this.appId = appId;
+		public void setV3(V3 v3){
+			this.v3 = v3;
 		}
 
 		/**
-		 * 返回密钥
+		 * 返回 V4 版本配置
 		 *
-		 * @return 密钥
+		 * @return V4 版本配置
 		 */
-		public String getSecretKey(){
-			return secretKey;
+		public V4 getV4(){
+			return v4;
 		}
 
 		/**
-		 * 设置密钥
+		 * 设置 V4 版本配置
 		 *
-		 * @param secretKey
-		 * 		密钥
+		 * @param v4
+		 * 		V4 版本配置
 		 */
-		public void setSecretKey(String secretKey){
-			this.secretKey = secretKey;
+		public void setV4(V4 v4){
+			this.v4 = v4;
+		}
+
+		public final static class V3 {
+
+			/**
+			 * 提交参数配置
+			 */
+			private GeetestV3Parameter parameter = new GeetestV3Parameter();
+
+			/**
+			 * 返回提交参数配置
+			 *
+			 * @return 提交参数配置
+			 */
+			public GeetestV3Parameter getParameter(){
+				return parameter;
+			}
+
+			/**
+			 * 设置提交参数配置
+			 *
+			 * @param parameter
+			 * 		提交参数配置
+			 */
+			public void setParameter(GeetestV3Parameter parameter){
+				this.parameter = parameter;
+			}
+
+		}
+
+		public final static class V4 {
+
+			/**
+			 * 提交参数配置
+			 */
+			private GeetestV4Parameter parameter = new GeetestV4Parameter();
+
+			/**
+			 * 返回提交参数配置
+			 *
+			 * @return 提交参数配置
+			 */
+			public GeetestV4Parameter getParameter(){
+				return parameter;
+			}
+
+			/**
+			 * 设置提交参数配置
+			 *
+			 * @param parameter
+			 * 		提交参数配置
+			 */
+			public void setParameter(GeetestV4Parameter parameter){
+				this.parameter = parameter;
+			}
+
 		}
 
 	}
@@ -396,6 +500,11 @@ public class CaptchaProperties {
 		private String secretKey;
 
 		/**
+		 * 提交参数配置
+		 */
+		private TencentParameter parameter = new TencentParameter();
+
+		/**
 		 * 返回应用 ID
 		 *
 		 * @return 应用 ID
@@ -431,6 +540,25 @@ public class CaptchaProperties {
 		 */
 		public void setSecretKey(String secretKey){
 			this.secretKey = secretKey;
+		}
+
+		/**
+		 * 返回提交参数配置
+		 *
+		 * @return 提交参数配置
+		 */
+		public TencentParameter getParameter(){
+			return parameter;
+		}
+
+		/**
+		 * 设置提交参数配置
+		 *
+		 * @param parameter
+		 * 		提交参数配置
+		 */
+		public void setParameter(TencentParameter parameter){
+			this.parameter = parameter;
 		}
 
 	}

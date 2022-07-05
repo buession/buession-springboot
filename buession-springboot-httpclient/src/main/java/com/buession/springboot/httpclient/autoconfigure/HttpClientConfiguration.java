@@ -26,11 +26,9 @@ package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.HttpClient;
-import com.buession.httpclient.OkHttpClient;
+import com.buession.httpclient.OkHttpHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
-import okhttp3.ConnectionPool;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,10 +42,13 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 1.2.2
  */
-
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
 public class HttpClientConfiguration {
+
+	protected final static String CLIENT_CONNECTION_MANAGER_BEAN_NAME = "httpClientConnectionManager";
+
+	protected final static String HTTP_CLIENT_BEAN_NAME = "$httpClient";
 
 	protected HttpClientProperties properties;
 
@@ -59,54 +60,54 @@ public class HttpClientConfiguration {
 	 * Apache HttpClient Auto Configuration
 	 *
 	 * @author Yong.Teng
-	 * @since 1.2.2
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass({HttpClientConnectionManager.class})
-	@ConditionalOnMissingBean({HttpClient.class})
+	@ConditionalOnClass(org.apache.http.impl.client.CloseableHttpClient.class)
+	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = HttpClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
-	class ApacheHttpClientConfiguration extends HttpClientConfiguration {
+	static class Apache extends HttpClientConfiguration {
 
-		public ApacheHttpClientConfiguration(HttpClientProperties properties){
+		public Apache(HttpClientProperties properties){
 			super(properties);
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public ApacheClientConnectionManager apacheClientConnectionManager(){
+		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
+		public ApacheClientConnectionManager clientConnectionManager(){
 			return new ApacheClientConnectionManager(properties);
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public ApacheHttpClient apacheHttpClient(ApacheClientConnectionManager connectionManager){
+		@Bean(name = HTTP_CLIENT_BEAN_NAME)
+		public ApacheHttpClient httpClient(ApacheClientConnectionManager connectionManager){
 			return new ApacheHttpClient(connectionManager);
 		}
 
 	}
 
+	/**
+	 * OkHttp HttpClient Auto Configuration
+	 *
+	 * @author Yong.Teng
+	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass({ConnectionPool.class})
-	@ConditionalOnMissingBean({HttpClient.class})
+	@ConditionalOnClass(okhttp3.OkHttpClient.class)
+	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = HttpClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
-	class OkHttpHttpClientConfiguration extends HttpClientConfiguration {
+	static class OkHttp extends HttpClientConfiguration {
 
-		public OkHttpHttpClientConfiguration(HttpClientProperties properties){
+		public OkHttp(HttpClientProperties properties){
 			super(properties);
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public OkHttpClientConnectionManager connectionManager(){
+		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
+		public OkHttpClientConnectionManager clientConnectionManager(){
 			return new OkHttpClientConnectionManager(properties);
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public OkHttpClient okHttpHttpClient(OkHttpClientConnectionManager connectionManager){
-			return new OkHttpClient(connectionManager);
+		@Bean(name = HTTP_CLIENT_BEAN_NAME)
+		public OkHttpHttpClient httpClient(OkHttpClientConnectionManager connectionManager){
+			return new OkHttpHttpClient(connectionManager);
 		}
 
 	}

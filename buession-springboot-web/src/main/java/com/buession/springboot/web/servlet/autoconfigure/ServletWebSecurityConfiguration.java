@@ -78,9 +78,11 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	static class WebSecurityConfigurerAdapterConfiguration extends ServletWebSecurityConfigurerAdapterConfiguration {
+	@ConditionalOnClass({WebSecurityConfigurerAdapter.class})
+	static class DefaultWebSecurityConfigurerAdapterConfiguration
+			extends ServletWebSecurityConfigurerAdapterConfiguration {
 
-		public WebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties){
+		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties){
 			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
 					properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
 					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),

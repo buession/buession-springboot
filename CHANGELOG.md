@@ -11,7 +11,7 @@
 
 ### ⭐ 新特性
 
-- **buession-springboot-captcha：** 新增极验 V4 版本支持，网易、阿里云、腾讯云行为验证码
+- **buession-springboot-captcha：** 新增极验 V4 版本支持，阿里云、腾讯云行为验证码
 - **buession-springboot-web：** 新增 CorsFilter Bean 配置
 
 
