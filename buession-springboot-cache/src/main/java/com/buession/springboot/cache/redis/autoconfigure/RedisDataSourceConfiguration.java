@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Duration;
 
 /**
- * Redis {@link DataSource} 连接对象 AutoConfiguration 抽象类
+ * Redis 数据源 {@link DataSource} 自动配置类
  *
  * @author Yong.Teng
  * @see DataSource

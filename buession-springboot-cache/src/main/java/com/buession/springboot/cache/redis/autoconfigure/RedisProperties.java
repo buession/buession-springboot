@@ -53,7 +53,7 @@ public class RedisProperties {
 	/**
 	 * Redis 端口
 	 */
-	private int port;
+	private int port = 6379;
 
 	/**
 	 * Redis 用户名
@@ -586,12 +586,12 @@ public class RedisProperties {
 		private Set<String> nodes;
 
 		/**
-		 * 最大重试次数
+		 * 最大重定向次数
 		 */
 		private Integer maxRedirects;
 
 		/**
-		 * 最大重数时长
+		 * 最大重定向时长持续时长
 		 */
 		private Duration maxTotalRetriesDuration;
 
@@ -615,38 +615,38 @@ public class RedisProperties {
 		}
 
 		/**
-		 * 返回最大重试次数
+		 * 返回最大重定向次数
 		 *
-		 * @return 最大重试次数
+		 * @return 最大重定向次数
 		 */
 		public Integer getMaxRedirects(){
 			return maxRedirects;
 		}
 
 		/**
-		 * 设置最大重试次数
+		 * 设置最大重定向次数
 		 *
 		 * @param maxRedirects
-		 * 		最大重试次数
+		 * 		最大重定向次数
 		 */
 		public void setMaxRedirects(Integer maxRedirects){
 			this.maxRedirects = maxRedirects;
 		}
 
 		/**
-		 * 返回最大重试持续时长
+		 * 返回最大重定向持续时长
 		 *
-		 * @return 最大重试持续时长
+		 * @return 最大重定向持续时长
 		 */
 		public Duration getMaxTotalRetriesDuration(){
 			return maxTotalRetriesDuration;
 		}
 
 		/**
-		 * 设置最大重试持续时长
+		 * 设置最大重定向持续时长
 		 *
 		 * @param maxTotalRetriesDuration
-		 * 		最大重试持续时长
+		 * 		最大重定向持续时长
 		 */
 		public void setMaxTotalRetriesDuration(Duration maxTotalRetriesDuration){
 			this.maxTotalRetriesDuration = maxTotalRetriesDuration;
