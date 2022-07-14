@@ -36,7 +36,7 @@ import java.util.Properties;
  */
 public class RuntimeProperties extends Properties {
 
-	private static final long serialVersionUID = 7179944252788268602L;
+	private final static long serialVersionUID = 7179944252788268602L;
 
 	public RuntimeProperties(){
 		putDefaults();
