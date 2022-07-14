@@ -25,8 +25,6 @@
 package com.buession.springboot.mongodb.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -48,30 +46,22 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Import({MongoDataAutoConfiguration.class})
 public class MongoDBConfiguration {
 
-	private MongoDBProperties properties;
+	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext,
+								ObjectProvider<MappingMongoConverter> mappingMongoConverter){
+		MongoMappingContext mappingContext = mongoMappingContext.getIfAvailable();
+		MappingMongoConverter mappingConverter = mappingMongoConverter.getIfAvailable();
+		MongoTypeMapper mongoTypeMapper;
 
-	private final static Logger logger = LoggerFactory.getLogger(MongoDBConfiguration.class);
-
-	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext, ObjectProvider<MappingMongoConverter> mappingMongoConverter){
-		this.properties = properties;
-		MongoTypeMapper mongoTypeMapper = null;
-
-		if(this.properties.getTypeMapper() != null){
-			try{
-				mongoTypeMapper = this.properties.getTypeMapper().newInstance();
-			}catch(InstantiationException e){
-				logger.error("Failed to instantiate [{}]: {}", this.properties.getTypeMapper().getName(), e.getMessage(), e);
-			}catch(IllegalAccessException e){
-				logger.error("Failed to instantiate [{}]: {}", this.properties.getTypeMapper().getName(), e.getMessage(), e);
-			}
+		if(properties.getTypeMapper() != null){
+			mongoTypeMapper = BeanUtils.instantiateClass(properties.getTypeMapper());
 		}else{
-			if(Validate.hasText(this.properties.getTypeKey())){
-				mongoTypeMapper = new DefaultMongoTypeMapper(this.properties.getTypeKey(), mongoMappingContext.getIfAvailable());
-			}
+			mongoTypeMapper = new DefaultMongoTypeMapper(
+					Validate.hasText(properties.getTypeKey()) ? properties.getTypeKey() : null,
+					mappingContext);
 		}
 
-		if(mongoTypeMapper != null){
-			mappingMongoConverter.getIfAvailable().setTypeMapper(mongoTypeMapper);
+		if(mappingConverter != null){
+			mappingConverter.setTypeMapper(mongoTypeMapper);
 		}
 	}
 

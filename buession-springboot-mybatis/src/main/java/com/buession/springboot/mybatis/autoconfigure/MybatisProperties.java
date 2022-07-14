@@ -86,10 +86,10 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	private Class<? extends TypeHandler> defaultEnumTypeHandler;
+	private Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler;
 
 	/**
-	 * MyBatis 的执行器
+	 * MyBatis 的执行器类型
 	 *
 	 * @since 1.2.0
 	 */
@@ -202,7 +202,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Class<? extends TypeHandler> getDefaultEnumTypeHandler(){
+	public Class<? extends TypeHandler<Enum<?>>> getDefaultEnumTypeHandler(){
 		return defaultEnumTypeHandler;
 	}
 
@@ -214,14 +214,14 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> defaultEnumTypeHandler){
+	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler){
 		this.defaultEnumTypeHandler = defaultEnumTypeHandler;
 	}
 
 	/**
-	 * 返回 MyBatis 的执行器
+	 * 返回 MyBatis 的执行器类型
 	 *
-	 * @return MyBatis 的执行器
+	 * @return MyBatis 的执行器类型
 	 *
 	 * @since 1.2.0
 	 */
@@ -230,10 +230,10 @@ public class MybatisProperties {
 	}
 
 	/**
-	 * 设置 MyBatis 的执行器
+	 * 设置 MyBatis 的执行器类型
 	 *
 	 * @param executorType
-	 * 		MyBatis 的执行器
+	 * 		MyBatis 的执行器类型
 	 *
 	 * @since 1.2.0
 	 */

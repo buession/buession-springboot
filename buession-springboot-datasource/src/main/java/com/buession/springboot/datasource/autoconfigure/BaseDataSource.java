@@ -22,16 +22,16 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.core;
+package com.buession.springboot.datasource.autoconfigure;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 
 /**
  * @author Yong.Teng
- * @since 1.3.2
+ * @since 2.0.0
  */
-public class BaseDataSource {
+class BaseDataSource {
 
 	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties,
 																		 final Class<T> type){
@@ -49,7 +49,7 @@ public class BaseDataSource {
 
 		@Override
 		public com.zaxxer.hikari.HikariDataSource createDataSource(){
-			com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties,
+			final com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties,
 					com.zaxxer.hikari.HikariDataSource.class);
 
 			getPoolConfiguration().setUrl(null);
@@ -75,7 +75,7 @@ public class BaseDataSource {
 
 		@Override
 		public BasicDataSource createDataSource(){
-			BasicDataSource dataSource = BaseDataSource.createDataSource(properties,
+			final BasicDataSource dataSource = BaseDataSource.createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 
 			getPoolConfiguration().setUrl(null);
@@ -101,7 +101,7 @@ public class BaseDataSource {
 
 		@Override
 		public com.alibaba.druid.pool.DruidDataSource createDataSource(){
-			com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties,
+			final com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties,
 					com.alibaba.druid.pool.DruidDataSource.class);
 
 			getPoolConfiguration().setUrl(null);
@@ -118,7 +118,7 @@ public class BaseDataSource {
 
 	public final static class TomcatDataSource extends com.buession.jdbc.datasource.TomcatDataSource {
 
-		private DataSourceProperties properties;
+		private final DataSourceProperties properties;
 
 		public TomcatDataSource(final DataSourceProperties properties){
 			super();
@@ -127,7 +127,7 @@ public class BaseDataSource {
 
 		@Override
 		public org.apache.tomcat.jdbc.pool.DataSource createDataSource(){
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties,
+			final org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties,
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 
 			getPoolConfiguration().setUrl(null);
@@ -153,7 +153,7 @@ public class BaseDataSource {
 
 		@Override
 		public javax.sql.DataSource createDataSource(){
-			javax.sql.DataSource dataSource = BaseDataSource.createDataSource(properties, null);
+			final javax.sql.DataSource dataSource = BaseDataSource.createDataSource(properties, null);
 
 			getPoolConfiguration().setUrl(null);
 			getPoolConfiguration().setDriverClassName(null);

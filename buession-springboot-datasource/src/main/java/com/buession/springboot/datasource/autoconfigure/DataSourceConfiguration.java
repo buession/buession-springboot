@@ -26,7 +26,6 @@ package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
-import com.buession.springboot.datasource.core.BaseDataSource;
 import com.buession.springboot.datasource.core.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,15 +51,15 @@ public class DataSourceConfiguration {
 		this.properties = properties;
 	}
 
-	protected static <S extends javax.sql.DataSource, P extends PoolConfiguration, T extends BaseDataSource.IDataSource<P, S>> DataSource createDataSource(
-			final Class<T> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties){
+	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
+			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties){
 		return createDataSource(type, poolConfiguration, dataSourceProperties, (dataSource, properties)->dataSource);
 	}
 
-	protected static <S extends javax.sql.DataSource, P extends PoolConfiguration, T extends BaseDataSource.IDataSource<P, S>> DataSource createDataSource(
-			final Class<T> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties,
-			final Callback<S> callback){
-		final DataSourceInitializer<S, P, T> dataSourceInitializer = new DataSourceInitializer<>(type,
+	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
+			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties,
+			final Callback<T> callback){
+		final DataSourceInitializer<T, P, D> dataSourceInitializer = new DataSourceInitializer<>(type,
 				poolConfiguration, dataSourceProperties);
 		return dataSourceInitializer.initialize(callback);
 	}
