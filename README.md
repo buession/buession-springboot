@@ -31,7 +31,7 @@
 
 - 参考文档 [https://springboot.buession.com/](https://springboot.buession.com/)
 - Wiki [https://github.com/buession/buession-springboot/wiki](https://github.com/buession/buession-springboot/wiki)
-- API Reference [https://springboot.buession.com/doc/](https://springboot.buession.com/doc/)
+- API Reference [https://springboot.buession.com/manual/](https://springboot.buession.com/manual/)
 
 ## License
 

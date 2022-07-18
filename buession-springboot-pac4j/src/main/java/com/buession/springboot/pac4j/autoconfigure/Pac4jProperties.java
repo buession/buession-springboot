@@ -72,7 +72,7 @@ public class Pac4jProperties {
 	/**
 	 * 是否保存到 SESSION 中
 	 */
-	private boolean saveInSession;
+	private boolean saveInSession = true;
 
 	/**
 	 * 过滤器配置
@@ -296,35 +296,49 @@ public class Pac4jProperties {
 		public final static class Security {
 
 			/**
-			 * 认证器名称
+			 * 认证器名称列表
 			 */
 			private Set<String> authorizers;
 
+			/**
+			 * 匹配器名称列表
+			 */
 			private Set<String> matchers;
 
 			/**
-			 * 返回认证器名称
+			 * 返回认证器名称列表
 			 *
-			 * @return 认证器名称
+			 * @return 认证器名称列表
 			 */
 			public Set<String> getAuthorizers(){
 				return authorizers;
 			}
 
 			/**
-			 * 设置认证器名称
+			 * 设置认证器名称列表
 			 *
 			 * @param authorizers
-			 * 		认证器名称
+			 * 		认证器名称列表
 			 */
 			public void setAuthorizers(Set<String> authorizers){
 				this.authorizers = authorizers;
 			}
 
+			/**
+			 * 返回匹配器名称列表
+			 *
+			 * @return 匹配器名称列表
+			 */
 			public Set<String> getMatchers(){
 				return matchers;
 			}
 
+			/**
+			 * 设置匹配器名称列表
+			 *
+			 * @param matchers
+			 * 		匹配器名称列表
+			 */
 			public void setMatchers(Set<String> matchers){
 				this.matchers = matchers;
 			}
@@ -372,6 +386,9 @@ public class Pac4jProperties {
 			 */
 			private String defaultUrl;
 
+			/**
+			 * 登出地址模式
+			 */
 			private String logoutUrlPattern;
 
 			/**
@@ -403,10 +420,21 @@ public class Pac4jProperties {
 				this.defaultUrl = defaultUrl;
 			}
 
+			/**
+			 * 返回登出地址模式
+			 *
+			 * @return 登出地址模式
+			 */
 			public String getLogoutUrlPattern(){
 				return logoutUrlPattern;
 			}
 
+			/**
+			 * 设置登出地址模式
+			 *
+			 * @param logoutUrlPattern
+			 * 		登出地址模式
+			 */
 			public void setLogoutUrlPattern(String logoutUrlPattern){
 				this.logoutUrlPattern = logoutUrlPattern;
 			}
@@ -448,7 +476,7 @@ public class Pac4jProperties {
 			public void setCentralLogout(boolean centralLogout){
 				this.centralLogout = centralLogout;
 			}
-			
+
 		}
 
 	}

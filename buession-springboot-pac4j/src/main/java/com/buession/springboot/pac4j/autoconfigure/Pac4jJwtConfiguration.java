@@ -28,9 +28,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
 import com.buession.springboot.pac4j.config.Jwt;
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWSAlgorithm;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.generator.ValueGenerator;
 import org.pac4j.http.client.direct.CookieClient;
@@ -76,7 +73,7 @@ public class Pac4jJwtConfiguration {
 	public SecretSignatureConfiguration secretSignatureConfiguration(){
 		Jwt config = properties.getClient().getJwt();
 		String jwtSecret = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
-		return new SecretSignatureConfiguration(jwtSecret, JWSAlgorithm.parse(config.getSecretSignatureAlgorithm()));
+		return new SecretSignatureConfiguration(jwtSecret, config.getSecretSignatureAlgorithm().getSource());
 	}
 
 	@Bean
@@ -85,9 +82,8 @@ public class Pac4jJwtConfiguration {
 		Jwt config = properties.getClient().getJwt();
 		String jwtEncryptionKey = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE,
 				config.getEncryptionKey());
-		return new SecretEncryptionConfiguration(jwtEncryptionKey,
-				JWEAlgorithm.parse(config.getSecretEncryptionAlgorithm()),
-				EncryptionMethod.parse(config.getEncryptionMethod()));
+		return new SecretEncryptionConfiguration(jwtEncryptionKey, config.getSecretEncryptionAlgorithm().getSource(),
+				config.getEncryptionMethod().getSource());
 	}
 
 	@Bean
@@ -116,7 +112,7 @@ public class Pac4jJwtConfiguration {
 	@EnableConfigurationProperties(Pac4jProperties.class)
 	static class Pac4JJwtClientConfiguration extends AbstractPac4jClientConfiguration<Jwt> {
 
-		private JwtAuthenticator jwtAuthenticator;
+		private final JwtAuthenticator jwtAuthenticator;
 
 		public Pac4JJwtClientConfiguration(Pac4jProperties properties,
 										   ObjectProvider<JwtAuthenticator> jwtAuthenticator){

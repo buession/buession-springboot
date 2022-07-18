@@ -1,10 +1,11 @@
  Buession SpringBoot Changelog
 ===========================
 
-## [2.0.1](https://github.com/buession/buession-springboot/releases/tag/v2.0.1) ()
+## [2.0.1](https://github.com/buession/buession-springboot/releases/tag/v2.0.1) (2022-07-18)
 
 ### 🔨依赖升级
 
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.0.1)
 - [jfiglet](http://lalyos.github.io/jfiglet/) 版本升级至 0.0.9
 
 
@@ -14,12 +15,13 @@
 - **buession-springboot-datasource：** 修复各驱动配置中的驱动类名、连接 URL、用户名和密码能够覆盖全局配置的问题，此种方式是不安全的
 - **buession-springboot-mongodb：** 废弃 spring.mongodb.read-preference 通过 spring-data-mongodb 原生方式设置
 - **buession-springboot-mybatis：** 严格约束了 spring.mybatis.defaultEnumTypeHandler 的类型
+- **buession-springboot-pac4j：** spring.pac4j.save-in-session 默认值设置为 true
 
 
 ### 🐞 Bug 修复
 
 - **buession-springboot-datasource：** 修复 spring.datasource.driver-class-name 配置未起作用的 BUG
-- **buession-springboot-mongodb：** 修复 spring.mongodb.type-key 未空时，未删掉实体中 "_class" 字段的 BUG
+- **buession-springboot-mongodb：** 修复 spring.mongodb.type-key 为空时，未删掉实体中 "_class" 字段的 BUG
 
 
 ## [2.0.0](https://github.com/buession/buession-springboot/releases/tag/v2.0.0) (2022-07-08)

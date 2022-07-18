@@ -26,6 +26,7 @@ package com.buession.springboot.mongodb.autoconfigure;
 
 import com.mongodb.ReadPreference;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 
@@ -70,11 +71,13 @@ public class MongoDBProperties {
 	}
 
 	@Deprecated
+	@DeprecatedConfigurationProperty
 	public Class<ReadPreference> getReadPreference(){
 		return readPreference;
 	}
 
 	@Deprecated
+	@DeprecatedConfigurationProperty
 	public void setReadPreference(Class<ReadPreference> readPreference){
 		this.readPreference = readPreference;
 	}

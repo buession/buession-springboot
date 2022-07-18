@@ -48,16 +48,6 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	public final static String DEFAULT_SUFFIX = ".vm";
 
 	/**
-	 * 模板前缀
-	 */
-	private String prefix = DEFAULT_PREFIX;
-
-	/**
-	 * 模板后缀
-	 */
-	private String suffix = DEFAULT_SUFFIX;
-
-	/**
 	 * 日期时间工具属性
 	 */
 	private String dateToolAttribute;
@@ -83,105 +73,190 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	private String toolboxConfigLocation;
 
 	/**
+	 * 是否预检文件权限
+	 */
+	private boolean preferFileSystemAccess = true;
+
+	/**
 	 * 宏配置
 	 */
 	@NestedConfigurationProperty
 	private VelocityMacro velocityMacro = new VelocityMacro();
 
-	private boolean preferFileSystemAccess = true;
-
+	/**
+	 * 构造函数
+	 */
 	public VelocityProperties(){
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
 
-	@Override
-	public String getPrefix(){
-		return prefix;
-	}
-
-	@Override
-	public void setPrefix(String prefix){
-		this.prefix = prefix;
-	}
-
-	@Override
-	public String getSuffix(){
-		return suffix;
-	}
-
-	@Override
-	public void setSuffix(String suffix){
-		this.suffix = suffix;
-	}
-
+	/**
+	 * 返回日期时间工具属性
+	 *
+	 * @return 日期时间工具属性
+	 */
 	public String getDateToolAttribute(){
 		return dateToolAttribute;
 	}
 
+	/**
+	 * 设置日期时间工具属性
+	 *
+	 * @param dateToolAttribute
+	 * 		日期时间工具属性
+	 */
 	public void setDateToolAttribute(String dateToolAttribute){
 		this.dateToolAttribute = dateToolAttribute;
 	}
 
+	/**
+	 * 返回数字工具属性
+	 *
+	 * @return 数字工具属性
+	 */
 	public String getNumberToolAttribute(){
 		return numberToolAttribute;
 	}
 
+	/**
+	 * 设置数字工具属性
+	 *
+	 * @param numberToolAttribute
+	 * 		数字工具属性
+	 */
 	public void setNumberToolAttribute(String numberToolAttribute){
 		this.numberToolAttribute = numberToolAttribute;
 	}
 
+	/**
+	 * 返回 Velocity 属性
+	 *
+	 * @return Velocity 属性
+	 */
 	public Map<String, String> getProperties(){
 		return properties;
 	}
 
+	/**
+	 * 设置 Velocity 属性
+	 *
+	 * @param properties
+	 * 		Velocity 属性
+	 */
 	public void setProperties(Map<String, String> properties){
 		this.properties = properties;
 	}
 
+	/**
+	 * 返回模板目录路径
+	 *
+	 * @return 模板目录路径
+	 */
 	public String getResourceLoaderPath(){
 		return resourceLoaderPath;
 	}
 
+	/**
+	 * 设置模板目录路径
+	 *
+	 * @param resourceLoaderPath
+	 * 		模板目录路径
+	 */
 	public void setResourceLoaderPath(String resourceLoaderPath){
 		this.resourceLoaderPath = resourceLoaderPath;
 	}
 
+	/**
+	 * 返回 toolbox 配置文件路径
+	 *
+	 * @return toolbox 配置文件路径
+	 */
 	public String getToolboxConfigLocation(){
 		return toolboxConfigLocation;
 	}
 
+	/**
+	 * 设置 toolbox 配置文件路径
+	 *
+	 * @param toolboxConfigLocation
+	 * 		toolbox 配置文件路径
+	 */
 	public void setToolboxConfigLocation(String toolboxConfigLocation){
 		this.toolboxConfigLocation = toolboxConfigLocation;
 	}
 
-	public VelocityMacro getVelocityMacro(){
-		return velocityMacro;
-	}
-
-	public void setVelocityMacro(VelocityMacro velocityMacro){
-		this.velocityMacro = velocityMacro;
-	}
-
+	/**
+	 * 返回是否预检文件权限
+	 *
+	 * @return 是否预检文件权限
+	 */
 	public boolean isPreferFileSystemAccess(){
 		return getPreferFileSystemAccess();
 	}
 
+	/**
+	 * 返回是否预检文件权限
+	 *
+	 * @return 是否预检文件权限
+	 */
 	public boolean getPreferFileSystemAccess(){
 		return preferFileSystemAccess;
 	}
 
+	/**
+	 * 设置是否预检文件权限
+	 *
+	 * @param preferFileSystemAccess
+	 * 		是否预检文件权限
+	 */
 	public void setPreferFileSystemAccess(boolean preferFileSystemAccess){
 		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
+	/**
+	 * 返回宏配置
+	 *
+	 * @return 宏配置
+	 */
+	public VelocityMacro getVelocityMacro(){
+		return velocityMacro;
+	}
+
+	/**
+	 * 设置宏配置
+	 *
+	 * @param velocityMacro
+	 * 		宏配置
+	 */
+	public void setVelocityMacro(VelocityMacro velocityMacro){
+		this.velocityMacro = velocityMacro;
+	}
+
+	/**
+	 * 宏配置
+	 */
 	public static class VelocityMacro {
 
+		/**
+		 * 宏文件路径
+		 */
 		private String library;
 
+		/**
+		 * 返回宏文件路径
+		 *
+		 * @return 宏文件路径
+		 */
 		public String getLibrary(){
 			return library;
 		}
 
+		/**
+		 * 设置宏文件路径
+		 *
+		 * @param library
+		 * 		宏文件路径
+		 */
 		public void setLibrary(String library){
 			this.library = library;
 		}
