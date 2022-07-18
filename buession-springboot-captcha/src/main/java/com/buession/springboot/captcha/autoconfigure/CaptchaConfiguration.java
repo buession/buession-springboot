@@ -42,6 +42,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 行为验证码客户端自动配置类
+ *
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)

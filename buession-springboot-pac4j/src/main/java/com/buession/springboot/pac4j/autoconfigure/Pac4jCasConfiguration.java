@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.Cas;
 import org.pac4j.cas.client.CasClient;
@@ -39,7 +40,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -80,7 +80,7 @@ public class Pac4jCasConfiguration {
 
 		Cas config = properties.getClient().getCas();
 
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
 		propertyMapper.from(config.getProtocol()).to(casConfiguration::setProtocol);
 		propertyMapper.from(config.getPrefixUrl()).to(casConfiguration::setPrefixUrl);
@@ -136,7 +136,7 @@ public class Pac4jCasConfiguration {
 			final CasRestFormClient casRestFormClient = new CasRestFormClient();
 
 			casRestFormClient.setConfiguration(casConfiguration);
-
+			
 			if(Validate.hasText(config.getRestForm().getUsernameParameter())){
 				casRestFormClient.setUsernameParameter(config.getRestForm().getUsernameParameter());
 			}

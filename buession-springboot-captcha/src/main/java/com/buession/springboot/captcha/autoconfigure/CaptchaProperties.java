@@ -29,6 +29,7 @@ import com.buession.security.captcha.geetest.api.v3.GeetestV3Parameter;
 import com.buession.security.captcha.geetest.api.v4.GeetestV4Parameter;
 import com.buession.security.captcha.tencent.TencentParameter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -45,6 +46,7 @@ public class CaptchaProperties {
 	/**
 	 * 是否启用验证码
 	 */
+	@Deprecated
 	private boolean enabled;
 
 	/**
@@ -72,6 +74,8 @@ public class CaptchaProperties {
 	 *
 	 * @return 是否启用验证码
 	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty
 	public boolean isEnabled(){
 		return enabled;
 	}
@@ -82,6 +86,8 @@ public class CaptchaProperties {
 	 * @param enabled
 	 * 		是否启用验证码
 	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 	}

@@ -48,6 +48,7 @@ public class DataSourceProperties {
 	 * Fully qualified name of the connection pool implementation to use. By default, it
 	 * is auto-detected from the classpath.
 	 */
+	@Deprecated
 	private Class<? extends DataSource> type;
 
 	/**
@@ -108,10 +109,12 @@ public class DataSourceProperties {
 	@NestedConfigurationProperty
 	private GenericPoolConfiguration generic = new GenericPoolConfiguration();
 
+	@Deprecated
 	public Class<? extends DataSource> getType(){
 		return type;
 	}
 
+	@Deprecated
 	public void setType(Class<? extends DataSource> type){
 		this.type = type;
 	}

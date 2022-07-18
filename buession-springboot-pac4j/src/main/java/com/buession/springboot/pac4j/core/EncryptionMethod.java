@@ -22,94 +22,43 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.pac4j.config;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+package com.buession.springboot.pac4j.core;
 
 /**
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.0.1
  */
-public abstract class BaseConfig {
+public enum EncryptionMethod {
+	A128CBC_HS256(com.nimbusds.jose.EncryptionMethod.A128CBC_HS256.getName(),
+			com.nimbusds.jose.EncryptionMethod.A128CBC_HS256),
 
-	protected final static String PROPERTIES_PREFIX = "spring.pac4j.client";
+	A192CBC_HS384(com.nimbusds.jose.EncryptionMethod.A192CBC_HS384.getName(),
+			com.nimbusds.jose.EncryptionMethod.A192CBC_HS384),
 
-	/**
-	 * 客户自定义属性
-	 */
-	private Map<String, Object> customProperties = new LinkedHashMap<>();
+	A256CBC_HS512(com.nimbusds.jose.EncryptionMethod.A256CBC_HS512.getName(),
+			com.nimbusds.jose.EncryptionMethod.A256CBC_HS512),
 
-	/**
-	 * 返回客户自定义属性
-	 *
-	 * @return 客户自定义属性
-	 */
-	public Map<String, Object> getCustomProperties(){
-		return customProperties;
+	A128GCM(com.nimbusds.jose.EncryptionMethod.A128GCM.getName(), com.nimbusds.jose.EncryptionMethod.A128GCM),
+
+	A192GCM(com.nimbusds.jose.EncryptionMethod.A192GCM.getName(), com.nimbusds.jose.EncryptionMethod.A192GCM),
+
+	A256GCM(com.nimbusds.jose.EncryptionMethod.A256GCM.getName(), com.nimbusds.jose.EncryptionMethod.A256GCM);
+
+	private final String name;
+
+	private final com.nimbusds.jose.EncryptionMethod source;
+
+	EncryptionMethod(final String name, final com.nimbusds.jose.EncryptionMethod source){
+		this.name = name;
+		this.source = source;
 	}
 
-	/**
-	 * 设置客户自定义属性
-	 *
-	 * @param customProperties
-	 * 		客户自定义属性
-	 */
-	public void setCustomProperties(Map<String, Object> customProperties){
-		this.customProperties = customProperties;
+	public String getName(){
+		return name;
 	}
 
-	public abstract static class BaseClientConfig extends BaseConfig {
-
-		/**
-		 * Client 名称
-		 */
-		private String name;
-
-		/**
-		 * 默认 Client 名称
-		 */
-		private String defaultName;
-
-		/**
-		 * 构造函数
-		 *
-		 * @param name
-		 * 		Client 名称
-		 */
-		public BaseClientConfig(String name){
-			this.name = name;
-			this.defaultName = name;
-		}
-
-		/**
-		 * 返回 Client 名称
-		 *
-		 * @return Client 名称
-		 */
-		public String getName(){
-			return name;
-		}
-
-		/**
-		 * 设置 Client 名称
-		 *
-		 * @param name
-		 * 		Client 名称
-		 */
-		public void setName(String name){
-			this.name = name;
-		}
-
-		/**
-		 * 返回默认 Client 名称
-		 *
-		 * @return 默认 Client 名称
-		 */
-		public String getDefaultName(){
-			return defaultName;
-		}
-
+	public com.nimbusds.jose.EncryptionMethod getSource(){
+		return source;
 	}
 
 }

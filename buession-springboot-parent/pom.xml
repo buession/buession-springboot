@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.0.0</version>
+		<version>2.0.1</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -102,13 +102,6 @@
 				<filtering>false</filtering>
 				<includes>
 					<include>**/*.*</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>${project.basedir}</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>changelog.txt</include>
 				</includes>
 			</resource>
 		</resources>

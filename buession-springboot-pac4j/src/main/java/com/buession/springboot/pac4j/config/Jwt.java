@@ -24,6 +24,9 @@
  */
 package com.buession.springboot.pac4j.config;
 
+import com.buession.springboot.pac4j.core.EncryptionMethod;
+import com.buession.springboot.pac4j.core.JWEAlgorithm;
+import com.buession.springboot.pac4j.core.JWSAlgorithm;
 import org.pac4j.core.util.generator.ValueGenerator;
 
 /**
@@ -39,17 +42,17 @@ public class Jwt extends BaseConfig {
 	/**
 	 * Secret 签名算法
 	 */
-	private String secretSignatureAlgorithm = "HS256";
+	private JWSAlgorithm secretSignatureAlgorithm = JWSAlgorithm.HS256;
 
 	/**
 	 * Secret 加密算法
 	 */
-	private String secretEncryptionAlgorithm = "DIR";
+	private JWEAlgorithm secretEncryptionAlgorithm = JWEAlgorithm.DIR;
 
 	/**
 	 * 加密方法
 	 */
-	private String encryptionMethod = "A128CBC_HS256";
+	private EncryptionMethod encryptionMethod = EncryptionMethod.A128CBC_HS256;
 
 	/**
 	 * 加密 Key
@@ -86,90 +89,210 @@ public class Jwt extends BaseConfig {
 	 */
 	private Parameter parameter = new Parameter();
 
+	/**
+	 * 返回 Secret 签名算法
+	 *
+	 * @return Secret 签名算法
+	 */
+	public JWSAlgorithm getSecretSignatureAlgorithm(){
+		return secretSignatureAlgorithm;
+	}
+
+	/**
+	 * 设置 Secret 签名算法
+	 *
+	 * @param secretSignatureAlgorithm
+	 * 		Secret 签名算法
+	 */
+	public void setSecretSignatureAlgorithm(JWSAlgorithm secretSignatureAlgorithm){
+		this.secretSignatureAlgorithm = secretSignatureAlgorithm;
+	}
+
+	/**
+	 * 返回 Secret 加密算法
+	 *
+	 * @return Secret 加密算法
+	 */
+	public JWEAlgorithm getSecretEncryptionAlgorithm(){
+		return secretEncryptionAlgorithm;
+	}
+
+	/**
+	 * 设置 Secret 加密算法
+	 *
+	 * @param secretEncryptionAlgorithm
+	 * 		Secret 加密算法
+	 */
+	public void setSecretEncryptionAlgorithm(JWEAlgorithm secretEncryptionAlgorithm){
+		this.secretEncryptionAlgorithm = secretEncryptionAlgorithm;
+	}
+
+	/**
+	 * 返回加密方法
+	 *
+	 * @return 加密方法
+	 */
+	public EncryptionMethod getEncryptionMethod(){
+		return encryptionMethod;
+	}
+
+	/**
+	 * 设置加密方法
+	 *
+	 * @param encryptionMethod
+	 * 		加密方法
+	 */
+	public void setEncryptionMethod(EncryptionMethod encryptionMethod){
+		this.encryptionMethod = encryptionMethod;
+	}
+
+	/**
+	 * 返回加密 Key
+	 *
+	 * @return 加密 Key
+	 */
 	public String getEncryptionKey(){
 		return encryptionKey;
 	}
 
+	/**
+	 * 设置加密 Key
+	 *
+	 * @param encryptionKey
+	 * 		加密 Key
+	 */
 	public void setEncryptionKey(String encryptionKey){
 		this.encryptionKey = encryptionKey;
 	}
 
-	public String getSecretSignatureAlgorithm(){
-		return secretSignatureAlgorithm;
-	}
-
-	public void setSecretSignatureAlgorithm(String secretSignatureAlgorithm){
-		this.secretSignatureAlgorithm = secretSignatureAlgorithm;
-	}
-
-	public String getSecretEncryptionAlgorithm(){
-		return secretEncryptionAlgorithm;
-	}
-
-	public void setSecretEncryptionAlgorithm(String secretEncryptionAlgorithm){
-		this.secretEncryptionAlgorithm = secretEncryptionAlgorithm;
-	}
-
-	public String getEncryptionMethod(){
-		return encryptionMethod;
-	}
-
-	public void setEncryptionMethod(String encryptionMethod){
-		this.encryptionMethod = encryptionMethod;
-	}
-
+	/**
+	 * 返回标识符生成器
+	 *
+	 * @return 标识符生成器
+	 */
 	public Class<ValueGenerator> getIdentifierGenerator(){
 		return identifierGenerator;
 	}
 
+	/**
+	 * 设置标识符生成器
+	 *
+	 * @param identifierGenerator
+	 * 		标识符生成器
+	 */
 	public void setIdentifierGenerator(Class<ValueGenerator> identifierGenerator){
 		this.identifierGenerator = identifierGenerator;
 	}
 
+	/**
+	 * 返回是否支持 GET 请求
+	 *
+	 * @return 是否支持 GET 请求
+	 */
 	public boolean isSupportGetRequest(){
 		return getSupportGetRequest();
 	}
 
+	/**
+	 * 返回是否支持 GET 请求
+	 *
+	 * @return 是否支持 GET 请求
+	 */
 	public boolean getSupportGetRequest(){
 		return supportGetRequest;
 	}
 
+	/**
+	 * 设置是否支持 GET 请求
+	 *
+	 * @param supportGetRequest
+	 * 		是否支持 GET 请求
+	 */
 	public void setSupportGetRequest(boolean supportGetRequest){
 		this.supportGetRequest = supportGetRequest;
 	}
 
+	/**
+	 * 返回是否支持 POST 请求
+	 *
+	 * @return 是否支持 POST 请求
+	 */
 	public boolean isSupportPostRequest(){
 		return getSupportPostRequest();
 	}
 
+	/**
+	 * 返回是否支持 POST 请求
+	 *
+	 * @return 是否支持 POST 请求
+	 */
 	public boolean getSupportPostRequest(){
 		return supportPostRequest;
 	}
 
+	/**
+	 * 设置是否支持 POST 请求
+	 *
+	 * @param supportPostRequest
+	 * 		是否支持 POST 请求
+	 */
 	public void setSupportPostRequest(boolean supportPostRequest){
 		this.supportPostRequest = supportPostRequest;
 	}
 
+	/**
+	 * 返回 Jwt 请求头模式配置
+	 *
+	 * @return Jwt 请求头模式配置
+	 */
 	public Header getHeader(){
 		return header;
 	}
 
+	/**
+	 * 设置 Jwt 请求头模式配置
+	 *
+	 * @param header
+	 * 		Jwt 请求头模式配置
+	 */
 	public void setHeader(Header header){
 		this.header = header;
 	}
 
+	/**
+	 * 返回 Jwt Cookie 模式配置
+	 *
+	 * @return Jwt Cookie 模式配置
+	 */
 	public Cookie getCookie(){
 		return cookie;
 	}
 
+	/**
+	 * 设置 Jwt Cookie 模式配置
+	 *
+	 * @param cookie
+	 * 		Jwt Cookie 模式配置
+	 */
 	public void setCookie(Cookie cookie){
 		this.cookie = cookie;
 	}
 
+	/**
+	 * 返回 Jwt 参数模式配置
+	 *
+	 * @return Jwt 参数模式配置
+	 */
 	public Parameter getParameter(){
 		return parameter;
 	}
 
+	/**
+	 * 设置 Jwt 参数模式配置
+	 *
+	 * @param parameter
+	 * 		Jwt 参数模式配置
+	 */
 	public void setParameter(Parameter parameter){
 		this.parameter = parameter;
 	}
@@ -189,6 +312,9 @@ public class Jwt extends BaseConfig {
 		 */
 		private String prefixHeader = com.buession.lang.Constants.EMPTY_STRING;
 
+		/**
+		 * 构造函数
+		 */
 		public Header(){
 			super("jwt-header");
 		}
@@ -243,6 +369,9 @@ public class Jwt extends BaseConfig {
 		 */
 		private String cookieName;
 
+		/**
+		 * 构造函数
+		 */
 		public Cookie(){
 			super("jwt-cookie");
 		}
@@ -274,28 +403,31 @@ public class Jwt extends BaseConfig {
 	public final static class Parameter extends BaseClientConfig {
 
 		/**
-		 * 参数名
+		 * 参数名称
 		 */
 		private String parameterName = com.buession.lang.Constants.EMPTY_STRING;
 
+		/**
+		 * 构造函数
+		 */
 		public Parameter(){
 			super("jwt-parameter");
 		}
 
 		/**
-		 * 返回参数名
+		 * 返回参数名称
 		 *
-		 * @return 参数名
+		 * @return 参数名称
 		 */
 		public String getParameterName(){
 			return parameterName;
 		}
 
 		/**
-		 * 设置参数名
+		 * 设置参数名称
 		 *
 		 * @param parameterName
-		 * 		参数名
+		 * 		参数名称
 		 */
 		public void setParameterName(String parameterName){
 			this.parameterName = parameterName;

@@ -155,6 +155,9 @@ public class Http extends BaseConfig {
 		 */
 		private String loginUrl;
 
+		/**
+		 * 构造函数
+		 */
 		public Form(){
 			super("form");
 		}
@@ -261,6 +264,9 @@ public class Http extends BaseConfig {
 	 */
 	public final static class IndirectBasicAuth extends BaseBasicAuthConfig {
 
+		/**
+		 * 构造函数
+		 */
 		public IndirectBasicAuth(){
 			super("indirect-basic-auth");
 		}
@@ -272,6 +278,9 @@ public class Http extends BaseConfig {
 	 */
 	public final static class DirectBasicAuth extends BaseBasicAuthConfig {
 
+		/**
+		 * 构造函数
+		 */
 		public DirectBasicAuth(){
 			super("direct-basic-auth");
 		}
