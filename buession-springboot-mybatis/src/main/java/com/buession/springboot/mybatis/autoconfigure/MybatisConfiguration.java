@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.mybatis.autoconfigure;
 
+import com.buession.core.collect.Arrays;
 import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
@@ -70,8 +71,6 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -214,9 +213,9 @@ public class MybatisConfiguration {
 
 		factory.setFailFast(properties.getFailFast());
 
-		List<Resource> resolveMapperLocations = resolveMapperLocations();
+		Resource[] resolveMapperLocations = resolveMapperLocations();
 		if(Validate.isNotEmpty(resolveMapperLocations)){
-			factory.setMapperLocations(resolveMapperLocations.toArray(new Resource[]{}));
+			factory.setMapperLocations(resolveMapperLocations);
 		}
 
 		return factory.getObject();
@@ -230,22 +229,20 @@ public class MybatisConfiguration {
 		}
 	}
 
-	private List<Resource> resolveMapperLocations(){
+	private Resource[] resolveMapperLocations(){
 		if(properties.getMapperLocations() == null){
 			return null;
 		}else{
 			int mapperLocationsSize = properties.getMapperLocations().length;
 
-			if(mapperLocationsSize == 0){
-				return Collections.emptyList();
-			}else{
+			if(mapperLocationsSize > 0){
+				Resource[] resources = new Resource[]{};
 				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-				ArrayList<Resource> resources = new ArrayList<>(mapperLocationsSize);
 
 				for(String mapperLocation : properties.getMapperLocations()){
 					try{
 						Resource[] mappers = resourceResolver.getResources(mapperLocation);
-						resources.addAll(Arrays.asList(mappers));
+						Arrays.addAll(resources, mappers);
 					}catch(IOException e){
 						if(logger.isErrorEnabled()){
 							logger.error("Get mapper resource error: {}.", e.getMessage());
@@ -254,6 +251,8 @@ public class MybatisConfiguration {
 				}
 
 				return resources;
+			}else{
+				return null;
 			}
 		}
 	}
