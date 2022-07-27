@@ -1,6 +1,18 @@
  Buession SpringBoot Changelog
 ===========================
 
+## [2.0.2](https://github.com/buession/buession-springboot/releases/tag/v2.0.2) (2022-07-27)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.0.2)
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-datasource：** 修复未创建 master DataSource 的 BUG
+
+
 ## [2.0.1](https://github.com/buession/buession-springboot/releases/tag/v2.0.1) (2022-07-18)
 
 ### 🔨依赖升级
