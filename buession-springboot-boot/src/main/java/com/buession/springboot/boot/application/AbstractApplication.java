@@ -112,7 +112,7 @@ public abstract class AbstractApplication implements Application {
 		startup(getClass(), args);
 
 		if(logger.isInfoEnabled()){
-			logger.info("Startup {} width arguments: {} at {}", getClass().getSimpleName(), args, new Date());
+			logger.info("Startup {} with arguments: {} at {}", getClass().getSimpleName(), args, new Date());
 		}
 	}
 
