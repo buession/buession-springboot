@@ -68,6 +68,8 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 	public DataSource initialize(final Callback<T> callback){
 		DataSource dataSource = new DataSource();
 
+		dataSource.setMaster(createDataSource(properties.getMaster(), callback));
+
 		if(logger.isInfoEnabled()){
 			logger.info("Create master datasource: by driver {}, type {}", properties.getDriverClassName(),
 					this.dataSource.getName());
