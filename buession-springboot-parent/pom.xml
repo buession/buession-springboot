@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.0.2</version>
+		<version>2.0.3</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>2.0.2</version>
+	<version>2.0.3</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -47,6 +47,11 @@
 		<developerConnection>scm:git:https://github.com/eduosi/buession-springboot.git</developerConnection>
 		<url>https://github.com/eduosi/buession-springboot</url>
 	</scm>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/buession/buession-springboot/issues</url>
+	</issueManagement>
 
 	<modules>
 		<module>../buession-springboot-boot</module>

@@ -1,6 +1,32 @@
  Buession SpringBoot Changelog
 ===========================
 
+## [2.0.3](https://github.com/buession/buession-springboot/releases/tag/v2.0.3) (2022-07-xx)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.0.3)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-pac4j：** 注解 @Principal 支持 webflux 环境
+
+
+### 🔔 变化
+
+- **buession-springboot-shiro：** 调整 Pac4j Filter 注入 shiro 中的方式
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-redis：** 修复集群模式下错误设置 username 和 password 的 BUG
+- **buession-springboot-pac4j：** 修复 Pac4j Filter 注册成为了全局 Filter 导致，请求任何 URL 都会执行每个 pac4j Filter 的 BUG
+
+
+---
+
+
 ## [2.0.2](https://github.com/buession/buession-springboot/releases/tag/v2.0.2) (2022-07-27)
 
 ### 🔨依赖升级
@@ -11,6 +37,9 @@
 ### 🐞 Bug 修复
 
 - **buession-springboot-datasource：** 修复未创建 master DataSource 的 BUG
+
+
+---
 
 
 ## [2.0.1](https://github.com/buession/buession-springboot/releases/tag/v2.0.1) (2022-07-18)
@@ -34,6 +63,9 @@
 
 - **buession-springboot-datasource：** 修复 spring.datasource.driver-class-name 配置未起作用的 BUG
 - **buession-springboot-mongodb：** 修复 spring.mongodb.type-key 为空时，未删掉实体中 "_class" 字段的 BUG
+
+
+---
 
 
 ## [2.0.0](https://github.com/buession/buession-springboot/releases/tag/v2.0.0) (2022-07-08)
