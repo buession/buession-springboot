@@ -27,11 +27,24 @@ package com.buession.springboot.cache.redis.autoconfigure;
 import com.buession.redis.client.connection.datasource.DataSource;
 
 /**
+ * Redis 数据源 {@link DataSource} 初始化器
+ *
+ * @param <DS>
+ * 		数据源类型
+ *
  * @author Yong.Teng
  * @since 2.0.0
  */
-interface DataSourceInitializer {
+interface DataSourceInitializer<DS extends DataSource> {
 
-	DataSource initialize(final Callback callback);
+	/**
+	 * Redis 数据源 {@link DataSource} 初始化
+	 *
+	 * @param callback
+	 * 		回调
+	 *
+	 * @return {@link DataSource} 实例
+	 */
+	DS initialize(final Callback<DS> callback);
 
 }

@@ -29,11 +29,14 @@ import com.buession.redis.client.connection.datasource.DataSource;
 /**
  * {@link DataSource} 初始化回调
  *
+ * @param <DS>
+ *        {@link DataSource} 类型
+ *
  * @author Yong.Teng
  * @since 2.0.0
  */
 @FunctionalInterface
-interface Callback {
+interface Callback<DS extends DataSource> {
 
 	/**
 	 * {@link DataSource} 初始化回调
@@ -45,6 +48,6 @@ interface Callback {
 	 *
 	 * @return {@link DataSource} 实例
 	 */
-	DataSource apply(DataSource dataSource, RedisProperties properties);
+	DS apply(DS dataSource, RedisProperties properties);
 
 }

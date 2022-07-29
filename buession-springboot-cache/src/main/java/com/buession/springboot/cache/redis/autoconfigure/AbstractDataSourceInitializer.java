@@ -24,16 +24,29 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.redis.client.connection.datasource.DataSource;
+
 import java.time.Duration;
 
 /**
+ * Redis 数据源 {@link DataSource} 初始化器抽象类
+ *
+ * @param <DS>
+ * 		数据源类型
+ *
  * @author Yong.Teng
  * @since 2.0.0
  */
-public abstract class AbstractDataSourceInitializer implements DataSourceInitializer {
+public abstract class AbstractDataSourceInitializer<DS extends DataSource> implements DataSourceInitializer<DS> {
 
 	protected final RedisProperties properties;
 
+	/**
+	 * 构造函数
+	 *
+	 * @param properties
+	 *        {@link RedisProperties}
+	 */
 	public AbstractDataSourceInitializer(final RedisProperties properties){
 		this.properties = properties;
 	}

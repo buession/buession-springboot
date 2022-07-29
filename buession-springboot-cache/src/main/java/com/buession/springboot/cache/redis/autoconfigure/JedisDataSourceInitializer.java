@@ -24,10 +24,11 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
-import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.client.connection.datasource.jedis.JedisClusterDataSource;
 import com.buession.redis.client.connection.datasource.jedis.JedisDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisRedisDataSource;
 import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSource;
 import com.buession.redis.core.RedisNode;
 import com.buession.redis.core.RedisURI;
@@ -38,20 +39,26 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Jedis DataSource 初始化
+ * Jedis Redis 数据源 {@link JedisDataSource} 初始化器
  *
  * @author Yong.Teng
  * @since 2.0.0
  */
-class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
+class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedisDataSource> {
 
+	/**
+	 * 构造函数
+	 *
+	 * @param properties
+	 *        {@link RedisProperties}
+	 */
 	public JedisDataSourceInitializer(final RedisProperties properties){
 		super(properties);
 	}
 
 	@Override
-	public DataSource initialize(Callback callback){
-		DataSource dataSource;
+	public JedisRedisDataSource initialize(final Callback<JedisRedisDataSource> callback){
+		JedisRedisDataSource dataSource;
 
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
 			dataSource = createJedisClusterDataSource();
@@ -61,10 +68,14 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
 			dataSource = createJedisDataSource();
 		}
 
+		if(Validate.hasText(properties.getClientName())){
+			dataSource.setClientName(properties.getClientName());
+		}
+
 		return callback.apply(dataSource, properties);
 	}
 
-	private DataSource createJedisDataSource(){
+	private JedisRedisDataSource createJedisDataSource(){
 		final JedisDataSource dataSource = new JedisDataSource();
 
 		if(Validate.hasText(properties.getHost())){
@@ -72,7 +83,6 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
 			dataSource.setPort(properties.getPort());
 			dataSource.setPassword(properties.getPassword());
 			dataSource.setDatabase(properties.getDatabase());
-			dataSource.setClientName(properties.getClientName());
 		}else{
 			if(Validate.hasText(properties.getUri())){
 				RedisURI redisURI = RedisURI.create(properties.getUri());
@@ -90,7 +100,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
 		return dataSource;
 	}
 
-	private DataSource createJedisSentinelDataSource(){
+	private JedisRedisDataSource createJedisSentinelDataSource(){
 		RedisProperties.Sentinel sentinel = properties.getSentinel();
 
 		List<RedisNode> sentinelNodes;
@@ -107,12 +117,11 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
 		dataSource.setSentinelSoTimeout(durationToMillis(sentinel.getSoTimeout()));
 		dataSource.setSentinelClientName(sentinel.getClientName());
 		dataSource.setSentinels(sentinelNodes);
-		dataSource.setClientName(properties.getClientName());
 
 		return dataSource;
 	}
 
-	private DataSource createJedisClusterDataSource(){
+	private JedisRedisDataSource createJedisClusterDataSource(){
 		RedisProperties.Cluster cluster = properties.getCluster();
 
 		List<RedisNode> nodes;
@@ -122,22 +131,17 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer {
 			throw new BeanInitializationException(e.getMessage());
 		}
 
-		final JedisClusterDataSource configuration = new JedisClusterDataSource();
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		final JedisClusterDataSource dataSource = new JedisClusterDataSource();
 
-		configuration.setNodes(nodes);
-		configuration.setUsername(configuration.getUsername());
-		configuration.setPassword(configuration.getPassword());
-		configuration.setClientName(properties.getClientName());
+		dataSource.setNodes(nodes);
+		dataSource.setUsername(properties.getUsername());
+		dataSource.setPassword(properties.getPassword());
+		propertyMapper.from(cluster::getMaxRedirects).to(dataSource::setMaxRedirects);
+		propertyMapper.from(cluster::getMaxTotalRetriesDuration).as(JedisDataSourceInitializer::durationToMillis)
+				.to(dataSource::setMaxTotalRetriesDuration);
 
-		if(cluster.getMaxRedirects() != null){
-			configuration.setMaxRedirects(cluster.getMaxRedirects());
-		}
-
-		if(cluster.getMaxTotalRetriesDuration() != null){
-			configuration.setMaxTotalRetriesDuration(durationToMillis(cluster.getMaxTotalRetriesDuration()));
-		}
-
-		return configuration;
+		return dataSource;
 	}
 
 }
