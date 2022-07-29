@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
@@ -99,17 +100,33 @@ public class Pac4jConfiguration {
 	}
 
 	/**
-	 * 初始化 {@link Pac4jWebMvcConfigurerAdapter} Bean
-	 *
-	 * @return {@link Pac4jWebMvcConfigurerAdapter}
-	 *
-	 * @since 1.2.2
+	 * @since 2.0.3
 	 */
-	@Bean
-	@ConditionalOnMissingBean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	public Pac4jWebMvcConfigurerAdapter webMvcConfigurerAdapter(){
-		return new Pac4jWebMvcConfigurerAdapter();
+	static class ServletPac4jConfigurerAdapterConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter(){
+			return new Pac4jWebMvcConfigurerAdapter();
+		}
+
+	}
+
+	/**
+	 * @since 2.0.3
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	static class WebFluxPac4jConfigurerAdapterConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(){
+			return new Pac4jWebFluxConfigurerAdapter();
+		}
+
 	}
 
 }

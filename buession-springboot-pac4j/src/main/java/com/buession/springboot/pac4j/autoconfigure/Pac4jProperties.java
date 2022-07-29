@@ -291,9 +291,42 @@ public class Pac4jProperties {
 		}
 
 		/**
+		 * 过滤器配置基类
+		 *
+		 * @since 2.0.3
+		 */
+		private static abstract class BaseFilter {
+
+			/**
+			 * 过滤器名称
+			 */
+			private String name;
+
+			/**
+			 * 返回过滤器名称
+			 *
+			 * @return 过滤器名称
+			 */
+			public String getName(){
+				return name;
+			}
+
+			/**
+			 * 设置过滤器名称
+			 *
+			 * @param name
+			 * 		过滤器名称
+			 */
+			public void setName(String name){
+				this.name = name;
+			}
+
+		}
+
+		/**
 		 * {@link io.buji.pac4j.filter.SecurityFilter} 配置
 		 */
-		public final static class Security {
+		public final static class Security extends BaseFilter {
 
 			/**
 			 * 认证器名称列表
@@ -348,7 +381,7 @@ public class Pac4jProperties {
 		/**
 		 * {@link io.buji.pac4j.filter.CallbackFilter} 配置
 		 */
-		public final static class Callback {
+		public final static class Callback extends BaseFilter {
 
 			/**
 			 * 默认跳转地址
@@ -379,7 +412,7 @@ public class Pac4jProperties {
 		/**
 		 * {@link io.buji.pac4j.filter.LogoutFilter} 配置
 		 */
-		public final static class Logout {
+		public final static class Logout extends BaseFilter {
 
 			/**
 			 * 登出成功默认跳转地址

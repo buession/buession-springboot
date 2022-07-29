@@ -23,8 +23,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  */
 /**
- * 
- *
  * @author Yong.Teng
  * @since 2.0.3
- */package com.buession.springboot.pac4j.filter;
+ */
+package com.buession.springboot.pac4j.filter;
