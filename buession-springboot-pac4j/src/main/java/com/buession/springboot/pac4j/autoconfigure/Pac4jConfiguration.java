@@ -33,11 +33,15 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ReactiveAdapterRegistry;
 
 import java.util.List;
 
@@ -121,10 +125,17 @@ public class Pac4jConfiguration {
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	static class WebFluxPac4jConfigurerAdapterConfiguration {
 
+		private ConfigurableApplicationContext context;
+
+		public WebFluxPac4jConfigurerAdapterConfiguration(ObjectProvider<ConfigurableApplicationContext> context){
+			this.context = context.getIfAvailable();
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(){
-			return new Pac4jWebFluxConfigurerAdapter();
+		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(
+				@Qualifier("webFluxAdapterRegistry") ReactiveAdapterRegistry reactiveAdapterRegistry){
+			return new Pac4jWebFluxConfigurerAdapter(context.getBeanFactory(), reactiveAdapterRegistry);
 		}
 
 	}

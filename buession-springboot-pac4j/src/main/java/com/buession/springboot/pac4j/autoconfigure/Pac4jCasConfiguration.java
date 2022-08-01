@@ -34,6 +34,11 @@ import org.pac4j.cas.client.direct.DirectCasProxyClient;
 import org.pac4j.cas.client.rest.CasRestBasicAuthClient;
 import org.pac4j.cas.client.rest.CasRestFormClient;
 import org.pac4j.cas.config.CasConfiguration;
+import org.pac4j.cas.credentials.authenticator.CasAuthenticator;
+import org.pac4j.core.authorization.generator.AuthorizationGenerator;
+import org.pac4j.core.client.BaseClient;
+import org.pac4j.core.credentials.TokenCredentials;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,6 +47,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pac4j CAS 自动配置类
@@ -118,7 +126,15 @@ public class Pac4jCasConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
 		public CasClient casClient(){
-			final CasClient casClient = new CasClient(casConfiguration);
+			final CasClient casClient = new CasClient(casConfiguration) {
+
+				@Override
+				protected void clientInit(){
+					super.clientInit();
+					doClientInit(this);
+				}
+
+			};
 
 			if(config.getCallbackUrl() != null){
 				casClient.setCallbackUrl(config.getCallbackUrl());
@@ -136,14 +152,11 @@ public class Pac4jCasConfiguration {
 			final CasRestFormClient casRestFormClient = new CasRestFormClient();
 
 			casRestFormClient.setConfiguration(casConfiguration);
-			
-			if(Validate.hasText(config.getRestForm().getUsernameParameter())){
-				casRestFormClient.setUsernameParameter(config.getRestForm().getUsernameParameter());
-			}
 
-			if(Validate.hasText(config.getRestForm().getPasswordParameter())){
-				casRestFormClient.setPasswordParameter(config.getRestForm().getPasswordParameter());
-			}
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+
+			propertyMapper.from(config.getRestForm()::getUsernameParameter).to(casRestFormClient::setUsernameParameter);
+			propertyMapper.from(config.getRestForm()::getPasswordParameter).to(casRestFormClient::setPasswordParameter);
 
 			afterClientInitialized(casRestFormClient, config.getRestForm());
 
@@ -154,7 +167,15 @@ public class Pac4jCasConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
 		public DirectCasClient directCasClient(){
-			final DirectCasClient directCasClient = new DirectCasClient(casConfiguration);
+			final DirectCasClient directCasClient = new DirectCasClient(casConfiguration) {
+
+				@Override
+				protected void clientInit(){
+					super.clientInit();
+					doClientInit(this);
+				}
+
+			};
 
 			afterClientInitialized(directCasClient, config.getDirect());
 
@@ -166,7 +187,15 @@ public class Pac4jCasConfiguration {
 		@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
 		public DirectCasProxyClient directCasProxyClient(){
 			final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(casConfiguration,
-					config.getPrefixUrl());
+					config.getPrefixUrl()) {
+
+				@Override
+				protected void clientInit(){
+					super.clientInit();
+					doClientInit(this);
+				}
+
+			};
 
 			afterClientInitialized(directCasProxyClient, config.getDirectProxy());
 
@@ -181,17 +210,33 @@ public class Pac4jCasConfiguration {
 
 			casRestBasicAuthClient.setConfiguration(casConfiguration);
 
-			if(Validate.hasText(config.getRestBasicAuth().getHeaderName())){
-				casRestBasicAuthClient.setHeaderName(config.getRestBasicAuth().getHeaderName());
-			}
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			if(Validate.hasText(config.getRestBasicAuth().getPrefixHeader())){
-				casRestBasicAuthClient.setPrefixHeader(config.getRestBasicAuth().getPrefixHeader());
-			}
+			propertyMapper.from(config.getRestBasicAuth()::getHeaderName).to(casRestBasicAuthClient::setHeaderName);
+			propertyMapper.from(config.getRestBasicAuth()::getPrefixHeader).to(casRestBasicAuthClient::setPrefixHeader);
 
 			afterClientInitialized(casRestBasicAuthClient, config.getRestBasicAuth());
 
 			return casRestBasicAuthClient;
+		}
+
+		protected void doClientInit(final BaseClient<TokenCredentials> client){
+			if(config.getProfileDefinition() != null){
+				((CasAuthenticator) client.getAuthenticator())
+						.setProfileDefinition(BeanUtils.instantiateClass(config.getProfileDefinition()));
+			}
+
+			if(Validate.isNotEmpty(config.getAuthorizationGenerator())){
+				final List<AuthorizationGenerator> authorizationGenerators = new ArrayList<>(
+						config.getAuthorizationGenerator().size());
+
+				config.getAuthorizationGenerator().forEach((authorizationGenerator)->{
+					authorizationGenerators.add(BeanUtils.instantiateClass(authorizationGenerator));
+				});
+
+				client.setAuthorizationGenerators(authorizationGenerators);
+			}
+
 		}
 
 	}

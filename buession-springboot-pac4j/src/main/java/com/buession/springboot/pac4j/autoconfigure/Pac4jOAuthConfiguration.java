@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.EnumUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.OAuth;
@@ -35,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -69,8 +69,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "true")
 		public BitbucketClient bitbucketClient(){
 			final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth10Client(bitbucketClient, config.getBitbucket());
+			initOAuth10Client(bitbucketClient, config.getBitbucket(), propertyMapper);
 
 			return bitbucketClient;
 		}
@@ -84,7 +85,9 @@ public class Pac4jOAuthConfiguration {
 			twitterClient.setAlwaysConfirmAuthorization(config.getTwitter().isAlwaysConfirmAuthorization());
 			twitterClient.setIncludeEmail(config.getTwitter().isIncludeEmail());
 
-			initOAuth10Client(twitterClient, config.getTwitter());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+
+			initOAuth10Client(twitterClient, config.getTwitter(), propertyMapper);
 
 			return twitterClient;
 		}
@@ -94,8 +97,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "true")
 		public YahooClient yahooClient(){
 			final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth10Client(yahooClient, config.getYahoo());
+			initOAuth10Client(yahooClient, config.getYahoo(), propertyMapper);
 
 			return yahooClient;
 		}
@@ -118,7 +122,7 @@ public class Pac4jOAuthConfiguration {
 			genericOAuth20Client.setKey(config.getKey());
 			genericOAuth20Client.setSecret(config.getSecret());
 
-			PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
 			propertyMapper.from(config.getGeneric().getAuthUrl()).to(genericOAuth20Client::setAuthUrl);
 			propertyMapper.from(config.getGeneric().getTokenUrl()).to(genericOAuth20Client::setTokenUrl);
@@ -130,7 +134,7 @@ public class Pac4jOAuthConfiguration {
 			propertyMapper.from(config.getGeneric().getProfileVerb()).to(genericOAuth20Client::setProfileVerb);
 			propertyMapper.from(config.getGeneric().getProfileAttrs()).to(genericOAuth20Client::setProfileAttrs);
 
-			initOAuth20Client(genericOAuth20Client, config.getGeneric());
+			initOAuth20Client(genericOAuth20Client, config.getGeneric(), propertyMapper);
 
 			return genericOAuth20Client;
 		}
@@ -149,7 +153,9 @@ public class Pac4jOAuthConfiguration {
 			casOAuthWrapperClient.setSpringSecurityCompliant(config.getCas().isSpringSecurityCompliant());
 			casOAuthWrapperClient.setImplicitFlow(config.getCas().isImplicitFlow());
 
-			initOAuth20Client(casOAuthWrapperClient, config.getCas());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+
+			initOAuth20Client(casOAuthWrapperClient, config.getCas(), propertyMapper);
 
 			return casOAuthWrapperClient;
 		}
@@ -159,8 +165,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "true")
 		public DropBoxClient dropboxClient(){
 			final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(dropboxClient, config.getDropBox());
+			initOAuth20Client(dropboxClient, config.getDropBox(), propertyMapper);
 
 			return dropboxClient;
 		}
@@ -174,7 +181,9 @@ public class Pac4jOAuthConfiguration {
 			facebookClient.setFields(config.getFacebook().getFields());
 			facebookClient.setLimit(config.getFacebook().getLimit());
 
-			initOAuth20Client(facebookClient, config.getFacebook());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+
+			initOAuth20Client(facebookClient, config.getFacebook(), propertyMapper);
 
 			return facebookClient;
 		}
@@ -188,7 +197,9 @@ public class Pac4jOAuthConfiguration {
 			figShareClient.setKey(config.getKey());
 			figShareClient.setSecret(config.getSecret());
 
-			initOAuth20Client(figShareClient, config.getFigShare());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+
+			initOAuth20Client(figShareClient, config.getFigShare(), propertyMapper);
 
 			return figShareClient;
 		}
@@ -198,8 +209,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "true")
 		public FoursquareClient foursquareClient(){
 			final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(foursquareClient, config.getFoursquare());
+			initOAuth20Client(foursquareClient, config.getFoursquare(), propertyMapper);
 
 			return foursquareClient;
 		}
@@ -209,8 +221,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "true")
 		public GitHubClient githubClient(){
 			final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(gitHubClient, config.getGitHub());
+			initOAuth20Client(gitHubClient, config.getGitHub(), propertyMapper);
 
 			return gitHubClient;
 		}
@@ -220,17 +233,12 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
 		public Google2Client google2Client(){
 			final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(google2Client, config.getGoogle2());
-
-			if(Validate.hasText(config.getGoogle2().getScope())){
-				Google2Client.Google2Scope scope = EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class,
-						config.getGoogle2().getScope());
-
-				if(scope != null){
-					google2Client.setScope(scope);
-				}
-			}
+			initOAuth20Client(google2Client, config.getGoogle2(), propertyMapper);
+			propertyMapper.from(config.getGoogle2()::getScope)
+					.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class,
+							v)).to(google2Client::setScope);
 
 			return google2Client;
 		}
@@ -240,8 +248,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
 		public HiOrgServerClient hiOrgServerClient(){
 			final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(hiOrgServerClient, config.getHiOrgServer());
+			initOAuth20Client(hiOrgServerClient, config.getHiOrgServer(), propertyMapper);
 
 			return hiOrgServerClient;
 		}
@@ -251,8 +260,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "true")
 		public LinkedIn2Client linkedin2Client(){
 			final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(linkedIn2Client, config.getLinkedIn2());
+			initOAuth20Client(linkedIn2Client, config.getLinkedIn2(), propertyMapper);
 
 			return linkedIn2Client;
 		}
@@ -262,8 +272,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "true")
 		public OkClient okClient(){
 			final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(okClient, config.getOk());
+			initOAuth20Client(okClient, config.getOk(), propertyMapper);
 
 			return okClient;
 		}
@@ -273,8 +284,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "true")
 		public PayPalClient paypalClient(){
 			final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(payPalClient, config.getPayPal());
+			initOAuth20Client(payPalClient, config.getPayPal(), propertyMapper);
 
 			return payPalClient;
 		}
@@ -284,8 +296,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "true")
 		public QQClient qqClient(){
 			final QQClient qqClient = new QQClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(qqClient, config.getQq());
+			initOAuth20Client(qqClient, config.getQq(), propertyMapper);
 
 			if(Validate.isNotEmpty(config.getQq().getScopes())){
 				qqClient.setScopes(config.getQq().getScopes());
@@ -299,12 +312,11 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "true")
 		public StravaClient stravaClient(){
 			final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(stravaClient, config.getStrava());
+			initOAuth20Client(stravaClient, config.getStrava(), propertyMapper);
 
-			if(Validate.hasText(config.getStrava().getApprovalPrompt())){
-				stravaClient.setApprovalPrompt(config.getStrava().getApprovalPrompt());
-			}
+			propertyMapper.from(config.getStrava()::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
 
 			return stravaClient;
 		}
@@ -314,8 +326,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "true")
 		public VkClient vkClient(){
 			final VkClient vkClient = new VkClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(vkClient, config.getVk());
+			initOAuth20Client(vkClient, config.getVk(), propertyMapper);
 
 			return vkClient;
 		}
@@ -325,17 +338,12 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "true")
 		public WeiboClient weiboClient(){
 			final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(weiboClient, config.getWeibo());
+			initOAuth20Client(weiboClient, config.getWeibo(), propertyMapper);
 
-			if(Validate.hasText(config.getWeibo().getScope())){
-				WeiboClient.WeiboScope scope = EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class,
-						config.getWeibo().getScope());
-
-				if(scope != null){
-					weiboClient.setScope(scope);
-				}
-			}
+			propertyMapper.from(config.getWeibo()::getScope)
+					.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
 
 			return weiboClient;
 		}
@@ -345,8 +353,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "true")
 		public WechatClient wechatClient(){
 			final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(wechatClient, config.getWechat());
+			initOAuth20Client(wechatClient, config.getWechat(), propertyMapper);
 
 			if(Validate.isNotEmpty(config.getWechat().getScopes())){
 				wechatClient.setScopes(config.getWechat().getScopes());
@@ -360,8 +369,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled", havingValue = "true")
 		public WindowsLiveClient windowsLiveClient(){
 			final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(windowsLiveClient, config.getWindowsLive());
+			initOAuth20Client(windowsLiveClient, config.getWindowsLive(), propertyMapper);
 
 			return windowsLiveClient;
 		}
@@ -371,8 +381,9 @@ public class Pac4jOAuthConfiguration {
 		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "word-press.enabled", havingValue = "true")
 		public WordPressClient wordPressClient(){
 			final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			initOAuth20Client(wordPressClient, config.getWordPress());
+			initOAuth20Client(wordPressClient, config.getWordPress(), propertyMapper);
 
 			return wordPressClient;
 		}
@@ -381,48 +392,33 @@ public class Pac4jOAuthConfiguration {
 		// *************** end oauth 2.0 *************** //
 		// ********************************************* //
 
-		protected void initOAuth10Client(final OAuth10Client client, final OAuth.BaseOAuth10Config config){
+		protected void initOAuth10Client(final OAuth10Client client, final OAuth.BaseOAuth10Config config,
+										 final PropertyMapper propertyMapper){
 			final OAuth10Configuration configuration = client.getConfiguration();
 
-			if(Validate.hasText(this.config.getCallbackUrl())){
-				client.setCallbackUrl(this.config.getCallbackUrl());
-			}
+			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
 
-			if(Validate.hasText(config.getResponseType())){
-				configuration.setResponseType(config.getResponseType());
-			}
-
-			if(Validate.hasText(config.getScope())){
-				configuration.setScope(config.getScope());
-			}
+			propertyMapper.from(config::getResponseType).to(configuration::setResponseType);
+			propertyMapper.from(config::getScope).to(configuration::setScope);
 
 			configuration.setTokenAsHeader(config.isTokenAsHeader());
 
 			afterClientInitialized(client, config);
 		}
 
-		protected void initOAuth20Client(final OAuth20Client client, final OAuth.BaseOAuth20Config config){
+		protected void initOAuth20Client(final OAuth20Client client, final OAuth.BaseOAuth20Config config,
+										 final PropertyMapper propertyMapper){
 			final OAuth20Configuration configuration = client.getConfiguration();
 
-			if(Validate.hasText(this.config.getCallbackUrl())){
-				client.setCallbackUrl(this.config.getCallbackUrl());
-			}
+			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
 
-			if(Validate.hasText(config.getResponseType())){
-				configuration.setResponseType(config.getResponseType());
-			}
-
-			if(Validate.hasText(config.getScope())){
-				configuration.setScope(config.getScope());
-			}
+			propertyMapper.from(config::getResponseType).to(configuration::setResponseType);
+			propertyMapper.from(config::getScope).to(configuration::setScope);
+			propertyMapper.from(config::getCustomParameters).to(configuration::setCustomParams);
 
 			configuration.setWithState(config.isWithState());
 			configuration.setTokenAsHeader(config.isTokenAsHeader());
 			configuration.setTokenAsHeader(config.isTokenAsHeader());
-
-			if(config.getCustomParameters() != null){
-				configuration.setCustomParams(config.getCustomParameters());
-			}
 
 			afterClientInitialized(client, config);
 		}

@@ -11,6 +11,7 @@
 ### ⭐ 新特性
 
 - **buession-springboot-pac4j：** 注解 @Principal 支持 webflux 环境
+- **buession-springboot-pac4j：** 增加配置属性 spring.pac4j.client.cas.profile-definition 可覆盖 CasAuthenticator 中默认的 ProfileDefinition 用于转换 CAS Server 返回的字段
 
 
 ### 🔔 变化
