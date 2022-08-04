@@ -57,36 +57,16 @@
 			<artifactId>buession-springboot-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.buession.springboot</groupId>
-			<artifactId>buession-springboot-cache</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>com.buession</groupId>
 			<artifactId>buession-session</artifactId>
 			<version>${buession.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>com.buession</groupId>
+			<artifactId>buession-redis</artifactId>
+			<version>${buession.version}</version>
 		</dependency>
 	</dependencies>
 
