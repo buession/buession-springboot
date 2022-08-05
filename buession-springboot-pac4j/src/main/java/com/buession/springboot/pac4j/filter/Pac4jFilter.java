@@ -36,7 +36,7 @@ import java.util.Map;
  * Pac4j Filter
  *
  * @author Yong.Teng
- * @since 2.0.3
+ * @since 2.1.0
  */
 public class Pac4jFilter {
 

@@ -104,7 +104,7 @@ public class Pac4jConfiguration {
 	}
 
 	/**
-	 * @since 2.0.3
+	 * @since 2.1.0
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
@@ -119,13 +119,13 @@ public class Pac4jConfiguration {
 	}
 
 	/**
-	 * @since 2.0.3
+	 * @since 2.1.0
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	static class WebFluxPac4jConfigurerAdapterConfiguration {
 
-		private ConfigurableApplicationContext context;
+		private final ConfigurableApplicationContext context;
 
 		public WebFluxPac4jConfigurerAdapterConfiguration(ObjectProvider<ConfigurableApplicationContext> context){
 			this.context = context.getIfAvailable();

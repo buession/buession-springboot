@@ -27,7 +27,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import com.buession.springboot.pac4j.config.Http;
-import org.pac4j.core.client.DirectClient;
 import org.pac4j.core.client.IndirectClient;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.http.client.direct.DirectBasicAuthClient;
@@ -106,7 +105,7 @@ public class Pac4jHttpConfiguration {
 
 			propertyMapper.from(config.getDirectBasicAuth()::getRealmName).to(directBasicAuthClient::setRealmName);
 
-			initHttpDirectClient(directBasicAuthClient, config.getDirectBasicAuth());
+			afterClientInitialized(directBasicAuthClient, config.getDirectBasicAuth());
 
 			return directBasicAuthClient;
 		}
@@ -115,11 +114,6 @@ public class Pac4jHttpConfiguration {
 											  final BaseConfig.BaseClientConfig config,
 											  final PropertyMapper propertyMapper){
 			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
-			afterClientInitialized(client, config);
-		}
-
-		protected void initHttpDirectClient(final DirectClient<? extends Credentials> client,
-											final BaseConfig.BaseClientConfig config){
 			afterClientInitialized(client, config);
 		}
 

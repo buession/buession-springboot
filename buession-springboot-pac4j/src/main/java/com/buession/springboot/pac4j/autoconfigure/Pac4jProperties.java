@@ -293,7 +293,7 @@ public class Pac4jProperties {
 		/**
 		 * 过滤器配置基类
 		 *
-		 * @since 2.0.3
+		 * @since 2.1.0
 		 */
 		private static abstract class BaseFilter {
 

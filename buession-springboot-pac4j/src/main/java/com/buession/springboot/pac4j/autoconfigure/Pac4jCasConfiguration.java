@@ -230,9 +230,8 @@ public class Pac4jCasConfiguration {
 				final List<AuthorizationGenerator> authorizationGenerators = new ArrayList<>(
 						config.getAuthorizationGenerator().size());
 
-				config.getAuthorizationGenerator().forEach((authorizationGenerator)->{
-					authorizationGenerators.add(BeanUtils.instantiateClass(authorizationGenerator));
-				});
+				config.getAuthorizationGenerator().forEach((authorizationGenerator)->authorizationGenerators.add(
+						BeanUtils.instantiateClass(authorizationGenerator)));
 
 				client.setAuthorizationGenerators(authorizationGenerators);
 			}
