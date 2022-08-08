@@ -60,17 +60,17 @@ public class ApacheHttpClientTest {
 
 	@Test
 	public void get() throws Exception{
-		for(int i = 0; i < 500; i++){
+		for(int i = 0; i < 5; i++){
 			logger.info("{}", i);
 			Response response = null;
 			try{
 				List<Header> headers = new ArrayList<>(2);
 
 				headers.add(new Header("Referer", "https://www.163.com"));
-				headers.add(new Header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) " + 
+				headers.add(new Header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) " +
 						"Gecko/20100101 Firefox/88.0"));
-				
-				response = apacheHttpClient.get("http://qxcms.cbg.cn/bn/upload/Image/mrtp/2021/08/09" + 
+
+				response = apacheHttpClient.get("http://qxcms.cbg.cn/bn/upload/Image/mrtp/2021/08/09" +
 						"/1_cc439f2662684c54a3a11734ced5c378.jpg");
 			}catch(ConnectTimeoutException e){
 				logger.error("网络状态连接失败, 链接超时：{}", e.getMessage());

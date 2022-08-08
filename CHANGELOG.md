@@ -1,7 +1,7 @@
  Buession SpringBoot Changelog
 ===========================
 
-## [2.1.0](https://github.com/buession/buession-springboot/releases/tag/v2.1.0) (2022-07-xx)
+## [2.1.0](https://github.com/buession/buession-springboot/releases/tag/v2.1.0) (2022-08-08)
 
 ### 🔨依赖升级
 
