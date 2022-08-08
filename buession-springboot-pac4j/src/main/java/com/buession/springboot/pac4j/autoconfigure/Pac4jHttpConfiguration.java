@@ -24,10 +24,9 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.validator.Validate;
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import com.buession.springboot.pac4j.config.Http;
-import org.pac4j.core.client.DirectClient;
 import org.pac4j.core.client.IndirectClient;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.http.client.direct.DirectBasicAuthClient;
@@ -69,16 +68,12 @@ public class Pac4jHttpConfiguration {
 		public FormClient formClient(){
 			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 			final FormClient formClient = new FormClient(config.getForm().getLoginUrl(), usernamePasswordAuthenticator);
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			if(Validate.hasText(config.getForm().getUsernameParameter())){
-				formClient.setUsernameParameter(config.getForm().getUsernameParameter());
-			}
+			propertyMapper.from(config.getForm()::getUsernameParameter).to(formClient::setUsernameParameter);
+			propertyMapper.from(config.getForm()::getPasswordParameter).to(formClient::setPasswordParameter);
 
-			if(Validate.hasText(config.getForm().getPasswordParameter())){
-				formClient.setPasswordParameter(config.getForm().getPasswordParameter());
-			}
-
-			initHttpIndirectClient(formClient, config.getForm());
+			initHttpIndirectClient(formClient, config.getForm(), propertyMapper);
 
 			return formClient;
 		}
@@ -90,12 +85,11 @@ public class Pac4jHttpConfiguration {
 			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 			final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
 					usernamePasswordAuthenticator);
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			if(Validate.hasText(config.getIndirectBasicAuth().getRealmName())){
-				indirectBasicAuthClient.setRealmName(config.getIndirectBasicAuth().getRealmName());
-			}
+			propertyMapper.from(config.getIndirectBasicAuth()::getRealmName).to(indirectBasicAuthClient::setRealmName);
 
-			initHttpIndirectClient(indirectBasicAuthClient, config.getIndirectBasicAuth());
+			initHttpIndirectClient(indirectBasicAuthClient, config.getIndirectBasicAuth(), propertyMapper);
 
 			return indirectBasicAuthClient;
 		}
@@ -107,27 +101,19 @@ public class Pac4jHttpConfiguration {
 			final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
 			final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(
 					usernamePasswordAuthenticator);
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
-			if(Validate.hasText(config.getDirectBasicAuth().getRealmName())){
-				directBasicAuthClient.setRealmName(config.getDirectBasicAuth().getRealmName());
-			}
+			propertyMapper.from(config.getDirectBasicAuth()::getRealmName).to(directBasicAuthClient::setRealmName);
 
-			initHttpDirectClient(directBasicAuthClient, config.getDirectBasicAuth());
+			afterClientInitialized(directBasicAuthClient, config.getDirectBasicAuth());
 
 			return directBasicAuthClient;
 		}
 
 		protected void initHttpIndirectClient(final IndirectClient<? extends Credentials> client,
-											  final BaseConfig.BaseClientConfig config){
-			if(Validate.hasText(this.config.getCallbackUrl())){
-				client.setCallbackUrl(this.config.getCallbackUrl());
-			}
-
-			afterClientInitialized(client, config);
-		}
-
-		protected void initHttpDirectClient(final DirectClient<? extends Credentials> client,
-											final BaseConfig.BaseClientConfig config){
+											  final BaseConfig.BaseClientConfig config,
+											  final PropertyMapper propertyMapper){
+			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
 			afterClientInitialized(client, config);
 		}
 

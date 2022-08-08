@@ -22,37 +22,59 @@
  * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.autoconfigure;
+package com.buession.springboot.pac4j.filter;
 
-import com.buession.redis.client.connection.datasource.DataSource;
+import com.buession.core.utils.Assert;
+import com.buession.core.utils.StringUtils;
+import com.buession.core.validator.Validate;
 
-import java.time.Duration;
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Redis 数据源 {@link DataSource} 初始化器抽象类
- *
- * @param <DS>
- * 		数据源类型
+ * Pac4j Filter
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.1.0
  */
-public abstract class AbstractDataSourceInitializer<DS extends DataSource> implements DataSourceInitializer<DS> {
-
-	protected final RedisProperties properties;
+public class Pac4jFilter {
 
 	/**
-	 * 构造函数
-	 *
-	 * @param properties
-	 *        {@link RedisProperties}
+	 * pac4j 过滤器
 	 */
-	public AbstractDataSourceInitializer(final RedisProperties properties){
-		this.properties = properties;
+	private final Map<String, Filter> filters = new HashMap<>(3);
+
+	/**
+	 * 添加 pac4j 过滤器
+	 *
+	 * @param name
+	 * 		过滤器名称，如果为 null 或者空字符串时，使用过滤器类名首字母小写后，作为过滤器名称
+	 * @param filter
+	 * 		过滤器
+	 */
+	public void addFilter(final String name, final Filter filter){
+		Assert.isNull(filter, "Filter cloud not null.");
+
+		final String filterName = Validate.hasText(name) ? name : StringUtils.uncapitalize(
+				filter.getClass().getSimpleName());
+		filters.put(filterName, filter);
 	}
 
-	protected static int durationToMillis(final Duration duration){
-		return (int) duration.toMillis();
+	/**
+	 * 获取所有 pac4j 过滤器
+	 *
+	 * @return pac4j 过滤器
+	 */
+	public Map<String, Filter> getFilters(){
+		return filters;
+	}
+
+	/**
+	 * 清除所有 pac4j 过滤器
+	 */
+	public void clear(){
+		filters.clear();
 	}
 
 }

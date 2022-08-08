@@ -26,6 +26,7 @@ package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
+import com.buession.springboot.pac4j.filter.Pac4jFilter;
 import io.buji.pac4j.filter.CallbackFilter;
 import io.buji.pac4j.filter.LogoutFilter;
 import io.buji.pac4j.filter.SecurityFilter;
@@ -39,6 +40,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import java.util.Set;
 
 /**
  * @author Yong.Teng
@@ -61,20 +64,38 @@ public class Pac4jWebFilterConfiguration {
 		this.config = config.getIfAvailable();
 	}
 
-	@Bean(name = "securityFilter")
+	@Bean(name = "pac4jFilter")
 	@ConditionalOnMissingBean
-	public SecurityFilter securityFilter(){
+	public Pac4jFilter pac4jFilter(){
+		final Pac4jFilter pac4jFilter = new Pac4jFilter();
+
+		final Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
+		pac4jFilter.addFilter(securityConfig.getName(),
+				securityFilter(config, securityConfig, properties.isMultiProfile(), properties.getClients()));
+
+		final Pac4jProperties.Filter.Callback callbackConfig = properties.getFilter().getCallback();
+		pac4jFilter.addFilter(callbackConfig.getName(),
+				callbackFilter(config, callbackConfig, properties.isMultiProfile(), properties.getDefaultClient(),
+						properties.isSaveInSession()));
+
+		final Pac4jProperties.Filter.Logout logoutConfig = properties.getFilter().getLogout();
+		pac4jFilter.addFilter(logoutConfig.getName(), logoutFilter(config, logoutConfig));
+
+		return pac4jFilter;
+	}
+
+	private static SecurityFilter securityFilter(final Config config,
+												 final Pac4jProperties.Filter.Security securityConfig,
+												 final boolean isMultiProfile, final Set<String> clients){
 		final SecurityFilter securityFilter = new SecurityFilter();
 
 		securityFilter.setConfig(config);
 
-		if(properties.getClients() != null){
-			securityFilter.setClients(StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+		if(clients != null){
+			securityFilter.setClients(StringUtils.join(clients, Pac4jConstants.ELEMENT_SEPARATOR));
 		}
 
-		securityFilter.setMultiProfile(properties.isMultiProfile());
-
-		Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
+		securityFilter.setMultiProfile(isMultiProfile);
 
 		if(Validate.isNotEmpty(securityConfig.getAuthorizers())){
 			securityFilter.setAuthorizers(
@@ -89,28 +110,23 @@ public class Pac4jWebFilterConfiguration {
 		return securityFilter;
 	}
 
-	@Bean(name = "callbackFilter")
-	@ConditionalOnMissingBean
-	public CallbackFilter callbackFilter(){
+	private static CallbackFilter callbackFilter(final Config config,
+												 final Pac4jProperties.Filter.Callback callbackConfig,
+												 final boolean isMultiProfile, final String defaultClient,
+												 final boolean saveInSession){
 		final CallbackFilter callbackFilter = new CallbackFilter();
-
-		Pac4jProperties.Filter.Callback callbackConfig = properties.getFilter().getCallback();
 
 		callbackFilter.setConfig(config);
 		callbackFilter.setDefaultUrl(callbackConfig.getDefaultUrl());
-		callbackFilter.setMultiProfile(properties.isMultiProfile());
-		callbackFilter.setDefaultClient(properties.getDefaultClient());
-		callbackFilter.setSaveInSession(properties.isSaveInSession());
+		callbackFilter.setMultiProfile(isMultiProfile);
+		callbackFilter.setDefaultClient(defaultClient);
+		callbackFilter.setSaveInSession(saveInSession);
 
 		return callbackFilter;
 	}
 
-	@Bean(name = "logoutFilter")
-	@ConditionalOnMissingBean
-	public LogoutFilter logoutFilter(){
+	private static LogoutFilter logoutFilter(final Config config, final Pac4jProperties.Filter.Logout logoutConfig){
 		final LogoutFilter logoutFilter = new LogoutFilter();
-
-		Pac4jProperties.Filter.Logout logoutConfig = properties.getFilter().getLogout();
 
 		logoutFilter.setConfig(config);
 		logoutFilter.setDefaultUrl(logoutConfig.getDefaultUrl());

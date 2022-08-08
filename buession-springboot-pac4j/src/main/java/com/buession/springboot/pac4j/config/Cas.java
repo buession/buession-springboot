@@ -25,10 +25,13 @@
 package com.buession.springboot.pac4j.config;
 
 import org.pac4j.cas.config.CasProtocol;
+import org.pac4j.cas.profile.CasProfileDefinition;
+import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.context.HttpConstants;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,6 +93,16 @@ public class Cas extends BaseConfig {
 	 * 退出登录请求参数
 	 */
 	private String postLogoutUrlParameter;
+
+	/**
+	 * Profile 定义，可用于处理 CAS Server 登录返回字段
+	 */
+	private Class<CasProfileDefinition> profileDefinition;
+
+	/**
+	 * 授权生成器
+	 */
+	private List<Class<AuthorizationGenerator>> authorizationGenerator;
 
 	/**
 	 * 客户自定义参数
@@ -302,6 +315,44 @@ public class Cas extends BaseConfig {
 	 */
 	public void setPostLogoutUrlParameter(String postLogoutUrlParameter){
 		this.postLogoutUrlParameter = postLogoutUrlParameter;
+	}
+
+	/**
+	 * 返回 Profile 定义，可用于处理 CAS Server 登录返回字段
+	 *
+	 * @return Profile 定义
+	 */
+	public Class<CasProfileDefinition> getProfileDefinition(){
+		return profileDefinition;
+	}
+
+	/**
+	 * 设置 Profile 定义，可用于处理 CAS Server 登录返回字段
+	 *
+	 * @param profileDefinition
+	 * 		Profile 定义
+	 */
+	public void setProfileDefinition(Class<CasProfileDefinition> profileDefinition){
+		this.profileDefinition = profileDefinition;
+	}
+
+	/**
+	 * 返回授权生成器
+	 *
+	 * @return 授权生成器
+	 */
+	public List<Class<AuthorizationGenerator>> getAuthorizationGenerator(){
+		return authorizationGenerator;
+	}
+
+	/**
+	 * 设置授权生成器
+	 *
+	 * @param authorizationGenerator
+	 * 		授权生成器
+	 */
+	public void setAuthorizationGenerator(List<Class<AuthorizationGenerator>> authorizationGenerator){
+		this.authorizationGenerator = authorizationGenerator;
 	}
 
 	/**

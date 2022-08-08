@@ -60,9 +60,13 @@ public class RedisConfiguration {
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
 	public RedisTemplate redisTemplate(DataSource dataSource){
-		RedisTemplate template = new RedisTemplate(dataSource);
+		final RedisTemplate template = new RedisTemplate(dataSource);
+		final Options.Builder builder = Options.Builder.getInstance()
+				.prefix(properties.getKeyPrefix())
+				.serializer(properties.getSerializer())
+				.enableTransactionSupport(properties.isEnableTransactionSupport());
 
-		template.setOptions(createOptions());
+		template.setOptions(builder.build());
 		template.afterPropertiesSet();
 
 		if(logger.isTraceEnabled()){
@@ -70,14 +74,6 @@ public class RedisConfiguration {
 		}
 
 		return template;
-	}
-
-	protected Options createOptions(){
-		return Options.Builder.getInstance()
-				.prefix(properties.getKeyPrefix())
-				.serializer(properties.getSerializer())
-				.enableTransactionSupport(properties.isEnableTransactionSupport())
-				.build();
 	}
 
 }

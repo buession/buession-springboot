@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>2.0.2</version>
+		<version>2.1.0</version>
 	</parent>
 	<artifactId>buession-springboot-session</artifactId>
 	<url>https://github.com/buession/buession-springboot</url>
@@ -46,15 +46,15 @@
 		<url>https://github.com/buession/buession-springboot</url>
 	</scm>
 
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/buession/buession-springboot/issues</url>
+	</issueManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.buession.springboot</groupId>
 			<artifactId>buession-springboot-boot</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.buession.springboot</groupId>
-			<artifactId>buession-springboot-cache</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -63,25 +63,10 @@
 			<artifactId>buession-session</artifactId>
 			<version>${buession.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>com.buession</groupId>
+			<artifactId>buession-redis</artifactId>
+			<version>${buession.version}</version>
 		</dependency>
 	</dependencies>
 

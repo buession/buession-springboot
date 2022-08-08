@@ -26,9 +26,15 @@ package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.web.reactive.config.WebFluxConfiguration;
 import com.buession.web.reactive.filter.RequestContextFilter;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ReactiveAdapterRegistry;
+
+import java.util.Objects;
 
 /**
  * @author Yong.Teng
@@ -36,6 +42,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveWebFluxConfiguration extends WebFluxConfiguration {
+
+	public ReactiveWebFluxConfiguration(ObjectProvider<ConfigurableApplicationContext> context,
+										@Qualifier("webFluxAdapterRegistry") ReactiveAdapterRegistry registry){
+		super(Objects.requireNonNull(context.getIfAvailable()).getBeanFactory(), registry);
+	}
 
 	@Bean
 	public RequestContextFilter requestContextFilter(){

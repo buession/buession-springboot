@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.springboot.shiro.ShiroFilters;
+import com.buession.springboot.pac4j.filter.Pac4jFilter;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
@@ -56,11 +56,11 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 	protected ShiroProperties properties;
 
-	private ShiroFilters shiroFilters;
+	private Pac4jFilter pac4jFilter;
 
-	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<ShiroFilters> shiroFilters){
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<Pac4jFilter> pac4jFilter){
 		this.properties = properties;
-		this.shiroFilters = shiroFilters.getIfAvailable();
+		this.pac4jFilter = pac4jFilter.getIfAvailable();
 
 		if(this.properties.getLoginUrl() != null){
 			this.loginUrl = this.properties.getLoginUrl();
@@ -85,7 +85,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		filterFactoryBean.setSecurityManager(securityManager);
 		filterFactoryBean.setGlobalFilters(globalFilters());
 		filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition.getFilterChainMap());
-		filterFactoryBean.setFilters(shiroFilters.getFilters());
+		filterFactoryBean.setFilters(pac4jFilter.getFilters());
 
 		return filterFactoryBean;
 	}
@@ -98,7 +98,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		filterRegistrationBean.setName(FILTER_NAME);
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);
-		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
+		filterRegistrationBean.setFilter(shiroFilterFactoryBean().getObject());
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;
