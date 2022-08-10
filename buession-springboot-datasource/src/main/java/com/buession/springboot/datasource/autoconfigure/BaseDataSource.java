@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.jdbc.datasource.config.AbstractPoolConfiguration;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 
@@ -36,6 +37,13 @@ class BaseDataSource {
 	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties,
 																		 final Class<T> type){
 		return properties.initializeDataSourceBuilder().type(type).build();
+	}
+	
+	protected static void clearConfiguration(final AbstractPoolConfiguration configuration){
+		configuration.setUrl(null);
+		configuration.setDriverClassName(null);
+		configuration.setUsername(null);
+		configuration.setPassword(null);
 	}
 
 	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource {
@@ -52,11 +60,7 @@ class BaseDataSource {
 			final com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties,
 					com.zaxxer.hikari.HikariDataSource.class);
 
-			getPoolConfiguration().setUrl(null);
-			getPoolConfiguration().setDriverClassName(null);
-			getPoolConfiguration().setUsername(null);
-			getPoolConfiguration().setPassword(null);
-
+			clearConfiguration(getPoolConfiguration());
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
@@ -78,11 +82,7 @@ class BaseDataSource {
 			final BasicDataSource dataSource = BaseDataSource.createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 
-			getPoolConfiguration().setUrl(null);
-			getPoolConfiguration().setDriverClassName(null);
-			getPoolConfiguration().setUsername(null);
-			getPoolConfiguration().setPassword(null);
-
+			clearConfiguration(getPoolConfiguration());
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
@@ -104,11 +104,7 @@ class BaseDataSource {
 			final com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties,
 					com.alibaba.druid.pool.DruidDataSource.class);
 
-			getPoolConfiguration().setUrl(null);
-			getPoolConfiguration().setDriverClassName(null);
-			getPoolConfiguration().setUsername(null);
-			getPoolConfiguration().setPassword(null);
-
+			clearConfiguration(getPoolConfiguration());
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
@@ -130,11 +126,7 @@ class BaseDataSource {
 			final org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties,
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 
-			getPoolConfiguration().setUrl(null);
-			getPoolConfiguration().setDriverClassName(null);
-			getPoolConfiguration().setUsername(null);
-			getPoolConfiguration().setPassword(null);
-
+			clearConfiguration(getPoolConfiguration());
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
@@ -155,11 +147,7 @@ class BaseDataSource {
 		public javax.sql.DataSource createDataSource(){
 			final javax.sql.DataSource dataSource = BaseDataSource.createDataSource(properties, null);
 
-			getPoolConfiguration().setUrl(null);
-			getPoolConfiguration().setDriverClassName(null);
-			getPoolConfiguration().setUsername(null);
-			getPoolConfiguration().setPassword(null);
-
+			clearConfiguration(getPoolConfiguration());
 			applyPoolConfiguration(dataSource, getPoolConfiguration());
 
 			return dataSource;
