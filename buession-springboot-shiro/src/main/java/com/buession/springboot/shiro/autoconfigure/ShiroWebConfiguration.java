@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import com.buession.security.shiro.Cookie;
 import com.buession.security.shiro.RedisManager;
@@ -48,6 +49,7 @@ import org.apache.shiro.spring.web.ShiroUrlPathHelper;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -82,63 +84,78 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		// Session info
 		ShiroProperties.Session session = properties.getSession();
 
-		this.sessionManagerDeleteInvalidSessions = session.isSessionManagerDeleteInvalidSessions();
-		this.sessionIdCookieEnabled = session.isSessionIdCookieEnabled();
-		this.sessionIdUrlRewritingEnabled = session.isSessionIdUrlRewritingEnabled();
-		this.useNativeSessionManager = session.isUseNativeSessionManager();
+		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
+				session.isSessionManagerDeleteInvalidSessions());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdCookieEnabled",
+				session.isSessionIdCookieEnabled());
+		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdUrlRewritingEnabled",
+				session.isSessionIdUrlRewritingEnabled());
+		SystemPropertyUtils.setProperty("shiro.userNativeSessionManager", session.isUseNativeSessionManager());
+		SystemPropertyUtils.setProperty("shiro.useNativeSessionManager", session.isUseNativeSessionManager());
 
 		// Session Cookie info
 		Cookie cookie = session.getCookie();
-
 		if(Validate.hasText(cookie.getName())){
-			this.sessionIdCookieName = cookie.getName();
+			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.name", cookie.getName());
 		}
 
 		if(cookie.getMaxAge() != null){
-			this.sessionIdCookieMaxAge = cookie.getMaxAge();
+			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.maxAge", cookie.getMaxAge());
 		}
 
 		if(Validate.hasText(cookie.getDomain())){
-			this.sessionIdCookieDomain = cookie.getDomain();
+			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.domain", cookie.getDomain());
 		}
 
 		if(Validate.hasText(cookie.getPath())){
-			this.sessionIdCookiePath = cookie.getPath();
+			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.path", cookie.getPath());
 		}
 
 		if(cookie.getSecure() != null){
-			this.sessionIdCookieSecure = cookie.getSecure();
+			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.secure", cookie.getSecure());
 		}
 
 		if(cookie.getSameSite() != null){
-			this.sessionIdCookieSameSite = sameSiteConverter.convert(cookie.getSameSite());
+			org.apache.shiro.web.servlet.Cookie.SameSiteOptions sameSiteOptions =
+					sameSiteConverter.convert(cookie.getSameSite());
+
+			if(sameSiteOptions != null){
+				SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.sameSite",
+						sameSiteOptions.name());
+			}
 		}
 
 		// RememberMe Cookie info
 		Cookie rememberMeCookie = properties.getRememberMe().getCookie();
 
 		if(Validate.hasText(rememberMeCookie.getName())){
-			this.rememberMeCookieName = rememberMeCookie.getName();
+			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.name", rememberMeCookie.getName());
 		}
 
 		if(rememberMeCookie.getMaxAge() != null){
-			this.rememberMeCookieMaxAge = rememberMeCookie.getMaxAge();
+			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.maxAge", rememberMeCookie.getMaxAge());
 		}
 
 		if(Validate.hasText(rememberMeCookie.getDomain())){
-			this.rememberMeCookieDomain = rememberMeCookie.getDomain();
+			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.domain", rememberMeCookie.getDomain());
 		}
 
 		if(Validate.hasText(rememberMeCookie.getPath())){
-			this.rememberMeCookiePath = rememberMeCookie.getPath();
+			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.path", rememberMeCookie.getPath());
 		}
 
 		if(rememberMeCookie.getSecure() != null){
-			this.rememberMeCookieSecure = rememberMeCookie.getSecure();
+			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.secure", rememberMeCookie.getSecure());
 		}
 
 		if(rememberMeCookie.getSameSite() != null){
-			this.rememberMeSameSite = sameSiteConverter.convert(rememberMeCookie.getSameSite());
+			org.apache.shiro.web.servlet.Cookie.SameSiteOptions sameSiteOptions =
+					sameSiteConverter.convert(rememberMeCookie.getSameSite());
+
+			if(sameSiteOptions != null){
+				SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.sameSite",
+						sameSiteOptions.name());
+			}
 		}
 	}
 
@@ -245,7 +262,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnResource(resources = "classpath:chainDefinition.ini")
-	protected ShiroFilterChainDefinition shiroFilterChainDefinition(SessionManager sessionManager){
+	protected ShiroFilterChainDefinition shiroFilterChainDefinition(ObjectProvider<SessionManager> sessionManager){
 		Ini ini = Ini.fromResourcePath("classpath:chainDefinition.ini");
 
 		if(Validate.isEmpty(ini)){
