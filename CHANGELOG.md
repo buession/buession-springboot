@@ -2,11 +2,21 @@
 ===========================
 
 
-## [2.1.1](https://github.com/buession/buession-parent/releases/tag/v2.1.1) (2022-08-xx)
+## [2.1.1](https://github.com/buession/buession-parent/releases/tag/v2.1.1) (2022-08-18)
 
 ### 🔨依赖升级
 
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.1.1)
+
+
+### 🔔 变化
+
+- **buession-springboot-shiro：** 配置 spring.shiro.session.session-id-url-rewriting-enabled 默认值改为 false
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-shiro：** 修复 spring.shiro.session、spring.shiro.remember-me 配置不生效的 BUG
 
 
 ---
