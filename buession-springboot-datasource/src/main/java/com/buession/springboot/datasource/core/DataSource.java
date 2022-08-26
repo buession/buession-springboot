@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2020 Buession.com Inc.														       |
+ * | Copyright @ 2013-2022 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.core;
@@ -27,34 +27,75 @@ package com.buession.springboot.datasource.core;
 import java.util.List;
 
 /**
+ * 主从数据源
+ *
  * @author Yong.Teng
  */
 public class DataSource {
 
+	/**
+	 * Master 库数据源
+	 */
 	private javax.sql.DataSource master;
 
+	/**
+	 * Slave 库数据源列表
+	 */
 	private List<javax.sql.DataSource> slaves;
 
+	/**
+	 * 构造函数
+	 */
 	public DataSource(){
 	}
 
+	/**
+	 * 构造函数
+	 *
+	 * @param master
+	 * 		Master 库数据源
+	 * @param slaves
+	 * 		Slave 库数据源列表
+	 */
 	public DataSource(javax.sql.DataSource master, List<javax.sql.DataSource> slaves){
 		this.master = master;
 		this.slaves = slaves;
 	}
 
+	/**
+	 * 返回 Master 库数据源
+	 *
+	 * @return Master 库数据源
+	 */
 	public javax.sql.DataSource getMaster(){
 		return master;
 	}
 
+	/**
+	 * 设置 Master 库数据源
+	 *
+	 * @param master
+	 * 		Master 库数据源
+	 */
 	public void setMaster(javax.sql.DataSource master){
 		this.master = master;
 	}
 
+	/**
+	 * 返回 Slave 库数据源列表
+	 *
+	 * @return Slave 库数据源列表
+	 */
 	public List<javax.sql.DataSource> getSlaves(){
 		return slaves;
 	}
 
+	/**
+	 * 设置 Slave 库数据源列表
+	 *
+	 * @param slaves
+	 * 		Slave 库数据源列表
+	 */
 	public void setSlaves(List<javax.sql.DataSource> slaves){
 		this.slaves = slaves;
 	}
