@@ -26,7 +26,6 @@ package com.buession.springboot.cache.redis.utils;
 
 import com.buession.core.utils.StringUtils;
 import com.buession.redis.core.RedisNode;
-import org.springframework.beans.factory.BeanInitializationException;
 
 import java.text.ParseException;
 import java.util.ArrayList;

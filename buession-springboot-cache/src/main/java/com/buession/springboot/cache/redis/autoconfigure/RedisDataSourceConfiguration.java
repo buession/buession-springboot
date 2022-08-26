@@ -38,8 +38,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
-
 /**
  * Redis 数据源 {@link DataSource} 自动配置类
  *
@@ -64,10 +62,6 @@ public class RedisDataSourceConfiguration {
 		this.properties = properties;
 	}
 
-	protected static int durationToMillis(final Duration duration){
-		return (int) duration.toMillis();
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(RedisProperties.class)
 	@ConditionalOnClass({redis.clients.jedis.Jedis.class})
@@ -83,9 +77,9 @@ public class RedisDataSourceConfiguration {
 			final JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
 
 			return dataSourceInitializer.initialize((dataSource, props)->{
-				dataSource.setConnectTimeout(durationToMillis(props.getConnectTimeout()));
-				dataSource.setSoTimeout(durationToMillis(props.getSoTimeout()));
-				dataSource.setInfiniteSoTimeout(durationToMillis(props.getInfiniteSoTimeout()));
+				dataSource.setConnectTimeout((int) props.getConnectTimeout().toMillis());
+				dataSource.setSoTimeout((int) props.getSoTimeout().toMillis());
+				dataSource.setInfiniteSoTimeout((int) props.getInfiniteSoTimeout().toMillis());
 
 				dataSource.setPoolConfig(props.getPool());
 

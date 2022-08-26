@@ -81,6 +81,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		if(Validate.hasText(properties.getHost())){
 			dataSource.setHost(properties.getHost());
 			dataSource.setPort(properties.getPort());
+			dataSource.setUsername(properties.getUsername());
 			dataSource.setPassword(properties.getPassword());
 			dataSource.setDatabase(properties.getDatabase());
 		}else{
@@ -89,6 +90,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 
 				dataSource.setHost(redisURI.getHost());
 				dataSource.setPort(redisURI.getPort());
+				dataSource.setUsername(redisURI.getUsername());
 				dataSource.setPassword(redisURI.getPassword());
 				dataSource.setDatabase(redisURI.getDatabase());
 				dataSource.setClientName(redisURI.getClientName());
@@ -110,12 +112,16 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 			throw new BeanInitializationException(e.getMessage());
 		}
 
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		final JedisSentinelDataSource dataSource = new JedisSentinelDataSource();
 
-		dataSource.setMasterName(sentinel.getMasterName());
-		dataSource.setSentinelConnectTimeout(durationToMillis(sentinel.getConnectTimeout()));
-		dataSource.setSentinelSoTimeout(durationToMillis(sentinel.getSoTimeout()));
-		dataSource.setSentinelClientName(sentinel.getClientName());
+		propertyMapper.from(sentinel::getMasterName).to(dataSource::setMasterName);
+		propertyMapper.from(sentinel::getConnectTimeout).as(JedisDataSourceInitializer::durationToMillis)
+				.to(dataSource::setSentinelConnectTimeout);
+		propertyMapper.from(sentinel::getSoTimeout).as(JedisDataSourceInitializer::durationToMillis)
+				.to(dataSource::setSentinelSoTimeout);
+		propertyMapper.from(sentinel::getClientName).to(dataSource::setSentinelClientName);
+
 		dataSource.setSentinels(sentinelNodes);
 
 		return dataSource;
@@ -135,8 +141,8 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		final JedisClusterDataSource dataSource = new JedisClusterDataSource();
 
 		dataSource.setNodes(nodes);
-		dataSource.setUsername(properties.getUsername());
-		dataSource.setPassword(properties.getPassword());
+		propertyMapper.from(properties::getUsername).to(dataSource::setUsername);
+		propertyMapper.from(properties::getPassword).to(dataSource::setPassword);
 		propertyMapper.from(cluster::getMaxRedirects).to(dataSource::setMaxRedirects);
 		propertyMapper.from(cluster::getMaxTotalRetriesDuration).as(JedisDataSourceInitializer::durationToMillis)
 				.to(dataSource::setMaxTotalRetriesDuration);
