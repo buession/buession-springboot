@@ -31,6 +31,8 @@ import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -99,6 +101,12 @@ public class Pac4jConfiguration {
 		final Config config = Config.INSTANCE;
 
 		config.setClients(clients);
+
+		if(properties.getHttpActionAdapterClass() != null){
+			HttpActionAdapter<?, ? extends WebContext> httpActionAdapter = BeanUtils.instantiateClass(
+					properties.getHttpActionAdapterClass());
+			config.setHttpActionAdapter(httpActionAdapter);
+		}
 
 		return config;
 	}

@@ -30,6 +30,9 @@ import com.buession.springboot.pac4j.config.Cas;
 import com.buession.springboot.pac4j.config.Http;
 import com.buession.springboot.pac4j.config.Jwt;
 import com.buession.springboot.pac4j.config.OAuth;
+import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -63,6 +66,11 @@ public class Pac4jProperties {
 	 * Compute if a HTTP request is an AJAX one and the appropriate response.
 	 */
 	private Class<? extends AjaxRequestResolver> ajaxRequestResolverClass = JsonAjaxRequestResolver.class;
+
+	/**
+	 * The HTTP action adapter for the {@link JEEContext}.
+	 */
+	private Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass;
 
 	/**
 	 * 是否允许多个 Profile
@@ -154,6 +162,26 @@ public class Pac4jProperties {
 	public void setAjaxRequestResolverClass(
 			Class<? extends AjaxRequestResolver> ajaxRequestResolverClass){
 		this.ajaxRequestResolverClass = ajaxRequestResolverClass;
+	}
+
+	/**
+	 * Return the HTTP action adapter for the {@link JEEContext}.
+	 *
+	 * @return The HTTP action adapter for the {@link JEEContext}.
+	 */
+	public Class<? extends HttpActionAdapter<?, ? extends WebContext>> getHttpActionAdapterClass(){
+		return httpActionAdapterClass;
+	}
+
+	/**
+	 * Set the HTTP action adapter for the {@link JEEContext}.
+	 *
+	 * @param httpActionAdapterClass
+	 * 		The HTTP action adapter for the {@link JEEContext}.
+	 */
+	public void setHttpActionAdapterClass(
+			Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass){
+		this.httpActionAdapterClass = httpActionAdapterClass;
 	}
 
 	/**

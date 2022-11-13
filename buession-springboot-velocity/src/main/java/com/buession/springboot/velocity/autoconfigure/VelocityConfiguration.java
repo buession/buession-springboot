@@ -178,8 +178,10 @@ public class VelocityConfiguration {
 
 		@PostConstruct
 		public void initialize(){
-			logger.error("{} cloud not support on {}", VelocityEngine.class.getName(),
-					ConditionalOnWebApplication.Type.REACTIVE.name());
+			if(logger.isErrorEnabled()){
+				logger.error("{} cloud not support on {}", VelocityEngine.class.getName(),
+						ConditionalOnWebApplication.Type.REACTIVE.name());
+			}
 		}
 
 	}

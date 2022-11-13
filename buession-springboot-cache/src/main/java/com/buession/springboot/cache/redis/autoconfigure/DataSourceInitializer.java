@@ -40,11 +40,8 @@ interface DataSourceInitializer<DS extends DataSource> {
 	/**
 	 * Redis 数据源 {@link DataSource} 初始化
 	 *
-	 * @param callback
-	 * 		回调
-	 *
 	 * @return {@link DataSource} 实例
 	 */
-	DS initialize(final Callback<DS> callback);
+	DS initialize();
 
 }

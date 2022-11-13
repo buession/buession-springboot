@@ -33,6 +33,8 @@ import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSo
 import com.buession.redis.core.RedisNode;
 import com.buession.redis.core.RedisURI;
 import com.buession.springboot.cache.redis.utils.RedisNodeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import java.text.ParseException;
@@ -46,6 +48,8 @@ import java.util.List;
  */
 class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedisDataSource> {
 
+	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceInitializer.class);
+
 	/**
 	 * 构造函数
 	 *
@@ -57,7 +61,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 	}
 
 	@Override
-	public JedisRedisDataSource initialize(final Callback<JedisRedisDataSource> callback){
+	public JedisRedisDataSource initialize(){
 		JedisRedisDataSource dataSource;
 
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
@@ -72,7 +76,18 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 			dataSource.setClientName(properties.getClientName());
 		}
 
-		return callback.apply(dataSource, properties);
+		dataSource.setConnectTimeout((int) properties.getConnectTimeout().toMillis());
+		dataSource.setSoTimeout((int) properties.getSoTimeout().toMillis());
+		dataSource.setInfiniteSoTimeout((int) properties.getInfiniteSoTimeout().toMillis());
+
+		dataSource.setPoolConfig(properties.getPool());
+
+		if(logger.isInfoEnabled()){
+			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
+					dataSource.getPoolConfig() == null ? "without" : "with");
+		}
+
+		return dataSource;
 	}
 
 	private JedisRedisDataSource createJedisDataSource(){
@@ -81,6 +96,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		if(Validate.hasText(properties.getHost())){
 			dataSource.setHost(properties.getHost());
 			dataSource.setPort(properties.getPort());
+			dataSource.setUsername(properties.getUsername());
 			dataSource.setPassword(properties.getPassword());
 			dataSource.setDatabase(properties.getDatabase());
 		}else{
@@ -89,6 +105,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 
 				dataSource.setHost(redisURI.getHost());
 				dataSource.setPort(redisURI.getPort());
+				dataSource.setUsername(redisURI.getUsername());
 				dataSource.setPassword(redisURI.getPassword());
 				dataSource.setDatabase(redisURI.getDatabase());
 				dataSource.setClientName(redisURI.getClientName());
@@ -107,15 +124,19 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		try{
 			sentinelNodes = RedisNodeUtils.parse(sentinel.getNodes(), RedisNode.DEFAULT_SENTINEL_PORT);
 		}catch(ParseException e){
-			throw new BeanInitializationException(e.getMessage());
+			throw new BeanInitializationException(e.getMessage(), e);
 		}
 
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		final JedisSentinelDataSource dataSource = new JedisSentinelDataSource();
 
-		dataSource.setMasterName(sentinel.getMasterName());
-		dataSource.setSentinelConnectTimeout(durationToMillis(sentinel.getConnectTimeout()));
-		dataSource.setSentinelSoTimeout(durationToMillis(sentinel.getSoTimeout()));
-		dataSource.setSentinelClientName(sentinel.getClientName());
+		propertyMapper.from(sentinel::getMasterName).to(dataSource::setMasterName);
+		propertyMapper.from(sentinel::getConnectTimeout).as((duration)->(int) duration.toMillis())
+				.to(dataSource::setSentinelConnectTimeout);
+		propertyMapper.from(sentinel::getSoTimeout).as((duration)->(int) duration.toMillis())
+				.to(dataSource::setSentinelSoTimeout);
+		propertyMapper.from(sentinel::getClientName).to(dataSource::setSentinelClientName);
+
 		dataSource.setSentinels(sentinelNodes);
 
 		return dataSource;
@@ -128,17 +149,17 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		try{
 			nodes = RedisNodeUtils.parse(cluster.getNodes(), RedisNode.DEFAULT_PORT);
 		}catch(ParseException e){
-			throw new BeanInitializationException(e.getMessage());
+			throw new BeanInitializationException(e.getMessage(), e);
 		}
 
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		final JedisClusterDataSource dataSource = new JedisClusterDataSource();
 
 		dataSource.setNodes(nodes);
-		dataSource.setUsername(properties.getUsername());
-		dataSource.setPassword(properties.getPassword());
+		propertyMapper.from(properties::getUsername).to(dataSource::setUsername);
+		propertyMapper.from(properties::getPassword).to(dataSource::setPassword);
 		propertyMapper.from(cluster::getMaxRedirects).to(dataSource::setMaxRedirects);
-		propertyMapper.from(cluster::getMaxTotalRetriesDuration).as(JedisDataSourceInitializer::durationToMillis)
+		propertyMapper.from(cluster::getMaxTotalRetriesDuration).as((duration)->(int) duration.toMillis())
 				.to(dataSource::setMaxTotalRetriesDuration);
 
 		return dataSource;
