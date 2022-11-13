@@ -57,7 +57,7 @@ public class DataSource {
 	 * @param slaves
 	 * 		Slave 库数据源列表
 	 */
-	public DataSource(javax.sql.DataSource master, List<javax.sql.DataSource> slaves){
+	public DataSource(final javax.sql.DataSource master, final List<javax.sql.DataSource> slaves){
 		this.master = master;
 		this.slaves = slaves;
 	}

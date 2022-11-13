@@ -75,16 +75,7 @@ public class RedisDataSourceConfiguration {
 		@Bean(name = "redisDataSource")
 		public JedisRedisDataSource dataSource(){
 			final JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
-
-			return dataSourceInitializer.initialize((dataSource, props)->{
-				dataSource.setConnectTimeout((int) props.getConnectTimeout().toMillis());
-				dataSource.setSoTimeout((int) props.getSoTimeout().toMillis());
-				dataSource.setInfiniteSoTimeout((int) props.getInfiniteSoTimeout().toMillis());
-
-				dataSource.setPoolConfig(props.getPool());
-
-				return dataSource;
-			});
+			return dataSourceInitializer.initialize();
 		}
 
 	}

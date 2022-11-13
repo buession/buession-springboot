@@ -45,13 +45,17 @@ public class RedisNodeUtils {
 			return new RedisNode(hostAndPort[0], defaultPort);
 		}else if(hostAndPort.length == 2){
 			try{
-				return new RedisNode(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
+				int port = Integer.parseInt(hostAndPort[1]);
+
+				if(port >= 0 && port <= 65535){
+					return new RedisNode(hostAndPort[0], port);
+				}
 			}catch(Exception e){
-				throw new ParseException("Illegal redis host and port: " + str + ".", -1);
+				//
 			}
-		}else{
-			throw new ParseException("Illegal redis host and port: " + str + ".", -1);
 		}
+
+		throw new ParseException("Illegal redis host and port: " + str + ".", -1);
 	}
 
 	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException{
