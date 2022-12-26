@@ -102,11 +102,7 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 
 			instance.setPoolConfiguration(poolConfiguration);
 
-			T dataSource = instance.createDataSource();
-
-			callback.apply(dataSource, properties);
-
-			return dataSource;
+			return callback.apply(instance.createDataSource(), properties);
 		}catch(NoSuchMethodException e){
 			throw new BeanInstantiationException(dataSource,
 					"Can't specify more arguments than constructor parameters");

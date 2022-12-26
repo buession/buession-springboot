@@ -2,7 +2,41 @@
 ===========================
 
 
-## [2.1.1](https://github.com/buession/buession-parent/releases/tag/v2.1.1) (2022-08-18)
+## [2.2.0](https://github.com/buession/buession-security/releases/tag/v2.2.0) (2022-11-xx)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.2.0)
+
+
+---
+
+
+## [2.1.2](https://github.com/buession/buession-springboot/releases/tag/v2.1.2) (2022-11-13)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.1.2)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-pac4j：** 增加配置属性 spring.pac4j.http-action-adapter-class ，允许配置 HttpActionAdapter
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-cache：** 修复单机模式未设置 user 的 BUG
+
+
+### 📔 文档
+- **buession-redis：** 修正错误的注释
+
+
+---
+
+
+## [2.1.1](https://github.com/buession/buession-springboot/releases/tag/v2.1.1) (2022-08-18)
 
 ### 🔨依赖升级
 

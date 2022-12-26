@@ -26,8 +26,6 @@ package com.buession.springboot.cache.redis.autoconfigure;
 
 import com.buession.redis.client.connection.datasource.DataSource;
 
-import java.time.Duration;
-
 /**
  * Redis 数据源 {@link DataSource} 初始化器抽象类
  *
@@ -49,10 +47,6 @@ public abstract class AbstractDataSourceInitializer<DS extends DataSource> imple
 	 */
 	public AbstractDataSourceInitializer(final RedisProperties properties){
 		this.properties = properties;
-	}
-
-	protected static int durationToMillis(final Duration duration){
-		return (int) duration.toMillis();
 	}
 
 }

@@ -32,6 +32,7 @@ import com.buession.security.shiro.Cookie;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.converter.SameSiteConverter;
 import com.buession.security.shiro.session.RedisSessionDAO;
+import com.buession.security.shiro.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authz.Authorizer;
@@ -292,6 +293,20 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Override
 	protected ShiroUrlPathHelper shiroUrlPathHelper(){
 		return super.shiroUrlPathHelper();
+	}
+
+	@Override
+	protected SessionManager nativeSessionManager(){
+		DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
+		webSessionManager.setSessionIdCookieEnabled(sessionIdCookieEnabled);
+		webSessionManager.setSessionIdUrlRewritingEnabled(sessionIdUrlRewritingEnabled);
+		webSessionManager.setSessionIdCookie(sessionCookieTemplate());
+
+		webSessionManager.setSessionFactory(sessionFactory());
+		webSessionManager.setSessionDAO(sessionDAO());
+		webSessionManager.setDeleteInvalidSessions(sessionManagerDeleteInvalidSessions);
+
+		return webSessionManager;
 	}
 
 }
