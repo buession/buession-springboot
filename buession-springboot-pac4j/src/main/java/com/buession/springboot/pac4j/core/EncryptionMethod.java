@@ -28,6 +28,7 @@ package com.buession.springboot.pac4j.core;
  * @author Yong.Teng
  * @since 2.0.1
  */
+@Deprecated
 public enum EncryptionMethod {
 	A128CBC_HS256(com.nimbusds.jose.EncryptionMethod.A128CBC_HS256.getName(),
 			com.nimbusds.jose.EncryptionMethod.A128CBC_HS256),

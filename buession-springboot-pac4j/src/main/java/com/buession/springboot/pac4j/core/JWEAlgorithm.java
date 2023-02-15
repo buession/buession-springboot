@@ -30,6 +30,7 @@ package com.buession.springboot.pac4j.core;
  * @author Yong.Teng
  * @since 2.0.1
  */
+@Deprecated
 public enum JWEAlgorithm {
 	RSA1_5(com.nimbusds.jose.JWEAlgorithm.RSA1_5.getName(), com.nimbusds.jose.JWEAlgorithm.RSA1_5),
 

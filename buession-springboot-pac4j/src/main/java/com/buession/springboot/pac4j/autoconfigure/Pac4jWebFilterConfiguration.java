@@ -41,23 +41,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.Set;
-
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnProperty(prefix = Pac4jProperties.PREFIX +
-		".filter", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Import({Pac4jConfiguration.class})
 public class Pac4jWebFilterConfiguration {
 
 	private Pac4jProperties properties;
 
-	private Config config;
+	private final Config config;
 
 	public Pac4jWebFilterConfiguration(Pac4jProperties properties, ObjectProvider<Config> config){
 		this.properties = properties;
@@ -70,32 +68,26 @@ public class Pac4jWebFilterConfiguration {
 		final Pac4jFilter pac4jFilter = new Pac4jFilter();
 
 		final Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
-		pac4jFilter.addFilter(securityConfig.getName(),
-				securityFilter(config, securityConfig, properties.isMultiProfile(), properties.getClients()));
+		pac4jFilter.addFilter(securityConfig.getName(), securityFilter(securityConfig));
 
 		final Pac4jProperties.Filter.Callback callbackConfig = properties.getFilter().getCallback();
-		pac4jFilter.addFilter(callbackConfig.getName(),
-				callbackFilter(config, callbackConfig, properties.isMultiProfile(), properties.getDefaultClient(),
-						properties.isSaveInSession()));
+		pac4jFilter.addFilter(callbackConfig.getName(), callbackFilter(callbackConfig));
 
 		final Pac4jProperties.Filter.Logout logoutConfig = properties.getFilter().getLogout();
-		pac4jFilter.addFilter(logoutConfig.getName(), logoutFilter(config, logoutConfig));
+		pac4jFilter.addFilter(logoutConfig.getName(), logoutFilter(logoutConfig));
 
 		return pac4jFilter;
 	}
 
-	private static SecurityFilter securityFilter(final Config config,
-												 final Pac4jProperties.Filter.Security securityConfig,
-												 final boolean isMultiProfile, final Set<String> clients){
+	private SecurityFilter securityFilter(final Pac4jProperties.Filter.Security securityConfig){
 		final SecurityFilter securityFilter = new SecurityFilter();
 
 		securityFilter.setConfig(config);
+		securityFilter.setMultiProfile(properties.isMultiProfile());
 
-		if(clients != null){
-			securityFilter.setClients(StringUtils.join(clients, Pac4jConstants.ELEMENT_SEPARATOR));
+		if(properties.getClients() != null){
+			securityFilter.setClients(StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
 		}
-
-		securityFilter.setMultiProfile(isMultiProfile);
 
 		if(Validate.isNotEmpty(securityConfig.getAuthorizers())){
 			securityFilter.setAuthorizers(
@@ -110,22 +102,19 @@ public class Pac4jWebFilterConfiguration {
 		return securityFilter;
 	}
 
-	private static CallbackFilter callbackFilter(final Config config,
-												 final Pac4jProperties.Filter.Callback callbackConfig,
-												 final boolean isMultiProfile, final String defaultClient,
-												 final boolean saveInSession){
+	private CallbackFilter callbackFilter(final Pac4jProperties.Filter.Callback callbackConfig){
 		final CallbackFilter callbackFilter = new CallbackFilter();
 
 		callbackFilter.setConfig(config);
 		callbackFilter.setDefaultUrl(callbackConfig.getDefaultUrl());
-		callbackFilter.setMultiProfile(isMultiProfile);
-		callbackFilter.setDefaultClient(defaultClient);
-		callbackFilter.setSaveInSession(saveInSession);
+		callbackFilter.setMultiProfile(properties.isMultiProfile());
+		callbackFilter.setDefaultClient(properties.getDefaultClient());
+		callbackFilter.setSaveInSession(properties.isSaveInSession());
 
 		return callbackFilter;
 	}
 
-	private static LogoutFilter logoutFilter(final Config config, final Pac4jProperties.Filter.Logout logoutConfig){
+	private LogoutFilter logoutFilter(final Pac4jProperties.Filter.Logout logoutConfig){
 		final LogoutFilter logoutFilter = new LogoutFilter();
 
 		logoutFilter.setConfig(config);

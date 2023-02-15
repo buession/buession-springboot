@@ -114,7 +114,7 @@ public class Pac4jCasConfiguration {
 	@EnableConfigurationProperties(Pac4jProperties.class)
 	static class Pac4jCasClientConfiguration extends AbstractPac4jClientConfiguration<Cas> {
 
-		private CasConfiguration casConfiguration;
+		private final CasConfiguration casConfiguration;
 
 		public Pac4jCasClientConfiguration(Pac4jProperties properties,
 										   ObjectProvider<CasConfiguration> casConfiguration){
