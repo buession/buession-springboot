@@ -43,7 +43,7 @@ import org.springframework.context.annotation.DependsOn;
  */
 @Configuration
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "annotations.enabled", matchIfMissing = true)
-@AutoConfigureAfter(AopAutoConfiguration.class)
+@AutoConfigureAfter({AopAutoConfiguration.class})
 public class ShiroAnnotationProcessorAutoConfiguration extends AbstractShiroAnnotationProcessorConfiguration {
 
 	@Bean
@@ -51,14 +51,14 @@ public class ShiroAnnotationProcessorAutoConfiguration extends AbstractShiroAnno
 	@ConditionalOnMissingBean(name = AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME, value =
 			DefaultAdvisorAutoProxyCreator.class)
 	@Override
-	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+	protected DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
 		return super.defaultAdvisorAutoProxyCreator();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+	protected AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
 		return super.authorizationAttributeSourceAdvisor(securityManager);
 	}
 

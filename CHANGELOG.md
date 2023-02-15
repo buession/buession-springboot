@@ -9,6 +9,18 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.2.0)
 
 
+### ⭐ 新特性
+
+- **buession-springboot-shiro：** Session Cookie 和 RememberMe Cookie 支持配置 HttpOnly
+
+
+### 🔔 变化
+
+- **buession-springboot-shiro：** 最大程度化，使用 shiro 自带 API
+- **buession-springboot-session：** 废弃该模块
+- **buession-springboot-pac4j** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
+
+
 ---
 
 

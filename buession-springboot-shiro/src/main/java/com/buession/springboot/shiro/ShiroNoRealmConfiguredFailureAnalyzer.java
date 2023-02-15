@@ -37,7 +37,7 @@ public class ShiroNoRealmConfiguredFailureAnalyzer extends AbstractFailureAnalyz
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoRealmBeanConfiguredException cause){
 		return new FailureAnalysis("No bean of type 'org.apache.shiro.realm.Realm' found.",
-				"Please create bean of type 'Realm' or add a shiro.ini in the root classpath (src/main/resources/shiro.ini) or in the META-INF folder (src/main/resources/META-INF/shiro.ini).",
+				"Please create bean of type 'org.apache.shiro.realm.Realm' or add a shiro.ini in the root classpath (src/main/resources/shiro.ini) or in the META-INF folder (src/main/resources/META-INF/shiro.ini).",
 				cause);
 	}
 

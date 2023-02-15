@@ -24,11 +24,14 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.core.utils.SystemPropertyUtils;
+import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.filter.Pac4jFilter;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -44,58 +47,49 @@ import java.util.List;
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@AutoConfigureAfter({ShiroWebConfiguration.class})
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
-
-	public final static String REGISTRATION_BEAN_NAME = "filterShiroFilterRegistrationBean";
-
-	public final static String FILTER_NAME = "shiroFilter";
 
 	protected ShiroProperties properties;
 
-	private Pac4jFilter pac4jFilter;
+	private final Pac4jFilter pac4jFilter;
 
 	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<Pac4jFilter> pac4jFilter){
 		this.properties = properties;
 		this.pac4jFilter = pac4jFilter.getIfAvailable();
 
-		if(this.properties.getLoginUrl() != null){
-			this.loginUrl = this.properties.getLoginUrl();
+		if(Validate.hasText(properties.getLoginUrl())){
+			SystemPropertyUtils.setProperty("shiro.loginUrl", properties.getLoginUrl());
 		}
 
-		if(this.properties.getSuccessUrl() != null){
-			this.successUrl = this.properties.getSuccessUrl();
+		if(Validate.hasText(properties.getSuccessUrl())){
+			SystemPropertyUtils.setProperty("shiro.successUrl", properties.getSuccessUrl());
 		}
 
-		if(this.properties.getUnauthorizedUrl() != null){
-			this.unauthorizedUrl = this.properties.getUnauthorizedUrl();
+		if(Validate.hasText(properties.getUnauthorizedUrl())){
+			SystemPropertyUtils.setProperty("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
 		}
 	}
 
 	@Override
 	protected ShiroFilterFactoryBean shiroFilterFactoryBean(){
-		ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
+		ShiroFilterFactoryBean filterFactoryBean = super.shiroFilterFactoryBean();
 
-		filterFactoryBean.setLoginUrl(loginUrl);
-		filterFactoryBean.setSuccessUrl(successUrl);
-		filterFactoryBean.setUnauthorizedUrl(unauthorizedUrl);
-		filterFactoryBean.setSecurityManager(securityManager);
-		filterFactoryBean.setGlobalFilters(globalFilters());
-		filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition.getFilterChainMap());
 		filterFactoryBean.setFilters(pac4jFilter.getFilters());
 
 		return filterFactoryBean;
 	}
 
-	@Bean(name = REGISTRATION_BEAN_NAME)
-	@ConditionalOnMissingBean(name = REGISTRATION_BEAN_NAME)
+	@Bean(name = "filterShiroFilterRegistrationBean")
+	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
 	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception{
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 
-		filterRegistrationBean.setName(FILTER_NAME);
+		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);
 		filterRegistrationBean.setFilter(shiroFilterFactoryBean().getObject());

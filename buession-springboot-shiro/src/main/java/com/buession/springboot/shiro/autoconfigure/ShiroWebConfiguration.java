@@ -32,7 +32,6 @@ import com.buession.security.shiro.Cookie;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.converter.SameSiteConverter;
 import com.buession.security.shiro.session.RedisSessionDAO;
-import com.buession.security.shiro.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authz.Authorizer;
@@ -46,7 +45,6 @@ import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
-import org.apache.shiro.spring.web.ShiroUrlPathHelper;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
@@ -121,8 +119,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 					sameSiteConverter.convert(cookie.getSameSite());
 
 			if(sameSiteOptions != null){
-				SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.sameSite",
-						sameSiteOptions.name());
+				SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.sameSite", sameSiteOptions.name());
 			}
 		}
 
@@ -154,31 +151,9 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 					sameSiteConverter.convert(rememberMeCookie.getSameSite());
 
 			if(sameSiteOptions != null){
-				SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.sameSite",
-						sameSiteOptions.name());
+				SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.sameSite", sameSiteOptions.name());
 			}
 		}
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected AuthenticationStrategy authenticationStrategy(){
-		return super.authenticationStrategy();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected Authenticator authenticator(){
-		return super.authenticator();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected Authorizer authorizer(){
-		return super.authorizer();
 	}
 
 	@Bean
@@ -198,6 +173,70 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
+	protected SessionFactory sessionFactory(){
+		return super.sessionFactory();
+	}
+
+	@Bean(name = "sessionDAO")
+	@ConditionalOnBean({RedisManager.class})
+	@ConditionalOnMissingBean({SessionDAO.class})
+	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager){
+		ShiroProperties.Session session = properties.getSession();
+		return new RedisSessionDAO(redisManager.getIfAvailable(), session.getPrefix(), session.getExpire(),
+				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+	}
+
+	@Bean(name = "sessionDAO")
+	@ConditionalOnMissingBean({SessionDAO.class})
+	@Override
+	protected SessionDAO sessionDAO(){
+		return super.sessionDAO();
+	}
+
+	@Bean(name = "sessionCookieTemplate")
+	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
+	@Override
+	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
+		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
+
+		if(properties.getSession().getCookie().getSecure() != null){
+			cookie.setSecure(properties.getSession().getCookie().getSecure());
+		}
+
+		if(properties.getSession().getCookie().getHttpOnly() != null){
+			cookie.setHttpOnly(properties.getSession().getCookie().getHttpOnly());
+		}
+
+		return cookie;
+	}
+
+	@Bean(name = "rememberMeCookieTemplate")
+	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
+	@Override
+	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
+		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
+
+		if(properties.getRememberMe().getCookie().getSecure() != null){
+			cookie.setSecure(properties.getRememberMe().getCookie().getSecure());
+		}
+
+		if(properties.getRememberMe().getCookie().getHttpOnly() != null){
+			cookie.setHttpOnly(properties.getRememberMe().getCookie().getHttpOnly());
+		}
+
+		return cookie;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected RememberMeManager rememberMeManager(){
+		return super.rememberMeManager();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
 	protected SubjectFactory subjectFactory(){
 		return super.subjectFactory();
 	}
@@ -205,24 +244,21 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionFactory sessionFactory(){
-		return super.sessionFactory();
+	protected Authorizer authorizer(){
+		return super.authorizer();
 	}
 
 	@Bean
-	@ConditionalOnBean({RedisManager.class})
-	@ConditionalOnMissingBean
-	protected SessionDAO redisSessionDAO(RedisManager redisManager){
-		ShiroProperties.Session session = properties.getSession();
-		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
-				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+	@Override
+	protected AuthenticationStrategy authenticationStrategy(){
+		return super.authenticationStrategy();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionDAO sessionDAO(){
-		return super.sessionDAO();
+	protected Authenticator authenticator(){
+		return super.authenticator();
 	}
 
 	@Bean
@@ -240,30 +276,9 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
-		return super.sessionCookieTemplate();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected RememberMeManager rememberMeManager(){
-		return super.rememberMeManager();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
-		return super.rememberMeCookieTemplate();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ShiroFilterChainDefinition.class})
 	@ConditionalOnResource(resources = "classpath:chainDefinition.ini")
-	protected ShiroFilterChainDefinition shiroFilterChainDefinition(ObjectProvider<SessionManager> sessionManager){
+	protected ShiroFilterChainDefinition iniShiroFilterChainDefinition(){
 		Ini ini = Ini.fromResourcePath("classpath:chainDefinition.ini");
 
 		if(Validate.isEmpty(ini)){
@@ -282,31 +297,10 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ShiroFilterChainDefinition.class})
 	@Override
 	protected ShiroFilterChainDefinition shiroFilterChainDefinition(){
 		return super.shiroFilterChainDefinition();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected ShiroUrlPathHelper shiroUrlPathHelper(){
-		return super.shiroUrlPathHelper();
-	}
-
-	@Override
-	protected SessionManager nativeSessionManager(){
-		DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-		webSessionManager.setSessionIdCookieEnabled(sessionIdCookieEnabled);
-		webSessionManager.setSessionIdUrlRewritingEnabled(sessionIdUrlRewritingEnabled);
-		webSessionManager.setSessionIdCookie(sessionCookieTemplate());
-
-		webSessionManager.setSessionFactory(sessionFactory());
-		webSessionManager.setSessionDAO(sessionDAO());
-		webSessionManager.setDeleteInvalidSessions(sessionManagerDeleteInvalidSessions);
-
-		return webSessionManager;
 	}
 
 }

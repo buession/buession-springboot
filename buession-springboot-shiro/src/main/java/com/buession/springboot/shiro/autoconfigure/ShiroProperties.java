@@ -242,7 +242,7 @@ public class ShiroProperties {
 		 * Session Cookie
 		 */
 		private Cookie cookie = new Cookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, SimpleCookie.DEFAULT_MAX_AGE,
-				false);
+				false, true);
 
 		/**
 		 * 返回是否使用原生 Session 管理器
@@ -556,7 +556,7 @@ public class ShiroProperties {
 		 * 记住我 Cookie
 		 */
 		private Cookie cookie = new Cookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME,
-				org.apache.shiro.web.servlet.Cookie.ONE_YEAR, false);
+				org.apache.shiro.web.servlet.Cookie.ONE_YEAR, false, true);
 
 		/**
 		 * 返回记住我 Cookie

@@ -57,6 +57,7 @@ public class ShiroBaseConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnBean(RedisManager.class)
 	@ConditionalOnMissingBean
 	public CacheManager cacheManager(RedisManager redisManager){
 		ShiroProperties.Cache cache = properties.getCache();
