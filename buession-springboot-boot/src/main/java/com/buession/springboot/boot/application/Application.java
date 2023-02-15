@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
@@ -33,7 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @author Yong.Teng
  */
-public interface Application {
+public interface Application extends Launcher, Daemon {
 
 	/**
 	 * 返回可配置的应用上下文类
@@ -54,68 +54,6 @@ public interface Application {
 	 */
 	void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
 												   configurableApplicationContext);
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param args
-	 * 		启动参数
-	 */
-	void startup(final String[] args);
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param clazz
-	 * 		启动应用程序类
-	 * @param args
-	 * 		启动参数
-	 */
-	void startup(final Class<? extends Application> clazz, final String[] args);
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param args
-	 * 		启动参数
-	 */
-	default void start(final String[] args){
-		startup(args);
-	}
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param clazz
-	 * 		启动应用程序类
-	 * @param args
-	 * 		启动参数
-	 */
-	default void start(final Class<? extends Application> clazz, final String[] args){
-		startup(clazz, args);
-	}
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param args
-	 * 		启动参数
-	 */
-	default void launch(final String[] args){
-		startup(args);
-	}
-
-	/**
-	 * 启动应用程序
-	 *
-	 * @param clazz
-	 * 		启动应用程序类
-	 * @param args
-	 * 		启动参数
-	 */
-	default void launch(final Class<? extends Application> clazz, final String[] args){
-		startup(clazz, args);
-	}
 
 	/**
 	 * 启动应用程序
