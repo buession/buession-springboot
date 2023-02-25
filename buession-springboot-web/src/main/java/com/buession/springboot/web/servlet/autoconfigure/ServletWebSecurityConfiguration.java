@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.servlet.autoconfigure;
@@ -30,6 +30,7 @@ import com.buession.core.validator.Validate;
 import com.buession.security.web.config.Configurer;
 import com.buession.security.web.servlet.config.ServletWebSecurityConfigurerAdapterConfiguration;
 import com.buession.security.web.utils.PolicyUtils;
+import com.buession.security.web.xss.servlet.WebMvcXssConfigurer;
 import com.buession.security.web.xss.servlet.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
@@ -88,6 +89,14 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),
 					properties.getFormLogin()), properties.isDisableDefaults());
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({Policy.class})
+	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue =
+			"true")
+	static class WebMvcXssConfigurerConfiguration extends WebMvcXssConfigurer {
 
 	}
 

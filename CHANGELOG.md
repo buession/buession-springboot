@@ -12,6 +12,7 @@
 ### ⭐ 新特性
 
 - **buession-springboot-shiro：** Session Cookie 和 RememberMe Cookie 支持配置 HttpOnly
+- **buession-springboot-web：** 新增实验性 jackson HttpMessageConverter 支持 XSS 过滤
 
 
 ### 🔔 变化
