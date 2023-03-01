@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
@@ -35,9 +35,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GeoIPProperties {
 
 	/**
-	 * 数据文件路径
+	 * 数据库文件路径
 	 */
 	private String dbPath;
+
+	/**
+	 * ASN 库文件路径
+	 */
+	private String asnDbPath;
 
 	/**
 	 * 是否开启缓存
@@ -50,6 +55,14 @@ public class GeoIPProperties {
 
 	public void setDbPath(String dbPath){
 		this.dbPath = dbPath;
+	}
+
+	public String getAsnDbPath(){
+		return asnDbPath;
+	}
+
+	public void setAsnDbPath(String asnDbPath){
+		this.asnDbPath = asnDbPath;
 	}
 
 	public boolean isEnableCache(){
