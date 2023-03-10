@@ -9,7 +9,7 @@
 [![Javadocs](http://www.javadoc.io/badge/com.buession.springboot/buession-springboot-boot.svg)](http://www.javadoc.io/doc/com.buession.springboot/buession-springboot-boot)
 
 
-基于 Spring Boot 2 的便捷使用扩展，[![Buession Framework](https://www.buession.com/)]、![Buession Security](https://security.buession.com/)] 类库的自动配置。
+基于 Spring Boot 2 的便捷使用扩展，[![Buession Framework](https://www.buession.com/)]、[![Buession Security](https://security.buession.com/)] 类库的自动配置。
 
 
 <p align="center">
