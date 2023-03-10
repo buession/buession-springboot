@@ -27,6 +27,7 @@
 package com.buession.springboot.mybatis.autoconfigure;
 
 import com.buession.core.collect.Arrays;
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
@@ -150,6 +151,7 @@ public class MybatisConfiguration {
 	}
 
 	private SqlSessionFactory createSqlSessionFactory(javax.sql.DataSource dataSource) throws Exception{
+		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
 
 		factory.setDataSource(dataSource);
@@ -183,9 +185,8 @@ public class MybatisConfiguration {
 			factory.setDatabaseIdProvider(databaseIdProvider);
 		}
 
-		if(Validate.hasText(properties.getTypeAliasesPackage())){
-			factory.setTypeAliasesPackage(properties.getTypeAliasesPackage());
-		}
+		mapper.from(properties.getTypeAliasesPackage()).to(factory::setTypeAliasesPackage);
+		mapper.from(properties.getTypeHandlersPackage()).to(factory::setTypeHandlersPackage);
 
 		if(properties.getTypeAliasesSuperType() != null){
 			factory.setTypeAliasesSuperType(properties.getTypeAliasesSuperType());
@@ -193,10 +194,6 @@ public class MybatisConfiguration {
 
 		if(Validate.isNotEmpty(properties.getTypeAliases())){
 			factory.setTypeAliases(properties.getTypeAliases());
-		}
-
-		if(Validate.hasText(properties.getTypeHandlersPackage())){
-			factory.setTypeHandlersPackage(properties.getTypeHandlersPackage());
 		}
 
 		if(Validate.isNotEmpty(properties.getTypeHandlers())){
@@ -226,24 +223,22 @@ public class MybatisConfiguration {
 	}
 
 	private Resource[] resolveMapperLocations(){
-		if(properties.getMapperLocations() != null){
-			if(properties.getMapperLocations().length > 0){
-				Resource[] resources = new Resource[]{};
-				PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+		if(Validate.isNotEmpty(properties.getMapperLocations())){
+			Resource[] resources = new Resource[]{};
+			PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
-				for(String mapperLocation : properties.getMapperLocations()){
-					try{
-						Resource[] mappers = resourceResolver.getResources(mapperLocation);
-						resources = Arrays.addAll(null, mappers);
-					}catch(IOException e){
-						if(logger.isErrorEnabled()){
-							logger.error("Get mapper resource error: {}.", e.getMessage());
-						}
+			for(String mapperLocation : properties.getMapperLocations()){
+				try{
+					Resource[] mappers = resourceResolver.getResources(mapperLocation);
+					resources = Arrays.addAll(null, mappers);
+				}catch(IOException e){
+					if(logger.isErrorEnabled()){
+						logger.error("Get mapper resource error: {}.", e.getMessage());
 					}
 				}
-
-				return resources;
 			}
+
+			return resources;
 		}
 
 		return null;

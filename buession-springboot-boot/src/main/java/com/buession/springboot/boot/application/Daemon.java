@@ -22,59 +22,14 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.geoip.autoconfigure;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package com.buession.springboot.boot.application;
 
 /**
- * GeoIP 配置
+ * 守护进程
  *
  * @author Yong.Teng
+ * @since 2.2.0
  */
-@ConfigurationProperties(prefix = "spring.geoip")
-public class GeoIPProperties {
-
-	/**
-	 * 数据库文件路径
-	 */
-	private String dbPath;
-
-	/**
-	 * ASN 库文件路径
-	 */
-	private String asnDbPath;
-
-	/**
-	 * 是否开启缓存
-	 */
-	private boolean enableCache = true;
-
-	public String getDbPath(){
-		return dbPath;
-	}
-
-	public void setDbPath(String dbPath){
-		this.dbPath = dbPath;
-	}
-
-	public String getAsnDbPath(){
-		return asnDbPath;
-	}
-
-	public void setAsnDbPath(String asnDbPath){
-		this.asnDbPath = asnDbPath;
-	}
-
-	public boolean isEnableCache(){
-		return getEnableCache();
-	}
-
-	public boolean getEnableCache(){
-		return enableCache;
-	}
-
-	public void setEnableCache(boolean enableCache){
-		this.enableCache = enableCache;
-	}
+public interface Daemon {
 
 }

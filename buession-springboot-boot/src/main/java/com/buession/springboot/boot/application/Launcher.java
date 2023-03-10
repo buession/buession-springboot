@@ -22,59 +22,76 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.geoip.autoconfigure;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package com.buession.springboot.boot.application;
 
 /**
- * GeoIP 配置
+ * 应用启动器
  *
  * @author Yong.Teng
+ * @since 2.2.0
  */
-@ConfigurationProperties(prefix = "spring.geoip")
-public class GeoIPProperties {
+public interface Launcher {
 
 	/**
-	 * 数据库文件路径
+	 * 启动应用程序
+	 *
+	 * @param args
+	 * 		启动参数
 	 */
-	private String dbPath;
+	void startup(final String[] args);
 
 	/**
-	 * ASN 库文件路径
+	 * 启动应用程序
+	 *
+	 * @param clazz
+	 * 		启动应用程序类
+	 * @param args
+	 * 		启动参数
 	 */
-	private String asnDbPath;
+	void startup(final Class<? extends Application> clazz, final String[] args);
 
 	/**
-	 * 是否开启缓存
+	 * 启动应用程序
+	 *
+	 * @param args
+	 * 		启动参数
 	 */
-	private boolean enableCache = true;
-
-	public String getDbPath(){
-		return dbPath;
+	default void start(final String[] args){
+		startup(args);
 	}
 
-	public void setDbPath(String dbPath){
-		this.dbPath = dbPath;
+	/**
+	 * 启动应用程序
+	 *
+	 * @param clazz
+	 * 		启动应用程序类
+	 * @param args
+	 * 		启动参数
+	 */
+	default void start(final Class<? extends Application> clazz, final String[] args){
+		startup(clazz, args);
 	}
 
-	public String getAsnDbPath(){
-		return asnDbPath;
+	/**
+	 * 启动应用程序
+	 *
+	 * @param args
+	 * 		启动参数
+	 */
+	default void launch(final String[] args){
+		startup(args);
 	}
 
-	public void setAsnDbPath(String asnDbPath){
-		this.asnDbPath = asnDbPath;
-	}
-
-	public boolean isEnableCache(){
-		return getEnableCache();
-	}
-
-	public boolean getEnableCache(){
-		return enableCache;
-	}
-
-	public void setEnableCache(boolean enableCache){
-		this.enableCache = enableCache;
+	/**
+	 * 启动应用程序
+	 *
+	 * @param clazz
+	 * 		启动应用程序类
+	 * @param args
+	 * 		启动参数
+	 */
+	default void launch(final Class<? extends Application> clazz, final String[] args){
+		startup(clazz, args);
 	}
 
 }

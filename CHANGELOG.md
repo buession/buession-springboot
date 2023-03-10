@@ -2,6 +2,30 @@
 ===========================
 
 
+## [2.2.0](https://github.com/buession/buession-springboot/releases/tag/v2.2.0) (2023-03-11)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.2.0)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-shiro：** Session Cookie 和 RememberMe Cookie 支持配置 HttpOnly
+- **buession-springboot-geoip：** 增加可支持设置 asn 库地址或流
+- **buession-springboot-web：** 新增实验性 jackson HttpMessageConverter 支持 XSS 过滤
+
+
+### 🔔 变化
+
+- **buession-springboot-shiro：** 最大程度化，使用 shiro 自带 API
+- **buession-springboot-session：** 废弃该模块
+- **buession-springboot-pac4j** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
+
+
+---
+
+
 ## [2.1.2](https://github.com/buession/buession-springboot/releases/tag/v2.1.2) (2022-11-13)
 
 ### 🔨依赖升级

@@ -73,7 +73,7 @@ public class Pac4jJwtConfiguration {
 	public SecretSignatureConfiguration secretSignatureConfiguration(){
 		Jwt config = properties.getClient().getJwt();
 		String jwtSecret = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
-		return new SecretSignatureConfiguration(jwtSecret, config.getSecretSignatureAlgorithm().getSource());
+		return new SecretSignatureConfiguration(jwtSecret, config.getSecretSignatureAlgorithm());
 	}
 
 	@Bean
@@ -82,8 +82,8 @@ public class Pac4jJwtConfiguration {
 		Jwt config = properties.getClient().getJwt();
 		String jwtEncryptionKey = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE,
 				config.getEncryptionKey());
-		return new SecretEncryptionConfiguration(jwtEncryptionKey, config.getSecretEncryptionAlgorithm().getSource(),
-				config.getEncryptionMethod().getSource());
+		return new SecretEncryptionConfiguration(jwtEncryptionKey, config.getSecretEncryptionAlgorithm(),
+				config.getEncryptionMethod());
 	}
 
 	@Bean

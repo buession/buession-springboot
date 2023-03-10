@@ -24,14 +24,12 @@
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.springboot.pac4j.autoconfigure.Pac4jWebFilterConfiguration;
 import io.buji.pac4j.realm.Pac4jRealm;
 import io.buji.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
-import org.pac4j.core.config.Config;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -39,7 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -49,9 +46,8 @@ import org.springframework.context.annotation.Lazy;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Config.class, Pac4jRealm.class, SubjectFactory.class})
+@ConditionalOnClass({Pac4jRealm.class, SubjectFactory.class})
 @AutoConfigureAfter({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
-@Import({Pac4jWebFilterConfiguration.class})
 public class Pac4jConfiguration {
 
 	@Bean
@@ -75,7 +71,6 @@ public class Pac4jConfiguration {
 		public ShiroAutoConfiguration(ObjectProvider<SecurityManager> securityManager,
 									  ObjectProvider<SubjectFactory> subjectFactory){
 			((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory.getIfAvailable());
-
 		}
 
 	}

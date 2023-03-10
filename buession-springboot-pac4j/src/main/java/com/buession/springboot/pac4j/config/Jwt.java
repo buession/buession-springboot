@@ -24,9 +24,9 @@
  */
 package com.buession.springboot.pac4j.config;
 
-import com.buession.springboot.pac4j.core.EncryptionMethod;
-import com.buession.springboot.pac4j.core.JWEAlgorithm;
-import com.buession.springboot.pac4j.core.JWSAlgorithm;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 import org.pac4j.core.util.generator.ValueGenerator;
 
 /**
