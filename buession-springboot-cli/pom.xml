@@ -10,7 +10,7 @@
 		<version>2.2.1</version>
 	</parent>
 	<artifactId>buession-springboot-cli</artifactId>
-	<url>https://github.com/buession/buession-springboot</url>
+	<url>https://springboot.buession.com/</url>
 	<description>Buession Framework Springboot Cli</description>
 	<packaging>jar</packaging>
 

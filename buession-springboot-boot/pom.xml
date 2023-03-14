@@ -10,7 +10,7 @@
 		<version>2.2.1</version>
 	</parent>
 	<artifactId>buession-springboot-boot</artifactId>
-	<url>https://github.com/buession/buession-springboot</url>
+	<url>https://springboot.buession.com/</url>
 	<description>Buession Framework Springboot Boot</description>
 	<packaging>jar</packaging>
 
