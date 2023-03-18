@@ -71,8 +71,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>2.2.0</buession.version>
-		<buession.security.version>2.2.0</buession.security.version>
+		<buession.version>2.2.1</buession.version>
+		<buession.security.version>2.2.1</buession.security.version>
 	</properties>
 
 	<dependencyManagement>

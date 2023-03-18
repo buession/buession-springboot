@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.config;
@@ -55,7 +55,7 @@ public class RuntimeProperties extends Properties {
 	}
 
 	protected void putDefaults(){
-		put("X-Powered-By", Framework.NAME + "/" + Framework.VERSION);
+		put("X-Powered-By", Framework.NAME + '/' + Framework.VERSION);
 	}
 
 }

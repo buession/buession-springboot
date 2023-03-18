@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.utils;
 
 import com.buession.core.utils.StringUtils;
+import com.buession.core.validator.Validate;
 import com.buession.redis.core.RedisNode;
 
 import java.text.ParseException;
@@ -47,7 +48,7 @@ public class RedisNodeUtils {
 			try{
 				int port = Integer.parseInt(hostAndPort[1]);
 
-				if(port >= 0 && port <= 65535){
+				if(Validate.isPort(port)){
 					return new RedisNode(hostAndPort[0], port);
 				}
 			}catch(Exception e){
