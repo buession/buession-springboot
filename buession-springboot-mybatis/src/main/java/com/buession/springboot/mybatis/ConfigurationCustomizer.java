@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2018 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis;
@@ -31,8 +31,9 @@ import org.apache.ibatis.session.Configuration;
 /**
  * @author Yong.Teng
  */
+@FunctionalInterface
 public interface ConfigurationCustomizer {
 
-    void customize(Configuration configuration);
+	void customize(Configuration configuration);
 
 }

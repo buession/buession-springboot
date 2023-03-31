@@ -7,10 +7,10 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>2.2.0</version>
+		<version>2.2.1</version>
 	</parent>
 	<artifactId>buession-springboot-httpclient</artifactId>
-	<url>https://github.com/buession/buession-springboot</url>
+	<url>https://springboot.buession.com/</url>
 	<description>Buession Framework Springboot For Http Client</description>
 	<packaging>jar</packaging>
 
