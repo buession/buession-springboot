@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -356,6 +356,10 @@ public class Pac4jProperties {
 		 */
 		public final static class Security extends BaseFilter {
 
+			public Security(){
+				setName("securityFilter");
+			}
+
 			/**
 			 * 认证器名称列表
 			 */
@@ -411,6 +415,10 @@ public class Pac4jProperties {
 		 */
 		public final static class Callback extends BaseFilter {
 
+			public Callback(){
+				setName("callbackFilter");
+			}
+
 			/**
 			 * 默认跳转地址
 			 */
@@ -441,6 +449,10 @@ public class Pac4jProperties {
 		 * {@link io.buji.pac4j.filter.LogoutFilter} 配置
 		 */
 		public final static class Logout extends BaseFilter {
+
+			public Logout(){
+				setName("logoutFilter");
+			}
 
 			/**
 			 * 登出成功默认跳转地址

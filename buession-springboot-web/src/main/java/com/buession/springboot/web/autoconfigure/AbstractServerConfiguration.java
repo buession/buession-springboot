@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.autoconfigure;
@@ -50,15 +50,17 @@ public abstract class AbstractServerConfiguration {
 		final Map<String, String> result = new HashMap<>(headers.size());
 
 		headers.forEach((key, value)->{
-			if(value != null && value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
-				String propertyName = value.substring(1);
-				String propertyValue = SystemPropertyUtils.getProperty(propertyName);
+			if(value != null){
+				if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
+					String propertyName = value.substring(1);
+					String propertyValue = SystemPropertyUtils.getProperty(propertyName);
 
-				if(Validate.hasText(propertyValue)){
-					result.put(key, propertyValue);
+					if(Validate.hasText(propertyValue)){
+						result.put(key, propertyValue);
+					}
+				}else{
+					result.put(key, value);
 				}
-			}else{
-				result.put(key, value);
 			}
 		});
 
