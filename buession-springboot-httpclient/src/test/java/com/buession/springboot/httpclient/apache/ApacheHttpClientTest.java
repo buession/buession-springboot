@@ -19,18 +19,16 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.apache;
 
+import com.buession.httpclient.ApacheHttpAsyncClient;
 import com.buession.httpclient.HttpClient;
 import com.buession.httpclient.core.Header;
 import com.buession.httpclient.core.Response;
-import com.buession.httpclient.exception.ConnectTimeoutException;
-import com.buession.httpclient.exception.ConnectionPoolTimeoutException;
-import com.buession.httpclient.exception.ReadTimeoutException;
-import com.buession.httpclient.exception.RequestAbortedException;
+import com.buession.httpclient.core.concurrent.Callback;
 import com.buession.httpclient.exception.RequestException;
 import com.buession.springboot.httpclient.SpringBootTestApplication;
 import org.junit.Test;
@@ -56,42 +54,79 @@ public class ApacheHttpClientTest {
 	@Autowired
 	private HttpClient apacheHttpClient;
 
+	@Autowired
+	private ApacheHttpAsyncClient apacheHttpAsyncClient;
+
 	private final static Logger logger = LoggerFactory.getLogger(ApacheHttpClientTest.class);
 
 	@Test
-	public void get() throws Exception{
-		for(int i = 0; i < 5; i++){
-			logger.info("{}", i);
-			Response response = null;
-			try{
-				List<Header> headers = new ArrayList<>(2);
+	public void get(){
+		Response response = null;
+		try{
+			List<Header> headers = new ArrayList<>(2);
 
-				headers.add(new Header("Referer", "https://www.163.com"));
-				headers.add(new Header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) " +
-						"Gecko/20100101 Firefox/88.0"));
+			headers.add(new Header("Referer", "https://www.163.com"));
+			headers.add(new Header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) " +
+					"Gecko/20100101 Firefox/88.0"));
 
-				response = apacheHttpClient.get("http://qxcms.cbg.cn/bn/upload/Image/mrtp/2021/08/09" +
-						"/1_cc439f2662684c54a3a11734ced5c378.jpg");
-			}catch(ConnectTimeoutException e){
-				logger.error("网络状态连接失败, 链接超时：{}", e.getMessage());
-			}catch(ConnectionPoolTimeoutException e){
-				logger.error("网络状态连接失败, 链接池超时：{}", e.getMessage());
-			}catch(ReadTimeoutException e){
-				logger.error("请求超时：{}", e.getMessage());
-			}catch(RequestAbortedException e){
-				logger.error("请求终止：{}", e.getMessage());
-			}catch(RequestException e){
-				logger.error("请求异常：{}", e.getMessage());
-			}catch(IOException e){
-				logger.error("图片保存异常：{}", e.getMessage());
-			}finally{
-				if(response != null && response.getInputStream() != null){
-					try{
-						response.getInputStream().close();
-					}catch(IOException e){
-					}
+			response = apacheHttpClient.get(
+					"https://gimg3.baidu.com/rel/src=https%3A%2F%2Fgips3.baidu.com%2Fit%2Fu%3D1371558006%2C3234928627%26fm%3D3028%26app%3D3028%26f%3DPNG%26fmt%3Dauto%26q%3D100%26size%3Df1138_640&refer=http%3A%2F%2Fwww.baidu.com&app=2010&size=w560&n=0&g=0n&q=100&fmt=auto?sec=1680800400&t=f73a553d17bf64428b1491c9d66df5e1",
+					headers);
+		}catch(RequestException e){
+			logger.error("请求异常：{}", e.getMessage());
+		}catch(IOException e){
+			logger.error("图片保存异常：{}", e.getMessage());
+		}finally{
+			if(response != null && response.getInputStream() != null){
+				try{
+					response.getInputStream().close();
+				}catch(IOException e){
 				}
 			}
 		}
 	}
+
+	@Test
+	public void asyncGet(){
+		try{
+			List<Header> headers = new ArrayList<>(2);
+
+			headers.add(new Header("Referer", "https://www.163.com"));
+			headers.add(new Header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) " +
+					"Gecko/20100101 Firefox/88.0"));
+
+			apacheHttpAsyncClient.get(
+					"https://gimg3.baidu.com/rel/src=https%3A%2F%2Fgips3.baidu.com%2Fit%2Fu%3D1371558006%2C3234928627%26fm%3D3028%26app%3D3028%26f%3DPNG%26fmt%3Dauto%26q%3D100%26size%3Df1138_640&refer=http%3A%2F%2Fwww.baidu.com&app=2010&size=w560&n=0&g=0n&q=100&fmt=auto?sec=1680800400&t=f73a553d17bf64428b1491c9d66df5e1",
+					headers,
+					new Callback() {
+
+						@Override
+						public void completed(Response response){
+							System.out.println(response.getContentLength());
+							if(response != null && response.getInputStream() != null){
+								try{
+									response.getInputStream().close();
+								}catch(IOException e){
+								}
+							}
+						}
+
+						@Override
+						public void failed(Exception ex){
+
+						}
+
+						@Override
+						public void cancelled(){
+
+						}
+					});
+		}catch(RequestException e){
+			logger.error("请求异常：{}", e.getMessage());
+		}catch(IOException e){
+			logger.error("图片保存异常：{}", e.getMessage());
+		}finally{
+		}
+	}
+
 }

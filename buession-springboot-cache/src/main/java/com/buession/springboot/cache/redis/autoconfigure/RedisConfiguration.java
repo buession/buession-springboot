@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Import;
 @Import({RedisDataSourceConfiguration.class})
 public class RedisConfiguration {
 
-	private RedisProperties properties;
+	private final RedisProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 

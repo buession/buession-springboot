@@ -19,13 +19,17 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
+import com.buession.httpclient.conn.nio.IOReactorConfig;
 import com.buession.httpclient.core.Configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Yong.Teng
@@ -34,5 +38,55 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HttpClientProperties extends Configuration {
 
 	public final static String PREFIX = "spring.httpclient";
+
+	@NestedConfigurationProperty
+	private ApacheClient apacheClient = new ApacheClient();
+
+	@NestedConfigurationProperty
+	private OkHttp okHttp = new OkHttp();
+
+	public ApacheClient getApacheClient(){
+		return apacheClient;
+	}
+
+	public void setApacheClient(ApacheClient apacheClient){
+		this.apacheClient = apacheClient;
+	}
+
+	public OkHttp getOkHttp(){
+		return okHttp;
+	}
+
+	public void setOkHttp(OkHttp okHttp){
+		this.okHttp = okHttp;
+	}
+
+	public final static class ApacheClient {
+
+		private IOReactorConfig ioReactor = new IOReactorConfig();
+
+		private Class<? extends ThreadFactory> threadFactory;
+
+		public IOReactorConfig getIoReactor(){
+			return ioReactor;
+		}
+
+		public void setIoReactor(IOReactorConfig ioReactor){
+			this.ioReactor = ioReactor;
+		}
+
+		public Class<? extends ThreadFactory> getThreadFactory(){
+			return threadFactory;
+		}
+
+		public void setThreadFactory(Class<? extends ThreadFactory> threadFactory){
+			this.threadFactory = threadFactory;
+		}
+
+	}
+
+	public final static class OkHttp {
+
+	}
 
 }

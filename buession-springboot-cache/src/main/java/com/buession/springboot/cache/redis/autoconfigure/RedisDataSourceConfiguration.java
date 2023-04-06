@@ -75,7 +75,7 @@ public class RedisDataSourceConfiguration {
 		@Bean(name = "redisDataSource")
 		public JedisRedisDataSource dataSource(){
 			final JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
-			return dataSourceInitializer.initialize();
+			return dataSourceInitializer.createInstance();
 		}
 
 	}

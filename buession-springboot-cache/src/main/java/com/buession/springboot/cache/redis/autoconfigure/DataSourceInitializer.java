@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -35,6 +35,7 @@ import com.buession.redis.client.connection.datasource.DataSource;
  * @author Yong.Teng
  * @since 2.0.0
  */
+@FunctionalInterface
 interface DataSourceInitializer<DS extends DataSource> {
 
 	/**
@@ -42,6 +43,6 @@ interface DataSourceInitializer<DS extends DataSource> {
 	 *
 	 * @return {@link DataSource} 实例
 	 */
-	DS initialize();
+	DS createInstance();
 
 }

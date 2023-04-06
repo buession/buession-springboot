@@ -9,6 +9,11 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.0)
 
 
+### ⭐ 新特性
+
+- **buession-springboot-httpclient：** 新增 HTTP 异步请求客户端
+
+
 ---
 
 

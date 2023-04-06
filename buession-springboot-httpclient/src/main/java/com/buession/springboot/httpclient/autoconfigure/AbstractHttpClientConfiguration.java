@@ -24,18 +24,24 @@
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
 /**
- * HttpClient Auto Configuration 类
- *
  * @author Yong.Teng
- * @since 1.2.2
+ * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(HttpClientProperties.class)
-@Deprecated
-public class HttpClientConfiguration {
+public abstract class AbstractHttpClientConfiguration {
+
+	protected final static String CLIENT_CONNECTION_MANAGER_BEAN_NAME = "httpClientConnectionManager";
+
+	protected final static String NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME = "nioHttpClientConnectionManager";
+
+	protected final static String HTTP_CLIENT_BEAN_NAME = "$httpClient";
+
+	protected final static String ASYNC_HTTP_CLIENT_BEAN_NAME = "$asyncHttpClient";
+
+	protected HttpClientProperties properties;
+
+	public AbstractHttpClientConfiguration(HttpClientProperties properties){
+		this.properties = properties;
+	}
 
 }
