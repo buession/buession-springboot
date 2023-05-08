@@ -29,6 +29,7 @@ import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * 命令行应用抽象类
@@ -36,6 +37,13 @@ import org.springframework.boot.WebApplicationType;
  * @author Yong.Teng
  */
 public abstract class AbstractCliApplication extends AbstractApplication implements CliApplication, CommandLineRunner {
+
+	/**
+	 * 是否添加 Command Line Properties
+	 *
+	 * @since 2.3.0
+	 */
+	private Boolean addCommandLineProperties;
 
 	/**
 	 * 构造函数
@@ -73,6 +81,64 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 		super(banner);
 	}
 
+	/**
+	 * 构造函数
+	 *
+	 * @param addCommandLineProperties
+	 * 		是否添加 Command Line Properties
+	 *
+	 * @since 2.3.0
+	 */
+	protected AbstractCliApplication(final boolean addCommandLineProperties){
+		super();
+		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 *        {@link Banner} 类
+	 * @param addCommandLineProperties
+	 * 		是否添加 Command Line Properties
+	 *
+	 * @throws InstantiationException
+	 * 		反射异常
+	 * @throws IllegalAccessException
+	 * 		没有访问权限的异常
+	 * @since 2.3.0
+	 */
+	protected AbstractCliApplication(final Class<? extends Banner> banner, final boolean addCommandLineProperties)
+			throws InstantiationException, IllegalAccessException{
+		super(banner);
+		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param banner
+	 *        {@link Banner} 实例
+	 * @param addCommandLineProperties
+	 * 		是否添加 Command Line Properties
+	 *
+	 * @since 2.3.0
+	 */
+	protected AbstractCliApplication(final Banner banner, final boolean addCommandLineProperties){
+		super(banner);
+		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	@Override
+	public Boolean getAddCommandLineProperties(){
+		return addCommandLineProperties;
+	}
+
+	@Override
+	public void setAddCommandLineProperties(Boolean addCommandLineProperties){
+		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
 	@Override
 	public void startup(Class<? extends Application> clazz, String[] args){
 		doStartup(clazz, WebApplicationType.NONE, args);
@@ -80,6 +146,18 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 
 	@Override
 	public final void run(final String[] args){
+	}
+
+	@Override
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz,
+																final WebApplicationType webApplicationType){
+		SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz, webApplicationType);
+
+		if(getAddCommandLineProperties() != null){
+			springApplicationBuilder.addCommandLineProperties(getAddCommandLineProperties());
+		}
+
+		return springApplicationBuilder;
 	}
 
 }
