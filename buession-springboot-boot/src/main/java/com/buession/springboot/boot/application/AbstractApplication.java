@@ -26,7 +26,6 @@
  */
 package com.buession.springboot.boot.application;
 
-import com.buession.core.utils.Assert;
 import com.buession.springboot.boot.config.RuntimeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +50,25 @@ public abstract class AbstractApplication implements Application {
 	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
 	/**
-	 * Banner
+	 * {@link Banner}
 	 *
 	 * @since 1.3.1
 	 */
 	private Banner banner;
+
+	/**
+	 * {@link Banner} Mode
+	 *
+	 * @since 2.3.0
+	 */
+	private Banner.Mode bannerMode;
+
+	/**
+	 * 是否延迟初始化
+	 *
+	 * @since 2.3.0
+	 */
+	private Boolean lazyInitialization;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -79,8 +92,9 @@ public abstract class AbstractApplication implements Application {
 	 */
 	protected AbstractApplication(final Class<? extends Banner> banner) throws InstantiationException,
 			IllegalAccessException{
-		Assert.isNull(banner, "Banner class cloud not be null.");
-		this.banner = banner.newInstance();
+		if(banner != null){
+			this.banner = banner.newInstance();
+		}
 	}
 
 	/**
@@ -92,8 +106,37 @@ public abstract class AbstractApplication implements Application {
 	 * @since 1.3.1
 	 */
 	protected AbstractApplication(final Banner banner){
-		Assert.isNull(banner, "Banner cloud not be null.");
 		this.banner = banner;
+	}
+
+	@Override
+	public Banner getBanner(){
+		return banner;
+	}
+
+	@Override
+	public void setBanner(Banner banner){
+		this.banner = banner;
+	}
+
+	@Override
+	public Banner.Mode getBannerMode(){
+		return bannerMode;
+	}
+
+	@Override
+	public void setBannerMode(Banner.Mode bannerMode){
+		this.bannerMode = bannerMode;
+	}
+
+	@Override
+	public Boolean getLazyInitialization(){
+		return lazyInitialization;
+	}
+
+	@Override
+	public void setLazyInitialization(Boolean lazyInitialization){
+		this.lazyInitialization = lazyInitialization;
 	}
 
 	@Override
@@ -116,26 +159,25 @@ public abstract class AbstractApplication implements Application {
 		}
 	}
 
-	public void doStartup(final Class<? extends Application> clazz, final WebApplicationType webApplicationType,
-						  final String[] args){
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz,
+																final WebApplicationType webApplicationType){
 		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
 		propertyMapper.from(getBanner()).to(springApplicationBuilder::banner);
+		propertyMapper.from(getBannerMode()).to(springApplicationBuilder::bannerMode);
 		propertyMapper.from(getConfigurableApplicationContext()).to(springApplicationBuilder::contextClass);
+		propertyMapper.from(getLazyInitialization()).to(springApplicationBuilder::lazyInitialization);
 
-		springApplicationBuilder.web(webApplicationType).properties(createRuntimeProperties()).logStartupInfo(true)
-				.run(args);
+		springApplicationBuilder.properties(createRuntimeProperties()).web(webApplicationType).logStartupInfo(true);
+
+		return springApplicationBuilder;
 	}
 
-	/**
-	 * 获取 Banner
-	 *
-	 * @return Banner
-	 */
-	protected Banner getBanner(){
-		return banner;
+	protected void doStartup(final Class<? extends Application> clazz, final WebApplicationType webApplicationType,
+							 final String[] args){
+		springApplicationBuilder(clazz, webApplicationType).run(args);
 	}
 
 	protected RuntimeProperties createRuntimeProperties(){

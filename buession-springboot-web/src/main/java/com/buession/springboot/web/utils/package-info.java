@@ -22,21 +22,9 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.boot.utils;
-
 /**
+ * 
+ *
  * @author Yong.Teng
- * @since 1.2.1
- */
-@Deprecated
-public class JceUtils {
-
-	private JceUtils(){
-
-	}
-
-	public static boolean isJceInstalled(){
-		return com.buession.core.utils.JceUtils.isInstalled();
-	}
-
-}
+ * @since 2.3.0
+ */package com.buession.springboot.web.utils;

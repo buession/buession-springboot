@@ -21,22 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.boot.utils;
-
-/**
+ */package com.buession.springboot.captcha.autoconfigure;/**
+ * 
+ *
  * @author Yong.Teng
- * @since 1.2.1
- */
-@Deprecated
-public class JceUtils {
-
-	private JceUtils(){
-
-	}
-
-	public static boolean isJceInstalled(){
-		return com.buession.core.utils.JceUtils.isInstalled();
-	}
-
+ * @since 2.3.0
+ */public class CaptchaWebConfiguration {
 }

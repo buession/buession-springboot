@@ -173,12 +173,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.lalyos</groupId>
-			<artifactId>jfiglet</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 		</dependency>
