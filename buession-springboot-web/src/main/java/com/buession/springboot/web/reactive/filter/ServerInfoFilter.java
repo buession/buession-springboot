@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.filter;
 
 import com.buession.core.validator.Validate;
+import com.buession.springboot.web.utils.ServerInfoFilterUtils;
 
 /**
  * Server 信息 Filter
@@ -85,28 +86,7 @@ public class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInf
 
 	@Override
 	protected String format(String serverName){
-		String s = serverName;
-		final StringBuilder sb = new StringBuilder(serverName.length());
-
-		if(Validate.hasText(prefix)){
-			sb.append(prefix);
-		}
-
-		if(Validate.hasText(stripPrefix) && s.startsWith(stripPrefix)){
-			s = s.substring(stripPrefix.length());
-		}
-
-		if(Validate.hasText(stripSuffix) && s.endsWith(stripSuffix)){
-			s = s.substring(0, s.length() - stripSuffix.length());
-		}
-
-		sb.append(s);
-
-		if(Validate.hasText(suffix)){
-			sb.append(suffix);
-		}
-
-		return sb.toString();
+		return ServerInfoFilterUtils.format(serverName, prefix, stripPrefix, suffix, stripSuffix);
 	}
 
 }

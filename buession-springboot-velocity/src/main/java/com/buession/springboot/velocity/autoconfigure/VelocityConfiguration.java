@@ -69,7 +69,7 @@ public class VelocityConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	private VelocityProperties properties;
+	private final VelocityProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
 
@@ -92,7 +92,7 @@ public class VelocityConfiguration {
 
 	static abstract class AbstractVelocityConfiguration {
 
-		protected VelocityProperties properties;
+		protected final VelocityProperties properties;
 
 		public AbstractVelocityConfiguration(VelocityProperties properties){
 			this.properties = properties;

@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -62,7 +62,7 @@ public class Pac4jJwtConfiguration {
 
 	private final static int PAD_SIZE = 32;
 
-	protected Pac4jProperties properties;
+	private final Pac4jProperties properties;
 
 	public Pac4jJwtConfiguration(Pac4jProperties properties){
 		this.properties = properties;

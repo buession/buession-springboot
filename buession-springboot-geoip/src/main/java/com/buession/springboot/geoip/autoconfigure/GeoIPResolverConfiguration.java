@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
@@ -45,7 +45,7 @@ import java.io.File;
 @EnableConfigurationProperties(GeoIPProperties.class)
 public class GeoIPResolverConfiguration {
 
-	private GeoIPProperties properties;
+	private final GeoIPProperties properties;
 
 	public GeoIPResolverConfiguration(GeoIPProperties properties){
 		this.properties = properties;

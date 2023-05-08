@@ -54,9 +54,9 @@ import java.io.IOException;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnClass({WebSecurityConfigurerAdapter.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
 
 	public ServletWebSecurityConfiguration(WebSecurityProperties properties){

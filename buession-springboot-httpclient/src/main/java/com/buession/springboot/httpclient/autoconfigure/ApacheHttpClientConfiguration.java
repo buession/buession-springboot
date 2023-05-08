@@ -29,7 +29,6 @@ import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import com.buession.httpclient.conn.ApacheNioClientConnectionManager;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
-@ConditionalOnBean({HttpClientConfiguration.class})
 public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
 	public ApacheHttpClientConfiguration(HttpClientProperties properties){

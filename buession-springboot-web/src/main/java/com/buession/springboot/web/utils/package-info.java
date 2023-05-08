@@ -23,8 +23,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  */
 /**
- * 
- *
  * @author Yong.Teng
  * @since 2.3.0
- */package com.buession.springboot.web.utils;
+ */
+package com.buession.springboot.web.utils;

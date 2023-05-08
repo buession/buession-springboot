@@ -49,17 +49,17 @@ public abstract class AbstractServerConfiguration {
 	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
 		final Map<String, String> result = new HashMap<>(headers.size());
 
-		headers.forEach((key, value)->{
+		headers.forEach((name, value)->{
 			if(value != null){
 				if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
 					String propertyName = value.substring(1);
 					String propertyValue = SystemPropertyUtils.getProperty(propertyName);
 
 					if(Validate.hasText(propertyValue)){
-						result.put(key, propertyValue);
+						result.put(name, propertyValue);
 					}
 				}else{
-					result.put(key, value);
+					result.put(name, value);
 				}
 			}
 		});

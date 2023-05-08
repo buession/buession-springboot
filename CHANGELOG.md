@@ -11,7 +11,15 @@
 
 ### ⭐ 新特性
 
+- **buession-springboot-boot：** Application 支持可设置 Banner Mode、lazyInitialization
+- **buession-springboot-cli：** CliApplication 支持可设置 addCommandLineProperties
 - **buession-springboot-httpclient：** 新增 HTTP 异步请求客户端
+- **buession-springboot-captcha** 新增对 WebFlux 的支持
+
+
+### 🔔 变化
+
+- **buession-springboot-boot：** AbstractApplication 允许 Banner 传 null
 
 
 ---

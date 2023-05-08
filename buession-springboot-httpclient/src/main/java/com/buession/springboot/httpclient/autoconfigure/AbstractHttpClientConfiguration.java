@@ -38,7 +38,7 @@ public abstract class AbstractHttpClientConfiguration {
 
 	protected final static String ASYNC_HTTP_CLIENT_BEAN_NAME = "$asyncHttpClient";
 
-	protected HttpClientProperties properties;
+	protected final HttpClientProperties properties;
 
 	public AbstractHttpClientConfiguration(HttpClientProperties properties){
 		this.properties = properties;

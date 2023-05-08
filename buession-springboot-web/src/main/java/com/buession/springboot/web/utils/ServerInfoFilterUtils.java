@@ -21,10 +21,45 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.web.utils;/**
- * 
- *
+ */
+package com.buession.springboot.web.utils;
+
+import com.buession.core.validator.Validate;
+
+/**
  * @author Yong.Teng
  * @since 2.3.0
- */public class ServerInfoFilterUtils {
+ */
+public class ServerInfoFilterUtils {
+
+	private ServerInfoFilterUtils(){
+
+	}
+
+	public static String format(final String serverName, final String prefix, final String stripPrefix,
+								final String suffix, final String stripSuffix){
+		String s = serverName;
+		final StringBuilder sb = new StringBuilder(serverName.length());
+
+		if(Validate.hasText(prefix)){
+			sb.append(prefix);
+		}
+
+		if(Validate.hasText(stripPrefix) && s.startsWith(stripPrefix)){
+			s = s.substring(stripPrefix.length());
+		}
+
+		if(Validate.hasText(stripSuffix) && s.endsWith(stripSuffix)){
+			s = s.substring(0, s.length() - stripSuffix.length());
+		}
+
+		sb.append(s);
+
+		if(Validate.hasText(suffix)){
+			sb.append(suffix);
+		}
+
+		return sb.toString();
+	}
+
 }

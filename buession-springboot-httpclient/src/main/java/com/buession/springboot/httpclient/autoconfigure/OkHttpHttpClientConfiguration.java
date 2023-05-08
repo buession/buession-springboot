@@ -28,7 +28,6 @@ import com.buession.httpclient.OkHttpHttpAsyncClient;
 import com.buession.httpclient.OkHttpHttpClient;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpNioClientConnectionManager;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
-@ConditionalOnBean({HttpClientConfiguration.class})
 public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
 	public OkHttpHttpClientConfiguration(HttpClientProperties properties){

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -146,16 +146,14 @@ public class Pac4jOAuthConfiguration {
 			final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
 					config.getSecret(), config.getCas().getCasOAuthUrl());
 
-			if(Validate.hasText(config.getCas().getCasLogoutUrl())){
-				casOAuthWrapperClient.setCasLogoutUrl(config.getCas().getCasLogoutUrl());
-			}
-
 			casOAuthWrapperClient.setSpringSecurityCompliant(config.getCas().isSpringSecurityCompliant());
 			casOAuthWrapperClient.setImplicitFlow(config.getCas().isImplicitFlow());
 
 			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
 			initOAuth20Client(casOAuthWrapperClient, config.getCas(), propertyMapper);
+
+			propertyMapper.from(config.getCas().getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
 
 			return casOAuthWrapperClient;
 		}
