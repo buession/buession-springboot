@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
@@ -49,7 +49,6 @@ public class MongoDBConfiguration {
 	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext,
 								ObjectProvider<MappingMongoConverter> mappingMongoConverter){
 		MongoMappingContext mappingContext = mongoMappingContext.getIfAvailable();
-		MappingMongoConverter mappingConverter = mappingMongoConverter.getIfAvailable();
 		MongoTypeMapper mongoTypeMapper;
 
 		if(properties.getTypeMapper() != null){
@@ -60,9 +59,7 @@ public class MongoDBConfiguration {
 					mappingContext);
 		}
 
-		if(mappingConverter != null){
-			mappingConverter.setTypeMapper(mongoTypeMapper);
-		}
+		mappingMongoConverter.ifUnique((mongoConverter)->mongoConverter.setTypeMapper(mongoTypeMapper));
 	}
 
 }

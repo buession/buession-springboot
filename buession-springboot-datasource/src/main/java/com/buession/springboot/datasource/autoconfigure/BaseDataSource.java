@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -38,7 +38,7 @@ class BaseDataSource {
 																		 final Class<T> type){
 		return properties.initializeDataSourceBuilder().type(type).build();
 	}
-	
+
 	protected static void clearConfiguration(final AbstractPoolConfiguration configuration){
 		configuration.setUrl(null);
 		configuration.setDriverClassName(null);
@@ -61,7 +61,7 @@ class BaseDataSource {
 					com.zaxxer.hikari.HikariDataSource.class);
 
 			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -83,7 +83,7 @@ class BaseDataSource {
 					org.apache.commons.dbcp2.BasicDataSource.class);
 
 			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -105,7 +105,7 @@ class BaseDataSource {
 					com.alibaba.druid.pool.DruidDataSource.class);
 
 			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -127,7 +127,7 @@ class BaseDataSource {
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 
 			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -148,7 +148,7 @@ class BaseDataSource {
 			final javax.sql.DataSource dataSource = BaseDataSource.createDataSource(properties, null);
 
 			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}

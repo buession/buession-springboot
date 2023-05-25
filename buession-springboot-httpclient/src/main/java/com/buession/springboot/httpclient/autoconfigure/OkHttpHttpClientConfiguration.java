@@ -28,6 +28,7 @@ import com.buession.httpclient.OkHttpHttpAsyncClient;
 import com.buession.httpclient.OkHttpHttpClient;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpNioClientConnectionManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -69,8 +70,8 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpClient httpClient(OkHttpClientConnectionManager connectionManager){
-			return new OkHttpHttpClient(connectionManager);
+		public OkHttpHttpClient httpClient(ObjectProvider<OkHttpClientConnectionManager> connectionManager){
+			return new OkHttpHttpClient(connectionManager.getIfAvailable());
 		}
 
 	}
@@ -95,8 +96,8 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpAsyncClient httpClient(OkHttpNioClientConnectionManager connectionManager){
-			return new OkHttpHttpAsyncClient(connectionManager);
+		public OkHttpHttpAsyncClient httpClient(ObjectProvider<OkHttpNioClientConnectionManager> connectionManager){
+			return new OkHttpHttpAsyncClient(connectionManager.getIfAvailable());
 		}
 
 	}

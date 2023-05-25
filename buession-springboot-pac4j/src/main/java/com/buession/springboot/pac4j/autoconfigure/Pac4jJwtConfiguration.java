@@ -88,17 +88,19 @@ public class Pac4jJwtConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JwtGenerator<CommonProfile> jwtGenerator(SecretSignatureConfiguration signatureConfiguration,
-													SecretEncryptionConfiguration secretEncryptionConfiguration){
-		return new JwtGenerator<>(signatureConfiguration, secretEncryptionConfiguration);
+	public JwtGenerator<CommonProfile> jwtGenerator(ObjectProvider<SecretSignatureConfiguration> signatureConfiguration,
+													ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration){
+		return new JwtGenerator<>(signatureConfiguration.getIfAvailable(),
+				secretEncryptionConfiguration.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JwtAuthenticator jwtAuthenticator(SecretSignatureConfiguration signatureConfiguration,
-											 SecretEncryptionConfiguration secretEncryptionConfiguration){
+	public JwtAuthenticator jwtAuthenticator(ObjectProvider<SecretSignatureConfiguration> signatureConfiguration,
+											 ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration){
 		Jwt config = properties.getClient().getJwt();
-		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
+		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration.getIfAvailable(),
+				secretEncryptionConfiguration.getIfAvailable());
 
 		if(config.getIdentifierGenerator() != null){
 			ValueGenerator identifierGenerator = BeanUtils.instantiateClass(config.getIdentifierGenerator());

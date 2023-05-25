@@ -120,8 +120,8 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SqlSessionTemplate masterSqlSessionTemplate(SqlSessionFactory masterSqlSessionFactory){
-		return createSqlSessionTemplate(masterSqlSessionFactory);
+	public SqlSessionTemplate masterSqlSessionTemplate(ObjectProvider<SqlSessionFactory> masterSqlSessionFactory){
+		return createSqlSessionTemplate(masterSqlSessionFactory.getIfAvailable());
 	}
 
 	@Bean

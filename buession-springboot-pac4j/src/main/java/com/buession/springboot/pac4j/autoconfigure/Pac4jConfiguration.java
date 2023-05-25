@@ -142,8 +142,9 @@ public class Pac4jConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(
-				@Qualifier("webFluxAdapterRegistry") ReactiveAdapterRegistry reactiveAdapterRegistry){
-			return new Pac4jWebFluxConfigurerAdapter(context.getBeanFactory(), reactiveAdapterRegistry);
+				@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> reactiveAdapterRegistry){
+			return new Pac4jWebFluxConfigurerAdapter(context.getBeanFactory(),
+					reactiveAdapterRegistry.getIfAvailable());
 		}
 
 	}

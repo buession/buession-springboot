@@ -105,7 +105,7 @@ public class Pac4jCasConfiguration {
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setLogoutHandler);
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setUrlResolver);
 
-		casConfiguration.setProxyReceptor(casProxyReceptor.getIfAvailable());
+		casProxyReceptor.ifUnique(casConfiguration::setProxyReceptor);
 
 		return casConfiguration;
 	}

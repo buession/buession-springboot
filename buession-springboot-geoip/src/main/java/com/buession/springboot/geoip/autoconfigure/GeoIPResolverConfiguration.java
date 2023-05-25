@@ -25,10 +25,8 @@
 package com.buession.springboot.geoip.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.geoip.Resolver;
 import com.buession.geoip.spring.GeoIPResolverFactoryBean;
 import com.maxmind.geoip2.DatabaseReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -53,17 +51,16 @@ public class GeoIPResolverConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Resolver geoIPResolver() throws Exception{
-		GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
+	public GeoIPResolverFactoryBean geoIPResolver() throws Exception{
+		final GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
 
 		if(Validate.hasText(properties.getDbPath())){
 			factory.setDbPath(new File(properties.getDbPath()));
 		}
 
 		factory.setEnableCache(properties.isEnableCache());
-		factory.afterPropertiesSet();
 
-		return factory.getObject();
+		return factory;
 	}
 
 }

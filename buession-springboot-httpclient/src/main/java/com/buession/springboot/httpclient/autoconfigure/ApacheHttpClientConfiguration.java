@@ -29,6 +29,7 @@ import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
 import com.buession.httpclient.conn.ApacheNioClientConnectionManager;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -70,8 +71,8 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpClient httpClient(ApacheClientConnectionManager connectionManager){
-			return new ApacheHttpClient(connectionManager);
+		public ApacheHttpClient httpClient(ObjectProvider<ApacheClientConnectionManager> connectionManager){
+			return new ApacheHttpClient(connectionManager.getIfAvailable());
 		}
 
 	}
@@ -111,8 +112,8 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpAsyncClient httpClient(ApacheNioClientConnectionManager connectionManager){
-			return new ApacheHttpAsyncClient(connectionManager);
+		public ApacheHttpAsyncClient httpClient(ObjectProvider<ApacheNioClientConnectionManager> connectionManager){
+			return new ApacheHttpAsyncClient(connectionManager.getIfAvailable());
 		}
 
 	}
