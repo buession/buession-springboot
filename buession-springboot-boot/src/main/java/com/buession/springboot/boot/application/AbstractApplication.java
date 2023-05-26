@@ -30,7 +30,6 @@ import com.buession.springboot.boot.config.RuntimeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -159,25 +158,27 @@ public abstract class AbstractApplication implements Application {
 		}
 	}
 
-	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz,
-																final WebApplicationType webApplicationType){
-		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
+	@Override
+	public void startup(final Class<? extends Application> clazz, final String[] args){
+		doStartup(clazz, args);
+	}
 
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
 		propertyMapper.from(getBanner()).to(springApplicationBuilder::banner);
 		propertyMapper.from(getBannerMode()).to(springApplicationBuilder::bannerMode);
 		propertyMapper.from(getConfigurableApplicationContext()).to(springApplicationBuilder::contextClass);
 		propertyMapper.from(getLazyInitialization()).to(springApplicationBuilder::lazyInitialization);
 
-		springApplicationBuilder.properties(createRuntimeProperties()).web(webApplicationType).logStartupInfo(true);
+		springApplicationBuilder.properties(createRuntimeProperties()).logStartupInfo(true);
 
 		return springApplicationBuilder;
 	}
 
-	protected void doStartup(final Class<? extends Application> clazz, final WebApplicationType webApplicationType,
-							 final String[] args){
-		springApplicationBuilder(clazz, webApplicationType).run(args);
+	protected void doStartup(final Class<? extends Application> clazz, final String[] args){
+		springApplicationBuilder(clazz).run(args);
 	}
 
 	protected RuntimeProperties createRuntimeProperties(){

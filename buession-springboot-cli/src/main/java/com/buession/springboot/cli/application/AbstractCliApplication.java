@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cli.application;
@@ -28,7 +28,6 @@ import com.buession.springboot.boot.application.AbstractApplication;
 import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
@@ -140,18 +139,12 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	}
 
 	@Override
-	public void startup(Class<? extends Application> clazz, String[] args){
-		doStartup(clazz, WebApplicationType.NONE, args);
-	}
-
-	@Override
 	public final void run(final String[] args){
 	}
 
 	@Override
-	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz,
-																final WebApplicationType webApplicationType){
-		SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz, webApplicationType);
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
+		final SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz);
 
 		if(getAddCommandLineProperties() != null){
 			springApplicationBuilder.addCommandLineProperties(getAddCommandLineProperties());
