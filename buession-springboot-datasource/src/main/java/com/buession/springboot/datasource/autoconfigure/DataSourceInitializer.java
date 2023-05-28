@@ -25,6 +25,7 @@
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
 import org.slf4j.Logger;
@@ -59,14 +60,15 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 
 	private final static Logger logger = LoggerFactory.getLogger(DataSourceInitializer.class);
 
-	DataSourceInitializer(final Class<D> dataSource, final P poolConfiguration, final DataSourceProperties properties){
+	DataSourceInitializer(final Class<D> dataSource, final P poolConfiguration, final DataSourceProperties properties) {
 		this.dataSource = dataSource;
 		this.poolConfiguration = poolConfiguration;
 		this.properties = properties;
 	}
 
-	public DataSource initialize(final Callback<T> callback){
-		DataSource dataSource = new DataSource();
+	public DataSource initialize(
+			final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
+		final DataSource dataSource = new DataSource();
 
 		dataSource.setMaster(createDataSource(properties.getMaster(), callback));
 
@@ -91,7 +93,7 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 	}
 
 	private T createDataSource(final org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties,
-							   final Callback<T> callback){
+							   final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
 		properties.setDriverClassName(properties.getDriverClassName());
 
 		try{
