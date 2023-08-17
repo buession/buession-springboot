@@ -2,6 +2,37 @@
 ===========================
 
 
+## [2.3.0](https://github.com/buession/buession-springboot/releases/tag/v2.3.0) (2023-08-17)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.0)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-boot：** Application 支持可设置 Banner Mode、lazyInitialization
+- **buession-springboot-cli：** CliApplication 支持可设置 addCommandLineProperties
+- **buession-springboot-httpclient：** 新增 HTTP 异步请求客户端
+- **buession-springboot-captcha：** 新增对 WebFlux 的支持
+- **buession-springboot-web：** webflux 下创建 HttpMessageConverters bean
+
+
+### 🔔 变化
+
+- **buession-springboot-boot：** AbstractApplication 允许 Banner 传 null
+- **buession-springboot-boot：** Banner 不再使用 jfiglet
+- **buession-springboot-web：** AbstractWebApplication webApplicationType 属性默认值由 WebApplicationType.SERVLET 改为 null
+
+
+### ⏪ 优化
+
+- 其它优化
+
+
+---
+
+
 ## [2.2.1](https://github.com/buession/buession-springboot/releases/tag/v2.2.1) (2023-03-31)
 
 ### 🔨依赖升级

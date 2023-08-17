@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -29,6 +29,7 @@ import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.core.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,7 +49,7 @@ import org.springframework.context.annotation.Import;
 @Import({RedisDataSourceConfiguration.class})
 public class RedisConfiguration {
 
-	private RedisProperties properties;
+	private final RedisProperties properties;
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
@@ -59,8 +60,8 @@ public class RedisConfiguration {
 	@Bean
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(DataSource dataSource){
-		final RedisTemplate template = new RedisTemplate(dataSource);
+	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource){
+		final RedisTemplate template = new RedisTemplate(dataSource.getIfAvailable());
 		final Options.Builder builder = Options.Builder.getInstance()
 				.prefix(properties.getKeyPrefix())
 				.serializer(properties.getSerializer())

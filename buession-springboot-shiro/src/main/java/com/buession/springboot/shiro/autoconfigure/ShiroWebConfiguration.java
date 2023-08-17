@@ -21,11 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import com.buession.security.shiro.Cookie;
@@ -73,7 +74,7 @@ import java.util.List;
 @AutoConfigureAfter({ShiroWebMvcConfiguration.class})
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
-	protected ShiroProperties properties;
+	private final ShiroProperties properties;
 
 	public ShiroWebConfiguration(ShiroProperties properties){
 		this.properties = properties;
@@ -199,13 +200,10 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
 		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
 
-		if(properties.getSession().getCookie().getSecure() != null){
-			cookie.setSecure(properties.getSession().getCookie().getSecure());
-		}
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-		if(properties.getSession().getCookie().getHttpOnly() != null){
-			cookie.setHttpOnly(properties.getSession().getCookie().getHttpOnly());
-		}
+		propertyMapper.from(properties.getSession().getCookie().getSecure()).to(cookie::setSecure);
+		propertyMapper.from(properties.getSession().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
 
 		return cookie;
 	}
@@ -216,13 +214,10 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
 		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
 
-		if(properties.getRememberMe().getCookie().getSecure() != null){
-			cookie.setSecure(properties.getRememberMe().getCookie().getSecure());
-		}
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-		if(properties.getRememberMe().getCookie().getHttpOnly() != null){
-			cookie.setHttpOnly(properties.getRememberMe().getCookie().getHttpOnly());
-		}
+		propertyMapper.from(properties.getRememberMe().getCookie().getSecure()).to(cookie::setSecure);
+		propertyMapper.from(properties.getRememberMe().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
 
 		return cookie;
 	}

@@ -19,21 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
-import com.buession.httpclient.ApacheHttpClient;
-import com.buession.httpclient.HttpClient;
-import com.buession.httpclient.OkHttpHttpClient;
-import com.buession.httpclient.conn.ApacheClientConnectionManager;
-import com.buession.httpclient.conn.OkHttpClientConnectionManager;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -44,72 +35,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HttpClientProperties.class)
+@Deprecated
 public class HttpClientConfiguration {
-
-	protected final static String CLIENT_CONNECTION_MANAGER_BEAN_NAME = "httpClientConnectionManager";
-
-	protected final static String HTTP_CLIENT_BEAN_NAME = "$httpClient";
-
-	protected HttpClientProperties properties;
-
-	public HttpClientConfiguration(HttpClientProperties properties){
-		this.properties = properties;
-	}
-
-	/**
-	 * Apache HttpClient Auto Configuration
-	 *
-	 * @author Yong.Teng
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass(org.apache.http.impl.client.CloseableHttpClient.class)
-	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = HttpClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
-	static class Apache extends HttpClientConfiguration {
-
-		public Apache(HttpClientProperties properties){
-			super(properties);
-		}
-
-		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public ApacheClientConnectionManager clientConnectionManager(){
-			return new ApacheClientConnectionManager(properties);
-		}
-
-		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpClient httpClient(ApacheClientConnectionManager connectionManager){
-			return new ApacheHttpClient(connectionManager);
-		}
-
-	}
-
-	/**
-	 * OkHttp HttpClient Auto Configuration
-	 *
-	 * @author Yong.Teng
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass(okhttp3.OkHttpClient.class)
-	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = HttpClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
-	static class OkHttp extends HttpClientConfiguration {
-
-		public OkHttp(HttpClientProperties properties){
-			super(properties);
-		}
-
-		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public OkHttpClientConnectionManager clientConnectionManager(){
-			return new OkHttpClientConnectionManager(properties);
-		}
-
-		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpClient httpClient(OkHttpClientConnectionManager connectionManager){
-			return new OkHttpHttpClient(connectionManager);
-		}
-
-	}
 
 }

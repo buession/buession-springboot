@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.core.validator.Validate;
+import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,18 +47,18 @@ public class DataSourceConfiguration {
 
 	protected final DataSourceProperties properties;
 
-	public DataSourceConfiguration(DataSourceProperties properties){
+	public DataSourceConfiguration(DataSourceProperties properties) {
 		this.properties = properties;
 	}
 
 	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
-			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties){
+			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties) {
 		return createDataSource(type, poolConfiguration, dataSourceProperties, (dataSource, properties)->dataSource);
 	}
 
 	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
 			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties,
-			final Callback<T> callback){
+			final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
 		final DataSourceInitializer<T, P, D> dataSourceInitializer = new DataSourceInitializer<>(type,
 				poolConfiguration, dataSourceProperties);
 		return dataSourceInitializer.initialize(callback);
@@ -76,21 +76,14 @@ public class DataSourceConfiguration {
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
 
-		public Hikari(DataSourceProperties properties){
+		public Hikari(DataSourceProperties properties) {
 			super(properties);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		public DataSource dataSource(){
-			return createDataSource(BaseDataSource.HikariDataSource.class, properties.getHikari(), properties,
-					(dataSource, properties)->{
-						if(Validate.hasText(properties.getName())){
-							dataSource.setPoolName(properties.getName());
-						}
-
-						return dataSource;
-					});
+		public DataSource dataSource() {
+			return createDataSource(DataSources.HikariDataSource.class, properties.getHikari(), properties);
 		}
 
 	}
@@ -107,14 +100,14 @@ public class DataSourceConfiguration {
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
 
-		public Dbcp2(DataSourceProperties properties){
+		public Dbcp2(DataSourceProperties properties) {
 			super(properties);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
-		public DataSource dataSource(){
-			return createDataSource(BaseDataSource.Dbcp2DataSource.class, properties.getDbcp2(), properties);
+		public DataSource dataSource() {
+			return createDataSource(DataSources.Dbcp2DataSource.class, properties.getDbcp2(), properties);
 		}
 
 	}
@@ -131,14 +124,14 @@ public class DataSourceConfiguration {
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.alibaba.druid.pool.DruidDataSource", matchIfMissing = true)
 	static class Druid extends DataSourceConfiguration {
 
-		public Druid(DataSourceProperties properties){
+		public Druid(DataSourceProperties properties) {
 			super(properties);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.druid")
-		public DataSource dataSource(){
-			return createDataSource(BaseDataSource.DruidDataSource.class, properties.getDruid(), properties);
+		public DataSource dataSource() {
+			return createDataSource(DataSources.DruidDataSource.class, properties.getDruid(), properties);
 		}
 
 	}
@@ -155,14 +148,14 @@ public class DataSourceConfiguration {
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
 
-		public Tomcat(DataSourceProperties properties){
+		public Tomcat(DataSourceProperties properties) {
 			super(properties);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		public DataSource dataSource(){
-			return createDataSource(BaseDataSource.TomcatDataSource.class, properties.getTomcat(), properties,
+		public DataSource dataSource() {
+			return createDataSource(DataSources.TomcatDataSource.class, properties.getTomcat(), properties,
 					(dataSource, properties)->{
 						DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
 						String validationQuery = databaseDriver.getValidationQuery();
@@ -189,13 +182,13 @@ public class DataSourceConfiguration {
 	@ConditionalOnProperty(name = "spring.datasource.type")
 	static class Generic extends DataSourceConfiguration {
 
-		public Generic(DataSourceProperties properties){
+		public Generic(DataSourceProperties properties) {
 			super(properties);
 		}
 
 		@Bean
-		public DataSource dataSource(){
-			return createDataSource(BaseDataSource.GenericDataSource.class, properties.getGeneric(), properties);
+		public DataSource dataSource() {
+			return createDataSource(DataSources.GenericDataSource.class, properties.getGeneric(), properties);
 		}
 
 	}

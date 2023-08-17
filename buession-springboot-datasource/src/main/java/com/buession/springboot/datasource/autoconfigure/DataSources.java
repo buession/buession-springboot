@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.jdbc.datasource.config.AbstractPoolConfiguration;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 
@@ -32,36 +31,29 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
  * @author Yong.Teng
  * @since 2.0.0
  */
-class BaseDataSource {
+class DataSources {
 
 	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties,
-																		 final Class<T> type){
+																		 final Class<T> type) {
 		return properties.initializeDataSourceBuilder().type(type).build();
-	}
-	
-	protected static void clearConfiguration(final AbstractPoolConfiguration configuration){
-		configuration.setUrl(null);
-		configuration.setDriverClassName(null);
-		configuration.setUsername(null);
-		configuration.setPassword(null);
 	}
 
 	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource {
 
 		private final DataSourceProperties properties;
 
-		public HikariDataSource(final DataSourceProperties properties){
-			super();
+		public HikariDataSource(final DataSourceProperties properties) {
+			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
+					properties.determinePassword());
 			this.properties = properties;
 		}
 
 		@Override
-		public com.zaxxer.hikari.HikariDataSource createDataSource(){
-			final com.zaxxer.hikari.HikariDataSource dataSource = BaseDataSource.createDataSource(properties,
+		public com.zaxxer.hikari.HikariDataSource createDataSource() {
+			final com.zaxxer.hikari.HikariDataSource dataSource = DataSources.createDataSource(properties,
 					com.zaxxer.hikari.HikariDataSource.class);
 
-			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -72,18 +64,18 @@ class BaseDataSource {
 
 		private final DataSourceProperties properties;
 
-		public Dbcp2DataSource(final DataSourceProperties properties){
-			super();
+		public Dbcp2DataSource(final DataSourceProperties properties) {
+			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
+					properties.determinePassword());
 			this.properties = properties;
 		}
 
 		@Override
-		public BasicDataSource createDataSource(){
-			final BasicDataSource dataSource = BaseDataSource.createDataSource(properties,
+		public BasicDataSource createDataSource() {
+			final BasicDataSource dataSource = DataSources.createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 
-			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -94,18 +86,18 @@ class BaseDataSource {
 
 		private final DataSourceProperties properties;
 
-		public DruidDataSource(final DataSourceProperties properties){
-			super();
+		public DruidDataSource(final DataSourceProperties properties) {
+			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
+					properties.determinePassword());
 			this.properties = properties;
 		}
 
 		@Override
-		public com.alibaba.druid.pool.DruidDataSource createDataSource(){
-			final com.alibaba.druid.pool.DruidDataSource dataSource = BaseDataSource.createDataSource(properties,
+		public com.alibaba.druid.pool.DruidDataSource createDataSource() {
+			final com.alibaba.druid.pool.DruidDataSource dataSource = DataSources.createDataSource(properties,
 					com.alibaba.druid.pool.DruidDataSource.class);
 
-			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -116,18 +108,18 @@ class BaseDataSource {
 
 		private final DataSourceProperties properties;
 
-		public TomcatDataSource(final DataSourceProperties properties){
-			super();
+		public TomcatDataSource(final DataSourceProperties properties) {
+			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
+					properties.determinePassword());
 			this.properties = properties;
 		}
 
 		@Override
-		public org.apache.tomcat.jdbc.pool.DataSource createDataSource(){
-			final org.apache.tomcat.jdbc.pool.DataSource dataSource = BaseDataSource.createDataSource(properties,
+		public org.apache.tomcat.jdbc.pool.DataSource createDataSource() {
+			final org.apache.tomcat.jdbc.pool.DataSource dataSource = DataSources.createDataSource(properties,
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 
-			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}
@@ -138,17 +130,17 @@ class BaseDataSource {
 
 		private final DataSourceProperties properties;
 
-		public GenericDataSource(final DataSourceProperties properties){
-			super();
+		public GenericDataSource(final DataSourceProperties properties) {
+			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
+					properties.determinePassword());
 			this.properties = properties;
 		}
 
 		@Override
-		public javax.sql.DataSource createDataSource(){
-			final javax.sql.DataSource dataSource = BaseDataSource.createDataSource(properties, null);
+		public javax.sql.DataSource createDataSource() {
+			final javax.sql.DataSource dataSource = DataSources.createDataSource(properties, null);
 
-			clearConfiguration(getPoolConfiguration());
-			applyPoolConfiguration(dataSource, getPoolConfiguration());
+			initialize(dataSource);
 
 			return dataSource;
 		}

@@ -21,17 +21,16 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.banner;
 
 import com.buession.core.Framework;
+import com.buession.core.utils.JceUtils;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.utils.VersionUtils;
 import com.buession.springboot.boot.utils.FileUtils;
-import com.buession.springboot.boot.utils.JceUtils;
-import com.github.lalyos.jfiglet.FigletFont;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
@@ -48,9 +47,14 @@ import java.util.Properties;
  */
 public abstract class AbstractBanner implements Banner {
 
+	private final static String ANSI_CYAN = "\u001B[36m";
+
+	private final static String ANSI_RESET = "\u001B[0m";
+
 	private final static int SEPARATOR_REPEAT_COUNT = 60;
 
-	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY, Collections.nCopies(SEPARATOR_REPEAT_COUNT, "-"));
+	private final static String LINE_SEPARATOR = String.join(StringUtils.EMPTY,
+			Collections.nCopies(SEPARATOR_REPEAT_COUNT, "-"));
 
 	private final static String BANNER_SKIP_PROPERTY_NAME = "BANNER_SKIP";
 
@@ -59,25 +63,28 @@ public abstract class AbstractBanner implements Banner {
 		String additional = collectEnvironmentInfo(environment, sourceClass);
 
 		try{
-			out.println("\u001b[36m");
-			out.println(FigletFont.convertOneLine(getTitle()));
+			out.println(ANSI_CYAN);
+			out.println(getTitle());
 
 			if(StringUtils.isNotBlank(additional)){
 				out.println(additional);
 			}
 
-			out.println("\u001b[0m");
+			out.println(ANSI_RESET);
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
 	}
 
 	protected String getTitle(){
-		StringBuilder sb = new StringBuilder(Framework.NAME.length());
-
-		sb.append('(').append(Framework.NAME.toUpperCase()).append(')');
-
-		return sb.toString();
+		return '\n'
+				+ "______                         _               \n" +
+				"| ___ \\                       (_)              \n" +
+				"| |_/ / _   _   ___  ___  ___  _   ___   _ __  \n" +
+				"| ___ \\| | | | / _ \\/ __|/ __|| | / _ \\ | '_ \\ \n" +
+				"| |_/ /| |_| ||  __/\\__ \\\\__ \\| || (_) || | | |\n" +
+				"\\____/  \\__,_| \\___||___/|___/|_| \\___/ |_| |_|\n" +
+				"                                                    \n";
 	}
 
 	protected String getVersion(){
@@ -124,7 +131,7 @@ public abstract class AbstractBanner implements Banner {
 				formatter.format("JVM Total Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.totalMemory()));
 				formatter.format("JVM Maximum Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.maxMemory()));
 				formatter.format("JVM Free Memory: %s%n", FileUtils.byteCountToDisplaySize(runtime.freeMemory()));
-				formatter.format("JCE Installed: %s%n", JceUtils.isJceInstalled() ? "Yes" : "No");
+				formatter.format("JCE Installed: %s%n", JceUtils.isInstalled() ? "Yes" : "No");
 				formatter.format("%s%n", LINE_SEPARATOR);
 
 				injectEnvironmentInfoIntoBanner(formatter, environment, sourceClass);
@@ -139,7 +146,8 @@ public abstract class AbstractBanner implements Banner {
 		}
 	}
 
-	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment, final Class<?> sourceClass){
+	protected void injectEnvironmentInfoIntoBanner(final Formatter formatter, final Environment environment,
+												   final Class<?> sourceClass){
 	}
 
 	private static void closeFormatter(Formatter formatter, Throwable throwable){

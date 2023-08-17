@@ -22,25 +22,44 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.web.utils;
 
-import org.apache.shiro.spring.web.config.ShiroRequestMappingConfig;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import com.buession.core.validator.Validate;
 
 /**
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RequestMappingHandlerMapping.class)
-@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import(ShiroRequestMappingConfig.class)
-public class ShiroWebMvcConfiguration {
+public class ServerInfoFilterUtils {
+
+	private ServerInfoFilterUtils(){
+
+	}
+
+	public static String format(final String serverName, final String prefix, final String stripPrefix,
+								final String suffix, final String stripSuffix){
+		String s = serverName;
+		final StringBuilder sb = new StringBuilder(serverName.length());
+
+		if(Validate.hasText(prefix)){
+			sb.append(prefix);
+		}
+
+		if(Validate.hasText(stripPrefix) && s.startsWith(stripPrefix)){
+			s = s.substring(stripPrefix.length());
+		}
+
+		if(Validate.hasText(stripSuffix) && s.endsWith(stripSuffix)){
+			s = s.substring(0, s.length() - stripSuffix.length());
+		}
+
+		sb.append(s);
+
+		if(Validate.hasText(suffix)){
+			sb.append(suffix);
+		}
+
+		return sb.toString();
+	}
 
 }

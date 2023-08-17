@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -55,11 +55,19 @@ import java.util.ArrayList;
 @Configuration(proxyBeanMethods = false)
 public class DataSourcePoolMetadataProvidersConfiguration {
 
+	abstract static class AbstractPoolDataSourceMetadataProviderConfiguration<P extends DataSourcePoolMetadataProvider<?>> {
+
+		abstract P poolDataSourceMetadataProvider();
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(HikariDataSource.class)
-	static class HikariPoolDataSourceMetadataProviderConfiguration {
+	static class HikariPoolDataSourceMetadataProviderConfiguration extends
+			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider> {
 
 		@Bean
+		@Override
 		public DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
@@ -90,9 +98,11 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Dbcp2DataSource.class)
-	static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
+	static class Dbcp2PoolDataSourceMetadataProviderConfiguration extends
+			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider> {
 
 		@Bean
+		@Override
 		public DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
@@ -125,9 +135,11 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DruidDataSource.class)
-	static class DruidPoolDataSourceMetadataProviderConfiguration {
+	static class DruidPoolDataSourceMetadataProviderConfiguration extends
+			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider> {
 
 		@Bean
+		@Override
 		public DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
@@ -159,9 +171,11 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TomcatDataSource.class)
-	static class TomcatDataSourcePoolMetadataProviderConfiguration {
+	static class TomcatDataSourcePoolMetadataProviderConfiguration extends
+			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider> {
 
 		@Bean
+		@Override
 		public DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();

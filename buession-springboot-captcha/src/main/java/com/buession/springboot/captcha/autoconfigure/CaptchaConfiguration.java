@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.captcha.autoconfigure;
@@ -28,12 +28,8 @@ import com.buession.httpclient.HttpClient;
 import com.buession.security.captcha.CaptchaClient;
 import com.buession.security.captcha.aliyun.AliYunCaptchaClient;
 import com.buession.security.captcha.geetest.GeetestCaptchaClient;
-import com.buession.security.captcha.geetest.GeetestParameter;
 import com.buession.security.captcha.tencent.TencentCaptchaClient;
-import com.buession.security.captcha.validator.CaptchaValidator;
-import com.buession.security.captcha.validator.servlet.ServletAliYunCaptchaValidator;
-import com.buession.security.captcha.validator.servlet.ServletGeetestCaptchaValidator;
-import com.buession.security.captcha.validator.servlet.ServletTencentCaptchaValidator;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,107 +45,54 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(CaptchaProperties.class)
 public class CaptchaConfiguration {
 
-	protected CaptchaProperties properties;
+	private final CaptchaProperties properties;
 
-	public CaptchaConfiguration(CaptchaProperties properties){
+	private final HttpClient httpClient;
+
+	public CaptchaConfiguration(CaptchaProperties properties, ObjectProvider<HttpClient> httpClient){
 		this.properties = properties;
+		this.httpClient = httpClient.getIfAvailable();
 	}
 
-	protected void afterInitialized(final CaptchaClient captchaClient){
+	protected void afterPropertiesSet(final CaptchaClient captchaClient){
 		captchaClient.setJavaScript(properties.getJavascript());
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CaptchaProperties.class)
-	@ConditionalOnMissingBean({CaptchaValidator.class})
+	@Bean
+	@ConditionalOnMissingBean({CaptchaClient.class})
 	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "aliyun.enabled", havingValue = "true")
-	static class AliYunCaptchaConfiguration extends CaptchaConfiguration {
+	public AliYunCaptchaClient aliYunCaptchaClient(){
+		final AliYunCaptchaClient client = new AliYunCaptchaClient(properties.getAliyun().getAccessKeyId(),
+				properties.getAliyun().getAccessKeySecret(), properties.getAliyun().getAppKey(),
+				properties.getAliyun().getRegionId(), httpClient);
 
-		public AliYunCaptchaConfiguration(CaptchaProperties properties){
-			super(properties);
-		}
+		afterPropertiesSet(client);
 
-		@Bean
-		@ConditionalOnMissingBean
-		public AliYunCaptchaClient captchaClient(HttpClient httpClient){
-			final CaptchaProperties.Aliyun config = properties.getAliyun();
-			final AliYunCaptchaClient client = new AliYunCaptchaClient(config.getAccessKeyId(),
-					config.getAccessKeySecret(), config.getAppKey(), config.getRegionId(), httpClient);
-
-			afterInitialized(client);
-
-			return client;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ServletAliYunCaptchaValidator captchaValidator(AliYunCaptchaClient aliYunCaptchaClient){
-			return new ServletAliYunCaptchaValidator(aliYunCaptchaClient, properties.getAliyun().getParameter());
-		}
-
+		return client;
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CaptchaProperties.class)
-	@ConditionalOnMissingBean({CaptchaValidator.class})
+	@Bean
+	@ConditionalOnMissingBean({CaptchaClient.class})
 	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "geetest.enabled", havingValue = "true")
-	static class GeetestCaptchaConfiguration extends CaptchaConfiguration {
+	public GeetestCaptchaClient geetestCaptchaClient(){
+		final GeetestCaptchaClient client = new GeetestCaptchaClient(properties.getGeetest().getAppId(),
+				properties.getGeetest().getSecretKey(), properties.getGeetest().getVersion(), httpClient);
 
-		public GeetestCaptchaConfiguration(CaptchaProperties properties){
-			super(properties);
-		}
+		afterPropertiesSet(client);
 
-		@Bean
-		@ConditionalOnMissingBean
-		public GeetestCaptchaClient captchaClient(HttpClient httpClient){
-			final CaptchaProperties.Geetest config = properties.getGeetest();
-			final GeetestCaptchaClient client = new GeetestCaptchaClient(config.getAppId(), config.getSecretKey(),
-					config.getVersion(), httpClient);
-
-			afterInitialized(client);
-
-			return client;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ServletGeetestCaptchaValidator captchaValidator(GeetestCaptchaClient geetestCaptchaClient){
-			GeetestParameter parameter = "v3".equalsIgnoreCase(
-					geetestCaptchaClient.getVersion()) ? properties.getGeetest().getV3()
-					.getParameter() : properties.getGeetest().getV4().getParameter();
-			return new ServletGeetestCaptchaValidator(geetestCaptchaClient, parameter);
-		}
-
+		return client;
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CaptchaProperties.class)
-	@ConditionalOnMissingBean({CaptchaValidator.class})
+	@Bean
+	@ConditionalOnMissingBean({CaptchaClient.class})
 	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "tencent.enabled", havingValue = "true")
-	static class TencentCaptchaConfiguration extends CaptchaConfiguration {
+	public TencentCaptchaClient tencentCaptchaClient(){
+		final TencentCaptchaClient client = new TencentCaptchaClient(properties.getTencent().getAppId(),
+				properties.getTencent().getSecretKey(), httpClient);
 
-		public TencentCaptchaConfiguration(CaptchaProperties properties){
-			super(properties);
-		}
+		afterPropertiesSet(client);
 
-		@Bean
-		@ConditionalOnMissingBean
-		public TencentCaptchaClient captchaClient(HttpClient httpClient){
-			final CaptchaProperties.Tencent config = properties.getTencent();
-			final TencentCaptchaClient client = new TencentCaptchaClient(config.getAppId(), config.getSecretKey(),
-					httpClient);
-
-			afterInitialized(client);
-
-			return client;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ServletTencentCaptchaValidator captchaValidator(TencentCaptchaClient tencentCaptchaClient){
-			return new ServletTencentCaptchaValidator(tencentCaptchaClient, properties.getTencent().getParameter());
-		}
-
+		return client;
 	}
 
 }

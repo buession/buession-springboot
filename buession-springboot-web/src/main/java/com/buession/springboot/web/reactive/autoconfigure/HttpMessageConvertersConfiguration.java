@@ -22,25 +22,38 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.web.reactive.autoconfigure;
 
-import org.apache.shiro.spring.web.config.ShiroRequestMappingConfig;
+import com.buession.web.reactive.OnWebFluxCondition;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.http.converter.HttpMessageConverter;
+
+import java.util.stream.Collectors;
 
 /**
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(RequestMappingHandlerMapping.class)
-@ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@Import(ShiroRequestMappingConfig.class)
-public class ShiroWebMvcConfiguration {
+@ConditionalOnClass(HttpMessageConverter.class)
+@Conditional(OnWebFluxCondition.class)
+@AutoConfigureAfter({GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class})
+public class HttpMessageConvertersConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(HttpMessageConverters.class)
+	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
+	}
 
 }

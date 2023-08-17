@@ -19,13 +19,14 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cli.application;
 
 import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.WebApplicationType;
 
 /**
  * 命令行应用接口
@@ -33,6 +34,25 @@ import org.springframework.boot.CommandLineRunner;
  * @author Yong.Teng
  */
 public interface CliApplication extends Application, CommandLineRunner {
+
+	/**
+	 * 返回是否添加 Command Line Properties
+	 *
+	 * @return 是否添加 Command Line Properties
+	 *
+	 * @since 2.3.0
+	 */
+	Boolean getAddCommandLineProperties();
+
+	/**
+	 * 设置是否添加 Command Line Properties
+	 *
+	 * @param addCommandLineProperties
+	 * 		是否添加 Command Line Properties
+	 *
+	 * @since 2.3.0
+	 */
+	void setAddCommandLineProperties(Boolean addCommandLineProperties);
 
 	@Override
 	default void run(final String[] args){

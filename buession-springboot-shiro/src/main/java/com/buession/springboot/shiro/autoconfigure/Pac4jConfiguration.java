@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -70,7 +70,8 @@ public class Pac4jConfiguration {
 
 		public ShiroAutoConfiguration(ObjectProvider<SecurityManager> securityManager,
 									  ObjectProvider<SubjectFactory> subjectFactory){
-			((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory.getIfAvailable());
+			((DefaultSecurityManager) securityManager.getIfAvailable()).setSubjectFactory(
+					subjectFactory.getIfAvailable());
 		}
 
 	}

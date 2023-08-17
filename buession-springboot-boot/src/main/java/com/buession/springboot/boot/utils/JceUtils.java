@@ -19,17 +19,16 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.utils;
-
-import javax.crypto.Cipher;
 
 /**
  * @author Yong.Teng
  * @since 1.2.1
  */
+@Deprecated
 public class JceUtils {
 
 	private JceUtils(){
@@ -37,11 +36,7 @@ public class JceUtils {
 	}
 
 	public static boolean isJceInstalled(){
-		try{
-			return Cipher.getMaxAllowedKeyLength("AES") == 2147483647;
-		}catch(Exception e){
-			return false;
-		}
+		return com.buession.core.utils.JceUtils.isInstalled();
 	}
 
 }

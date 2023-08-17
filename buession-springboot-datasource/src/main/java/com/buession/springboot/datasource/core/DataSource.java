@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.datasource.core;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -31,7 +32,9 @@ import java.util.List;
  *
  * @author Yong.Teng
  */
-public class DataSource {
+public class DataSource implements Serializable {
+
+	private final static long serialVersionUID = 1181748178611062130L;
 
 	/**
 	 * Master 库数据源
@@ -46,7 +49,7 @@ public class DataSource {
 	/**
 	 * 构造函数
 	 */
-	public DataSource(){
+	public DataSource() {
 	}
 
 	/**
@@ -57,7 +60,7 @@ public class DataSource {
 	 * @param slaves
 	 * 		Slave 库数据源列表
 	 */
-	public DataSource(final javax.sql.DataSource master, final List<javax.sql.DataSource> slaves){
+	public DataSource(final javax.sql.DataSource master, final List<javax.sql.DataSource> slaves) {
 		this.master = master;
 		this.slaves = slaves;
 	}
@@ -67,7 +70,7 @@ public class DataSource {
 	 *
 	 * @return Master 库数据源
 	 */
-	public javax.sql.DataSource getMaster(){
+	public javax.sql.DataSource getMaster() {
 		return master;
 	}
 
@@ -77,7 +80,7 @@ public class DataSource {
 	 * @param master
 	 * 		Master 库数据源
 	 */
-	public void setMaster(javax.sql.DataSource master){
+	public void setMaster(javax.sql.DataSource master) {
 		this.master = master;
 	}
 
@@ -86,7 +89,7 @@ public class DataSource {
 	 *
 	 * @return Slave 库数据源列表
 	 */
-	public List<javax.sql.DataSource> getSlaves(){
+	public List<javax.sql.DataSource> getSlaves() {
 		return slaves;
 	}
 
@@ -96,7 +99,7 @@ public class DataSource {
 	 * @param slaves
 	 * 		Slave 库数据源列表
 	 */
-	public void setSlaves(List<javax.sql.DataSource> slaves){
+	public void setSlaves(List<javax.sql.DataSource> slaves) {
 		this.slaves = slaves;
 	}
 

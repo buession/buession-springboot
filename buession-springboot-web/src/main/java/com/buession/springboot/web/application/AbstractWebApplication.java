@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.application;
@@ -30,6 +30,7 @@ import com.buession.springboot.boot.application.AbstractApplication;
 import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * Web 应用抽象类
@@ -41,7 +42,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	/**
 	 * WEB 应用类型
 	 */
-	private WebApplicationType webApplicationType = WebApplicationType.SERVLET;
+	private WebApplicationType webApplicationType;
 
 	/**
 	 * 构造函数
@@ -141,8 +142,14 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	}
 
 	@Override
-	public void startup(final Class<? extends Application> clazz, final String[] args){
-		doStartup(clazz, getWebApplicationType(), args);
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
+		final SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz);
+
+		if(getWebApplicationType() != null){
+			springApplicationBuilder.web(getWebApplicationType());
+		}
+
+		return springApplicationBuilder;
 	}
 
 }

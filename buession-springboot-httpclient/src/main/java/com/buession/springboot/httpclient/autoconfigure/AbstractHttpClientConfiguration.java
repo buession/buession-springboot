@@ -19,32 +19,29 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.autoconfigure;
-
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+package com.buession.springboot.httpclient.autoconfigure;
 
 /**
- * {@link javax.sql.DataSource} 初始化回调
- *
  * @author Yong.Teng
- * @since 1.3.2
+ * @since 2.3.0
  */
-@FunctionalInterface
-interface Callback<T extends javax.sql.DataSource> {
+public abstract class AbstractHttpClientConfiguration {
 
-	/**
-	 * {@link javax.sql.DataSource} 初始化回调
-	 *
-	 * @param dataSource
-	 *        {@link javax.sql.DataSource} 实例
-	 * @param properties
-	 *        {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties} 配置
-	 *
-	 * @return {@link javax.sql.DataSource} 实例
-	 */
-	T apply(T dataSource, DataSourceProperties properties);
+	protected final static String CLIENT_CONNECTION_MANAGER_BEAN_NAME = "httpClientConnectionManager";
+
+	protected final static String NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME = "nioHttpClientConnectionManager";
+
+	protected final static String HTTP_CLIENT_BEAN_NAME = "$httpClient";
+
+	protected final static String ASYNC_HTTP_CLIENT_BEAN_NAME = "$asyncHttpClient";
+
+	protected final HttpClientProperties properties;
+
+	public AbstractHttpClientConfiguration(HttpClientProperties properties){
+		this.properties = properties;
+	}
 
 }

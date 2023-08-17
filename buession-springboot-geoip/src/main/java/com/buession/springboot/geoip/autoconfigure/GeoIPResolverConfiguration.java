@@ -19,16 +19,14 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.geoip.autoconfigure;
 
 import com.buession.core.validator.Validate;
-import com.buession.geoip.Resolver;
 import com.buession.geoip.spring.GeoIPResolverFactoryBean;
 import com.maxmind.geoip2.DatabaseReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,7 +43,7 @@ import java.io.File;
 @EnableConfigurationProperties(GeoIPProperties.class)
 public class GeoIPResolverConfiguration {
 
-	private GeoIPProperties properties;
+	private final GeoIPProperties properties;
 
 	public GeoIPResolverConfiguration(GeoIPProperties properties){
 		this.properties = properties;
@@ -53,17 +51,16 @@ public class GeoIPResolverConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Resolver geoIPResolver() throws Exception{
-		GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
+	public GeoIPResolverFactoryBean geoIPResolver() throws Exception{
+		final GeoIPResolverFactoryBean factory = new GeoIPResolverFactoryBean();
 
 		if(Validate.hasText(properties.getDbPath())){
 			factory.setDbPath(new File(properties.getDbPath()));
 		}
 
 		factory.setEnableCache(properties.isEnableCache());
-		factory.afterPropertiesSet();
 
-		return factory.getObject();
+		return factory;
 	}
 
 }

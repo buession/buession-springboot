@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -64,7 +64,7 @@ import java.util.List;
 @AutoConfigureBefore({Pac4jConfiguration.class})
 public class Pac4jCasConfiguration {
 
-	protected Pac4jProperties properties;
+	private final Pac4jProperties properties;
 
 	public Pac4jCasConfiguration(Pac4jProperties properties){
 		this.properties = properties;
@@ -105,7 +105,7 @@ public class Pac4jCasConfiguration {
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setLogoutHandler);
 		//propertyMapper.from(config.getIfAvailable()).to(casConfiguration::setUrlResolver);
 
-		casConfiguration.setProxyReceptor(casProxyReceptor.getIfAvailable());
+		casProxyReceptor.ifUnique(casConfiguration::setProxyReceptor);
 
 		return casConfiguration;
 	}
@@ -235,7 +235,6 @@ public class Pac4jCasConfiguration {
 
 				client.setAuthorizationGenerators(authorizationGenerators);
 			}
-
 		}
 
 	}
