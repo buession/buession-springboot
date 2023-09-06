@@ -25,6 +25,8 @@
 package com.buession.springboot.cache.redis.autoconfigure;
 
 import com.buession.redis.client.connection.datasource.DataSource;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Redis 数据源 {@link DataSource} 初始化器
@@ -35,14 +37,6 @@ import com.buession.redis.client.connection.datasource.DataSource;
  * @author Yong.Teng
  * @since 2.0.0
  */
-@FunctionalInterface
-interface DataSourceInitializer<DS extends DataSource> {
-
-	/**
-	 * Redis 数据源 {@link DataSource} 初始化
-	 *
-	 * @return {@link DataSource} 实例
-	 */
-	DS createInstance();
+interface DataSourceInitializer<DS extends DataSource> extends InitializingBean, FactoryBean<DS> {
 
 }

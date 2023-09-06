@@ -56,12 +56,12 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 	 * @param properties
 	 *        {@link RedisProperties}
 	 */
-	public JedisDataSourceInitializer(final RedisProperties properties){
+	public JedisDataSourceInitializer(final RedisProperties properties) {
 		super(properties);
 	}
 
 	@Override
-	public JedisRedisDataSource createInstance(){
+	public JedisRedisDataSource getObject() throws Exception {
 		JedisRedisDataSource dataSource;
 
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
@@ -90,7 +90,17 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisDataSource(){
+	@Override
+	public Class<? extends JedisRedisDataSource> getObjectType() {
+		return null;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	}
+
+	private JedisRedisDataSource createJedisDataSource() {
 		final JedisDataSource dataSource = new JedisDataSource();
 
 		if(Validate.hasText(properties.getHost())){
@@ -117,7 +127,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisSentinelDataSource(){
+	private JedisRedisDataSource createJedisSentinelDataSource() {
 		RedisProperties.Sentinel sentinel = properties.getSentinel();
 
 		List<RedisNode> sentinelNodes;
@@ -142,7 +152,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisClusterDataSource(){
+	private JedisRedisDataSource createJedisClusterDataSource() {
 		RedisProperties.Cluster cluster = properties.getCluster();
 
 		List<RedisNode> nodes;
