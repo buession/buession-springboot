@@ -29,14 +29,14 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Redis 数据源 {@link DataSource} 初始化器
+ * Redis 数据源 {@link DataSource} 工厂 Bean
  *
  * @param <DS>
  * 		数据源类型
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.1
  */
-interface DataSourceInitializer<DS extends DataSource> extends InitializingBean, FactoryBean<DS> {
+interface DataSourceFactoryBean<DS extends DataSource> extends InitializingBean, FactoryBean<DS> {
 
 }

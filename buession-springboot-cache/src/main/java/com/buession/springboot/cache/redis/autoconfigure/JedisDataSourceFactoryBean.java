@@ -41,14 +41,14 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Jedis Redis 数据源 {@link JedisDataSource} 初始化器
+ * Jedis Redis 数据源 {@link JedisDataSource} 工厂 Bean
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.0
  */
-class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedisDataSource> {
+class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedisDataSource> {
 
-	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceInitializer.class);
+	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceFactoryBean.class);
 
 	/**
 	 * 构造函数
@@ -56,14 +56,12 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 	 * @param properties
 	 *        {@link RedisProperties}
 	 */
-	public JedisDataSourceInitializer(final RedisProperties properties) {
+	public JedisDataSourceFactoryBean(final RedisProperties properties) {
 		super(properties);
 	}
 
 	@Override
 	public JedisRedisDataSource getObject() throws Exception {
-		JedisRedisDataSource dataSource;
-
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
 			dataSource = createJedisClusterDataSource();
 		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
@@ -72,6 +70,11 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 			dataSource = createJedisDataSource();
 		}
 
+		return dataSource;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		if(Validate.hasText(properties.getClientName())){
 			dataSource.setClientName(properties.getClientName());
 		}
@@ -86,18 +89,6 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
 					dataSource.getPoolConfig() == null ? "without" : "with");
 		}
-
-		return dataSource;
-	}
-
-	@Override
-	public Class<? extends JedisRedisDataSource> getObjectType() {
-		return null;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-
 	}
 
 	private JedisRedisDataSource createJedisDataSource() {

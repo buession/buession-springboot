@@ -58,7 +58,7 @@ public class RedisDataSourceConfiguration {
 
 	protected RedisProperties properties;
 
-	public RedisDataSourceConfiguration(RedisProperties properties){
+	public RedisDataSourceConfiguration(RedisProperties properties) {
 		this.properties = properties;
 	}
 
@@ -68,14 +68,13 @@ public class RedisDataSourceConfiguration {
 	@ConditionalOnMissingBean(name = "redisDataSource", value = DataSource.class)
 	static class Jedis extends RedisDataSourceConfiguration {
 
-		public Jedis(RedisProperties properties){
+		public Jedis(RedisProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = "redisDataSource")
-		public JedisRedisDataSource dataSource(){
-			final JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
-			return dataSourceInitializer.createInstance();
+		public JedisDataSourceFactoryBean dataSource() throws Exception {
+			return new JedisDataSourceFactoryBean(properties);
 		}
 
 	}
