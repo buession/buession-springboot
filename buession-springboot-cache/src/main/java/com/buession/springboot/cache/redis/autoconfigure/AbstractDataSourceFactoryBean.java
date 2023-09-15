@@ -52,6 +52,11 @@ public abstract class AbstractDataSourceFactoryBean<DS extends DataSource> imple
 	}
 
 	@Override
+	public DS getObject() throws Exception {
+		return dataSource;
+	}
+
+	@Override
 	public Class<? extends DataSource> getObjectType() {
 		return dataSource.getClass();
 	}

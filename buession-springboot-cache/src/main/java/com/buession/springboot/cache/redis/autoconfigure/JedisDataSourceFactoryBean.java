@@ -61,20 +61,9 @@ class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedi
 	}
 
 	@Override
-	public JedisRedisDataSource getObject() throws Exception {
-		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
-			dataSource = createJedisClusterDataSource();
-		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
-			dataSource = createJedisSentinelDataSource();
-		}else{
-			dataSource = createJedisDataSource();
-		}
-
-		return dataSource;
-	}
-
-	@Override
 	public void afterPropertiesSet() throws Exception {
+		dataSource = createJedisDataSource();
+
 		if(Validate.hasText(properties.getClientName())){
 			dataSource.setClientName(properties.getClientName());
 		}
@@ -92,6 +81,16 @@ class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedi
 	}
 
 	private JedisRedisDataSource createJedisDataSource() {
+		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
+			return createJedisClusterDataSource();
+		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
+			return createJedisSentinelDataSource();
+		}else{
+			return createJedisStandaloneDataSource();
+		}
+	}
+
+	private JedisRedisDataSource createJedisStandaloneDataSource() {
 		final JedisDataSource dataSource = new JedisDataSource();
 
 		if(Validate.hasText(properties.getHost())){
