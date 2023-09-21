@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -29,8 +29,10 @@ package com.buession.springboot.mybatis.autoconfigure;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.type.TypeHandler;
+import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.lang.annotation.Annotation;
 import java.util.Properties;
 
 /**
@@ -38,8 +40,10 @@ import java.util.Properties;
  *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.mybatis")
+@ConfigurationProperties(prefix = MybatisProperties.PREFIX)
 public class MybatisProperties {
+
+	public final static String PREFIX = "spring.mybatis";
 
 	/**
 	 * 配置文件路径
@@ -117,11 +121,18 @@ public class MybatisProperties {
 	private boolean failFast;
 
 	/**
+	 * 扫描器
+	 *
+	 * @since 2.3.1
+	 */
+	private Scanner scanner;
+
+	/**
 	 * 获取配置文件路径
 	 *
 	 * @return 配置文件路径
 	 */
-	public String getConfigLocation(){
+	public String getConfigLocation() {
 		return configLocation;
 	}
 
@@ -131,67 +142,67 @@ public class MybatisProperties {
 	 * @param configLocation
 	 * 		配置文件路径
 	 */
-	public void setConfigLocation(String configLocation){
+	public void setConfigLocation(String configLocation) {
 		this.configLocation = configLocation;
 	}
 
-	public boolean isCheckConfigLocation(){
+	public boolean isCheckConfigLocation() {
 		return getCheckConfigLocation();
 	}
 
-	public boolean getCheckConfigLocation(){
+	public boolean getCheckConfigLocation() {
 		return checkConfigLocation;
 	}
 
-	public void setCheckConfigLocation(boolean checkConfigLocation){
+	public void setCheckConfigLocation(boolean checkConfigLocation) {
 		this.checkConfigLocation = checkConfigLocation;
 	}
 
-	public String[] getMapperLocations(){
+	public String[] getMapperLocations() {
 		return mapperLocations;
 	}
 
-	public void setMapperLocations(String[] mapperLocations){
+	public void setMapperLocations(String[] mapperLocations) {
 		this.mapperLocations = mapperLocations;
 	}
 
-	public String getTypeAliasesPackage(){
+	public String getTypeAliasesPackage() {
 		return typeAliasesPackage;
 	}
 
-	public void setTypeAliasesPackage(String typeAliasesPackage){
+	public void setTypeAliasesPackage(String typeAliasesPackage) {
 		this.typeAliasesPackage = typeAliasesPackage;
 	}
 
-	public Class<?> getTypeAliasesSuperType(){
+	public Class<?> getTypeAliasesSuperType() {
 		return typeAliasesSuperType;
 	}
 
-	public void setTypeAliasesSuperType(Class<?> typeAliasesSuperType){
+	public void setTypeAliasesSuperType(Class<?> typeAliasesSuperType) {
 		this.typeAliasesSuperType = typeAliasesSuperType;
 	}
 
-	public Class<?>[] getTypeAliases(){
+	public Class<?>[] getTypeAliases() {
 		return typeAliases;
 	}
 
-	public void setTypeAliases(Class<?>[] typeAliases){
+	public void setTypeAliases(Class<?>[] typeAliases) {
 		this.typeAliases = typeAliases;
 	}
 
-	public String getTypeHandlersPackage(){
+	public String getTypeHandlersPackage() {
 		return typeHandlersPackage;
 	}
 
-	public void setTypeHandlersPackage(String typeHandlersPackage){
+	public void setTypeHandlersPackage(String typeHandlersPackage) {
 		this.typeHandlersPackage = typeHandlersPackage;
 	}
 
-	public TypeHandler<?>[] getTypeHandlers(){
+	public TypeHandler<?>[] getTypeHandlers() {
 		return typeHandlers;
 	}
 
-	public void setTypeHandlers(TypeHandler<?>[] typeHandlers){
+	public void setTypeHandlers(TypeHandler<?>[] typeHandlers) {
 		this.typeHandlers = typeHandlers;
 	}
 
@@ -202,7 +213,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Class<? extends TypeHandler<Enum<?>>> getDefaultEnumTypeHandler(){
+	public Class<? extends TypeHandler<Enum<?>>> getDefaultEnumTypeHandler() {
 		return defaultEnumTypeHandler;
 	}
 
@@ -214,7 +225,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler){
+	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler) {
 		this.defaultEnumTypeHandler = defaultEnumTypeHandler;
 	}
 
@@ -225,7 +236,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public ExecutorType getExecutorType(){
+	public ExecutorType getExecutorType() {
 		return executorType;
 	}
 
@@ -237,7 +248,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setExecutorType(ExecutorType executorType){
+	public void setExecutorType(ExecutorType executorType) {
 		this.executorType = executorType;
 	}
 
@@ -248,7 +259,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Properties getConfigurationProperties(){
+	public Properties getConfigurationProperties() {
 		return configurationProperties;
 	}
 
@@ -260,7 +271,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setConfigurationProperties(Properties configurationProperties){
+	public void setConfigurationProperties(Properties configurationProperties) {
 		this.configurationProperties = configurationProperties;
 	}
 
@@ -271,7 +282,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Configuration getConfiguration(){
+	public Configuration getConfiguration() {
 		return configuration;
 	}
 
@@ -283,7 +294,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setConfiguration(Configuration configuration){
+	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -294,7 +305,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public boolean getFailFast(){
+	public boolean getFailFast() {
 		return failFast;
 	}
 
@@ -306,8 +317,148 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setFailFast(boolean failFast){
+	public void setFailFast(boolean failFast) {
 		this.failFast = failFast;
+	}
+
+	/**
+	 * 返回扫描器
+	 *
+	 * @return 扫描器
+	 */
+	public Scanner getScanner() {
+		return scanner;
+	}
+
+	/**
+	 * 设置扫描器
+	 *
+	 * @param scanner
+	 * 		扫描器
+	 */
+	public void setScanner(Scanner scanner) {
+		this.scanner = scanner;
+	}
+
+	/**
+	 * 扫描器
+	 *
+	 * @author Yong.Teng
+	 * @since 2.3.1
+	 */
+	public final static class Scanner {
+
+		private String basePackage;
+
+		private Boolean addToConfig = true;
+
+		private String lazyInitialization;
+
+		private String sqlSessionFactoryBeanName;
+
+		private String sqlSessionTemplateBeanName;
+
+		private Class<? extends Annotation> annotationClass = org.apache.ibatis.annotations.Mapper.class;
+
+		private Class<?> markerInterface;
+
+		private Class<? extends MapperFactoryBean> mapperFactoryBeanClass;
+
+		private String beanName;
+
+		private Boolean processPropertyPlaceHolders;
+
+		private String defaultScope;
+
+		public String getBasePackage() {
+			return basePackage;
+		}
+
+		public void setBasePackage(String basePackage) {
+			this.basePackage = basePackage;
+		}
+
+		public Boolean getAddToConfig() {
+			return addToConfig;
+		}
+
+		public void setAddToConfig(Boolean addToConfig) {
+			this.addToConfig = addToConfig;
+		}
+
+		public String getLazyInitialization() {
+			return lazyInitialization;
+		}
+
+		public void setLazyInitialization(String lazyInitialization) {
+			this.lazyInitialization = lazyInitialization;
+		}
+
+		public String getSqlSessionFactoryBeanName() {
+			return sqlSessionFactoryBeanName;
+		}
+
+		public void setSqlSessionFactoryBeanName(String sqlSessionFactoryBeanName) {
+			this.sqlSessionFactoryBeanName = sqlSessionFactoryBeanName;
+		}
+
+		public String getSqlSessionTemplateBeanName() {
+			return sqlSessionTemplateBeanName;
+		}
+
+		public void setSqlSessionTemplateBeanName(String sqlSessionTemplateBeanName) {
+			this.sqlSessionTemplateBeanName = sqlSessionTemplateBeanName;
+		}
+
+		public Class<? extends Annotation> getAnnotationClass() {
+			return annotationClass;
+		}
+
+		public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
+			this.annotationClass = annotationClass;
+		}
+
+		public Class<?> getMarkerInterface() {
+			return markerInterface;
+		}
+
+		public void setMarkerInterface(Class<?> markerInterface) {
+			this.markerInterface = markerInterface;
+		}
+
+		public Class<? extends MapperFactoryBean> getMapperFactoryBeanClass() {
+			return mapperFactoryBeanClass;
+		}
+
+		public void setMapperFactoryBeanClass(
+				Class<? extends MapperFactoryBean> mapperFactoryBeanClass) {
+			this.mapperFactoryBeanClass = mapperFactoryBeanClass;
+		}
+
+		public String getBeanName() {
+			return beanName;
+		}
+
+		public void setBeanName(String beanName) {
+			this.beanName = beanName;
+		}
+
+		public Boolean getProcessPropertyPlaceHolders() {
+			return processPropertyPlaceHolders;
+		}
+
+		public void setProcessPropertyPlaceHolders(Boolean processPropertyPlaceHolders) {
+			this.processPropertyPlaceHolders = processPropertyPlaceHolders;
+		}
+
+		public String getDefaultScope() {
+			return defaultScope;
+		}
+
+		public void setDefaultScope(String defaultScope) {
+			this.defaultScope = defaultScope;
+		}
+
 	}
 
 }
