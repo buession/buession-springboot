@@ -25,51 +25,131 @@
 package com.buession.springboot.canal.autoconfigure;
 
 /**
- * Kafka 适配器配置
+ * RabbitMQ 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class KafkaProperties extends BaseAdapterProperties {
+public class RabbitProperties extends BaseAdapterProperties {
 
-	private String servers;
+	/**
+	 * RabbitMQ 主机地址
+	 */
+	private String server;
 
-	private String topic;
+	/**
+	 * Virtual Host
+	 */
+	private String virtualHost;
 
-	private String groupId;
+	/**
+	 * 用户名
+	 */
+	private String username;
 
-	private Integer partition;
+	/**
+	 * 密码
+	 */
+	private String password;
 
-	public String getServers() {
-		return servers;
+	/**
+	 * 队列名称
+	 */
+	private String queueName;
+
+	/**
+	 * 返回 RabbitMQ 主机地址
+	 *
+	 * @return RabbitMQ 主机地址
+	 */
+	public String getServer() {
+		return server;
 	}
 
-	public void setServers(String servers) {
-		this.servers = servers;
+	/**
+	 * 设置 RabbitMQ 主机地址
+	 *
+	 * @param server
+	 * 		RabbitMQ 主机地址
+	 */
+	public void setServer(String server) {
+		this.server = server;
 	}
 
-	public String getTopic() {
-		return topic;
+	/**
+	 * 返回 Virtual Host
+	 *
+	 * @return Virtual Host
+	 */
+	public String getVirtualHost() {
+		return virtualHost;
 	}
 
-	public void setTopic(String topic) {
-		this.topic = topic;
+	/**
+	 * 设置 Virtual Host
+	 *
+	 * @param virtualHost
+	 * 		Virtual Host
+	 */
+	public void setVirtualHost(String virtualHost) {
+		this.virtualHost = virtualHost;
 	}
 
-	public String getGroupId() {
-		return groupId;
+	/**
+	 * 返回用户名
+	 *
+	 * @return 用户名
+	 */
+	public String getUsername() {
+		return username;
 	}
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
+	/**
+	 * 设置用户名
+	 *
+	 * @param username
+	 * 		用户名
+	 */
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public Integer getPartition() {
-		return partition;
+	/**
+	 * 返回密码
+	 *
+	 * @return 密码
+	 */
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPartition(Integer partition) {
-		this.partition = partition;
+	/**
+	 * 设置密码
+	 *
+	 * @param password
+	 * 		密码
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	
+
+	/**
+	 * 返回队列名称
+	 *
+	 * @return 队列名称
+	 */
+	public String getQueueName() {
+		return queueName;
+	}
+
+	/**
+	 * 设置队列名称
+	 *
+	 * @param queueName
+	 * 		队列名称
+	 */
+	public void setQueueName(String queueName) {
+		this.queueName = queueName;
+	}
+
 }

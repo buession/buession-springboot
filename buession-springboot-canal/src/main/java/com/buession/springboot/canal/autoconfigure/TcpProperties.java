@@ -30,46 +30,112 @@ package com.buession.springboot.canal.autoconfigure;
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class KafkaProperties extends BaseAdapterProperties {
+public class TcpProperties extends BaseAdapterProperties {
 
-	private String servers;
+	/**
+	 * 主机地址
+	 */
+	private String server;
 
-	private String topic;
+	/**
+	 * Zookeeper 主机地址
+	 */
+	private String zkServers;
 
-	private String groupId;
+	private String destination;
 
-	private Integer partition;
+	/**
+	 * 用户名
+	 */
+	private String username;
 
-	public String getServers() {
-		return servers;
+	/**
+	 * 密码
+	 */
+	private String password;
+
+	/**
+	 * 返回主机地址
+	 *
+	 * @return 主机地址
+	 */
+	public String getServer() {
+		return server;
 	}
 
-	public void setServers(String servers) {
-		this.servers = servers;
+	/**
+	 * 设置主机地址
+	 *
+	 * @param server
+	 * 		主机地址
+	 */
+	public void setServer(String server) {
+		this.server = server;
 	}
 
-	public String getTopic() {
-		return topic;
+	/**
+	 * 返回 Zookeeper 主机地址
+	 *
+	 * @return Zookeeper 主机地址
+	 */
+	public String getZkServers() {
+		return zkServers;
 	}
 
-	public void setTopic(String topic) {
-		this.topic = topic;
+	/**
+	 * 设置 Zookeeper 主机地址
+	 *
+	 * @param zkServers
+	 * 		Zookeeper 主机地址
+	 */
+	public void setZkServers(String zkServers) {
+		this.zkServers = zkServers;
 	}
 
-	public String getGroupId() {
-		return groupId;
+	public String getDestination() {
+		return destination;
 	}
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
+	public void setDestination(String destination) {
+		this.destination = destination;
 	}
 
-	public Integer getPartition() {
-		return partition;
+	/**
+	 * 返回用户名
+	 *
+	 * @return 用户名
+	 */
+	public String getUsername() {
+		return username;
 	}
 
-	public void setPartition(Integer partition) {
-		this.partition = partition;
+	/**
+	 * 设置用户名
+	 *
+	 * @param username
+	 * 		用户名
+	 */
+	public void setUsername(String username) {
+		this.username = username;
 	}
-	
+
+	/**
+	 * 返回密码
+	 *
+	 * @return 密码
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * 设置密码
+	 *
+	 * @param password
+	 * 		密码
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 }

@@ -22,9 +22,10 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal;
+package com.buession.springboot.canal.autoconfigure;
 
 import com.buession.canal.core.concurrent.DefaultThreadFactory;
+import com.buession.springboot.canal.ThreadConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({CanalProperties.class})
-@ConditionalOnProperty(prefix = CanalProperties.PREFIX, name = "async", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = CanalProperties.PREFIX, name = "async.enable", havingValue = "true", matchIfMissing = true)
 public class ThreadPoolConfiguration {
 
 	private final ThreadConfig thread;
@@ -74,7 +75,7 @@ public class ThreadPoolConfiguration {
 		}
 
 		return new ThreadPoolExecutor(thread.getCorePoolSize(), thread.getMaximumPoolSize(),
-				thread.getKeepAlive().toMillis(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(
+				thread.getKeepAliveTime().toMillis(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(
 				thread.getQueueCapacity()), new DefaultThreadFactory(thread.getNamePrefix()), rejectedExecutionHandler);
 	}
 

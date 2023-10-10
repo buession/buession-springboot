@@ -56,6 +56,7 @@
 	<modules>
 		<module>../buession-springboot-boot</module>
 		<module>../buession-springboot-cache</module>
+		<module>../buession-springboot-canal</module>
 		<module>../buession-springboot-captcha</module>
 		<module>../buession-springboot-cli</module>
 		<module>../buession-springboot-datasource</module>

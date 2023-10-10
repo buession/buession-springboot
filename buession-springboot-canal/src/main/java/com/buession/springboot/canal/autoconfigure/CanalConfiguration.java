@@ -21,10 +21,28 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.autoconfigure;/**
- * 
- *
+ */
+package com.buession.springboot.canal.autoconfigure;
+
+import com.buession.canal.client.CanalClient;
+import com.buession.springboot.canal.launcher.CanalLauncher;
+import com.buession.springboot.canal.launcher.DefaultCanalLauncher;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+/**
  * @author Yong.Teng
  * @since 2.3.1
- */public class CanalConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@Import(CanalClientConfiguration.class)
+public class CanalConfiguration {
+
+	@Bean
+	public CanalLauncher canalLauncher(ObjectProvider<CanalClient> canalClient) {
+		return new DefaultCanalLauncher(canalClient.getIfAvailable());
+	}
+
 }

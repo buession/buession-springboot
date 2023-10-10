@@ -21,10 +21,50 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.launcher;/**
- * 
+ */
+package com.buession.springboot.canal.launcher;
+
+import com.buession.canal.client.CanalClient;
+import com.buession.core.utils.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Canal 客户端启动器抽象类
  *
  * @author Yong.Teng
  * @since 2.3.1
- */public class AbstractCanalLauncher {
+ */
+public abstract class AbstractCanalLauncher implements CanalLauncher {
+
+	/**
+	 * Canal 客户端
+	 */
+	private final CanalClient canalClient;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	/**
+	 * 构造函数
+	 *
+	 * @param canalClient
+	 * 		Canal 客户端
+	 */
+	public AbstractCanalLauncher(final CanalClient canalClient) {
+		Assert.isNull(canalClient, "CanalClient cloud not be null.");
+		this.canalClient = canalClient;
+	}
+
+	@Override
+	public void startup() {
+		logger.info("CanalClient startup.");
+		canalClient.start();
+	}
+
+	@Override
+	public void close() throws Exception {
+		canalClient.stop();
+		logger.info("CanalClient close.");
+	}
+
 }

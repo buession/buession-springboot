@@ -21,10 +21,27 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.launcher;/**
- * 
+ */
+package com.buession.springboot.canal.launcher;
+
+import com.buession.canal.client.CanalClient;
+
+/**
+ * 默认 Canal 客户端启动器
  *
  * @author Yong.Teng
  * @since 2.3.1
- */public class DefaultCanalLauncher {
+ */
+public class DefaultCanalLauncher extends AbstractCanalLauncher {
+
+	/**
+	 * 构造函数
+	 *
+	 * @param canalClient
+	 * 		Canal 客户端
+	 */
+	public DefaultCanalLauncher(final CanalClient canalClient) {
+		super(canalClient);
+	}
+
 }

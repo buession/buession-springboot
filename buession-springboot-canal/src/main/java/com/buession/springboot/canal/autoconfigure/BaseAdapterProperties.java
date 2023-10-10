@@ -24,10 +24,60 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import java.time.Duration;
+
 /**
  * @author Yong.Teng
  * @since 2.3.1
  */
-abstract class BaseProperties {
+abstract class BaseAdapterProperties {
+
+	/**
+	 * 超时时间
+	 */
+	private Duration timeout = Duration.ofSeconds(10);
+
+	/**
+	 * 批处理大小
+	 */
+	private int batchSize = 10;
+
+	/**
+	 * 返回超时时间
+	 *
+	 * @return 超时时间
+	 */
+	public Duration getTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * 设置超时时间
+	 *
+	 * @param timeout
+	 * 		超时时间
+	 */
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
+	}
+
+	/**
+	 * 返回批处理大小
+	 *
+	 * @return 批处理大小
+	 */
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	/**
+	 * 设置批处理大小
+	 *
+	 * @param batchSize
+	 * 		批处理大小
+	 */
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
 
 }

@@ -21,10 +21,111 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.autoconfigure;/**
- * 
+ */
+package com.buession.springboot.canal.autoconfigure;
+
+/**
+ * Kafka 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
- */public class KafkaProperties {
+ */
+public class KafkaProperties extends BaseAdapterProperties {
+
+	/**
+	 * Kafka 主机地址
+	 */
+	private String servers;
+
+	/**
+	 * Topic
+	 */
+	private String topic;
+
+	/**
+	 * Group Id
+	 */
+	private String groupId;
+
+	/**
+	 * 分区
+	 */
+	private Integer partition;
+
+	/**
+	 * 返回 Kafka 主机地址
+	 *
+	 * @return Kafka 主机地址
+	 */
+	public String getServers() {
+		return servers;
+	}
+
+	/**
+	 * 设置 Kafka 主机地址
+	 *
+	 * @param servers
+	 * 		Kafka 主机地址
+	 */
+	public void setServers(String servers) {
+		this.servers = servers;
+	}
+
+	/**
+	 * 返回 Topic
+	 *
+	 * @return Topic
+	 */
+	public String getTopic() {
+		return topic;
+	}
+
+	/**
+	 * 设置 Topic
+	 *
+	 * @param topic
+	 * 		Topic
+	 */
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
+	/**
+	 * 返回 Group Id
+	 *
+	 * @return Group Id
+	 */
+	public String getGroupId() {
+		return groupId;
+	}
+
+	/**
+	 * 设置 Group Id
+	 *
+	 * @param groupId
+	 * 		Group Id
+	 */
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	/**
+	 * 返回分区
+	 *
+	 * @return 分区
+	 */
+	public Integer getPartition() {
+		return partition;
+	}
+
+	/**
+	 * 设置分区
+	 *
+	 * @param partition
+	 * 		分区
+	 */
+	public void setPartition(Integer partition) {
+		this.partition = partition;
+	}
+
 }
