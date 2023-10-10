@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.boot.autoconfigure;
+package com.buession.springboot.boot.autoconfigure.condition;
