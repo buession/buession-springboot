@@ -19,55 +19,57 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package org.springframework.boot.jdbc.metadata;
-
-import com.alibaba.druid.pool.DruidDataSource;
-
-import javax.sql.DataSource;
+package com.buession.springboot.canal.autoconfigure;
 
 /**
- * {@link DataSourcePoolMetadata} for a Druid {@link DataSource}.
+ * Kafka 适配器配置
  *
  * @author Yong.Teng
- * @since 1.3.2
+ * @since 2.3.1
  */
-public class DruidDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DruidDataSource> {
+public class KafkaProperties extends BaseAdapterProperties {
 
-	public DruidDataSourcePoolMetadata(DruidDataSource dataSource) {
-		super(dataSource);
+	private String servers;
+
+	private String topic;
+
+	private String groupId;
+
+	private Integer partition;
+
+	public String getServers() {
+		return servers;
 	}
 
-	@Override
-	public Integer getActive() {
-		return getDataSource().getActiveCount();
+	public void setServers(String servers) {
+		this.servers = servers;
 	}
 
-	@Override
-	public Integer getIdle() {
-		return getDataSource().getPoolingCount();
+	public String getTopic() {
+		return topic;
 	}
 
-	@Override
-	public Integer getMax() {
-		return getDataSource().getMaxIdle();
+	public void setTopic(String topic) {
+		this.topic = topic;
 	}
 
-	@Override
-	public Integer getMin() {
-		return getDataSource().getMinIdle();
+	public String getGroupId() {
+		return groupId;
 	}
 
-	@Override
-	public String getValidationQuery() {
-		return getDataSource().getValidationQuery();
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 
-	@Override
-	public Boolean getDefaultAutoCommit() {
-		return getDataSource().isDefaultAutoCommit();
+	public Integer getPartition() {
+		return partition;
 	}
 
+	public void setPartition(Integer partition) {
+		this.partition = partition;
+	}
+	
 }

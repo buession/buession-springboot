@@ -19,13 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.core.builder.ListBuilder;
 import com.buession.core.validator.Validate;
-import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
 import org.slf4j.Logger;
@@ -34,7 +34,6 @@ import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +51,7 @@ import java.util.stream.Collectors;
  */
 class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> {
 
-	private final Class<D> dataSource;
+	private final Class<D> type;
 
 	private final P poolConfiguration;
 
@@ -60,54 +59,49 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 
 	private final static Logger logger = LoggerFactory.getLogger(DataSourceInitializer.class);
 
-	DataSourceInitializer(final Class<D> dataSource, final P poolConfiguration, final DataSourceProperties properties) {
-		this.dataSource = dataSource;
+	DataSourceInitializer(final Class<D> type, final P poolConfiguration, final DataSourceProperties properties) {
+		this.type = type;
 		this.poolConfiguration = poolConfiguration;
 		this.properties = properties;
 	}
 
-	public DataSource initialize(
-			final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
+	public DataSource createDataSource() {
 		final DataSource dataSource = new DataSource();
 
-		dataSource.setMaster(createDataSource(properties.getMaster(), callback));
+		dataSource.setMaster(createDataSource(properties.getMaster()));
 
 		if(logger.isInfoEnabled()){
 			logger.info("Create master datasource: by driver {}, type {}", properties.getDriverClassName(),
-					this.dataSource.getName());
+					this.type.getName());
 		}
 
 		if(Validate.isEmpty(properties.getSlaves())){
-			dataSource.setSlaves(Collections.singletonList(createDataSource(properties.getMaster(), callback)));
+			dataSource.setSlaves(ListBuilder.of(createDataSource(properties.getMaster())));
 		}else{
-			dataSource.setSlaves(properties.getSlaves().stream().map(properties->createDataSource(properties, callback))
+			dataSource.setSlaves(properties.getSlaves().parallelStream().map(this::createDataSource)
 					.collect(Collectors.toList()));
 		}
 
 		if(logger.isInfoEnabled()){
 			logger.info("Create {} size slave datasource: by driver {}, type {}", dataSource.getSlaves().size(),
-					properties.getDriverClassName(), this.dataSource.getName());
+					properties.getDriverClassName(), this.type.getName());
 		}
 
 		return dataSource;
 	}
 
-	private T createDataSource(final org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties,
-							   final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
-		properties.setDriverClassName(properties.getDriverClassName());
-
+	private T createDataSource(final org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties) {
 		try{
-			final Constructor<D> constructor = dataSource.getConstructor(
+			final Constructor<D> constructor = type.getConstructor(
 					org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.class);
 
 			D instance = BeanUtils.instantiateClass(constructor, properties);
 
 			instance.setPoolConfiguration(poolConfiguration);
 
-			return callback.apply(instance.createDataSource(), properties);
+			return instance.createDataSource();
 		}catch(NoSuchMethodException e){
-			throw new BeanInstantiationException(dataSource,
-					"Can't specify more arguments than constructor parameters");
+			throw new BeanInstantiationException(type, "Can't specify more arguments than constructor parameters");
 		}
 	}
 

@@ -19,55 +19,30 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package org.springframework.boot.jdbc.metadata;
+package com.buession.springboot.canal;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
-import javax.sql.DataSource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link DataSourcePoolMetadata} for a Druid {@link DataSource}.
- *
  * @author Yong.Teng
- * @since 1.3.2
+ * @since 2.3.1
  */
-public class DruidDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DruidDataSource> {
+@ConfigurationProperties(CanalProperties.PREFIX)
+public class CanalProperties {
 
-	public DruidDataSourcePoolMetadata(DruidDataSource dataSource) {
-		super(dataSource);
+	public final static String PREFIX = "spring.canal";
+
+	private ThreadConfig thread = new ThreadConfig();
+
+	public ThreadConfig getThread() {
+		return thread;
 	}
 
-	@Override
-	public Integer getActive() {
-		return getDataSource().getActiveCount();
-	}
-
-	@Override
-	public Integer getIdle() {
-		return getDataSource().getPoolingCount();
-	}
-
-	@Override
-	public Integer getMax() {
-		return getDataSource().getMaxIdle();
-	}
-
-	@Override
-	public Integer getMin() {
-		return getDataSource().getMinIdle();
-	}
-
-	@Override
-	public String getValidationQuery() {
-		return getDataSource().getValidationQuery();
-	}
-
-	@Override
-	public Boolean getDefaultAutoCommit() {
-		return getDataSource().isDefaultAutoCommit();
+	public void setThread(ThreadConfig thread) {
+		this.thread = thread;
 	}
 
 }
