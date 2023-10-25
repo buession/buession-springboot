@@ -21,8 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-/**
+ */package com.buession.springboot.canal.autoconfigure;/**
+ * 
+ *
  * @author Yong.Teng
- */
-package com.buession.springboot.boot.autoconfigure.condition;
+ * @since 0.0.1
+ */public interface ICanalAdapterClientConfiguration {
+}

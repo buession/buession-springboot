@@ -21,33 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.canal.launcher;
-
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-
-/**
- * Canal 客户端启动器接口
+ */package com.buession.springboot.canal;/**
+ * 
  *
  * @author Yong.Teng
- * @since 2.3.1
- */
-public interface CanalLauncher extends InitializingBean, DisposableBean, AutoCloseable {
-
-	/**
-	 * 启动方法
-	 */
-	void startup();
-
-	@Override
-	default void afterPropertiesSet() throws Exception {
-		startup();
-	}
-
-	@Override
-	default void destroy() throws Exception {
-		close();
-	}
-
+ * @since 0.0.1
+ */public class MqBaseInstance {
 }

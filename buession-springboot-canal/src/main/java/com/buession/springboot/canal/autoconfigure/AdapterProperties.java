@@ -22,7 +22,14 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.canal.autoconfigure;
+
+import java.time.Duration;
+
 /**
  * @author Yong.Teng
+ * @since 2.3.1
  */
-package com.buession.springboot.boot.autoconfigure.condition;
+abstract class BaseAdapterProperties {
+
+}

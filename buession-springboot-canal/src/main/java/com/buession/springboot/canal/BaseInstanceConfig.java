@@ -22,7 +22,86 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.canal;
+
+import java.time.Duration;
+
 /**
  * @author Yong.Teng
+ * @since 0.0.1
  */
-package com.buession.springboot.boot.autoconfigure.condition;
+public abstract class BaseInstance {
+
+	/**
+	 * 过滤规则
+	 */
+	private String filter;
+
+	/**
+	 * 超时时间
+	 */
+	private Duration timeout = Duration.ofSeconds(10);
+
+	/**
+	 * 批处理大小
+	 */
+	private int batchSize = 10;
+
+	/**
+	 * 返回过滤规则
+	 *
+	 * @return 过滤规则
+	 */
+	public String getFilter() {
+		return filter;
+	}
+
+	/**
+	 * 设置过滤规则
+	 *
+	 * @param filter
+	 * 		过滤规则
+	 */
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+
+	/**
+	 * 返回超时时间
+	 *
+	 * @return 超时时间
+	 */
+	public Duration getTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * 设置超时时间
+	 *
+	 * @param timeout
+	 * 		超时时间
+	 */
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
+	}
+
+	/**
+	 * 返回批处理大小
+	 *
+	 * @return 批处理大小
+	 */
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	/**
+	 * 设置批处理大小
+	 *
+	 * @param batchSize
+	 * 		批处理大小
+	 */
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+}

@@ -22,7 +22,17 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.canal;
+
+import com.buession.canal.client.adapter.CanalAdapterClient;
+
 /**
  * @author Yong.Teng
+ * @since 2.3.1
  */
-package com.buession.springboot.boot.autoconfigure.condition;
+@FunctionalInterface
+public interface KafkaCanalAdapterClientBuilder<T extends BaseInstance, C extends CanalAdapterClient> {
+
+	C newInstance(String destination, T instance);
+
+}
