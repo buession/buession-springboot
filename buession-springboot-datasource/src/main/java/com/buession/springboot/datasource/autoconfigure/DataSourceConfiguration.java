@@ -73,7 +73,7 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + "hikari")
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".hikari")
 		public DataSource dataSource() {
 			return createDataSource(DataSources.HikariDataSource.class, properties.getHikari(), properties);
 		}
