@@ -21,10 +21,43 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.autoconfigure;/**
- * 
- *
+ */
+package com.buession.springboot.canal.autoconfigure;
+
+import com.buession.springboot.canal.BaseInstanceConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class AbstractAdapterProperties {
+ */
+abstract class AbstractAdapterProperties<T extends BaseInstanceConfig> implements AdapterProperties<T> {
+
+	/**
+	 * 实例清单
+	 */
+	private Map<String, T> instances = new HashMap<>();
+
+	/**
+	 * 返回实例清单
+	 *
+	 * @return 实例清单
+	 */
+	@Override
+	public Map<String, T> getInstances() {
+		return instances;
+	}
+
+	/**
+	 * 设置实例清单
+	 *
+	 * @param instances
+	 * 		实例清单
+	 */
+	public void setInstances(Map<String, T> instances) {
+		this.instances = instances;
+	}
+
 }

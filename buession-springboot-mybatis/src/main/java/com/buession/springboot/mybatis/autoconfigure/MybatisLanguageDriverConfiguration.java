@@ -21,10 +21,145 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.mybatis.autoconfigure;/**
- * 
- *
+ */
+package com.buession.springboot.mybatis.autoconfigure;
+
+import org.apache.ibatis.scripting.LanguageDriver;
+import org.mybatis.scripting.freemarker.FreeMarkerLanguageDriver;
+import org.mybatis.scripting.freemarker.FreeMarkerLanguageDriverConfig;
+import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriver;
+import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriverConfig;
+import org.mybatis.scripting.velocity.VelocityLanguageDriver;
+import org.mybatis.scripting.velocity.VelocityLanguageDriverConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
  * @author Yong.Teng
  * @since 2.3.1
- */public class MybatisLanguageDriverConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(LanguageDriver.class)
+public class MybatisLanguageDriverConfiguration {
+
+	private static final String CONFIGURATION_PROPERTY_PREFIX = MybatisProperties.PREFIX +
+			"scripting-language-driver";
+
+	/**
+	 * Configuration class for mybatis-freemarker 1.1.x or under.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(FreeMarkerLanguageDriver.class)
+	@ConditionalOnMissingClass("org.mybatis.scripting.freemarker.FreeMarkerLanguageDriverConfig")
+	public static class LegacyFreeMarkerConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		FreeMarkerLanguageDriver freeMarkerLanguageDriver() {
+			return new FreeMarkerLanguageDriver();
+		}
+
+	}
+
+	/**
+	 * Configuration class for mybatis-freemarker 1.2.x or above.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({FreeMarkerLanguageDriver.class, FreeMarkerLanguageDriverConfig.class})
+	static class FreeMarkerConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".freemarker")
+		public FreeMarkerLanguageDriverConfig freeMarkerLanguageDriverConfig() {
+			return FreeMarkerLanguageDriverConfig.newInstance();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public FreeMarkerLanguageDriver freeMarkerLanguageDriver(FreeMarkerLanguageDriverConfig config) {
+			return new FreeMarkerLanguageDriver(config);
+		}
+
+	}
+
+	/**
+	 * Configuration class for mybatis-velocity 2.0 or under.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.mybatis.scripting.velocity.Driver.class)
+	@ConditionalOnMissingClass("org.mybatis.scripting.velocity.VelocityLanguageDriverConfig")
+	public static class LegacyVelocityConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public org.mybatis.scripting.velocity.Driver velocityLanguageDriver() {
+			return new org.mybatis.scripting.velocity.Driver();
+		}
+
+	}
+
+	/**
+	 * Configuration class for mybatis-velocity 2.1.x or above.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({VelocityLanguageDriver.class, VelocityLanguageDriverConfig.class})
+	public static class VelocityConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".velocity")
+		public VelocityLanguageDriverConfig velocityLanguageDriverConfig() {
+			return VelocityLanguageDriverConfig.newInstance();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public VelocityLanguageDriver velocityLanguageDriver(VelocityLanguageDriverConfig config) {
+			return new VelocityLanguageDriver(config);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ThymeleafLanguageDriver.class)
+	public static class ThymeleafConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".thymeleaf")
+		public ThymeleafLanguageDriverConfig thymeleafLanguageDriverConfig() {
+			return ThymeleafLanguageDriverConfig.newInstance();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ThymeleafLanguageDriver thymeleafLanguageDriver(ThymeleafLanguageDriverConfig config) {
+			return new ThymeleafLanguageDriver(config);
+		}
+
+		// This class provides to avoid the https://github.com/spring-projects/spring-boot/issues/21626 as workaround.
+		@SuppressWarnings("unused")
+		private final static class MetadataThymeleafLanguageDriverConfig extends ThymeleafLanguageDriverConfig {
+
+			@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".thymeleaf.dialect")
+			@Override
+			public DialectConfig getDialect() {
+				return super.getDialect();
+			}
+
+			@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".thymeleaf.template-file")
+			@Override
+			public TemplateFileConfig getTemplateFile() {
+				return super.getTemplateFile();
+			}
+
+		}
+
+	}
+
 }

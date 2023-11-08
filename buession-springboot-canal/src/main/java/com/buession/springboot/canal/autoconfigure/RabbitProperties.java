@@ -24,13 +24,15 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import com.buession.springboot.canal.MqBaseInstance;
+
 /**
  * RabbitMQ 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class RabbitProperties extends BaseAdapterProperties {
+public class RabbitProperties extends AbstractMqAdapterProperties<RabbitProperties.Instance> {
 
 	/**
 	 * RabbitMQ 主机地址
@@ -51,11 +53,6 @@ public class RabbitProperties extends BaseAdapterProperties {
 	 * 密码
 	 */
 	private String password;
-
-	/**
-	 * 队列名称
-	 */
-	private String queueName;
 
 	/**
 	 * 返回 RabbitMQ 主机地址
@@ -133,23 +130,8 @@ public class RabbitProperties extends BaseAdapterProperties {
 		this.password = password;
 	}
 
-	/**
-	 * 返回队列名称
-	 *
-	 * @return 队列名称
-	 */
-	public String getQueueName() {
-		return queueName;
-	}
+	public final static class Instance extends MqBaseInstance {
 
-	/**
-	 * 设置队列名称
-	 *
-	 * @param queueName
-	 * 		队列名称
-	 */
-	public void setQueueName(String queueName) {
-		this.queueName = queueName;
 	}
 
 }

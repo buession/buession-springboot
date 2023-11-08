@@ -21,10 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.factory;/**
+ */package com.buession.springboot.canal.autoconfigure;/**
  * 
  *
  * @author Yong.Teng
  * @since 2.3.1
- */public class InstanceFactory {
+ */public class BinderConfiguration {
 }

@@ -21,18 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.canal;
-
-import com.buession.canal.client.adapter.CanalAdapterClient;
-
-/**
+ */package com.buession.springboot.canal.factory;/**
+ * 
+ *
  * @author Yong.Teng
  * @since 2.3.1
- */
-@FunctionalInterface
-public interface KafkaCanalAdapterClientBuilder<T extends BaseInstance, C extends CanalAdapterClient> {
-
-	C newInstance(String destination, T instance);
-
+ */public class InstanceConfigurerFactoryBean {
 }

@@ -44,22 +44,17 @@ public class ThreadConfig {
 	/**
 	 * 线程池核心线程大小
 	 */
-	private int corePoolSize = 1;
+	private Integer corePoolSize;
 
 	/**
 	 * 线程池最大线程数量
 	 */
-	private int maximumPoolSize = 1;
+	private Integer maximumPoolSize;
 
 	/**
 	 * 空闲线程存活时间
 	 */
 	private Duration keepAliveTime = Duration.ZERO;
-
-	/**
-	 * 队列容量
-	 */
-	private int queueCapacity = 4;
 
 	/**
 	 * 饱和策略
@@ -90,7 +85,7 @@ public class ThreadConfig {
 	 *
 	 * @return 线程池核心线程大小
 	 */
-	public int getCorePoolSize() {
+	public Integer getCorePoolSize() {
 		return corePoolSize;
 	}
 
@@ -100,7 +95,7 @@ public class ThreadConfig {
 	 * @param corePoolSize
 	 * 		线程池核心线程大小
 	 */
-	public void setCorePoolSize(int corePoolSize) {
+	public void setCorePoolSize(Integer corePoolSize) {
 		this.corePoolSize = corePoolSize;
 	}
 
@@ -109,7 +104,7 @@ public class ThreadConfig {
 	 *
 	 * @return 线程池最大线程数量
 	 */
-	public int getMaximumPoolSize() {
+	public Integer getMaximumPoolSize() {
 		return maximumPoolSize;
 	}
 
@@ -119,7 +114,7 @@ public class ThreadConfig {
 	 * @param maximumPoolSize
 	 * 		线程池最大线程数量
 	 */
-	public void setMaximumPoolSize(int maximumPoolSize) {
+	public void setMaximumPoolSize(Integer maximumPoolSize) {
 		this.maximumPoolSize = maximumPoolSize;
 	}
 
@@ -140,25 +135,6 @@ public class ThreadConfig {
 	 */
 	public void setKeepAliveTime(Duration keepAliveTime) {
 		this.keepAliveTime = keepAliveTime;
-	}
-
-	/**
-	 * 返回队列容量
-	 *
-	 * @return 队列容量
-	 */
-	public int getQueueCapacity() {
-		return queueCapacity;
-	}
-
-	/**
-	 * 设置队列容量
-	 *
-	 * @param queueCapacity
-	 * 		队列容量
-	 */
-	public void setQueueCapacity(int queueCapacity) {
-		this.queueCapacity = queueCapacity;
 	}
 
 	/**

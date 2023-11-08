@@ -24,17 +24,114 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.springboot.canal.BaseInstanceConfig;
-
-import java.util.Map;
+import com.buession.springboot.canal.MqBaseInstanceConfig;
 
 /**
+ * RabbitMQ 适配器配置
+ *
  * @author Yong.Teng
  * @since 2.3.1
  */
-@FunctionalInterface
-interface AdapterProperties<T extends BaseInstanceConfig> {
+public class RabbitProperties extends AbstractMqAdapterProperties<RabbitProperties.Instance> {
 
-	Map<String, T> getInstances();
+	/**
+	 * RabbitMQ 主机地址
+	 */
+	private String server;
+
+	/**
+	 * Virtual Host
+	 */
+	private String virtualHost;
+
+	/**
+	 * 用户名
+	 */
+	private String username;
+
+	/**
+	 * 密码
+	 */
+	private String password;
+
+	/**
+	 * 返回 RabbitMQ 主机地址
+	 *
+	 * @return RabbitMQ 主机地址
+	 */
+	public String getServer() {
+		return server;
+	}
+
+	/**
+	 * 设置 RabbitMQ 主机地址
+	 *
+	 * @param server
+	 * 		RabbitMQ 主机地址
+	 */
+	public void setServer(String server) {
+		this.server = server;
+	}
+
+	/**
+	 * 返回 Virtual Host
+	 *
+	 * @return Virtual Host
+	 */
+	public String getVirtualHost() {
+		return virtualHost;
+	}
+
+	/**
+	 * 设置 Virtual Host
+	 *
+	 * @param virtualHost
+	 * 		Virtual Host
+	 */
+	public void setVirtualHost(String virtualHost) {
+		this.virtualHost = virtualHost;
+	}
+
+	/**
+	 * 返回用户名
+	 *
+	 * @return 用户名
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * 设置用户名
+	 *
+	 * @param username
+	 * 		用户名
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * 返回密码
+	 *
+	 * @return 密码
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * 设置密码
+	 *
+	 * @param password
+	 * 		密码
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public final static class Instance extends MqBaseInstanceConfig {
+
+	}
 
 }

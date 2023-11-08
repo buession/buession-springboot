@@ -21,10 +21,15 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.canal.autoconfigure;/**
- * 
- *
+ */
+package com.buession.springboot.canal.autoconfigure;
+
+import com.buession.springboot.canal.BaseInstanceConfig;
+
+/**
  * @author Yong.Teng
  * @since 2.3.1
- */public class AbstractMqAdapterProperties {
+ */
+abstract class AbstractMqAdapterProperties<T extends BaseInstanceConfig> extends AbstractAdapterProperties<T> {
+
 }

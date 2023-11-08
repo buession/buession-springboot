@@ -24,18 +24,15 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.canal.core.concurrent.DefaultThreadFactory;
+import com.buession.canal.core.concurrent.DefaultCanalThreadPoolExecutor;
 import com.buession.springboot.canal.ThreadConfig;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Yong.Teng
@@ -43,7 +40,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({CanalProperties.class})
-@ConditionalOnProperty(prefix = CanalProperties.PREFIX, name = "async.enable", havingValue = "true", matchIfMissing = true)
 public class ThreadPoolConfiguration {
 
 	private final ThreadConfig thread;
@@ -74,9 +70,22 @@ public class ThreadPoolConfiguration {
 				break;
 		}
 
-		return new ThreadPoolExecutor(thread.getCorePoolSize(), thread.getMaximumPoolSize(),
-				thread.getKeepAliveTime().toMillis(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(
-				thread.getQueueCapacity()), new DefaultThreadFactory(thread.getNamePrefix()), rejectedExecutionHandler);
+		Integer coreSize = null;
+		Integer corePoolSize = thread.getCorePoolSize();
+		Integer maximumPoolSize = thread.getMaximumPoolSize();
+
+		if(corePoolSize == null || maximumPoolSize == null){
+			coreSize = Runtime.getRuntime().availableProcessors();
+			if(corePoolSize == null){
+				corePoolSize = coreSize * 2;
+			}
+			if(maximumPoolSize == null){
+				maximumPoolSize = coreSize * 2;
+			}
+		}
+
+		return new DefaultCanalThreadPoolExecutor(thread.getNamePrefix(), corePoolSize, maximumPoolSize,
+				thread.getKeepAliveTime().toMillis(), rejectedExecutionHandler);
 	}
 
 }

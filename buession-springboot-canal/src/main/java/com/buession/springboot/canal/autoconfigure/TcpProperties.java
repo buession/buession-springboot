@@ -24,13 +24,15 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import com.buession.springboot.canal.BaseInstanceConfig;
+
 /**
  * Kafka 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class TcpProperties extends BaseAdapterProperties {
+public class TcpProperties extends AbstractAdapterProperties<TcpProperties.Instance> {
 
 	/**
 	 * 主机地址
@@ -41,8 +43,6 @@ public class TcpProperties extends BaseAdapterProperties {
 	 * Zookeeper 主机地址
 	 */
 	private String zkServers;
-
-	private String destination;
 
 	/**
 	 * 用户名
@@ -92,14 +92,6 @@ public class TcpProperties extends BaseAdapterProperties {
 		this.zkServers = zkServers;
 	}
 
-	public String getDestination() {
-		return destination;
-	}
-
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
-
 	/**
 	 * 返回用户名
 	 *
@@ -136,6 +128,10 @@ public class TcpProperties extends BaseAdapterProperties {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public final static class Instance extends BaseInstanceConfig {
+
 	}
 
 }

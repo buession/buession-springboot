@@ -25,6 +25,6 @@
  * 
  *
  * @author Yong.Teng
- * @since 0.0.1
- */public class MqBaseInstance {
+ * @since 2.3.1
+ */public class InstanceConfigurer {
 }

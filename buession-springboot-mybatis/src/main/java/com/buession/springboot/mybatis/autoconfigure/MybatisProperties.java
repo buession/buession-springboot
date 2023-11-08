@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.mybatis.autoconfigure;
 
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.type.TypeHandler;
@@ -126,6 +127,13 @@ public class MybatisProperties {
 	 * @since 2.3.1
 	 */
 	private Scanner scanner;
+
+	/**
+	 * The default scripting language driver class. (Available when use together with mybatis-spring 2.0.2+)
+	 *
+	 * @since 2.3.1
+	 */
+	private Class<? extends LanguageDriver> defaultScriptingLanguageDriver;
 
 	/**
 	 * 获取配置文件路径
@@ -341,6 +349,25 @@ public class MybatisProperties {
 	}
 
 	/**
+	 * Return the default scripting language driver class.
+	 *
+	 * @return The default scripting language driver class.
+	 */
+	public Class<? extends LanguageDriver> getDefaultScriptingLanguageDriver() {
+		return defaultScriptingLanguageDriver;
+	}
+
+	/**
+	 * Sets the default scripting language driver class.
+	 *
+	 * @param defaultScriptingLanguageDriver
+	 * 		The default scripting language driver class.
+	 */
+	public void setDefaultScriptingLanguageDriver(Class<? extends LanguageDriver> defaultScriptingLanguageDriver) {
+		this.defaultScriptingLanguageDriver = defaultScriptingLanguageDriver;
+	}
+
+	/**
 	 * 扫描器
 	 *
 	 * @author Yong.Teng
@@ -367,6 +394,8 @@ public class MybatisProperties {
 		private String beanName;
 
 		private Boolean processPropertyPlaceHolders;
+
+		private Boolean injectSqlSessionOnMapperScan;
 
 		private String defaultScope;
 
@@ -449,6 +478,14 @@ public class MybatisProperties {
 
 		public void setProcessPropertyPlaceHolders(Boolean processPropertyPlaceHolders) {
 			this.processPropertyPlaceHolders = processPropertyPlaceHolders;
+		}
+
+		public Boolean getInjectSqlSessionOnMapperScan() {
+			return injectSqlSessionOnMapperScan;
+		}
+
+		public void setInjectSqlSessionOnMapperScan(Boolean injectSqlSessionOnMapperScan) {
+			this.injectSqlSessionOnMapperScan = injectSqlSessionOnMapperScan;
 		}
 
 		public String getDefaultScope() {

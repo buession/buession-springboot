@@ -27,8 +27,6 @@ package com.buession.springboot.canal.autoconfigure;
 import com.buession.springboot.canal.ThreadConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
-
 /**
  * Canal 配置
  *
@@ -48,17 +46,17 @@ public class CanalProperties {
 	/**
 	 * Kafka 实例配置
 	 */
-	private Map<String, KafkaProperties> kafka;
+	private KafkaProperties kafka;
 
 	/**
 	 * RabbitMQ 实例配置
 	 */
-	private Map<String, RabbitProperties> rabbit;
+	private RabbitProperties rabbit;
 
 	/**
 	 * TCP 实例配置
 	 */
-	private Map<String, TcpProperties> tcp;
+	private TcpProperties tcp;
 
 	/**
 	 * 返回线程池配置
@@ -84,7 +82,7 @@ public class CanalProperties {
 	 *
 	 * @return Kafka 实例配置
 	 */
-	public Map<String, KafkaProperties> getKafka() {
+	public KafkaProperties getKafka() {
 		return kafka;
 	}
 
@@ -94,7 +92,7 @@ public class CanalProperties {
 	 * @param kafka
 	 * 		Kafka 实例配置
 	 */
-	public void setKafka(Map<String, KafkaProperties> kafka) {
+	public void setKafka(KafkaProperties kafka) {
 		this.kafka = kafka;
 	}
 
@@ -103,7 +101,7 @@ public class CanalProperties {
 	 *
 	 * @return RabbitMQ 实例配置
 	 */
-	public Map<String, RabbitProperties> getRabbit() {
+	public RabbitProperties getRabbit() {
 		return rabbit;
 	}
 
@@ -113,7 +111,7 @@ public class CanalProperties {
 	 * @param rabbit
 	 * 		RabbitMQ 实例配置
 	 */
-	public void setRabbit(Map<String, RabbitProperties> rabbit) {
+	public void setRabbit(RabbitProperties rabbit) {
 		this.rabbit = rabbit;
 	}
 
@@ -122,7 +120,7 @@ public class CanalProperties {
 	 *
 	 * @return TCP 实例配置
 	 */
-	public Map<String, TcpProperties> getTcp() {
+	public TcpProperties getTcp() {
 		return tcp;
 	}
 
@@ -132,7 +130,7 @@ public class CanalProperties {
 	 * @param tcp
 	 * 		TCP 实例配置
 	 */
-	public void setTcp(Map<String, TcpProperties> tcp) {
+	public void setTcp(TcpProperties tcp) {
 		this.tcp = tcp;
 	}
 

@@ -90,6 +90,25 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.mybatis.scripting</groupId>
+			<artifactId>mybatis-freemarker</artifactId>
+			<version>1.2.4</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis.scripting</groupId>
+			<artifactId>mybatis-velocity</artifactId>
+			<version>2.1.2</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis.scripting</groupId>
+			<artifactId>mybatis-thymeleaf</artifactId>
+			<version>1.0.4</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
@@ -98,6 +117,14 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+
+		<!--
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		-->
 	</dependencies>
 
 	<build>

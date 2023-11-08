@@ -24,33 +24,20 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import com.buession.springboot.canal.MqBaseInstance;
+
 /**
  * Kafka 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class KafkaProperties extends BaseAdapterProperties {
+public class KafkaProperties extends AbstractMqAdapterProperties<KafkaProperties.Instance> {
 
 	/**
 	 * Kafka 主机地址
 	 */
 	private String servers;
-
-	/**
-	 * Topic
-	 */
-	private String topic;
-
-	/**
-	 * Group Id
-	 */
-	private String groupId;
-
-	/**
-	 * 分区
-	 */
-	private Integer partition;
 
 	/**
 	 * 返回 Kafka 主机地址
@@ -71,61 +58,56 @@ public class KafkaProperties extends BaseAdapterProperties {
 		this.servers = servers;
 	}
 
-	/**
-	 * 返回 Topic
-	 *
-	 * @return Topic
-	 */
-	public String getTopic() {
-		return topic;
-	}
+	public final static class Instance extends MqBaseInstance {
 
-	/**
-	 * 设置 Topic
-	 *
-	 * @param topic
-	 * 		Topic
-	 */
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+		/**
+		 * Group Id
+		 */
+		private String groupId;
 
-	/**
-	 * 返回 Group Id
-	 *
-	 * @return Group Id
-	 */
-	public String getGroupId() {
-		return groupId;
-	}
+		/**
+		 * 分区
+		 */
+		private Integer partition;
 
-	/**
-	 * 设置 Group Id
-	 *
-	 * @param groupId
-	 * 		Group Id
-	 */
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+		/**
+		 * 返回 Group Id
+		 *
+		 * @return Group Id
+		 */
+		public String getGroupId() {
+			return groupId;
+		}
 
-	/**
-	 * 返回分区
-	 *
-	 * @return 分区
-	 */
-	public Integer getPartition() {
-		return partition;
-	}
+		/**
+		 * 设置 Group Id
+		 *
+		 * @param groupId
+		 * 		Group Id
+		 */
+		public void setGroupId(String groupId) {
+			this.groupId = groupId;
+		}
 
-	/**
-	 * 设置分区
-	 *
-	 * @param partition
-	 * 		分区
-	 */
-	public void setPartition(Integer partition) {
-		this.partition = partition;
+		/**
+		 * 返回分区
+		 *
+		 * @return 分区
+		 */
+		public Integer getPartition() {
+			return partition;
+		}
+
+		/**
+		 * 设置分区
+		 *
+		 * @param partition
+		 * 		分区
+		 */
+		public void setPartition(Integer partition) {
+			this.partition = partition;
+		}
+
 	}
 
 }
