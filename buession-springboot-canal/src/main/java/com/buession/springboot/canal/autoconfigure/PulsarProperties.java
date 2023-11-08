@@ -24,163 +24,191 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.springboot.canal.MqBaseInstanceConfig;
+import com.buession.canal.client.adapter.PulsarMQCanalAdapterClient;
 
 /**
- * RocketMQ 适配器配置
+ * PulsarMQ 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class RocketProperties extends AbstractMqAdapterProperties<RocketProperties.Instance> {
+public class PulsarProperties extends AbstractMqAdapterProperties<PulsarProperties.Instance> {
 
 	/**
-	 * RocketMQ NameServer 地址
+	 * PulsarMQ 服务地址
 	 */
-	private String nameServer;
+	private String serviceUrl;
 
 	/**
-	 * Topic
+	 * Role Token
 	 */
-	private String topic;
-
-	/**
-	 * Group ID
-	 */
-	private String groupId;
-
-	/**
-	 * 名称空间
-	 */
-	private String namespace;
-
-	/**
-	 * 是否启用消息跟踪
-	 */
-	private Boolean enableMessageTrace;
+	private String roleToken;
 
 	/**
 	 * -
 	 */
-	private String customizedTraceTopic;
+	private int getBatchTimeout = PulsarMQCanalAdapterClient.DEFAULT_GET_BATCH_TIMEOUT;
 
 	/**
 	 * -
 	 */
-	private String accessChannel;
+	private int batchProcessTimeout = PulsarMQCanalAdapterClient.DEFAULT_BATCH_PROCESS_TIMEOUT;
 
 	/**
-	 * 返回 RocketMQ NameServer 地址
-	 *
-	 * @return RocketMQ NameServer 地址
+	 * -
 	 */
-	public String getNameServer() {
-		return nameServer;
+	private int redeliveryDelay = PulsarMQCanalAdapterClient.DEFAULT_REDELIVERY_DELAY;
+
+	/**
+	 * -
+	 */
+	private int ackTimeout = PulsarMQCanalAdapterClient.DEFAULT_ACK_TIMEOUT;
+
+	/**
+	 * 是否重试
+	 */
+	private boolean retry = true;
+
+	/**
+	 * -
+	 */
+	private boolean retryDLQUpperCase = true;
+
+	/**
+	 * -
+	 */
+	private Integer maxRedeliveryCount;
+
+	/**
+	 * 返回 PulsarMQ 服务地址
+	 *
+	 * @return PulsarMQ 服务地址
+	 */
+	public String getServiceUrl() {
+		return serviceUrl;
 	}
 
 	/**
-	 * 设置 RocketMQ NameServer 地址
+	 * 设置 PulsarMQ 服务地址
 	 *
-	 * @param nameServer
-	 * 		RocketMQ NameServer 地址
+	 * @param serviceUrl
+	 * 		PulsarMQ 服务地址
 	 */
-	public void setNameServer(String nameServer) {
-		this.nameServer = nameServer;
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
 	}
 
 	/**
-	 * 返回 Topic
+	 * 返回 Role Token
 	 *
-	 * @return Topic
+	 * @return Role Token
 	 */
-	public String getTopic() {
-		return topic;
+	public String getRoleToken() {
+		return roleToken;
 	}
 
 	/**
-	 * 设置 Topic
+	 * 设置 Role Token
 	 *
-	 * @param topic
-	 * 		Topic
+	 * @param roleToken
+	 * 		Role Token
 	 */
-	public void setTopic(String topic) {
-		this.topic = topic;
+	public void setRoleToken(String roleToken) {
+		this.roleToken = roleToken;
+	}
+
+	public int getGetBatchTimeout() {
+		return getBatchTimeout;
+	}
+
+	public void setGetBatchTimeout(int getBatchTimeout) {
+		this.getBatchTimeout = getBatchTimeout;
+	}
+
+	public int getBatchProcessTimeout() {
+		return batchProcessTimeout;
+	}
+
+	public void setBatchProcessTimeout(int batchProcessTimeout) {
+		this.batchProcessTimeout = batchProcessTimeout;
+	}
+
+	public int getRedeliveryDelay() {
+		return redeliveryDelay;
+	}
+
+	public void setRedeliveryDelay(int redeliveryDelay) {
+		this.redeliveryDelay = redeliveryDelay;
+	}
+
+	public int getAckTimeout() {
+		return ackTimeout;
+	}
+
+	public void setAckTimeout(int ackTimeout) {
+		this.ackTimeout = ackTimeout;
 	}
 
 	/**
-	 * 返回 Group ID
-	 *
-	 * @return Group ID
-	 */
-	public String getGroupId() {
-		return groupId;
-	}
-
-	/**
-	 * 设置 Group ID
-	 *
-	 * @param groupId
-	 * 		Group ID
-	 */
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-	/**
-	 * 返回名称空间
-	 *
-	 * @return 名称空间
-	 */
-	public String getNamespace() {
-		return namespace;
-	}
-
-	/**
-	 * 设置名称空间
-	 *
-	 * @param namespace
-	 * 		名称空间
-	 */
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	/**
-	 * 返回是否启用消息跟踪
+	 * 返回是否重试
 	 *
 	 * @return true / false
 	 */
-	public Boolean getEnableMessageTrace() {
-		return enableMessageTrace;
+	public boolean isRetry() {
+		return retry;
 	}
 
 	/**
-	 * 设置是否启用消息跟踪
+	 * 设置是否重试
 	 *
-	 * @param enableMessageTrace
+	 * @param retry
 	 * 		true / false
 	 */
-	public void setEnableMessageTrace(Boolean enableMessageTrace) {
-		this.enableMessageTrace = enableMessageTrace;
+	public void setRetry(boolean retry) {
+		this.retry = retry;
 	}
 
-	public String getCustomizedTraceTopic() {
-		return customizedTraceTopic;
+	public boolean isRetryDLQUpperCase() {
+		return retryDLQUpperCase;
 	}
 
-	public void setCustomizedTraceTopic(String customizedTraceTopic) {
-		this.customizedTraceTopic = customizedTraceTopic;
+	public void setRetryDLQUpperCase(boolean retryDLQUpperCase) {
+		this.retryDLQUpperCase = retryDLQUpperCase;
 	}
 
-	public String getAccessChannel() {
-		return accessChannel;
+	public Integer getMaxRedeliveryCount() {
+		return maxRedeliveryCount;
 	}
 
-	public void setAccessChannel(String accessChannel) {
-		this.accessChannel = accessChannel;
+	public void setMaxRedeliveryCount(Integer maxRedeliveryCount) {
+		this.maxRedeliveryCount = maxRedeliveryCount;
 	}
 
 	public final static class Instance extends MqBaseInstanceConfig {
+
+		/**
+		 * 订阅名称
+		 */
+		private String subscriptName;
+
+		/**
+		 * 返回订阅名称
+		 *
+		 * @return 订阅名称
+		 */
+		public String getSubscriptName() {
+			return subscriptName;
+		}
+
+		/**
+		 * 设置订阅名称
+		 *
+		 * @param subscriptName
+		 * 		订阅名称
+		 */
+		public void setSubscriptName(String subscriptName) {
+			this.subscriptName = subscriptName;
+		}
 
 	}
 

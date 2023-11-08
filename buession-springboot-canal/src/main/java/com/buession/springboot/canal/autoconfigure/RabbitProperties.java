@@ -24,8 +24,6 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.springboot.canal.MqBaseInstance;
-
 /**
  * RabbitMQ 适配器配置
  *
@@ -130,7 +128,7 @@ public class RabbitProperties extends AbstractMqAdapterProperties<RabbitProperti
 		this.password = password;
 	}
 
-	public final static class Instance extends MqBaseInstance {
+	public final static class Instance extends MqBaseInstanceConfig {
 
 	}
 

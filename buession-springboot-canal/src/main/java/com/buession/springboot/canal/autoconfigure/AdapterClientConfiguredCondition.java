@@ -26,43 +26,21 @@ package com.buession.springboot.canal.autoconfigure;
 
 import com.buession.canal.core.CanalMode;
 import com.buession.springboot.boot.autoconfigure.condition.BaseOnPropertyExistCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-interface ClientConfiguredCondition {
+interface AdapterClientConfiguredCondition {
 
-	ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata);
+	abstract class AbstractCanalAdapterClientConfiguredCondition<P extends AdapterProperties<?
+			extends AbstractAdapterProperties.BaseInstanceConfig>>
+			extends BaseOnPropertyExistCondition<P> implements AdapterClientConfiguredCondition {
 
-	abstract class AbstractCanalAdapterClientConfiguredCondition<P extends AdapterProperties>
-			extends BaseOnPropertyExistCondition<P> implements ClientConfiguredCondition {
-
-		public AbstractCanalAdapterClientConfiguredCondition(final Bindable<Map<String, P>> registrationMap,
-															 final CanalMode mode) {
-			super(CanalProperties.PREFIX + '.' + mode.getName(), registrationMap);
-		}
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage.forCondition(
-					"Canal adapter client Configured Condition");
-			Map<String, P> registrations = getRegistrations(context.getEnvironment());
-
-			if(registrations.isEmpty()){
-				return ConditionOutcome.noMatch(message.notAvailable("registered canal adapter clients"));
-			}
-
-			return ConditionOutcome.match(message.foundExactly("registered canal adapter clients " +
-					Arrays.toString(registrations.entrySet().toArray())));
+		public AbstractCanalAdapterClientConfiguredCondition(final Bindable<P> registration, final CanalMode mode) {
+			super(CanalProperties.PREFIX + '.' + mode.getName(), "registered canal adapter clients", registration,
+					"Canal " + mode.getName() + "adapter client configured condition");
 		}
 
 	}
@@ -70,11 +48,10 @@ interface ClientConfiguredCondition {
 	class KafkaCanalAdapterClientConfiguredCondition
 			extends AbstractCanalAdapterClientConfiguredCondition<KafkaProperties> {
 
-		private static final Bindable<Map<String, KafkaProperties>> REGISTRATION_MAP = Bindable
-				.mapOf(String.class, KafkaProperties.class);
+		private final static Bindable<KafkaProperties> REGISTRATION = Bindable.of(KafkaProperties.class);
 
 		KafkaCanalAdapterClientConfiguredCondition() {
-			super(REGISTRATION_MAP, CanalMode.KAFKA);
+			super(REGISTRATION, CanalMode.KAFKA);
 		}
 
 	}
@@ -82,11 +59,32 @@ interface ClientConfiguredCondition {
 	class RabbitCanalAdapterClientConfiguredCondition
 			extends AbstractCanalAdapterClientConfiguredCondition<RabbitProperties> {
 
-		private static final Bindable<Map<String, RabbitProperties>> REGISTRATION_MAP = Bindable
-				.mapOf(String.class, RabbitProperties.class);
+		private final static Bindable<RabbitProperties> REGISTRATION = Bindable.of(RabbitProperties.class);
 
 		RabbitCanalAdapterClientConfiguredCondition() {
-			super(REGISTRATION_MAP, CanalMode.RABBIT_MQ);
+			super(REGISTRATION, CanalMode.RABBIT_MQ);
+		}
+
+	}
+
+	class PulsarCanalAdapterClientConfiguredCondition
+			extends AbstractCanalAdapterClientConfiguredCondition<PulsarProperties> {
+
+		private final static Bindable<PulsarProperties> REGISTRATION = Bindable.of(PulsarProperties.class);
+
+		PulsarCanalAdapterClientConfiguredCondition() {
+			super(REGISTRATION, CanalMode.PULSAR_MQ);
+		}
+
+	}
+
+	class RocketCanalAdapterClientConfiguredCondition
+			extends AbstractCanalAdapterClientConfiguredCondition<RocketProperties> {
+
+		private final static Bindable<RocketProperties> REGISTRATION = Bindable.of(RocketProperties.class);
+
+		RocketCanalAdapterClientConfiguredCondition() {
+			super(REGISTRATION, CanalMode.ROCKET_MQ);
 		}
 
 	}
@@ -94,11 +92,10 @@ interface ClientConfiguredCondition {
 	class TcpCanalAdapterClientConfiguredCondition
 			extends AbstractCanalAdapterClientConfiguredCondition<TcpProperties> {
 
-		private static final Bindable<Map<String, TcpProperties>> REGISTRATION_MAP = Bindable
-				.mapOf(String.class, TcpProperties.class);
+		private final static Bindable<TcpProperties> REGISTRATION = Bindable.of(TcpProperties.class);
 
 		TcpCanalAdapterClientConfiguredCondition() {
-			super(REGISTRATION_MAP, CanalMode.TCP);
+			super(REGISTRATION, CanalMode.TCP);
 		}
 
 	}

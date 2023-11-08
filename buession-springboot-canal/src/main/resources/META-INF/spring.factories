@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.canal.autoconfigure.ThreadPoolConfiguration, \
-  com.buession.springboot.canal.autoconfigure.CanalClientConfiguration, \
+  com.buession.springboot.canal.autoconfigure.BinderConfiguration, \
   com.buession.springboot.canal.autoconfigure.CanalConfiguration

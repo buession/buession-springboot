@@ -70,17 +70,16 @@ public class ThreadPoolConfiguration {
 				break;
 		}
 
-		Integer coreSize = null;
 		Integer corePoolSize = thread.getCorePoolSize();
 		Integer maximumPoolSize = thread.getMaximumPoolSize();
 
 		if(corePoolSize == null || maximumPoolSize == null){
-			coreSize = Runtime.getRuntime().availableProcessors();
+			int coreSize = Runtime.getRuntime().availableProcessors();
 			if(corePoolSize == null){
-				corePoolSize = coreSize * 2;
+				corePoolSize = coreSize << 1;
 			}
 			if(maximumPoolSize == null){
-				maximumPoolSize = coreSize * 2;
+				maximumPoolSize = coreSize << 1;
 			}
 		}
 

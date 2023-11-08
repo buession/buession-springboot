@@ -24,113 +24,148 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.springboot.canal.MqBaseInstanceConfig;
-
 /**
- * RabbitMQ 适配器配置
+ * RocketMQ 适配器配置
  *
  * @author Yong.Teng
  * @since 2.3.1
  */
-public class RabbitProperties extends AbstractMqAdapterProperties<RabbitProperties.Instance> {
+public class RocketProperties extends AbstractMqAdapterProperties<RocketProperties.Instance> {
 
 	/**
-	 * RabbitMQ 主机地址
+	 * RocketMQ NameServer 地址
 	 */
-	private String server;
+	private String nameServer;
 
 	/**
-	 * Virtual Host
+	 * 是否启用消息跟踪
 	 */
-	private String virtualHost;
+	private Boolean enableMessageTrace;
 
 	/**
-	 * 用户名
+	 * 消息轨迹数据 Topic
 	 */
-	private String username;
+	private String customizedTraceTopic;
 
 	/**
-	 * 密码
+	 * -
 	 */
-	private String password;
+	private String accessChannel;
 
 	/**
-	 * 返回 RabbitMQ 主机地址
+	 * 返回 RocketMQ NameServer 地址
 	 *
-	 * @return RabbitMQ 主机地址
+	 * @return RocketMQ NameServer 地址
 	 */
-	public String getServer() {
-		return server;
+	public String getNameServer() {
+		return nameServer;
 	}
 
 	/**
-	 * 设置 RabbitMQ 主机地址
+	 * 设置 RocketMQ NameServer 地址
 	 *
-	 * @param server
-	 * 		RabbitMQ 主机地址
+	 * @param nameServer
+	 * 		RocketMQ NameServer 地址
 	 */
-	public void setServer(String server) {
-		this.server = server;
+	public void setNameServer(String nameServer) {
+		this.nameServer = nameServer;
 	}
 
 	/**
-	 * 返回 Virtual Host
+	 * 返回是否启用消息跟踪
 	 *
-	 * @return Virtual Host
+	 * @return true / false
 	 */
-	public String getVirtualHost() {
-		return virtualHost;
+	public Boolean getEnableMessageTrace() {
+		return enableMessageTrace;
 	}
 
 	/**
-	 * 设置 Virtual Host
+	 * 设置是否启用消息跟踪
 	 *
-	 * @param virtualHost
-	 * 		Virtual Host
+	 * @param enableMessageTrace
+	 * 		true / false
 	 */
-	public void setVirtualHost(String virtualHost) {
-		this.virtualHost = virtualHost;
+	public void setEnableMessageTrace(Boolean enableMessageTrace) {
+		this.enableMessageTrace = enableMessageTrace;
 	}
 
 	/**
-	 * 返回用户名
+	 * 返回消息轨迹数据 Topic
 	 *
-	 * @return 用户名
+	 * @return 消息轨迹数据 Topic
 	 */
-	public String getUsername() {
-		return username;
+	public String getCustomizedTraceTopic() {
+		return customizedTraceTopic;
 	}
 
 	/**
-	 * 设置用户名
+	 * 设置消息轨迹数据 Topic
 	 *
-	 * @param username
-	 * 		用户名
+	 * @param customizedTraceTopic
+	 * 		消息轨迹数据 Topic
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setCustomizedTraceTopic(String customizedTraceTopic) {
+		this.customizedTraceTopic = customizedTraceTopic;
 	}
 
-	/**
-	 * 返回密码
-	 *
-	 * @return 密码
-	 */
-	public String getPassword() {
-		return password;
+	public String getAccessChannel() {
+		return accessChannel;
 	}
 
-	/**
-	 * 设置密码
-	 *
-	 * @param password
-	 * 		密码
-	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setAccessChannel(String accessChannel) {
+		this.accessChannel = accessChannel;
 	}
 
 	public final static class Instance extends MqBaseInstanceConfig {
+
+		/**
+		 * Group ID
+		 */
+		private String groupId;
+
+		/**
+		 * 名称空间
+		 */
+		private String namespace;
+
+		/**
+		 * 返回 Group ID
+		 *
+		 * @return Group ID
+		 */
+		public String getGroupId() {
+			return groupId;
+		}
+
+		/**
+		 * 设置 Group ID
+		 *
+		 * @param groupId
+		 * 		Group ID
+		 */
+		public void setGroupId(String groupId) {
+			this.groupId = groupId;
+		}
+
+		/**
+		 * 返回名称空间
+		 *
+		 * @return 名称空间
+		 */
+		public String getNamespace() {
+			return namespace;
+		}
+
+		/**
+		 * 设置名称空间
+		 *
+		 * @param namespace
+		 * 		名称空间
+		 */
+		public void setNamespace(String namespace) {
+			this.namespace = namespace;
+		}
 
 	}
 

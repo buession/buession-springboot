@@ -54,6 +54,16 @@ public class CanalProperties {
 	private RabbitProperties rabbit;
 
 	/**
+	 * RocketMQ 实例配置
+	 */
+	private RocketProperties rocket;
+
+	/**
+	 * PulsarMQ 实例配置
+	 */
+	private PulsarProperties pulsar;
+
+	/**
 	 * TCP 实例配置
 	 */
 	private TcpProperties tcp;
@@ -113,6 +123,44 @@ public class CanalProperties {
 	 */
 	public void setRabbit(RabbitProperties rabbit) {
 		this.rabbit = rabbit;
+	}
+
+	/**
+	 * 返回 RocketMQ 实例配置
+	 *
+	 * @return RocketMQ 实例配置
+	 */
+	public RocketProperties getRocket() {
+		return rocket;
+	}
+
+	/**
+	 * 设置 RocketMQ 实例配置
+	 *
+	 * @param rocket
+	 * 		RocketMQ 实例配置
+	 */
+	public void setRocket(RocketProperties rocket) {
+		this.rocket = rocket;
+	}
+
+	/**
+	 * 返回 PulsarMQ 实例配置
+	 *
+	 * @return PulsarMQ 实例配置
+	 */
+	public PulsarProperties getPulsar() {
+		return pulsar;
+	}
+
+	/**
+	 * 设置 PulsarMQ 实例配置
+	 *
+	 * @param pulsar
+	 * 		PulsarMQ 实例配置
+	 */
+	public void setPulsar(PulsarProperties pulsar) {
+		this.pulsar = pulsar;
 	}
 
 	/**

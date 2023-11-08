@@ -24,8 +24,6 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.springboot.canal.BaseInstanceConfig;
-
 /**
  * Kafka 适配器配置
  *
