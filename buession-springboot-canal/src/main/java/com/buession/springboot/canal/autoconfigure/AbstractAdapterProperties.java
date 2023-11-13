@@ -24,6 +24,8 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import com.buession.canal.core.Configuration;
+
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +36,7 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 0.0.1
  */
-abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.BaseInstanceConfig>
+abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.BaseInstanceConfiguration>
 		implements AdapterProperties<IC> {
 
 	/**
@@ -68,78 +70,11 @@ abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.Ba
 	 * @author Yong.Teng
 	 * @since 0.0.1
 	 */
-	public static abstract class BaseInstanceConfig implements InstanceConfig {
+	public static abstract class BaseInstanceConfiguration extends Configuration {
 
-		/**
-		 * 过滤规则
-		 */
-		private String filter;
-
-		/**
-		 * 超时时间
-		 */
-		private Duration timeout = Duration.ofSeconds(10);
-
-		/**
-		 * 批处理大小
-		 */
-		private int batchSize = 10;
-
-		/**
-		 * 返回过滤规则
-		 *
-		 * @return 过滤规则
-		 */
-		public String getFilter() {
-			return filter;
-		}
-
-		/**
-		 * 设置过滤规则
-		 *
-		 * @param filter
-		 * 		过滤规则
-		 */
-		public void setFilter(String filter) {
-			this.filter = filter;
-		}
-
-		/**
-		 * 返回超时时间
-		 *
-		 * @return 超时时间
-		 */
-		public Duration getTimeout() {
-			return timeout;
-		}
-
-		/**
-		 * 设置超时时间
-		 *
-		 * @param timeout
-		 * 		超时时间
-		 */
-		public void setTimeout(Duration timeout) {
-			this.timeout = timeout;
-		}
-
-		/**
-		 * 返回批处理大小
-		 *
-		 * @return 批处理大小
-		 */
-		public int getBatchSize() {
-			return batchSize;
-		}
-
-		/**
-		 * 设置批处理大小
-		 *
-		 * @param batchSize
-		 * 		批处理大小
-		 */
-		public void setBatchSize(int batchSize) {
-			this.batchSize = batchSize;
+		public BaseInstanceConfiguration() {
+			setTimeout(Duration.ofSeconds(10));
+			setBatchSize(10);
 		}
 
 	}

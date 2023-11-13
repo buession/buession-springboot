@@ -117,7 +117,7 @@ public class RocketProperties extends AbstractMqAdapterProperties<RocketProperti
 		this.accessChannel = accessChannel;
 	}
 
-	public final static class Instance extends MqBaseInstanceConfig {
+	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
 
 		/**
 		 * Group ID
@@ -128,6 +128,10 @@ public class RocketProperties extends AbstractMqAdapterProperties<RocketProperti
 		 * 名称空间
 		 */
 		private String namespace;
+
+		public Instance() {
+			super();
+		}
 
 		/**
 		 * 返回 Group ID

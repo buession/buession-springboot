@@ -128,7 +128,10 @@ public class TcpProperties extends AbstractAdapterProperties<TcpProperties.Insta
 		this.password = password;
 	}
 
-	public final static class Instance extends BaseInstanceConfig {
+	public final static class Instance extends AbstractAdapterProperties.BaseInstanceConfiguration {
+
+		public Instance() {
+		}
 
 	}
 

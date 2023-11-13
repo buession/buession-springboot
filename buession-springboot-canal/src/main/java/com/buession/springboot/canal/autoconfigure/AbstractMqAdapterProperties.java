@@ -28,8 +28,8 @@ package com.buession.springboot.canal.autoconfigure;
  * @author Yong.Teng
  * @since 2.3.1
  */
-abstract class AbstractMqAdapterProperties<T extends AbstractAdapterProperties.BaseInstanceConfig>
-		extends AbstractAdapterProperties<T> {
+abstract class AbstractMqAdapterProperties<IC extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration>
+		extends AbstractAdapterProperties<IC> {
 
 	/**
 	 * MQ 实例基本配置
@@ -37,9 +37,13 @@ abstract class AbstractMqAdapterProperties<T extends AbstractAdapterProperties.B
 	 * @author Yong.Teng
 	 * @since 0.0.1
 	 */
-	public static abstract class MqBaseInstanceConfig extends BaseInstanceConfig {
+	public static abstract class MqBaseInstanceConfiguration extends BaseInstanceConfiguration {
 
 		private boolean flatMessage;
+
+		public MqBaseInstanceConfiguration() {
+			super();
+		}
 
 		public boolean isFlatMessage() {
 			return flatMessage;

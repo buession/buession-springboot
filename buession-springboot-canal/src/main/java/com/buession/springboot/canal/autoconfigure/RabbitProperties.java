@@ -128,7 +128,11 @@ public class RabbitProperties extends AbstractMqAdapterProperties<RabbitProperti
 		this.password = password;
 	}
 
-	public final static class Instance extends MqBaseInstanceConfig {
+	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
+
+		public Instance() {
+			super();
+		}
 
 	}
 

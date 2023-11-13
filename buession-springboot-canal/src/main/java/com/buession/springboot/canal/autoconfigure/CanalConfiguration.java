@@ -24,7 +24,10 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.canal.client.Binder;
+import com.buession.canal.client.CanalContext;
+import com.buession.canal.client.DefaultCanalContext;
+import com.buession.canal.client.adapter.AdapterClient;
+import com.buession.canal.client.dispatcher.Dispatcher;
 import com.buession.canal.spring.client.factory.CanalClientFactoryBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -42,15 +45,18 @@ import java.util.concurrent.ExecutorService;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CanalProperties.class)
-@Import({ThreadPoolConfiguration.class, BinderConfiguration.class})
+@Import({ThreadPoolConfiguration.class, AdapterClientConfiguration.class})
 public class CanalConfiguration {
 
 	@Bean(destroyMethod = "destroy")
-	public CanalClientFactoryBean createCanalClientFactoryBean(ObjectProvider<List<Binder>> binders,
-															   @Qualifier("canalExecutorService") ObjectProvider<ExecutorService> executorService) {
+	public CanalClientFactoryBean createCanalClientFactoryBean(
+			ObjectProvider<Set<AdapterClient>> canalAdapterClients, ObjectProvider<Dispatcher> dispatcher,
+			@Qualifier("canalExecutorService") ObjectProvider<ExecutorService> executorService) {
 		final CanalClientFactoryBean canalClientFactoryBean = new CanalClientFactoryBean();
 
-		canalClientFactoryBean.setBinders(binders.getIfAvailable());
+		CanalContext context = new DefaultCanalContext(canalAdapterClients.getIfAvailable());
+		canalClientFactoryBean.setContext(context);
+		canalClientFactoryBean.setDispatcher(dispatcher.getIfAvailable());
 		canalClientFactoryBean.setExecutor(executorService.getIfAvailable());
 
 		return canalClientFactoryBean;

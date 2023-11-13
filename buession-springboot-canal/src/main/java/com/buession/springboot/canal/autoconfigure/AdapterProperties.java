@@ -24,6 +24,8 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
+import com.buession.canal.core.Configuration;
+
 import java.util.Map;
 
 /**
@@ -33,23 +35,13 @@ import java.util.Map;
  * @since 2.3.1
  */
 @FunctionalInterface
-interface AdapterProperties<IC extends AdapterProperties.InstanceConfig> {
+interface AdapterProperties<C extends Configuration> {
 
 	/**
 	 * 返回实例清单
 	 *
 	 * @return 实例清单
 	 */
-	Map<String, IC> getInstances();
-
-	/**
-	 * 实例配置
-	 *
-	 * @author Yong.Teng
-	 * @since 0.0.1
-	 */
-	interface InstanceConfig {
-
-	}
+	Map<String, C> getInstances();
 
 }

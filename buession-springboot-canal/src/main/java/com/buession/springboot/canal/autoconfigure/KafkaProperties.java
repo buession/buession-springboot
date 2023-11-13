@@ -56,7 +56,7 @@ public class KafkaProperties extends AbstractMqAdapterProperties<KafkaProperties
 		this.servers = servers;
 	}
 
-	public final static class Instance extends MqBaseInstanceConfig {
+	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
 
 		/**
 		 * Group Id
@@ -67,6 +67,10 @@ public class KafkaProperties extends AbstractMqAdapterProperties<KafkaProperties
 		 * 分区
 		 */
 		private Integer partition;
+
+		public Instance() {
+			super();
+		}
 
 		/**
 		 * 返回 Group Id

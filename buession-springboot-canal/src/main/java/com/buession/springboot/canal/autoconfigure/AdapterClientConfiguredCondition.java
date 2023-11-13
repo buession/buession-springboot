@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 interface AdapterClientConfiguredCondition {
 
 	abstract class AbstractCanalAdapterClientConfiguredCondition<P extends AdapterProperties<?
-			extends AbstractAdapterProperties.BaseInstanceConfig>>
+			extends AbstractAdapterProperties.BaseInstanceConfiguration>>
 			extends BaseOnPropertyExistCondition<P> implements AdapterClientConfiguredCondition {
 
 		public AbstractCanalAdapterClientConfiguredCondition(final Bindable<P> registration, final CanalMode mode) {

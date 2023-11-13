@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.canal.client.adapter.PulsarMQCanalAdapterClient;
+import com.buession.canal.client.adapter.PulsarMQAdapterClient;
 
 /**
  * PulsarMQ 适配器配置
@@ -47,22 +47,22 @@ public class PulsarProperties extends AbstractMqAdapterProperties<PulsarProperti
 	/**
 	 * -
 	 */
-	private int getBatchTimeout = PulsarMQCanalAdapterClient.DEFAULT_GET_BATCH_TIMEOUT;
+	private int getBatchTimeout = PulsarMQAdapterClient.DEFAULT_GET_BATCH_TIMEOUT;
 
 	/**
 	 * -
 	 */
-	private int batchProcessTimeout = PulsarMQCanalAdapterClient.DEFAULT_BATCH_PROCESS_TIMEOUT;
+	private int batchProcessTimeout = PulsarMQAdapterClient.DEFAULT_BATCH_PROCESS_TIMEOUT;
 
 	/**
 	 * -
 	 */
-	private int redeliveryDelay = PulsarMQCanalAdapterClient.DEFAULT_REDELIVERY_DELAY;
+	private int redeliveryDelay = PulsarMQAdapterClient.DEFAULT_REDELIVERY_DELAY;
 
 	/**
 	 * -
 	 */
-	private int ackTimeout = PulsarMQCanalAdapterClient.DEFAULT_ACK_TIMEOUT;
+	private int ackTimeout = PulsarMQAdapterClient.DEFAULT_ACK_TIMEOUT;
 
 	/**
 	 * 是否重试
@@ -184,12 +184,16 @@ public class PulsarProperties extends AbstractMqAdapterProperties<PulsarProperti
 		this.maxRedeliveryCount = maxRedeliveryCount;
 	}
 
-	public final static class Instance extends MqBaseInstanceConfig {
+	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
 
 		/**
 		 * 订阅名称
 		 */
 		private String subscriptName;
+
+		public Instance() {
+			super();
+		}
 
 		/**
 		 * 返回订阅名称
