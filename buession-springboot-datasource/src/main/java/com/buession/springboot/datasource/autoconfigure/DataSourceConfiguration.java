@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "spring.datasource")
+@ConditionalOnProperty(name = DataSourceProperties.PREFIX)
 public class DataSourceConfiguration {
 
 	protected final DataSourceProperties properties;
@@ -53,15 +51,9 @@ public class DataSourceConfiguration {
 
 	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
 			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties) {
-		return createDataSource(type, poolConfiguration, dataSourceProperties, (dataSource, properties)->dataSource);
-	}
-
-	protected static <T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> DataSource createDataSource(
-			final Class<D> type, final P poolConfiguration, final DataSourceProperties dataSourceProperties,
-			final Callback<T, org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> callback) {
 		final DataSourceInitializer<T, P, D> dataSourceInitializer = new DataSourceInitializer<>(type,
 				poolConfiguration, dataSourceProperties);
-		return dataSourceInitializer.initialize(callback);
+		return dataSourceInitializer.createDataSource();
 	}
 
 	/**
@@ -73,7 +65,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(com.zaxxer.hikari.HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
 
 		public Hikari(DataSourceProperties properties) {
@@ -81,7 +73,7 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.hikari")
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".hikari")
 		public DataSource dataSource() {
 			return createDataSource(DataSources.HikariDataSource.class, properties.getHikari(), properties);
 		}
@@ -97,7 +89,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
 
 		public Dbcp2(DataSourceProperties properties) {
@@ -105,7 +97,7 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".dbcp2")
 		public DataSource dataSource() {
 			return createDataSource(DataSources.Dbcp2DataSource.class, properties.getDbcp2(), properties);
 		}
@@ -121,7 +113,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(com.alibaba.druid.pool.DruidDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.alibaba.druid.pool.DruidDataSource", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = "com.alibaba.druid.pool.DruidDataSource", matchIfMissing = true)
 	static class Druid extends DataSourceConfiguration {
 
 		public Druid(DataSourceProperties properties) {
@@ -129,7 +121,7 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.druid")
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".druid")
 		public DataSource dataSource() {
 			return createDataSource(DataSources.DruidDataSource.class, properties.getDruid(), properties);
 		}
@@ -145,7 +137,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
 
 		public Tomcat(DataSourceProperties properties) {
@@ -153,20 +145,9 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".tomcat")
 		public DataSource dataSource() {
-			return createDataSource(DataSources.TomcatDataSource.class, properties.getTomcat(), properties,
-					(dataSource, properties)->{
-						DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
-						String validationQuery = databaseDriver.getValidationQuery();
-
-						if(validationQuery != null){
-							dataSource.setTestOnBorrow(true);
-							dataSource.setValidationQuery(validationQuery);
-						}
-
-						return dataSource;
-					});
+			return createDataSource(DataSources.TomcatDataSource.class, properties.getTomcat(), properties);
 		}
 
 	}
@@ -179,7 +160,7 @@ public class DataSourceConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type")
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type")
 	static class Generic extends DataSourceConfiguration {
 
 		public Generic(DataSourceProperties properties) {

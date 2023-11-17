@@ -53,7 +53,7 @@ public class Pac4jFilter {
 	 * @param filter
 	 * 		过滤器
 	 */
-	public void addFilter(final String name, final Filter filter){
+	public void addFilter(final String name, final Filter filter) {
 		Assert.isNull(filter, "Filter cloud not null.");
 
 		final String filterName = Validate.hasText(name) ? name : StringUtils.uncapitalize(
@@ -66,14 +66,14 @@ public class Pac4jFilter {
 	 *
 	 * @return pac4j 过滤器
 	 */
-	public Map<String, Filter> getFilters(){
+	public Map<String, Filter> getFilters() {
 		return filters;
 	}
 
 	/**
 	 * 清除所有 pac4j 过滤器
 	 */
-	public void clear(){
+	public void clear() {
 		filters.clear();
 	}
 

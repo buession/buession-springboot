@@ -26,6 +26,7 @@ package com.buession.springboot.datasource.autoconfigure;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 
 /**
  * @author Yong.Teng
@@ -120,6 +121,14 @@ class DataSources {
 					org.apache.tomcat.jdbc.pool.DataSource.class);
 
 			initialize(dataSource);
+
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			String validationQuery = databaseDriver.getValidationQuery();
+
+			if(validationQuery != null){
+				dataSource.setTestOnBorrow(true);
+				dataSource.setValidationQuery(validationQuery);
+			}
 
 			return dataSource;
 		}

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -74,11 +74,11 @@ public class DataSourceAutoConfiguration {
 	 */
 	static class PooledDataSourceCondition extends AnyNestedCondition {
 
-		PooledDataSourceCondition(){
+		PooledDataSourceCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type")
 		static class ExplicitType {
 
 		}
@@ -96,7 +96,7 @@ public class DataSourceAutoConfiguration {
 	static class PooledDataSourceAvailableCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata){
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("PooledDataSource");
 			if(DataSourceBuilder.findType(context.getClassLoader()) != null){
 				return ConditionOutcome.match(message.foundExactly("supported DataSource"));

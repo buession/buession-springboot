@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.buession.springboot.web.servlet.autoconfigure.SiteMeshConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletServerConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletWebMvcConfiguration,\
   com.buession.springboot.web.servlet.autoconfigure.ServletWebSecurityConfiguration,\

@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.3.0</version>
+		<version>2.3.1</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://springboot.buession.com/</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>2.3.0</version>
+	<version>2.3.1</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -56,6 +56,7 @@
 	<modules>
 		<module>../buession-springboot-boot</module>
 		<module>../buession-springboot-cache</module>
+		<module>../buession-springboot-canal</module>
 		<module>../buession-springboot-captcha</module>
 		<module>../buession-springboot-cli</module>
 		<module>../buession-springboot-datasource</module>
@@ -71,8 +72,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>2.3.0</buession.version>
-		<buession.security.version>2.3.0</buession.security.version>
+		<buession.version>2.3.1</buession.version>
+		<buession.security.version>2.3.1</buession.security.version>
 	</properties>
 
 	<dependencyManagement>

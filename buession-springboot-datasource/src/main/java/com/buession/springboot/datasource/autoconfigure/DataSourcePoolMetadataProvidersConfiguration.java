@@ -55,9 +55,9 @@ import java.util.ArrayList;
 @Configuration(proxyBeanMethods = false)
 public class DataSourcePoolMetadataProvidersConfiguration {
 
-	abstract static class AbstractPoolDataSourceMetadataProviderConfiguration<P extends DataSourcePoolMetadataProvider<?>> {
+	abstract static class AbstractPoolDataSourceMetadataProviderConfiguration<PMP extends DataSourcePoolMetadataProvider<?>> {
 
-		abstract P poolDataSourceMetadataProvider();
+		abstract PMP poolDataSourceMetadataProvider();
 
 	}
 
@@ -68,7 +68,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		@Override
-		public DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
+		public DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
 				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(),
@@ -103,7 +103,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		@Override
-		public DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
+		public DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
 				org.apache.commons.dbcp2.BasicDataSource dbcp2DataSource = DataSourceUnwrapper.unwrap(
@@ -140,7 +140,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		@Override
-		public DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
+		public DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
 				com.alibaba.druid.pool.DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(
@@ -176,7 +176,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 		@Bean
 		@Override
-		public DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider poolDataSourceMetadataProvider(){
+		public DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
 				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
 				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(

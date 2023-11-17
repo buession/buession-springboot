@@ -41,14 +41,14 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Jedis Redis 数据源 {@link JedisDataSource} 初始化器
+ * Jedis Redis 数据源 {@link JedisDataSource} 工厂 Bean
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.0
  */
-class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedisDataSource> {
+class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedisDataSource> {
 
-	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceInitializer.class);
+	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceFactoryBean.class);
 
 	/**
 	 * 构造函数
@@ -56,21 +56,13 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 	 * @param properties
 	 *        {@link RedisProperties}
 	 */
-	public JedisDataSourceInitializer(final RedisProperties properties){
+	public JedisDataSourceFactoryBean(final RedisProperties properties) {
 		super(properties);
 	}
 
 	@Override
-	public JedisRedisDataSource createInstance(){
-		JedisRedisDataSource dataSource;
-
-		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
-			dataSource = createJedisClusterDataSource();
-		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
-			dataSource = createJedisSentinelDataSource();
-		}else{
-			dataSource = createJedisDataSource();
-		}
+	public void afterPropertiesSet() throws Exception {
+		dataSource = createJedisDataSource();
 
 		if(Validate.hasText(properties.getClientName())){
 			dataSource.setClientName(properties.getClientName());
@@ -86,11 +78,19 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
 					dataSource.getPoolConfig() == null ? "without" : "with");
 		}
-
-		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisDataSource(){
+	private JedisRedisDataSource createJedisDataSource() {
+		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
+			return createJedisClusterDataSource();
+		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
+			return createJedisSentinelDataSource();
+		}else{
+			return createJedisStandaloneDataSource();
+		}
+	}
+
+	private JedisRedisDataSource createJedisStandaloneDataSource() {
 		final JedisDataSource dataSource = new JedisDataSource();
 
 		if(Validate.hasText(properties.getHost())){
@@ -117,7 +117,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisSentinelDataSource(){
+	private JedisRedisDataSource createJedisSentinelDataSource() {
 		RedisProperties.Sentinel sentinel = properties.getSentinel();
 
 		List<RedisNode> sentinelNodes;
@@ -142,7 +142,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisClusterDataSource(){
+	private JedisRedisDataSource createJedisClusterDataSource() {
 		RedisProperties.Cluster cluster = properties.getCluster();
 
 		List<RedisNode> nodes;
