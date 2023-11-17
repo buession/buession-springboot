@@ -2,11 +2,36 @@
 ===========================
 
 
-## [2.3.1](https://github.com/buession/buession-springboot/releases/tag/v2.3.1) (2023-xx-xx)
+## [2.3.1](https://github.com/buession/buession-springboot/releases/tag/v2.3.1) (2023-11-17)
 
 ### 🔨依赖升级
 
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.1)
+
+
+### 🔔 变化
+
+- **buession-springboot-boot：** 移除 org.bouncycastle 依赖
+
+
+### ⭐ 新特性
+
+- **buession-springboot-boot：** 新增 BaseOnPropertyExistCondition、BaseMapOnPropertyExistCondition
+- **buession-springboot-canal：** 新增 canal 自动配置类
+- **buession-springboot-mybatis：** 新增 Mybatis scanner
+- **buession-springboot-mybatis：** 新增 Mybatis LanguageDriver bean
+- **buession-springboot-web：** 新增 sitemesh 自动配置类
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-mybatis：** 修复配置多个 mapper location 时 location 丢失的问题
+
+
+### ⏪ 优化
+
+- **buession-springboot-datasource：** DataSource 初始化优化
+- **buession-springboot-mybatis：** 优化 SqlSessionFactoryBean 初始化
 
 
 ---
@@ -71,7 +96,7 @@
 
 - **buession-springboot-shiro：** 最大程度化，使用 shiro 自带 API
 - **buession-springboot-session：** 废弃该模块
-- **buession-springboot-pac4j** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
+- **buession-springboot-pac4j：** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
 
 
 ---
