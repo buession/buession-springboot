@@ -38,21 +38,22 @@ public class WebApplicationTypeBuilder {
 
 	private final static Map<String, WebApplicationType> TYPE_MAP = new HashMap<>(2);
 
-	static{
+	static {
 		TYPE_MAP.put("org.springframework.web.reactive.config.WebFluxConfigurationSupport",
 				WebApplicationType.REACTIVE);
 		TYPE_MAP.put("javax.servlet.Servlet", WebApplicationType.SERVLET);
 	}
 
-	public static WebApplicationType findType(){
+	public static WebApplicationType findType() {
 		return findType(null);
 	}
 
-	public static WebApplicationType findType(final ClassLoader classLoader){
+	public static WebApplicationType findType(final ClassLoader classLoader) {
 		for(Map.Entry<String, WebApplicationType> e : TYPE_MAP.entrySet()){
 			try{
-				ClassUtils.forName(e.getKey(), classLoader);
-				return e.getValue();
+				if(ClassUtils.isPresent(e.getKey(), classLoader)){
+					return e.getValue();
+				}
 			}catch(Exception ex){
 				// Swallow and continue
 			}

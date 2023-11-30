@@ -61,7 +61,7 @@ public class CaptchaWebConfiguration {
 
 		protected final CaptchaProperties properties;
 
-		public AbstractCaptchaWebConfiguration(CaptchaProperties properties){
+		public AbstractCaptchaWebConfiguration(CaptchaProperties properties) {
 			this.properties = properties;
 		}
 
@@ -73,7 +73,7 @@ public class CaptchaWebConfiguration {
 	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 	static class CaptchaServletWebConfiguration extends AbstractCaptchaWebConfiguration {
 
-		public CaptchaServletWebConfiguration(CaptchaProperties properties){
+		public CaptchaServletWebConfiguration(CaptchaProperties properties) {
 			super(properties);
 		}
 
@@ -81,7 +81,7 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({AliYunCaptchaClient.class})
 		public ServletAliYunCaptchaValidator aliYunCaptchaValidator(
-				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient){
+				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient) {
 			return new ServletAliYunCaptchaValidator(aliYunCaptchaClient.getIfAvailable(),
 					properties.getAliyun().getParameter());
 		}
@@ -90,9 +90,8 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({GeetestCaptchaClient.class})
 		public ServletGeetestCaptchaValidator geetestCaptchaValidator(
-				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient){
-			GeetestParameter parameter = "v3".equalsIgnoreCase(
-					geetestCaptchaClient.getIfAvailable().getVersion()) ? properties.getGeetest().getV3()
+				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
+			GeetestParameter parameter = geetestCaptchaClient.getIfAvailable().isV3() ? properties.getGeetest().getV3()
 					.getParameter() : properties.getGeetest().getV4().getParameter();
 			return new ServletGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(), parameter);
 		}
@@ -101,7 +100,7 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({TencentCaptchaClient.class})
 		public ServletTencentCaptchaValidator tencentCaptchaValidator(
-				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient){
+				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient) {
 			return new ServletTencentCaptchaValidator(tencentCaptchaClient.getIfAvailable(),
 					properties.getTencent().getParameter());
 		}
@@ -114,7 +113,7 @@ public class CaptchaWebConfiguration {
 	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
 	static class CaptchaReactiveWebConfiguration extends AbstractCaptchaWebConfiguration {
 
-		public CaptchaReactiveWebConfiguration(CaptchaProperties properties){
+		public CaptchaReactiveWebConfiguration(CaptchaProperties properties) {
 			super(properties);
 		}
 
@@ -122,7 +121,7 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({AliYunCaptchaClient.class})
 		public ReactiveAliYunCaptchaValidator aliYunCaptchaValidator(
-				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient){
+				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient) {
 			return new ReactiveAliYunCaptchaValidator(aliYunCaptchaClient.getIfAvailable(),
 					properties.getAliyun().getParameter());
 		}
@@ -131,9 +130,8 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({GeetestCaptchaClient.class})
 		public ReactiveGeetestCaptchaValidator geetestCaptchaValidator(
-				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient){
-			GeetestParameter parameter = "v3".equalsIgnoreCase(
-					geetestCaptchaClient.getIfAvailable().getVersion()) ? properties.getGeetest().getV3()
+				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
+			GeetestParameter parameter = geetestCaptchaClient.getIfAvailable().isV3() ? properties.getGeetest().getV3()
 					.getParameter() : properties.getGeetest().getV4().getParameter();
 			return new ReactiveGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(), parameter);
 		}
@@ -142,7 +140,7 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({TencentCaptchaClient.class})
 		public ReactiveTencentCaptchaValidator tencentCaptchaValidator(
-				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient){
+				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient) {
 			return new ReactiveTencentCaptchaValidator(tencentCaptchaClient.getIfAvailable(),
 					properties.getTencent().getParameter());
 		}

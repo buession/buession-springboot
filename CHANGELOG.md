@@ -9,6 +9,12 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.2)
 
 
+### ⏪ 优化
+
+- **buession-springboot-cache：** RedisTemplate 初始化时不手动调用 afterPropertiesSet 方法
+- **buession-springboot-boot：** 代码质量优化
+
+
 ---
 
 

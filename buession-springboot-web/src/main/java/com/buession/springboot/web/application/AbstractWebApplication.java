@@ -47,7 +47,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	/**
 	 * 构造函数
 	 */
-	protected AbstractWebApplication(){
+	protected AbstractWebApplication() {
 		super();
 	}
 
@@ -59,7 +59,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 *
 	 * @see WebApplicationType
 	 */
-	protected AbstractWebApplication(final WebApplicationType webApplicationType){
+	protected AbstractWebApplication(final WebApplicationType webApplicationType) {
 		if(webApplicationType != null){
 			this.webApplicationType = webApplicationType;
 		}
@@ -78,7 +78,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 * @since 1.3.1
 	 */
 	protected AbstractWebApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
+			IllegalAccessException {
 		super(banner);
 	}
 
@@ -99,7 +99,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 */
 	protected AbstractWebApplication(final WebApplicationType webApplicationType,
 									 final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
+			IllegalAccessException {
 		super(banner);
 		if(webApplicationType != null){
 			this.webApplicationType = webApplicationType;
@@ -114,7 +114,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 *
 	 * @since 1.3.1
 	 */
-	public AbstractWebApplication(final Banner banner){
+	public AbstractWebApplication(final Banner banner) {
 		super(banner);
 	}
 
@@ -129,7 +129,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 * @see WebApplicationType
 	 * @since 1.3.1
 	 */
-	public AbstractWebApplication(final WebApplicationType webApplicationType, final Banner banner){
+	public AbstractWebApplication(final WebApplicationType webApplicationType, final Banner banner) {
 		super(banner);
 		if(webApplicationType != null){
 			this.webApplicationType = webApplicationType;
@@ -137,12 +137,12 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	}
 
 	@Override
-	public WebApplicationType getWebApplicationType(){
+	public WebApplicationType getWebApplicationType() {
 		return webApplicationType;
 	}
 
 	@Override
-	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz) {
 		final SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz);
 
 		if(getWebApplicationType() != null){
