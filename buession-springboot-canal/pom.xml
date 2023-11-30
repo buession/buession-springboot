@@ -52,7 +52,7 @@
 	</issueManagement>
 
 	<properties>
-		<buession.canal.version>0.0.1</buession.canal.version>
+		<buession.canal.version>0.0.2</buession.canal.version>
 	</properties>
 
 	<dependencies>
