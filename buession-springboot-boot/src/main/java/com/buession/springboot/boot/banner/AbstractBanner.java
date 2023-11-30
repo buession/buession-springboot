@@ -26,10 +26,11 @@
  */
 package com.buession.springboot.boot.banner;
 
-import com.buession.core.Framework;
+import com.buession.core.BuessionFrameworkVersion;
 import com.buession.core.utils.JceUtils;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.utils.VersionUtils;
+import com.buession.springboot.boot.BuessionBootVersion;
 import com.buession.springboot.boot.utils.FileUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootVersion;
@@ -121,8 +122,8 @@ public abstract class AbstractBanner implements Banner {
 	}
 
 	private void collectEnvironmentInfo(final Properties properties, final Formatter formatter) {
-		formatter.format("Buession Framework Version: %s%n", Framework.VERSION);
-		formatter.format("Buession Spring Boot Version: %s%n", getVersion(AbstractBanner.class));
+		formatter.format("Buession Framework Version: %s%n", BuessionFrameworkVersion.getVersion());
+		formatter.format("Buession Spring Boot Version: %s%n", BuessionBootVersion.getVersion());
 		formatter.format("%s%n", LINE_SEPARATOR);
 
 		formatter.format("Spring Framework Version: %s%n", SpringVersion.getVersion());

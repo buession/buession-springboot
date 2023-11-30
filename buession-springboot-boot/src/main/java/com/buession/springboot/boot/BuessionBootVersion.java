@@ -22,51 +22,22 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.utils;
+package com.buession.springboot.boot;
 
-import com.buession.core.utils.StringUtils;
-import com.buession.core.validator.Validate;
-import com.buession.redis.core.RedisNode;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.buession.core.utils.VersionUtils;
 
 /**
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.2
  */
-public class RedisNodeUtils {
+public class BuessionBootVersion {
 
-	public static RedisNode parse(final String str, final int defaultPort) throws ParseException {
-		String[] hostAndPort = StringUtils.split(str, ':');
+	private BuessionBootVersion() {
 
-		if(hostAndPort.length == 1){
-			return new RedisNode(hostAndPort[0], defaultPort);
-		}else if(hostAndPort.length == 2){
-			try{
-				int port = Integer.parseInt(hostAndPort[1]);
-
-				if(Validate.isPort(port)){
-					return new RedisNode(hostAndPort[0], port);
-				}
-			}catch(Exception e){
-				//
-			}
-		}
-
-		throw new ParseException("Illegal redis host and port: " + str + ".", -1);
 	}
 
-	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException {
-		List<RedisNode> nodes = new ArrayList<>(str.size());
-
-		for(String s : str){
-			nodes.add(parse(s, defaultPort));
-		}
-
-		return nodes;
+	public static String getVersion() {
+		return VersionUtils.determineClassVersion(BuessionBootVersion.class);
 	}
 
 }

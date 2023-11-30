@@ -27,4 +27,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.boot.config;
+package com.buession.springboot.boot;
