@@ -25,6 +25,7 @@
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.converter.mapper.PropertyMapper;
+import com.buession.core.utils.ObjectUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.Cas;
 import org.pac4j.cas.client.CasClient;
@@ -136,9 +137,7 @@ public class Pac4jCasConfiguration {
 
 			};
 
-			if(config.getCallbackUrl() != null){
-				casClient.setCallbackUrl(config.getCallbackUrl());
-			}
+			ObjectUtils.invokeIfAvailable(config.getCallbackUrl(), casClient::setCallbackUrl);
 
 			afterClientInitialized(casClient, config.getGeneral());
 
@@ -221,10 +220,9 @@ public class Pac4jCasConfiguration {
 		}
 
 		protected void doClientInit(final BaseClient<TokenCredentials> client) {
-			if(config.getProfileDefinition() != null){
-				((CasAuthenticator) client.getAuthenticator())
-						.setProfileDefinition(BeanUtils.instantiateClass(config.getProfileDefinition()));
-			}
+			ObjectUtils.invokeIfAvailable(config.getProfileDefinition(),
+					(profileDefinition)->((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(
+							BeanUtils.instantiateClass(profileDefinition)));
 
 			if(Validate.isNotEmpty(config.getAuthorizationGenerator())){
 				final List<AuthorizationGenerator> authorizationGenerators = config.getAuthorizationGenerator().stream()

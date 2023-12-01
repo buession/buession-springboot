@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.utils.ObjectUtils;
 import com.buession.core.utils.StringUtils;
 import com.buession.springboot.pac4j.config.Jwt;
 import org.pac4j.core.profile.CommonProfile;
@@ -64,13 +65,13 @@ public class Pac4jJwtConfiguration {
 
 	private final Pac4jProperties properties;
 
-	public Pac4jJwtConfiguration(Pac4jProperties properties){
+	public Pac4jJwtConfiguration(Pac4jProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SecretSignatureConfiguration secretSignatureConfiguration(){
+	public SecretSignatureConfiguration secretSignatureConfiguration() {
 		Jwt config = properties.getClient().getJwt();
 		String jwtSecret = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
 		return new SecretSignatureConfiguration(jwtSecret, config.getSecretSignatureAlgorithm());
@@ -78,7 +79,7 @@ public class Pac4jJwtConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SecretEncryptionConfiguration secretEncryptionConfiguration(){
+	public SecretEncryptionConfiguration secretEncryptionConfiguration() {
 		Jwt config = properties.getClient().getJwt();
 		String jwtEncryptionKey = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE,
 				config.getEncryptionKey());
@@ -89,7 +90,7 @@ public class Pac4jJwtConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public JwtGenerator<CommonProfile> jwtGenerator(ObjectProvider<SecretSignatureConfiguration> signatureConfiguration,
-													ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration){
+													ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration) {
 		return new JwtGenerator<>(signatureConfiguration.getIfAvailable(),
 				secretEncryptionConfiguration.getIfAvailable());
 	}
@@ -97,15 +98,14 @@ public class Pac4jJwtConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public JwtAuthenticator jwtAuthenticator(ObjectProvider<SecretSignatureConfiguration> signatureConfiguration,
-											 ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration){
+											 ObjectProvider<SecretEncryptionConfiguration> secretEncryptionConfiguration) {
 		Jwt config = properties.getClient().getJwt();
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration.getIfAvailable(),
 				secretEncryptionConfiguration.getIfAvailable());
 
-		if(config.getIdentifierGenerator() != null){
-			ValueGenerator identifierGenerator = BeanUtils.instantiateClass(config.getIdentifierGenerator());
-			jwtAuthenticator.setIdentifierGenerator(identifierGenerator);
-		}
+		ObjectUtils.invokeIfAvailable(config.getIdentifierGenerator(),
+				(identifierGenerator)->jwtAuthenticator.setIdentifierGenerator(
+						BeanUtils.instantiateClass(identifierGenerator)));
 
 		return jwtAuthenticator;
 	}
@@ -117,7 +117,7 @@ public class Pac4jJwtConfiguration {
 		private final JwtAuthenticator jwtAuthenticator;
 
 		public Pac4JJwtClientConfiguration(Pac4jProperties properties,
-										   ObjectProvider<JwtAuthenticator> jwtAuthenticator){
+										   ObjectProvider<JwtAuthenticator> jwtAuthenticator) {
 			super(properties, properties.getClient().getJwt());
 			this.jwtAuthenticator = jwtAuthenticator.getIfAvailable();
 		}
@@ -125,7 +125,7 @@ public class Pac4jJwtConfiguration {
 		@Bean(name = "jwtParameterClient")
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
-		public HeaderClient headerClient(){
+		public HeaderClient headerClient() {
 			final HeaderClient headerClient = new HeaderClient(config.getHeader().getHeaderName(),
 					config.getHeader().getPrefixHeader(), jwtAuthenticator);
 
@@ -137,7 +137,7 @@ public class Pac4jJwtConfiguration {
 		@Bean(name = "jwtCookieClient")
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "cookie.enabled", havingValue = "true")
-		public CookieClient cookieClient(){
+		public CookieClient cookieClient() {
 			final CookieClient cookieClient = new CookieClient(config.getCookie().getCookieName(), jwtAuthenticator);
 
 			afterClientInitialized(cookieClient, config.getCookie());
@@ -148,7 +148,7 @@ public class Pac4jJwtConfiguration {
 		@Bean(name = "jwtParameterClient")
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
-		public ParameterClient parameterClient(){
+		public ParameterClient parameterClient() {
 			final ParameterClient parameterClient = new ParameterClient(config.getParameter().getParameterName(),
 					jwtAuthenticator);
 

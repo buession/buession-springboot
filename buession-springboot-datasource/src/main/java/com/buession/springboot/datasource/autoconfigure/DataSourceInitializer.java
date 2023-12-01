@@ -94,8 +94,7 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 		try{
 			final Constructor<D> constructor = type.getConstructor(
 					org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.class);
-
-			D instance = BeanUtils.instantiateClass(constructor, properties);
+			final D instance = BeanUtils.instantiateClass(constructor, properties);
 
 			instance.setPoolConfiguration(poolConfiguration);
 
