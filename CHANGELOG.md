@@ -9,6 +9,12 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.2)
 
 
+### 🐞 Bug 修复
+
+- **buession-springboot-mybatis：** 修复 Environment 获取 spring.mybatis.annotation-class 转换成 Class 异常 BUG
+- **buession-springboot-mybatis：** 修复无法获取 spring.mybatis.scanner.base-package 的 BUG
+
+
 ### ⏪ 优化
 
 - **buession-springboot-cache：** RedisTemplate 初始化时不手动调用 afterPropertiesSet 方法

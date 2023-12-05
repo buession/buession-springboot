@@ -30,10 +30,8 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.type.TypeHandler;
-import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.lang.annotation.Annotation;
 import java.util.Properties;
 
 /**
@@ -120,13 +118,6 @@ public class MybatisProperties {
 	 * @since 1.2.0
 	 */
 	private boolean failFast;
-
-	/**
-	 * 扫描器
-	 *
-	 * @since 2.3.1
-	 */
-	private Scanner scanner;
 
 	/**
 	 * The default scripting language driver class. (Available when use together with mybatis-spring 2.0.2+)
@@ -330,25 +321,6 @@ public class MybatisProperties {
 	}
 
 	/**
-	 * 返回扫描器
-	 *
-	 * @return 扫描器
-	 */
-	public Scanner getScanner() {
-		return scanner;
-	}
-
-	/**
-	 * 设置扫描器
-	 *
-	 * @param scanner
-	 * 		扫描器
-	 */
-	public void setScanner(Scanner scanner) {
-		this.scanner = scanner;
-	}
-
-	/**
 	 * Return the default scripting language driver class.
 	 *
 	 * @return The default scripting language driver class.
@@ -365,137 +337,6 @@ public class MybatisProperties {
 	 */
 	public void setDefaultScriptingLanguageDriver(Class<? extends LanguageDriver> defaultScriptingLanguageDriver) {
 		this.defaultScriptingLanguageDriver = defaultScriptingLanguageDriver;
-	}
-
-	/**
-	 * 扫描器
-	 *
-	 * @author Yong.Teng
-	 * @since 2.3.1
-	 */
-	public final static class Scanner {
-
-		private String basePackage;
-
-		private Boolean addToConfig = true;
-
-		private String lazyInitialization;
-
-		private String sqlSessionFactoryBeanName;
-
-		private String sqlSessionTemplateBeanName;
-
-		private Class<? extends Annotation> annotationClass = org.apache.ibatis.annotations.Mapper.class;
-
-		private Class<?> markerInterface;
-
-		private Class<? extends MapperFactoryBean> mapperFactoryBeanClass;
-
-		private String beanName;
-
-		private Boolean processPropertyPlaceHolders;
-
-		private Boolean injectSqlSessionOnMapperScan;
-
-		private String defaultScope;
-
-		public String getBasePackage() {
-			return basePackage;
-		}
-
-		public void setBasePackage(String basePackage) {
-			this.basePackage = basePackage;
-		}
-
-		public Boolean getAddToConfig() {
-			return addToConfig;
-		}
-
-		public void setAddToConfig(Boolean addToConfig) {
-			this.addToConfig = addToConfig;
-		}
-
-		public String getLazyInitialization() {
-			return lazyInitialization;
-		}
-
-		public void setLazyInitialization(String lazyInitialization) {
-			this.lazyInitialization = lazyInitialization;
-		}
-
-		public String getSqlSessionFactoryBeanName() {
-			return sqlSessionFactoryBeanName;
-		}
-
-		public void setSqlSessionFactoryBeanName(String sqlSessionFactoryBeanName) {
-			this.sqlSessionFactoryBeanName = sqlSessionFactoryBeanName;
-		}
-
-		public String getSqlSessionTemplateBeanName() {
-			return sqlSessionTemplateBeanName;
-		}
-
-		public void setSqlSessionTemplateBeanName(String sqlSessionTemplateBeanName) {
-			this.sqlSessionTemplateBeanName = sqlSessionTemplateBeanName;
-		}
-
-		public Class<? extends Annotation> getAnnotationClass() {
-			return annotationClass;
-		}
-
-		public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
-			this.annotationClass = annotationClass;
-		}
-
-		public Class<?> getMarkerInterface() {
-			return markerInterface;
-		}
-
-		public void setMarkerInterface(Class<?> markerInterface) {
-			this.markerInterface = markerInterface;
-		}
-
-		public Class<? extends MapperFactoryBean> getMapperFactoryBeanClass() {
-			return mapperFactoryBeanClass;
-		}
-
-		public void setMapperFactoryBeanClass(
-				Class<? extends MapperFactoryBean> mapperFactoryBeanClass) {
-			this.mapperFactoryBeanClass = mapperFactoryBeanClass;
-		}
-
-		public String getBeanName() {
-			return beanName;
-		}
-
-		public void setBeanName(String beanName) {
-			this.beanName = beanName;
-		}
-
-		public Boolean getProcessPropertyPlaceHolders() {
-			return processPropertyPlaceHolders;
-		}
-
-		public void setProcessPropertyPlaceHolders(Boolean processPropertyPlaceHolders) {
-			this.processPropertyPlaceHolders = processPropertyPlaceHolders;
-		}
-
-		public Boolean getInjectSqlSessionOnMapperScan() {
-			return injectSqlSessionOnMapperScan;
-		}
-
-		public void setInjectSqlSessionOnMapperScan(Boolean injectSqlSessionOnMapperScan) {
-			this.injectSqlSessionOnMapperScan = injectSqlSessionOnMapperScan;
-		}
-
-		public String getDefaultScope() {
-			return defaultScope;
-		}
-
-		public void setDefaultScope(String defaultScope) {
-			this.defaultScope = defaultScope;
-		}
-
 	}
 
 }
