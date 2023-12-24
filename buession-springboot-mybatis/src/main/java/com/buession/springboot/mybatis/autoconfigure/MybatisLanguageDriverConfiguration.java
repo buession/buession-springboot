@@ -31,6 +31,7 @@ import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriver;
 import org.mybatis.scripting.thymeleaf.ThymeleafLanguageDriverConfig;
 import org.mybatis.scripting.velocity.VelocityLanguageDriver;
 import org.mybatis.scripting.velocity.VelocityLanguageDriverConfig;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -47,7 +48,7 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisLanguageDriverConfiguration {
 
 	private static final String CONFIGURATION_PROPERTY_PREFIX = MybatisProperties.PREFIX +
-			"scripting-language-driver";
+			".scripting-language-driver";
 
 	/**
 	 * Configuration class for mybatis-freemarker 1.1.x or under.
@@ -81,8 +82,9 @@ public class MybatisLanguageDriverConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FreeMarkerLanguageDriver freeMarkerLanguageDriver(FreeMarkerLanguageDriverConfig config) {
-			return new FreeMarkerLanguageDriver(config);
+		public FreeMarkerLanguageDriver freeMarkerLanguageDriver(
+				ObjectProvider<FreeMarkerLanguageDriverConfig> config) {
+			return new FreeMarkerLanguageDriver(config.getIfAvailable());
 		}
 
 	}
@@ -119,8 +121,8 @@ public class MybatisLanguageDriverConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public VelocityLanguageDriver velocityLanguageDriver(VelocityLanguageDriverConfig config) {
-			return new VelocityLanguageDriver(config);
+		public VelocityLanguageDriver velocityLanguageDriver(ObjectProvider<VelocityLanguageDriverConfig> config) {
+			return new VelocityLanguageDriver(config.getIfAvailable());
 		}
 
 	}
@@ -133,17 +135,15 @@ public class MybatisLanguageDriverConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".thymeleaf")
 		public ThymeleafLanguageDriverConfig thymeleafLanguageDriverConfig() {
-			return ThymeleafLanguageDriverConfig.newInstance();
+			return MetadataThymeleafLanguageDriverConfig.newInstance();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ThymeleafLanguageDriver thymeleafLanguageDriver(ThymeleafLanguageDriverConfig config) {
-			return new ThymeleafLanguageDriver(config);
+		public ThymeleafLanguageDriver thymeleafLanguageDriver(ObjectProvider<ThymeleafLanguageDriverConfig> config) {
+			return new ThymeleafLanguageDriver(config.getIfAvailable());
 		}
 
-		// This class provides to avoid the https://github.com/spring-projects/spring-boot/issues/21626 as workaround.
-		@SuppressWarnings("unused")
 		private final static class MetadataThymeleafLanguageDriverConfig extends ThymeleafLanguageDriverConfig {
 
 			@ConfigurationProperties(CONFIGURATION_PROPERTY_PREFIX + ".thymeleaf.dialect")

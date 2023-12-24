@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -61,7 +61,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.util.CollectionUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -228,7 +227,7 @@ public class MybatisConfiguration {
 			configuration = new org.apache.ibatis.session.Configuration();
 		}
 
-		if(configuration != null && !CollectionUtils.isEmpty(this.configurationCustomizers)){
+		if(configuration != null && Validate.isNotEmpty(configurationCustomizers)){
 			for(ConfigurationCustomizer customizer : configurationCustomizers){
 				customizer.customize(configuration);
 			}

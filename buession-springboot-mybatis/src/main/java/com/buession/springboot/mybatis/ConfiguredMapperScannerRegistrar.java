@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.mybatis;
 
+import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.mybatis.autoconfigure.MybatisProperties;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -45,11 +46,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -80,25 +79,20 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 	@Override
 	public void registerBeanDefinitions(@NonNull AnnotationMetadata annotationMetadata,
 										@NonNull BeanDefinitionRegistry registry) {
-		if(AutoConfigurationPackages.has(beanFactory) == false){
+		if(AutoConfigurationPackages.has(beanFactory)){
+			registerBeanDefinition(registry);
+		}else{
 			logger.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.");
-			return;
 		}
-
-		registerBeanDefinition(registry);
 	}
 
 	public void registerBeanDefinition(@NonNull BeanDefinitionRegistry registry) {
 		String basePackage = getProperty("base-package", "basePackage", String.class);
-		List<String> basePackages;
+		List<String> basePackages = Validate.isBlank(basePackage) ? AutoConfigurationPackages.get(
+				beanFactory) : Arrays.asList(com.buession.core.utils.StringUtils.split(basePackage, ','));
 
-		if(Validate.isBlank(basePackage)){
-			basePackages = AutoConfigurationPackages.get(beanFactory);
-		}else{
-			basePackages = Arrays.asList(com.buession.core.utils.StringUtils.split(basePackage, ','));
-		}
 		if(logger.isDebugEnabled()){
-			basePackages.forEach(pkg->logger.debug("Using auto-configuration base package '{}'", pkg));
+			basePackages.forEach((pkg)->logger.debug("Using auto-configuration base package '{}'", pkg));
 		}
 
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
@@ -106,20 +100,20 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 
 		String annotationClassName = getProperty("annotation-class", "annotationClass", String.class);
 
-		if(logger.isDebugEnabled()){
-			logger.debug("Searching for mappers annotated with @{}",
-					Optional.ofNullable(annotationClassName)
-							.orElse(org.apache.ibatis.annotations.Mapper.class.getSimpleName()));
-		}
-
 		try{
-			builder.addPropertyValue("annotationClass", annotationClassName == null ?
-					org.apache.ibatis.annotations.Mapper.class : ClassUtils.forName(annotationClassName, null));
+			Class<?> annotationClass = annotationClassName == null ?
+					org.apache.ibatis.annotations.Mapper.class : ClassUtils.forName(annotationClassName, null);
+
+			builder.addPropertyValue("annotationClass", annotationClass);
+
+			if(logger.isDebugEnabled()){
+				logger.debug("Searching for mappers annotated with @{}", annotationClass.getSimpleName());
+			}
 		}catch(ClassNotFoundException e){
 			throw new BeanInitializationException(e.getMessage());
 		}
 
-		builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(basePackages));
+		builder.addPropertyValue("basePackage", StringUtils.join(basePackages, ','));
 
 		BeanWrapper beanWrapper = new BeanWrapperImpl(MapperScannerConfigurer.class);
 
@@ -134,7 +128,7 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 		registry.registerBeanDefinition(MapperScannerConfigurer.class.getName(), builder.getBeanDefinition());
 	}
 
-	private <T> T getProperty(String key, String humpKey, Class<T> targetType) {
+	private <T> T getProperty(final String key, final String humpKey, final Class<T> targetType) {
 		T value = environment.getProperty(PREFIX + '.' + key, targetType);
 
 		if(value == null){
