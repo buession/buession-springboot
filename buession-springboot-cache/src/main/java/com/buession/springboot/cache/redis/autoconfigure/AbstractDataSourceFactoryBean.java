@@ -24,7 +24,10 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.redis.client.connection.datasource.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Redis 数据源 {@link DataSource} 工厂 Bean 抽象类
@@ -40,6 +43,8 @@ public abstract class AbstractDataSourceFactoryBean<DS extends DataSource> imple
 	protected final RedisProperties properties;
 
 	protected DS dataSource;
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 构造函数
@@ -60,5 +65,28 @@ public abstract class AbstractDataSourceFactoryBean<DS extends DataSource> imple
 	public Class<? extends DataSource> getObjectType() {
 		return dataSource.getClass();
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(dataSource == null){
+			PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			dataSource = createDataSource();
+
+			propertyMapper.alwaysApplyingWhenHasText().from(properties.getClientName()).to(dataSource::setClientName);
+			propertyMapper.from(properties.getConnectTimeout()).as((v)->(int) v.toMillis())
+					.to(dataSource::setConnectTimeout);
+			propertyMapper.from(properties.getSoTimeout()).as((v)->(int) v.toMillis()).to(dataSource::setSoTimeout);
+			propertyMapper.from(properties.getInfiniteSoTimeout()).as((v)->(int) v.toMillis())
+					.to(dataSource::setInfiniteSoTimeout);
+			propertyMapper.from(properties.getPool()).to(dataSource::setPoolConfig);
+
+			if(logger.isInfoEnabled()){
+				logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
+						dataSource.getPoolConfig() == null ? "without" : "with");
+			}
+		}
+	}
+
+	protected abstract DS createDataSource();
 
 }
