@@ -2,6 +2,69 @@
 ===========================
 
 
+## [2.3.2](https://github.com/buession/buession-springboot/releases/tag/v2.3.2) (2023-12-27)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.2)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-httpclient：** OKHTTP client 增加可设置 maxRequests
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-mybatis：** 修复 Environment 获取 spring.mybatis.annotation-class 转换成 Class 异常 BUG
+- **buession-springboot-mybatis：** 修复无法获取 spring.mybatis.scanner.base-package 的 BUG
+
+
+### ⏪ 优化
+
+- **buession-springboot-cache：** RedisTemplate 初始化时不手动调用 afterPropertiesSet 方法
+- **buession-springboot-cache：** 优化 AbstractDataSourceFactoryBean 多次调用 afterPropertiesSet 时，重复初始化 dataSource
+- **buession-springboot-boot：** 代码质量优化
+
+
+---
+
+
+## [2.3.1](https://github.com/buession/buession-springboot/releases/tag/v2.3.1) (2023-11-17)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.1)
+
+
+### 🔔 变化
+
+- **buession-springboot-boot：** 移除 org.bouncycastle 依赖
+
+
+### ⭐ 新特性
+
+- **buession-springboot-boot：** 新增 BaseOnPropertyExistCondition、BaseMapOnPropertyExistCondition
+- **buession-springboot-canal：** 新增 canal 自动配置类
+- **buession-springboot-mybatis：** 新增 Mybatis scanner
+- **buession-springboot-mybatis：** 新增 Mybatis LanguageDriver bean
+- **buession-springboot-web：** 新增 sitemesh 自动配置类
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-mybatis：** 修复配置多个 mapper location 时 location 丢失的问题
+
+
+### ⏪ 优化
+
+- **buession-springboot-datasource：** DataSource 初始化优化
+- **buession-springboot-mybatis：** 优化 SqlSessionFactoryBean 初始化
+
+
+---
+
+
 ## [2.3.0](https://github.com/buession/buession-springboot/releases/tag/v2.3.0) (2023-08-17)
 
 ### 🔨依赖升级
@@ -61,7 +124,7 @@
 
 - **buession-springboot-shiro：** 最大程度化，使用 shiro 自带 API
 - **buession-springboot-session：** 废弃该模块
-- **buession-springboot-pac4j** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
+- **buession-springboot-pac4j：** jwt 配置属性 secretSignatureAlgorithm、secretEncryptionAlgorithm、encryptionMethod 使用 com.nimbusds.jose 库的原生质值
 
 
 ---

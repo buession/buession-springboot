@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
+import com.buession.core.utils.ObjectUtils;
 import com.buession.httpclient.ApacheHttpAsyncClient;
 import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
@@ -47,7 +48,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(HttpClientProperties.class)
 public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
-	public ApacheHttpClientConfiguration(HttpClientProperties properties){
+	public ApacheHttpClientConfiguration(HttpClientProperties properties) {
 		super(properties);
 	}
 
@@ -61,17 +62,17 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
 	static class HttpClient extends ApacheHttpClientConfiguration {
 
-		public HttpClient(HttpClientProperties properties){
+		public HttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public ApacheClientConnectionManager clientConnectionManager(){
+		public ApacheClientConnectionManager clientConnectionManager() {
 			return new ApacheClientConnectionManager(properties);
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpClient httpClient(ObjectProvider<ApacheClientConnectionManager> connectionManager){
+		public ApacheHttpClient httpClient(ObjectProvider<ApacheClientConnectionManager> connectionManager) {
 			return new ApacheHttpClient(connectionManager.getIfAvailable());
 		}
 
@@ -88,31 +89,28 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 			"true", matchIfMissing = true)
 	static class AsyncHttpClient extends ApacheHttpClientConfiguration {
 
-		public AsyncHttpClient(HttpClientProperties properties){
+		public AsyncHttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public ApacheNioClientConnectionManager clientConnectionManager(){
+		public ApacheNioClientConnectionManager clientConnectionManager() {
 			final ApacheNioClientConnectionManager clientConnectionManager =
 					new ApacheNioClientConnectionManager(properties);
 
 			if(properties.getApacheClient() != null){
-				if(properties.getApacheClient().getIoReactor() != null){
-					clientConnectionManager.setIoReactorConfig(properties.getApacheClient().getIoReactor());
-				}
-
-				if(properties.getApacheClient().getThreadFactory() != null){
-					clientConnectionManager.setThreadFactory(
-							BeanUtils.instantiateClass(properties.getApacheClient().getThreadFactory()));
-				}
+				ObjectUtils.invokeIfAvailable(properties.getApacheClient().getIoReactor(),
+						clientConnectionManager::setIoReactorConfig);
+				ObjectUtils.invokeIfAvailable(properties.getApacheClient().getThreadFactory(),
+						(threadFactory)->clientConnectionManager.setThreadFactory(
+								BeanUtils.instantiateClass(threadFactory)));
 			}
 
 			return clientConnectionManager;
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpAsyncClient httpClient(ObjectProvider<ApacheNioClientConnectionManager> connectionManager){
+		public ApacheHttpAsyncClient httpClient(ObjectProvider<ApacheNioClientConnectionManager> connectionManager) {
 			return new ApacheHttpAsyncClient(connectionManager.getIfAvailable());
 		}
 

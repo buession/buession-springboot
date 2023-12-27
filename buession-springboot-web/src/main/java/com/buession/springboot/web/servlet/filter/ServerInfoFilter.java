@@ -26,6 +26,7 @@ package com.buession.springboot.web.servlet.filter;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.utils.ServerInfoFilterUtils;
+import org.springframework.lang.NonNull;
 
 /**
  * Server 信息 Filter
@@ -71,7 +72,7 @@ public class ServerInfoFilter extends com.buession.web.servlet.filter.ServerInfo
 	 * 		删除后缀
 	 */
 	public ServerInfoFilter(final String headerName, final String prefix, final String suffix, final String stripPrefix,
-							final String stripSuffix){
+							final String stripSuffix) {
 		super();
 
 		if(Validate.hasText(headerName)){
@@ -85,7 +86,8 @@ public class ServerInfoFilter extends com.buession.web.servlet.filter.ServerInfo
 	}
 
 	@Override
-	protected String format(String serverName){
+	@NonNull
+	protected String format(@NonNull final String serverName) {
 		return ServerInfoFilterUtils.format(serverName, prefix, stripPrefix, suffix, stripSuffix);
 	}
 

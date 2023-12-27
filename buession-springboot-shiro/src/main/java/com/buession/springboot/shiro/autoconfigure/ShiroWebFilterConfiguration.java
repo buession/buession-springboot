@@ -54,12 +54,9 @@ import java.util.List;
 @AutoConfigureAfter({ShiroWebConfiguration.class})
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
-	private final ShiroProperties properties;
-
 	private final Pac4jFilter pac4jFilter;
 
-	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<Pac4jFilter> pac4jFilter){
-		this.properties = properties;
+	public ShiroWebFilterConfiguration(ShiroProperties properties, ObjectProvider<Pac4jFilter> pac4jFilter) {
 		this.pac4jFilter = pac4jFilter.getIfAvailable();
 
 		if(Validate.hasText(properties.getLoginUrl())){
@@ -76,7 +73,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	}
 
 	@Override
-	protected ShiroFilterFactoryBean shiroFilterFactoryBean(){
+	protected ShiroFilterFactoryBean shiroFilterFactoryBean() {
 		ShiroFilterFactoryBean filterFactoryBean = super.shiroFilterFactoryBean();
 
 		filterFactoryBean.setFilters(pac4jFilter.getFilters());
@@ -86,7 +83,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 	@Bean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
-	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception{
+	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception {
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 
 		filterRegistrationBean.setName("shiroFilter");
@@ -101,7 +98,7 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@Bean(name = "globalFilters")
 	@ConditionalOnMissingBean
 	@Override
-	protected List<String> globalFilters(){
+	protected List<String> globalFilters() {
 		return super.globalFilters();
 	}
 

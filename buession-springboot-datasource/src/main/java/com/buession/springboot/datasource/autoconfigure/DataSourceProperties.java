@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -41,8 +41,10 @@ import java.util.List;
  *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.datasource")
+@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 public class DataSourceProperties {
+
+	public final static String PREFIX = "spring.datasource";
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -110,12 +112,12 @@ public class DataSourceProperties {
 	private GenericPoolConfiguration generic = new GenericPoolConfiguration();
 
 	@Deprecated
-	public Class<? extends DataSource> getType(){
+	public Class<? extends DataSource> getType() {
 		return type;
 	}
 
 	@Deprecated
-	public void setType(Class<? extends DataSource> type){
+	public void setType(Class<? extends DataSource> type) {
 		this.type = type;
 	}
 
@@ -124,7 +126,7 @@ public class DataSourceProperties {
 	 *
 	 * @return 数据库驱动类名
 	 */
-	public String getDriverClassName(){
+	public String getDriverClassName() {
 		return driverClassName;
 	}
 
@@ -134,7 +136,7 @@ public class DataSourceProperties {
 	 * @param driverClassName
 	 * 		数据库驱动类名
 	 */
-	public void setDriverClassName(String driverClassName){
+	public void setDriverClassName(String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
@@ -143,7 +145,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Master 配置
 	 */
-	public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster(){
+	public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster() {
 		return master;
 	}
 
@@ -153,7 +155,7 @@ public class DataSourceProperties {
 	 * @param master
 	 * 		Master 配置
 	 */
-	public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master){
+	public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master) {
 		this.master = master;
 	}
 
@@ -162,7 +164,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Slaves 配置
 	 */
-	public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves(){
+	public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves() {
 		return slaves;
 	}
 
@@ -172,7 +174,7 @@ public class DataSourceProperties {
 	 * @param slaves
 	 * 		Slaves 配置
 	 */
-	public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves){
+	public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves) {
 		this.slaves = slaves;
 	}
 
@@ -183,7 +185,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public HikariPoolConfiguration getHikari(){
+	public HikariPoolConfiguration getHikari() {
 		return hikari;
 	}
 
@@ -195,7 +197,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setHikari(HikariPoolConfiguration hikari){
+	public void setHikari(HikariPoolConfiguration hikari) {
 		this.hikari = hikari;
 	}
 
@@ -206,7 +208,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public Dbcp2PoolConfiguration getDbcp2(){
+	public Dbcp2PoolConfiguration getDbcp2() {
 		return dbcp2;
 	}
 
@@ -218,7 +220,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setDbcp2(Dbcp2PoolConfiguration dbcp2){
+	public void setDbcp2(Dbcp2PoolConfiguration dbcp2) {
 		this.dbcp2 = dbcp2;
 	}
 
@@ -227,7 +229,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Druid 数据源配置
 	 */
-	public DruidPoolConfiguration getDruid(){
+	public DruidPoolConfiguration getDruid() {
 		return druid;
 	}
 
@@ -237,7 +239,7 @@ public class DataSourceProperties {
 	 * @param druid
 	 * 		Druid 数据源配置
 	 */
-	public void setDruid(DruidPoolConfiguration druid){
+	public void setDruid(DruidPoolConfiguration druid) {
 		this.druid = druid;
 	}
 
@@ -246,7 +248,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Tomcat 数据源配置
 	 */
-	public TomcatPoolConfiguration getTomcat(){
+	public TomcatPoolConfiguration getTomcat() {
 		return tomcat;
 	}
 
@@ -256,7 +258,7 @@ public class DataSourceProperties {
 	 * @param tomcat
 	 * 		Tomcat 数据源配置
 	 */
-	public void setTomcat(TomcatPoolConfiguration tomcat){
+	public void setTomcat(TomcatPoolConfiguration tomcat) {
 		this.tomcat = tomcat;
 	}
 
@@ -265,7 +267,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Generic 数据源配置
 	 */
-	public GenericPoolConfiguration getGeneric(){
+	public GenericPoolConfiguration getGeneric() {
 		return generic;
 	}
 
@@ -275,7 +277,7 @@ public class DataSourceProperties {
 	 * @param generic
 	 * 		Generic 数据源配置
 	 */
-	public void setGeneric(GenericPoolConfiguration generic){
+	public void setGeneric(GenericPoolConfiguration generic) {
 		this.generic = generic;
 	}
 

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -58,7 +58,7 @@ public class RedisDataSourceConfiguration {
 
 	protected RedisProperties properties;
 
-	public RedisDataSourceConfiguration(RedisProperties properties){
+	public RedisDataSourceConfiguration(RedisProperties properties) {
 		this.properties = properties;
 	}
 
@@ -68,14 +68,13 @@ public class RedisDataSourceConfiguration {
 	@ConditionalOnMissingBean(name = "redisDataSource", value = DataSource.class)
 	static class Jedis extends RedisDataSourceConfiguration {
 
-		public Jedis(RedisProperties properties){
+		public Jedis(RedisProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = "redisDataSource")
-		public JedisRedisDataSource dataSource(){
-			final JedisDataSourceInitializer dataSourceInitializer = new JedisDataSourceInitializer(properties);
-			return dataSourceInitializer.createInstance();
+		public JedisDataSourceFactoryBean dataSource() {
+			return new JedisDataSourceFactoryBean(properties);
 		}
 
 	}

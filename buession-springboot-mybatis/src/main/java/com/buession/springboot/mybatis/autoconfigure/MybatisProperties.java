@@ -21,11 +21,12 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2023 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
 
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.type.TypeHandler;
@@ -38,8 +39,10 @@ import java.util.Properties;
  *
  * @author Yong.Teng
  */
-@ConfigurationProperties(prefix = "spring.mybatis")
+@ConfigurationProperties(prefix = MybatisProperties.PREFIX)
 public class MybatisProperties {
+
+	public final static String PREFIX = "spring.mybatis";
 
 	/**
 	 * 配置文件路径
@@ -117,11 +120,18 @@ public class MybatisProperties {
 	private boolean failFast;
 
 	/**
+	 * The default scripting language driver class. (Available when use together with mybatis-spring 2.0.2+)
+	 *
+	 * @since 2.3.1
+	 */
+	private Class<? extends LanguageDriver> defaultScriptingLanguageDriver;
+
+	/**
 	 * 获取配置文件路径
 	 *
 	 * @return 配置文件路径
 	 */
-	public String getConfigLocation(){
+	public String getConfigLocation() {
 		return configLocation;
 	}
 
@@ -131,67 +141,67 @@ public class MybatisProperties {
 	 * @param configLocation
 	 * 		配置文件路径
 	 */
-	public void setConfigLocation(String configLocation){
+	public void setConfigLocation(String configLocation) {
 		this.configLocation = configLocation;
 	}
 
-	public boolean isCheckConfigLocation(){
+	public boolean isCheckConfigLocation() {
 		return getCheckConfigLocation();
 	}
 
-	public boolean getCheckConfigLocation(){
+	public boolean getCheckConfigLocation() {
 		return checkConfigLocation;
 	}
 
-	public void setCheckConfigLocation(boolean checkConfigLocation){
+	public void setCheckConfigLocation(boolean checkConfigLocation) {
 		this.checkConfigLocation = checkConfigLocation;
 	}
 
-	public String[] getMapperLocations(){
+	public String[] getMapperLocations() {
 		return mapperLocations;
 	}
 
-	public void setMapperLocations(String[] mapperLocations){
+	public void setMapperLocations(String[] mapperLocations) {
 		this.mapperLocations = mapperLocations;
 	}
 
-	public String getTypeAliasesPackage(){
+	public String getTypeAliasesPackage() {
 		return typeAliasesPackage;
 	}
 
-	public void setTypeAliasesPackage(String typeAliasesPackage){
+	public void setTypeAliasesPackage(String typeAliasesPackage) {
 		this.typeAliasesPackage = typeAliasesPackage;
 	}
 
-	public Class<?> getTypeAliasesSuperType(){
+	public Class<?> getTypeAliasesSuperType() {
 		return typeAliasesSuperType;
 	}
 
-	public void setTypeAliasesSuperType(Class<?> typeAliasesSuperType){
+	public void setTypeAliasesSuperType(Class<?> typeAliasesSuperType) {
 		this.typeAliasesSuperType = typeAliasesSuperType;
 	}
 
-	public Class<?>[] getTypeAliases(){
+	public Class<?>[] getTypeAliases() {
 		return typeAliases;
 	}
 
-	public void setTypeAliases(Class<?>[] typeAliases){
+	public void setTypeAliases(Class<?>[] typeAliases) {
 		this.typeAliases = typeAliases;
 	}
 
-	public String getTypeHandlersPackage(){
+	public String getTypeHandlersPackage() {
 		return typeHandlersPackage;
 	}
 
-	public void setTypeHandlersPackage(String typeHandlersPackage){
+	public void setTypeHandlersPackage(String typeHandlersPackage) {
 		this.typeHandlersPackage = typeHandlersPackage;
 	}
 
-	public TypeHandler<?>[] getTypeHandlers(){
+	public TypeHandler<?>[] getTypeHandlers() {
 		return typeHandlers;
 	}
 
-	public void setTypeHandlers(TypeHandler<?>[] typeHandlers){
+	public void setTypeHandlers(TypeHandler<?>[] typeHandlers) {
 		this.typeHandlers = typeHandlers;
 	}
 
@@ -202,7 +212,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Class<? extends TypeHandler<Enum<?>>> getDefaultEnumTypeHandler(){
+	public Class<? extends TypeHandler<Enum<?>>> getDefaultEnumTypeHandler() {
 		return defaultEnumTypeHandler;
 	}
 
@@ -214,7 +224,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler){
+	public void setDefaultEnumTypeHandler(Class<? extends TypeHandler<Enum<?>>> defaultEnumTypeHandler) {
 		this.defaultEnumTypeHandler = defaultEnumTypeHandler;
 	}
 
@@ -225,7 +235,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public ExecutorType getExecutorType(){
+	public ExecutorType getExecutorType() {
 		return executorType;
 	}
 
@@ -237,7 +247,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setExecutorType(ExecutorType executorType){
+	public void setExecutorType(ExecutorType executorType) {
 		this.executorType = executorType;
 	}
 
@@ -248,7 +258,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Properties getConfigurationProperties(){
+	public Properties getConfigurationProperties() {
 		return configurationProperties;
 	}
 
@@ -260,7 +270,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setConfigurationProperties(Properties configurationProperties){
+	public void setConfigurationProperties(Properties configurationProperties) {
 		this.configurationProperties = configurationProperties;
 	}
 
@@ -271,7 +281,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public Configuration getConfiguration(){
+	public Configuration getConfiguration() {
 		return configuration;
 	}
 
@@ -283,7 +293,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setConfiguration(Configuration configuration){
+	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -294,7 +304,7 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public boolean getFailFast(){
+	public boolean getFailFast() {
 		return failFast;
 	}
 
@@ -306,8 +316,27 @@ public class MybatisProperties {
 	 *
 	 * @since 1.2.0
 	 */
-	public void setFailFast(boolean failFast){
+	public void setFailFast(boolean failFast) {
 		this.failFast = failFast;
+	}
+
+	/**
+	 * Return the default scripting language driver class.
+	 *
+	 * @return The default scripting language driver class.
+	 */
+	public Class<? extends LanguageDriver> getDefaultScriptingLanguageDriver() {
+		return defaultScriptingLanguageDriver;
+	}
+
+	/**
+	 * Sets the default scripting language driver class.
+	 *
+	 * @param defaultScriptingLanguageDriver
+	 * 		The default scripting language driver class.
+	 */
+	public void setDefaultScriptingLanguageDriver(Class<? extends LanguageDriver> defaultScriptingLanguageDriver) {
+		this.defaultScriptingLanguageDriver = defaultScriptingLanguageDriver;
 	}
 
 }

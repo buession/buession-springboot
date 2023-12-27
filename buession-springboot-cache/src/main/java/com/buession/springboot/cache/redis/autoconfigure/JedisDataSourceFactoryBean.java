@@ -33,22 +33,18 @@ import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSo
 import com.buession.redis.core.RedisNode;
 import com.buession.redis.core.RedisURI;
 import com.buession.springboot.cache.redis.utils.RedisNodeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import java.text.ParseException;
 import java.util.List;
 
 /**
- * Jedis Redis 数据源 {@link JedisDataSource} 初始化器
+ * Jedis Redis 数据源 {@link JedisDataSource} 工厂 Bean
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.0
  */
-class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedisDataSource> {
-
-	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceInitializer.class);
+class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedisDataSource> {
 
 	/**
 	 * 构造函数
@@ -56,41 +52,22 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 	 * @param properties
 	 *        {@link RedisProperties}
 	 */
-	public JedisDataSourceInitializer(final RedisProperties properties){
+	public JedisDataSourceFactoryBean(final RedisProperties properties) {
 		super(properties);
 	}
 
 	@Override
-	public JedisRedisDataSource createInstance(){
-		JedisRedisDataSource dataSource;
-
+	protected JedisRedisDataSource createDataSource() {
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
-			dataSource = createJedisClusterDataSource();
+			return createJedisClusterDataSource();
 		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
-			dataSource = createJedisSentinelDataSource();
+			return createJedisSentinelDataSource();
 		}else{
-			dataSource = createJedisDataSource();
+			return createJedisStandaloneDataSource();
 		}
-
-		if(Validate.hasText(properties.getClientName())){
-			dataSource.setClientName(properties.getClientName());
-		}
-
-		dataSource.setConnectTimeout((int) properties.getConnectTimeout().toMillis());
-		dataSource.setSoTimeout((int) properties.getSoTimeout().toMillis());
-		dataSource.setInfiniteSoTimeout((int) properties.getInfiniteSoTimeout().toMillis());
-
-		dataSource.setPoolConfig(properties.getPool());
-
-		if(logger.isInfoEnabled()){
-			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
-					dataSource.getPoolConfig() == null ? "without" : "with");
-		}
-
-		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisDataSource(){
+	private JedisRedisDataSource createJedisStandaloneDataSource() {
 		final JedisDataSource dataSource = new JedisDataSource();
 
 		if(Validate.hasText(properties.getHost())){
@@ -117,7 +94,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisSentinelDataSource(){
+	private JedisRedisDataSource createJedisSentinelDataSource() {
 		RedisProperties.Sentinel sentinel = properties.getSentinel();
 
 		List<RedisNode> sentinelNodes;
@@ -142,7 +119,7 @@ class JedisDataSourceInitializer extends AbstractDataSourceInitializer<JedisRedi
 		return dataSource;
 	}
 
-	private JedisRedisDataSource createJedisClusterDataSource(){
+	private JedisRedisDataSource createJedisClusterDataSource() {
 		RedisProperties.Cluster cluster = properties.getCluster();
 
 		List<RedisNode> nodes;

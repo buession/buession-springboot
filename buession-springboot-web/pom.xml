@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>2.3.0</version>
+		<version>2.3.2</version>
 	</parent>
 	<artifactId>buession-springboot-web</artifactId>
 	<url>https://springboot.buession.com/</url>
@@ -103,6 +103,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- springframework boot end -->
+
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>sitemesh</artifactId>
+			<version>2.5.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>

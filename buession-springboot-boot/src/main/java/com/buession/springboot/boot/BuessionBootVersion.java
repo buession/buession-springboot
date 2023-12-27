@@ -19,34 +19,25 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.autoconfigure;
+package com.buession.springboot.boot;
 
-import com.buession.redis.client.connection.datasource.DataSource;
+import com.buession.core.utils.VersionUtils;
 
 /**
- * Redis 数据源 {@link DataSource} 初始化器抽象类
- *
- * @param <DS>
- * 		数据源类型
- *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 2.3.2
  */
-public abstract class AbstractDataSourceInitializer<DS extends DataSource> implements DataSourceInitializer<DS> {
+public class BuessionBootVersion {
 
-	protected final RedisProperties properties;
+	private BuessionBootVersion() {
 
-	/**
-	 * 构造函数
-	 *
-	 * @param properties
-	 *        {@link RedisProperties}
-	 */
-	public AbstractDataSourceInitializer(final RedisProperties properties){
-		this.properties = properties;
+	}
+
+	public static String getVersion() {
+		return VersionUtils.determineClassVersion(BuessionBootVersion.class);
 	}
 
 }
