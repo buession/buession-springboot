@@ -53,14 +53,14 @@ public class RedisConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
-	public RedisConfiguration(RedisProperties properties){
+	public RedisConfiguration(RedisProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource){
+	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource) {
 		final RedisTemplate template = new RedisTemplate(dataSource.getIfAvailable());
 		final Options.Builder builder = Options.Builder.getInstance()
 				.prefix(properties.getKeyPrefix())
@@ -68,7 +68,6 @@ public class RedisConfiguration {
 				.enableTransactionSupport(properties.isEnableTransactionSupport());
 
 		template.setOptions(builder.build());
-		template.afterPropertiesSet();
 
 		if(logger.isTraceEnabled()){
 			logger.trace("RedisTemplate bean initialized success.");

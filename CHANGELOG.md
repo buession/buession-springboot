@@ -2,6 +2,34 @@
 ===========================
 
 
+## [2.3.2](https://github.com/buession/buession-springboot/releases/tag/v2.3.2) (2023-12-27)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.2)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-httpclient：** OKHTTP client 增加可设置 maxRequests
+
+
+### 🐞 Bug 修复
+
+- **buession-springboot-mybatis：** 修复 Environment 获取 spring.mybatis.annotation-class 转换成 Class 异常 BUG
+- **buession-springboot-mybatis：** 修复无法获取 spring.mybatis.scanner.base-package 的 BUG
+
+
+### ⏪ 优化
+
+- **buession-springboot-cache：** RedisTemplate 初始化时不手动调用 afterPropertiesSet 方法
+- **buession-springboot-cache：** 优化 AbstractDataSourceFactoryBean 多次调用 afterPropertiesSet 时，重复初始化 dataSource
+- **buession-springboot-boot：** 代码质量优化
+
+
+---
+
+
 ## [2.3.1](https://github.com/buession/buession-springboot/releases/tag/v2.3.1) (2023-11-17)
 
 ### 🔨依赖升级

@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.utils.ObjectUtils;
 import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import org.pac4j.core.client.Client;
@@ -58,7 +59,7 @@ public class Pac4jConfiguration {
 
 	private final Pac4jProperties properties;
 
-	public Pac4jConfiguration(Pac4jProperties properties){
+	public Pac4jConfiguration(Pac4jProperties properties) {
 		this.properties = properties;
 	}
 
@@ -74,15 +75,11 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Clients clients(List<Client> clientList){
+	public Clients clients(List<Client> clientList) {
 		final Clients clients = new Clients(clientList);
 
-		if(properties.getAjaxRequestResolverClass() != null){
-			AjaxRequestResolver ajaxRequestResolver = BeanUtils.instantiateClass(
-					properties.getAjaxRequestResolverClass());
-
-			clients.setAjaxRequestResolver(ajaxRequestResolver);
-		}
+		ObjectUtils.invokeIfAvailable(properties.getAjaxRequestResolverClass(),
+				(ajaxRequestResolver)->clients.setAjaxRequestResolver(BeanUtils.instantiateClass(ajaxRequestResolver)));
 
 		return clients;
 	}
@@ -97,16 +94,13 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config config(Clients clients){
+	public Config config(Clients clients) {
 		final Config config = Config.INSTANCE;
 
 		config.setClients(clients);
 
-		if(properties.getHttpActionAdapterClass() != null){
-			HttpActionAdapter<?, ? extends WebContext> httpActionAdapter = BeanUtils.instantiateClass(
-					properties.getHttpActionAdapterClass());
-			config.setHttpActionAdapter(httpActionAdapter);
-		}
+		ObjectUtils.invokeIfAvailable(properties.getHttpActionAdapterClass(),
+				(httpActionAdapter)->config.setHttpActionAdapter(BeanUtils.instantiateClass(httpActionAdapter)));
 
 		return config;
 	}
@@ -120,7 +114,7 @@ public class Pac4jConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter(){
+		public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter() {
 			return new Pac4jWebMvcConfigurerAdapter();
 		}
 
@@ -135,14 +129,14 @@ public class Pac4jConfiguration {
 
 		private final ConfigurableApplicationContext context;
 
-		public WebFluxPac4jConfigurerAdapterConfiguration(ObjectProvider<ConfigurableApplicationContext> context){
+		public WebFluxPac4jConfigurerAdapterConfiguration(ObjectProvider<ConfigurableApplicationContext> context) {
 			this.context = context.getIfAvailable();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(
-				@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> reactiveAdapterRegistry){
+				@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> reactiveAdapterRegistry) {
 			return new Pac4jWebFluxConfigurerAdapter(context.getBeanFactory(),
 					reactiveAdapterRegistry.getIfAvailable());
 		}

@@ -22,73 +22,22 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.web.reactive.filter;
+package com.buession.springboot.boot;
 
-import com.buession.core.validator.Validate;
-import com.buession.springboot.web.utils.ServerInfoFilterUtils;
-import org.springframework.lang.NonNull;
+import com.buession.core.utils.VersionUtils;
 
 /**
- * Server 信息 Filter
- *
  * @author Yong.Teng
- * @see com.buession.web.reactive.filter.ServerInfoFilter
- * @since 2.0.0
+ * @since 2.3.2
  */
-public class ServerInfoFilter extends com.buession.web.reactive.filter.ServerInfoFilter {
+public class BuessionBootVersion {
 
-	/**
-	 * 前缀
-	 */
-	private final String prefix;
+	private BuessionBootVersion() {
 
-	/**
-	 * 后缀
-	 */
-	private final String suffix;
-
-	/**
-	 * 删除前缀
-	 */
-	private final String stripPrefix;
-
-	/**
-	 * 删除后缀
-	 */
-	private final String stripSuffix;
-
-	/**
-	 * 构造函数
-	 *
-	 * @param headerName
-	 * 		响应头名称
-	 * @param prefix
-	 * 		前缀
-	 * @param suffix
-	 * 		后缀
-	 * @param stripPrefix
-	 * 		删除前缀
-	 * @param stripSuffix
-	 * 		删除后缀
-	 */
-	public ServerInfoFilter(final String headerName, final String prefix, final String suffix, final String stripPrefix,
-							final String stripSuffix) {
-		super();
-
-		if(Validate.hasText(headerName)){
-			setHeaderName(headerName);
-		}
-
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.stripPrefix = stripPrefix;
-		this.stripSuffix = stripSuffix;
 	}
 
-	@Override
-	@NonNull
-	protected String format(@NonNull String serverName) {
-		return ServerInfoFilterUtils.format(serverName, prefix, stripPrefix, suffix, stripSuffix);
+	public static String getVersion() {
+		return VersionUtils.determineClassVersion(BuessionBootVersion.class);
 	}
 
 }

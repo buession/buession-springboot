@@ -33,8 +33,6 @@ import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSo
 import com.buession.redis.core.RedisNode;
 import com.buession.redis.core.RedisURI;
 import com.buession.springboot.cache.redis.utils.RedisNodeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import java.text.ParseException;
@@ -48,8 +46,6 @@ import java.util.List;
  */
 class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedisDataSource> {
 
-	private final static Logger logger = LoggerFactory.getLogger(JedisDataSourceFactoryBean.class);
-
 	/**
 	 * 构造函数
 	 *
@@ -61,26 +57,7 @@ class JedisDataSourceFactoryBean extends AbstractDataSourceFactoryBean<JedisRedi
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		dataSource = createJedisDataSource();
-
-		if(Validate.hasText(properties.getClientName())){
-			dataSource.setClientName(properties.getClientName());
-		}
-
-		dataSource.setConnectTimeout((int) properties.getConnectTimeout().toMillis());
-		dataSource.setSoTimeout((int) properties.getSoTimeout().toMillis());
-		dataSource.setInfiniteSoTimeout((int) properties.getInfiniteSoTimeout().toMillis());
-
-		dataSource.setPoolConfig(properties.getPool());
-
-		if(logger.isInfoEnabled()){
-			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
-					dataSource.getPoolConfig() == null ? "without" : "with");
-		}
-	}
-
-	private JedisRedisDataSource createJedisDataSource() {
+	protected JedisRedisDataSource createDataSource() {
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
 			return createJedisClusterDataSource();
 		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){

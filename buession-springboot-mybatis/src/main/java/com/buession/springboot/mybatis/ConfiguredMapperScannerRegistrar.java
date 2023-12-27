@@ -24,9 +24,9 @@
  */
 package com.buession.springboot.mybatis;
 
+import com.buession.core.utils.StringUtils;
+import com.buession.core.validator.Validate;
 import com.buession.springboot.mybatis.autoconfigure.MybatisProperties;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -44,13 +44,11 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.StringUtils;
+import org.springframework.lang.NonNull;
+import org.springframework.util.ClassUtils;
 
-import java.beans.PropertyDescriptor;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -79,70 +77,65 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 	}
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
-		if(AutoConfigurationPackages.has(beanFactory) == false){
+	public void registerBeanDefinitions(@NonNull AnnotationMetadata annotationMetadata,
+										@NonNull BeanDefinitionRegistry registry) {
+		if(AutoConfigurationPackages.has(beanFactory)){
+			registerBeanDefinition(registry);
+		}else{
 			logger.debug("Could not determine auto-configuration package, automatic mapper scanning disabled.");
-			return;
 		}
+	}
 
-		List<String> packages = AutoConfigurationPackages.get(beanFactory);
+	public void registerBeanDefinition(@NonNull BeanDefinitionRegistry registry) {
+		String basePackage = getProperty("base-package", "basePackage", String.class);
+		List<String> basePackages = Validate.isBlank(basePackage) ? AutoConfigurationPackages.get(
+				beanFactory) : Arrays.asList(com.buession.core.utils.StringUtils.split(basePackage, ','));
+
 		if(logger.isDebugEnabled()){
-			packages.forEach(pkg->logger.debug("Using auto-configuration base package '{}'", pkg));
+			basePackages.forEach((pkg)->logger.debug("Using auto-configuration base package '{}'", pkg));
 		}
 
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
 		builder.addPropertyValue("processPropertyPlaceHolders", true);
 
-		Class<?> annotationClass = environment.getProperty(PREFIX + ".annotation-class",
-				Class.class, org.apache.ibatis.annotations.Mapper.class);
+		String annotationClassName = getProperty("annotation-class", "annotationClass", String.class);
 
-		if(logger.isDebugEnabled()){
-			logger.debug("Searching for mappers annotated with @{}", annotationClass.getName());
+		try{
+			Class<?> annotationClass = annotationClassName == null ?
+					org.apache.ibatis.annotations.Mapper.class : ClassUtils.forName(annotationClassName, null);
+
+			builder.addPropertyValue("annotationClass", annotationClass);
+
+			if(logger.isDebugEnabled()){
+				logger.debug("Searching for mappers annotated with @{}", annotationClass.getSimpleName());
+			}
+		}catch(ClassNotFoundException e){
+			throw new BeanInitializationException(e.getMessage());
 		}
 
-		builder.addPropertyValue("annotationClass", annotationClass);
-		builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(packages));
+		builder.addPropertyValue("basePackage", StringUtils.join(basePackages, ','));
 
 		BeanWrapper beanWrapper = new BeanWrapperImpl(MapperScannerConfigurer.class);
-		Set<String> propertyNames = Stream.of(beanWrapper.getPropertyDescriptors()).map(PropertyDescriptor::getName)
-				.collect(Collectors.toSet());
 
-		if(propertyNames.contains("lazyInitialization")){
-			// Need to mybatis-spring 2.0.2+
-			builder.addPropertyValue("lazyInitialization", "${" + PREFIX + ".lazy-initialization:false}");
-		}
-		if(propertyNames.contains("defaultScope")){
-			// Need to mybatis-spring 2.0.6+
-			builder.addPropertyValue("defaultScope", "${" + PREFIX + ".mapper-default-scope:}");
-		}
-
-		// for spring-native
-		//boolean injectSqlSession = environment.getProperty("spring.mybatis.inject-sql-session-on-mapper-scan",
-		//	Boolean.class, Boolean.TRUE);
-		boolean injectSqlSession = environment.getProperty(PREFIX + ".inject-sql-session-on-mapper-scan", Boolean.class,
-				Boolean.TRUE);
-		if(injectSqlSession && beanFactory instanceof ListableBeanFactory){
-			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
-			Optional<String> sqlSessionTemplateBeanName = Optional
-					.ofNullable(getBeanNameForType(SqlSessionTemplate.class, listableBeanFactory));
-			Optional<String> sqlSessionFactoryBeanName = Optional
-					.ofNullable(getBeanNameForType(SqlSessionFactory.class, listableBeanFactory));
-			if(sqlSessionTemplateBeanName.isPresent() || !sqlSessionFactoryBeanName.isPresent()){
-				builder.addPropertyValue("sqlSessionTemplateBeanName",
-						sqlSessionTemplateBeanName.orElse("sqlSessionTemplate"));
-			}else{
-				builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryBeanName.get());
-			}
-		}
+		Stream.of(beanWrapper.getPropertyDescriptors()).filter((x)->"lazyInitialization".equals(x.getName())).findAny()
+				.ifPresent((x)->builder.addPropertyValue("lazyInitialization",
+						"${" + PREFIX + ".lazy-initialization:false}"));
+		Stream.of(beanWrapper.getPropertyDescriptors()).filter((x)->"defaultScope".equals(x.getName())).findAny()
+				.ifPresent((x)->builder.addPropertyValue("defaultScope", "${" + PREFIX + ".mapper-default-scope:}"));
 
 		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
 		registry.registerBeanDefinition(MapperScannerConfigurer.class.getName(), builder.getBeanDefinition());
 	}
 
-	private String getBeanNameForType(Class<?> type, ListableBeanFactory factory) {
-		String[] beanNames = factory.getBeanNamesForType(type);
-		return beanNames.length > 0 ? beanNames[0] : null;
+	private <T> T getProperty(final String key, final String humpKey, final Class<T> targetType) {
+		T value = environment.getProperty(PREFIX + '.' + key, targetType);
+
+		if(value == null){
+			value = environment.getProperty(PREFIX + '.' + humpKey, targetType);
+		}
+
+		return value;
 	}
 
 }

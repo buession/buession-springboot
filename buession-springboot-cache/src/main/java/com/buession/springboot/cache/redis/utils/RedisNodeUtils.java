@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class RedisNodeUtils {
 
-	public static RedisNode parse(final String str, final int defaultPort) throws ParseException{
+	public static RedisNode parse(final String str, final int defaultPort) throws ParseException {
 		String[] hostAndPort = StringUtils.split(str, ':');
 
 		if(hostAndPort.length == 1){
@@ -59,7 +59,7 @@ public class RedisNodeUtils {
 		throw new ParseException("Illegal redis host and port: " + str + ".", -1);
 	}
 
-	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException{
+	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException {
 		List<RedisNode> nodes = new ArrayList<>(str.size());
 
 		for(String s : str){
