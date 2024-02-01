@@ -67,6 +67,7 @@
 			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>

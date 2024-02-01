@@ -52,47 +52,24 @@
 	</issueManagement>
 
 	<properties>
-		<buession.canal.version>0.0.2</buession.canal.version>
+		<buession.canal.version>1.0.0</buession.canal.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.buession.springboot</groupId>
-			<artifactId>buession-springboot-boot</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.buession.canal</groupId>
-			<artifactId>buession-canal-client</artifactId>
+			<artifactId>buession-canal-springboot</artifactId>
 			<version>${buession.canal.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.buession.canal</groupId>
-			<artifactId>buession-canal-spring</artifactId>
-			<version>${buession.canal.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<relocation>
+			<groupId>com.buession.canal</groupId>
+			<artifactId>buession-canal-springboot</artifactId>
+			<version>${buession.canal.version}</version>
+		</relocation>
+	</distributionManagement>
 
 	<build>
 		<finalName>buession-springboot-canal</finalName>
