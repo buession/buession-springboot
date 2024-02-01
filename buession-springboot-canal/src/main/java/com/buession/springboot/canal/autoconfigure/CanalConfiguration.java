@@ -24,20 +24,10 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.canal.client.CanalContext;
-import com.buession.canal.client.DefaultCanalContext;
-import com.buession.canal.client.adapter.AdapterClient;
-import com.buession.canal.client.dispatcher.Dispatcher;
-import com.buession.canal.spring.client.factory.CanalClientFactoryBean;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author Yong.Teng
@@ -46,20 +36,8 @@ import java.util.concurrent.ExecutorService;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CanalProperties.class)
 @Import({ThreadPoolConfiguration.class, AdapterClientConfiguration.class})
-public class CanalConfiguration {
-
-	@Bean(destroyMethod = "destroy")
-	public CanalClientFactoryBean createCanalClientFactoryBean(
-			ObjectProvider<Set<AdapterClient>> canalAdapterClients, ObjectProvider<Dispatcher> dispatcher,
-			@Qualifier("canalExecutorService") ObjectProvider<ExecutorService> executorService) {
-		final CanalClientFactoryBean canalClientFactoryBean = new CanalClientFactoryBean();
-
-		CanalContext context = new DefaultCanalContext(canalAdapterClients.getIfAvailable());
-		canalClientFactoryBean.setContext(context);
-		canalClientFactoryBean.setDispatcher(dispatcher.getIfAvailable());
-		canalClientFactoryBean.setExecutor(executorService.getIfAvailable());
-
-		return canalClientFactoryBean;
-	}
+@ConditionalOnMissingBean(com.buession.canal.springboot.autoconfigure.CanalConfiguration.class)
+@Deprecated
+public class CanalConfiguration extends com.buession.canal.springboot.autoconfigure.CanalConfiguration {
 
 }
