@@ -47,7 +47,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 public class MongoDBConfiguration {
 
 	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext,
-								ObjectProvider<MappingMongoConverter> mappingMongoConverter){
+								ObjectProvider<MappingMongoConverter> mappingMongoConverter) {
 		MongoMappingContext mappingContext = mongoMappingContext.getIfAvailable();
 		MongoTypeMapper mongoTypeMapper;
 
@@ -55,8 +55,7 @@ public class MongoDBConfiguration {
 			mongoTypeMapper = BeanUtils.instantiateClass(properties.getTypeMapper());
 		}else{
 			mongoTypeMapper = new DefaultMongoTypeMapper(
-					Validate.hasText(properties.getTypeKey()) ? properties.getTypeKey() : null,
-					mappingContext);
+					Validate.hasText(properties.getTypeKey()) ? properties.getTypeKey() : null, mappingContext);
 		}
 
 		mappingMongoConverter.ifUnique((mongoConverter)->mongoConverter.setTypeMapper(mongoTypeMapper));

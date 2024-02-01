@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.mongodb.autoconfigure;
+package com.buession.springboot.mongodb;

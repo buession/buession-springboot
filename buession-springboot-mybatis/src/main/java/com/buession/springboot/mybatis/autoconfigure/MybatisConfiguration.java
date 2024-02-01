@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -66,6 +66,7 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -125,12 +126,11 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories) {
-		if(Validate.isEmpty(slaveSqlSessionFactories)){
+	public List<SqlSessionTemplate> slaveSqlSessionTemplates(
+			ObjectProvider<List<SqlSessionFactory>> slaveSqlSessionFactories) {
+		return slaveSqlSessionFactories.getIfAvailable(()->{
 			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
-		}
-
-		return slaveSqlSessionFactories.stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
+		}).stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
 	}
 
 	@Bean
