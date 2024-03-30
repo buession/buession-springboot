@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.filter;
@@ -38,12 +38,15 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 2.1.0
  */
-public class Pac4jFilter {
+public class Pac4jFilter extends HashMap<String, Filter> {
+
+	private final static long serialVersionUID = 4022270505797878239L;
 
 	/**
-	 * pac4j 过滤器
+	 * 构造函数
 	 */
-	private final Map<String, Filter> filters = new HashMap<>(3);
+	public Pac4jFilter() {
+	}
 
 	/**
 	 * 添加 pac4j 过滤器
@@ -54,11 +57,31 @@ public class Pac4jFilter {
 	 * 		过滤器
 	 */
 	public void addFilter(final String name, final Filter filter) {
-		Assert.isNull(filter, "Filter cloud not null.");
+		put(name, filter);
+	}
 
-		final String filterName = Validate.hasText(name) ? name : StringUtils.uncapitalize(
-				filter.getClass().getSimpleName());
-		filters.put(filterName, filter);
+	/**
+	 * 添加 pac4j 过滤器
+	 *
+	 * @param name
+	 * 		过滤器名称，如果为 null 或者空字符串时，使用过滤器类名首字母小写后，作为过滤器名称
+	 * @param filter
+	 * 		过滤器
+	 *
+	 * @since 2.3.3
+	 */
+	@Override
+	public Filter put(final String name, final Filter filter) {
+		Assert.isNull(filter, "Filter cloud not null.");
+		return doPut(name, filter);
+	}
+
+	@Override
+	public void putAll(final Map<? extends String, ? extends Filter> m) {
+		for(Map.Entry<? extends String, ? extends Filter> e : m.entrySet()){
+			Assert.isNull(e.getValue(), "Filter cloud not null.");
+			doPut(e.getKey(), e.getValue());
+		}
 	}
 
 	/**
@@ -66,15 +89,15 @@ public class Pac4jFilter {
 	 *
 	 * @return pac4j 过滤器
 	 */
+	@Deprecated
 	public Map<String, Filter> getFilters() {
-		return filters;
+		return this;
 	}
 
-	/**
-	 * 清除所有 pac4j 过滤器
-	 */
-	public void clear() {
-		filters.clear();
+	private Filter doPut(final String filterName, final Filter filter) {
+		final String key = Validate.hasText(filterName) ? filterName : StringUtils.uncapitalize(
+				filter.getClass().getSimpleName());
+		return super.put(key, filter);
 	}
 
 }

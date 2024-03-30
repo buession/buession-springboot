@@ -9,6 +9,11 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.3)
 
 
+### ⏪ 优化
+
+- **buession-springboot-pac4j：** 优化 Pac4jFilter 类
+
+
 ---
 
 
