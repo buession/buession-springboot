@@ -24,10 +24,29 @@
  */
 package com.buession.springboot.shiro.core;
 
+import javax.servlet.Filter;
+import java.util.Map;
+
 /**
  * @author Yong.Teng
  * @since 2.3.3
  */
-public class ShiroFilterInitializer {
+public class ShiroFilter {
 
+	private Map<String, Filter> filters;
+
+	public ShiroFilter() {
+	}
+
+	public ShiroFilter(Map<String, Filter> filters) {
+		this.filters = filters;
+	}
+
+	public Map<String, Filter> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(Map<String, Filter> filters) {
+		this.filters = filters;
+	}
 }

@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.shiro;
+package com.buession.springboot.shiro.core;

@@ -19,11 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
+import com.buession.springboot.pac4j.filter.Pac4jFilter;
+import com.buession.springboot.shiro.core.ShiroFilter;
 import io.buji.pac4j.realm.Pac4jRealm;
 import io.buji.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -37,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 /**
  * Pac4j for shiro 自动加载类
@@ -52,28 +53,27 @@ public class Pac4jConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Lazy
-	public Realm pac4jRealm(){
-		return new Pac4jRealm();
+	@ConditionalOnBean({Pac4jFilter.class})
+	public ShiroFilter shiroFilter(ObjectProvider<Pac4jFilter> pac4jFilter) {
+		return new ShiroFilter(pac4jFilter.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Lazy
-	public SubjectFactory subjectFactory(){
-		return new Pac4jSubjectFactory();
+	public Realm pac4jRealm() {
+		return new Pac4jRealm();
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({SecurityManager.class, SubjectFactory.class})
-	static class ShiroAutoConfiguration {
+	@Bean
+	@ConditionalOnMissingBean({SubjectFactory.class})
+	public SubjectFactory subjectFactory(ObjectProvider<SecurityManager> securityManager) {
+		SubjectFactory subjectFactory = new Pac4jSubjectFactory();
 
-		public ShiroAutoConfiguration(ObjectProvider<SecurityManager> securityManager,
-									  ObjectProvider<SubjectFactory> subjectFactory){
-			((DefaultSecurityManager) securityManager.getIfAvailable()).setSubjectFactory(
-					subjectFactory.getIfAvailable());
-		}
+		securityManager.ifAvailable((securityMgr)->{
+			((DefaultSecurityManager) securityMgr).setSubjectFactory(subjectFactory);
+		});
 
+		return subjectFactory;
 	}
 
 }
