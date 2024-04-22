@@ -54,6 +54,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,7 +67,6 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,7 +77,7 @@ import java.util.stream.Stream;
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnBean({DataSource.class})
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
-@AutoConfigureAfter({DataSourceConfiguration.class})
+@AutoConfigureAfter({DataSourceConfiguration.class, MybatisLanguageDriverConfiguration.class})
 public class MybatisConfiguration {
 
 	private final MybatisProperties properties;
@@ -136,10 +136,8 @@ public class MybatisConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public List<SqlSessionFactoryBean> slaveSqlSessionFactories() {
-		if(Validate.isEmpty(dataSource.getSlaves())){
-			throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
-		}
-
+		Assert.isEmpty(dataSource.getSlaves(), ()->
+				new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty"));
 		return dataSource.getSlaves().parallelStream().map(this::createSqlSessionFactory).collect(Collectors.toList());
 	}
 
@@ -164,13 +162,12 @@ public class MybatisConfiguration {
 			sessionFactoryBean.setPlugins(interceptors);
 		}
 
-		mapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
-		mapper.from(properties.getTypeAliasesSuperType()).to(sessionFactoryBean::setTypeAliasesSuperType);
-		mapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
-
 		if(Validate.isNotEmpty(properties.getTypeAliases())){
 			sessionFactoryBean.setTypeAliases(properties.getTypeAliases());
 		}
+		mapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
+		mapper.from(properties.getTypeAliasesSuperType()).to(sessionFactoryBean::setTypeAliasesSuperType);
+		mapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
 
 		if(Validate.isNotEmpty(properties.getTypeHandlers())){
 			sessionFactoryBean.setTypeHandlers(properties.getTypeHandlers());
@@ -261,6 +258,7 @@ public class MybatisConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@Import(ConfiguredMapperScannerRegistrar.class)
 	@ConditionalOnMissingBean({MapperFactoryBean.class, MapperScannerConfigurer.class})
+	@ConditionalOnProperty(prefix = MybatisProperties.PREFIX, name = "scanner.enabled", havingValue = "true", matchIfMissing = true)
 	static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
 		@Override

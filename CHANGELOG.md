@@ -12,6 +12,7 @@
 ### ⭐ 新特性
 
 - **buession-springboot-boot：** 新增线程池自动配置类 ThreadPoolConfiguration
+- **buession-springboot-mybatis：** ConfiguredMapperScannerRegistrar，增加 spring.mybatis.scanner.enabled 开关配置
 
 
 ### ⏪ 优化
