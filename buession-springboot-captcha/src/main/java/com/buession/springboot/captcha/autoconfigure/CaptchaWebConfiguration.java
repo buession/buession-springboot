@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.captcha.autoconfigure;
@@ -65,6 +65,11 @@ public class CaptchaWebConfiguration {
 			this.properties = properties;
 		}
 
+		protected GeetestParameter getGeetestParameter(final GeetestCaptchaClient geetestCaptchaClient) {
+			return geetestCaptchaClient.isV3() ? properties.getGeetest().getV3()
+					.getParameter() : properties.getGeetest().getV4().getParameter();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -91,9 +96,8 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnBean({GeetestCaptchaClient.class})
 		public ServletGeetestCaptchaValidator geetestCaptchaValidator(
 				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
-			GeetestParameter parameter = geetestCaptchaClient.getIfAvailable().isV3() ? properties.getGeetest().getV3()
-					.getParameter() : properties.getGeetest().getV4().getParameter();
-			return new ServletGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(), parameter);
+			return new ServletGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(),
+					getGeetestParameter(geetestCaptchaClient.getIfAvailable()));
 		}
 
 		@Bean
@@ -131,9 +135,8 @@ public class CaptchaWebConfiguration {
 		@ConditionalOnBean({GeetestCaptchaClient.class})
 		public ReactiveGeetestCaptchaValidator geetestCaptchaValidator(
 				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
-			GeetestParameter parameter = geetestCaptchaClient.getIfAvailable().isV3() ? properties.getGeetest().getV3()
-					.getParameter() : properties.getGeetest().getV4().getParameter();
-			return new ReactiveGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(), parameter);
+			return new ReactiveGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(),
+					getGeetestParameter(geetestCaptchaClient.getIfAvailable()));
 		}
 
 		@Bean

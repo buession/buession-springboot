@@ -69,9 +69,8 @@ public class Pac4jConfiguration {
 	public SubjectFactory subjectFactory(ObjectProvider<SecurityManager> securityManager) {
 		SubjectFactory subjectFactory = new Pac4jSubjectFactory();
 
-		securityManager.ifAvailable((securityMgr)->{
-			((DefaultSecurityManager) securityMgr).setSubjectFactory(subjectFactory);
-		});
+		securityManager.ifAvailable(
+				(securityMgr)->((DefaultSecurityManager) securityMgr).setSubjectFactory(subjectFactory));
 
 		return subjectFactory;
 	}
