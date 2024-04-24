@@ -130,7 +130,6 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 				.ifPresent((x)->builder.addPropertyValue("defaultScope", getProperty("mapper-default-scope",
 						"mapperDefaultScope", Constants.EMPTY_STRING)));
 
-		/*
 		if(beanFactory instanceof ListableBeanFactory){
 			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
 
@@ -141,15 +140,13 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 
 			if(sqlSessionTemplateBeanName.isPresent() || sqlSessionFactoryBeanName.isPresent() == false){
 				builder.addPropertyValue("sqlSessionTemplateBeanName", sqlSessionTemplateBeanName.orElse(
-						"sqlSessionTemplate"));
+						"masterSqlSessionTemplate"));
 			}else{
 				builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryBeanName.get());
 			}
 		}
 
 		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-
-		 */
 
 		registry.registerBeanDefinition(MapperScannerConfigurer.class.getName(), builder.getBeanDefinition());
 	}

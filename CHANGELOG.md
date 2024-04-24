@@ -19,6 +19,7 @@
 
 - **buession-springboot-pac4j：** 优化 Pac4jFilter 类
 - **buession-springboot-shiro：** 优化 Shiro Filter 初始化及处理流程
+- **buession-springboot-mybatis：** SqlSessionFactoryBean 初始化速度优化
 
 
 ---

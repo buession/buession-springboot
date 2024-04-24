@@ -29,6 +29,7 @@ package com.buession.springboot.mybatis.autoconfigure;
 import com.buession.core.collect.Arrays;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.Assert;
+import com.buession.core.utils.FieldUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
@@ -47,7 +48,6 @@ import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -63,12 +63,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Yong.Teng
@@ -88,11 +85,15 @@ public class MybatisConfiguration {
 
 	private final ResourceLoader resourceLoader;
 
+	private Resource configLocationResource = null;
+
 	private final DatabaseIdProvider databaseIdProvider;
 
 	private final List<ConfigurationCustomizer> configurationCustomizers;
 
 	private final LanguageDriver[] languageDrivers;
+
+	private final Resource[] mapperLocations;
 
 	private final static Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
@@ -110,6 +111,12 @@ public class MybatisConfiguration {
 		this.languageDrivers = languageDrivers.getIfAvailable();
 
 		checkConfigFileExists();
+
+		if(Validate.hasText(properties.getConfigLocation())){
+			configLocationResource = resourceLoader.getResource(properties.getConfigLocation());
+		}
+
+		this.mapperLocations = resolveMapperLocations();
 	}
 
 	@Bean
@@ -149,8 +156,7 @@ public class MybatisConfiguration {
 		sessionFactoryBean.setVfs(SpringBootVFS.class);
 		sessionFactoryBean.setFailFast(properties.getFailFast());
 
-		mapper.from(properties::getConfigLocation).as(resourceLoader::getResource)
-				.to(sessionFactoryBean::setConfigLocation);
+		mapper.from(this.configLocationResource).to(sessionFactoryBean::setConfigLocation);
 
 		applyConfiguration(sessionFactoryBean);
 
@@ -176,28 +182,34 @@ public class MybatisConfiguration {
 		mapper.alwaysApplyingWhenNonNull().from(properties.getDefaultEnumTypeHandler())
 				.to(sessionFactoryBean::setDefaultEnumTypeHandler);
 
-		Resource[] resolveMapperLocations = resolveMapperLocations();
-		if(Validate.isNotEmpty(resolveMapperLocations)){
-			sessionFactoryBean.setMapperLocations(resolveMapperLocations);
+		if(Validate.isNotEmpty(this.mapperLocations)){
+			sessionFactoryBean.setMapperLocations(this.mapperLocations);
 		}
 
-		Set<String> factoryPropertyNames = Stream
-				.of(new BeanWrapperImpl(SqlSessionFactoryBean.class).getPropertyDescriptors())
-				.map(PropertyDescriptor::getName)
-				.collect(Collectors.toSet());
-
 		Class<? extends LanguageDriver> defaultLanguageDriver = properties.getDefaultScriptingLanguageDriver();
-		if(factoryPropertyNames.contains("scriptingLanguageDrivers") && Validate.isNotEmpty(languageDrivers)){
-			// Need to mybatis-spring 2.0.2+
-			sessionFactoryBean.setScriptingLanguageDrivers(languageDrivers);
+		if(Validate.isNotEmpty(languageDrivers)){
+			try{
+				FieldUtils.writeField(sessionFactoryBean, "scriptingLanguageDrivers", languageDrivers);
+			}catch(IllegalAccessException e){
+				if(logger.isWarnEnabled()){
+					logger.warn("Set field 'scriptingLanguageDrivers' for {} error: {}",
+							SqlSessionFactoryBean.class.getName(), e.getMessage());
+				}
+			}
+
 			if(defaultLanguageDriver == null && languageDrivers.length == 1){
 				defaultLanguageDriver = languageDrivers[0].getClass();
 			}
 		}
 
-		if(factoryPropertyNames.contains("defaultScriptingLanguageDriver")){
-			// Need to mybatis-spring 2.0.2+
-			sessionFactoryBean.setDefaultScriptingLanguageDriver(defaultLanguageDriver);
+		try{
+			FieldUtils.writeDeclaredField(sessionFactoryBean, "defaultScriptingLanguageDriver", defaultLanguageDriver,
+					true);
+		}catch(IllegalAccessException e){
+			if(logger.isWarnEnabled()){
+				logger.warn("Set field 'defaultScriptingLanguageDriver' for {} error: {}",
+						SqlSessionFactoryBean.class.getName(), e.getMessage());
+			}
 		}
 
 		return sessionFactoryBean;
@@ -240,8 +252,7 @@ public class MybatisConfiguration {
 
 			for(String mapperLocation : properties.getMapperLocations()){
 				try{
-					Resource[] mappers = resourceResolver.getResources(mapperLocation);
-					resources = Arrays.addAll(resources, mappers);
+					resources = Arrays.addAll(resources, resourceResolver.getResources(mapperLocation));
 				}catch(IOException e){
 					if(logger.isErrorEnabled()){
 						logger.error("Load mapper resource error: {}.", e.getMessage());
