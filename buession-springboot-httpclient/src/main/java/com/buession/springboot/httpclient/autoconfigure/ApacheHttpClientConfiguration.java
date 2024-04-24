@@ -100,9 +100,9 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 					new ApacheNioClientConnectionManager(properties);
 
 			if(properties.getApacheClient() != null){
-				Optional.of(properties.getApacheClient().getIoReactor())
+				Optional.ofNullable(properties.getApacheClient().getIoReactor())
 						.ifPresent(clientConnectionManager::setIoReactorConfig);
-				Optional.of(properties.getApacheClient().getThreadFactory())
+				Optional.ofNullable(properties.getApacheClient().getThreadFactory())
 						.ifPresent((threadFactory)->clientConnectionManager.setThreadFactory(
 								BeanUtils.instantiateClass(threadFactory)));
 			}

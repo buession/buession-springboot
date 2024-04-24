@@ -21,20 +21,16 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.utils.ObjectUtils;
 import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.WebContext;
-import org.pac4j.core.http.adapter.HttpActionAdapter;
-import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ReactiveAdapterRegistry;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pac4j 基础配置自动加载类
@@ -78,7 +75,7 @@ public class Pac4jConfiguration {
 	public Clients clients(List<Client> clientList) {
 		final Clients clients = new Clients(clientList);
 
-		ObjectUtils.invokeIfAvailable(properties.getAjaxRequestResolverClass(),
+		Optional.ofNullable(properties.getAjaxRequestResolverClass()).ifPresent(
 				(ajaxRequestResolver)->clients.setAjaxRequestResolver(BeanUtils.instantiateClass(ajaxRequestResolver)));
 
 		return clients;
@@ -94,12 +91,12 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config config(Clients clients) {
+	public Config config(ObjectProvider<Clients> clients) {
 		final Config config = Config.INSTANCE;
 
-		config.setClients(clients);
+		clients.ifAvailable(config::setClients);
 
-		ObjectUtils.invokeIfAvailable(properties.getHttpActionAdapterClass(),
+		Optional.ofNullable(properties.getHttpActionAdapterClass()).ifPresent(
 				(httpActionAdapter)->config.setHttpActionAdapter(BeanUtils.instantiateClass(httpActionAdapter)));
 
 		return config;

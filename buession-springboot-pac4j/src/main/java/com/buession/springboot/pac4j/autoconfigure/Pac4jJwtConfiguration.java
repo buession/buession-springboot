@@ -21,16 +21,14 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.utils.ObjectUtils;
 import com.buession.core.utils.StringUtils;
 import com.buession.springboot.pac4j.config.Jwt;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.util.generator.ValueGenerator;
 import org.pac4j.http.client.direct.CookieClient;
 import org.pac4j.http.client.direct.HeaderClient;
 import org.pac4j.http.client.direct.ParameterClient;
@@ -47,6 +45,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Optional;
 
 /**
  * Pac4j JWT 自动配置类
@@ -103,8 +103,8 @@ public class Pac4jJwtConfiguration {
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration.getIfAvailable(),
 				secretEncryptionConfiguration.getIfAvailable());
 
-		ObjectUtils.invokeIfAvailable(config.getIdentifierGenerator(),
-				(identifierGenerator)->jwtAuthenticator.setIdentifierGenerator(
+		Optional.ofNullable(config.getIdentifierGenerator())
+				.ifPresent((identifierGenerator)->jwtAuthenticator.setIdentifierGenerator(
 						BeanUtils.instantiateClass(identifierGenerator)));
 
 		return jwtAuthenticator;

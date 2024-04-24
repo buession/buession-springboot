@@ -19,13 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.converter.mapper.PropertyMapper;
-import com.buession.core.utils.ObjectUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.Cas;
 import org.pac4j.cas.client.CasClient;
@@ -50,6 +49,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -137,7 +137,7 @@ public class Pac4jCasConfiguration {
 
 			};
 
-			ObjectUtils.invokeIfAvailable(config.getCallbackUrl(), casClient::setCallbackUrl);
+			Optional.ofNullable(config.getCallbackUrl()).ifPresent(casClient::setCallbackUrl);
 
 			afterClientInitialized(casClient, config.getGeneral());
 
@@ -220,8 +220,8 @@ public class Pac4jCasConfiguration {
 		}
 
 		protected void doClientInit(final BaseClient<TokenCredentials> client) {
-			ObjectUtils.invokeIfAvailable(config.getProfileDefinition(),
-					(profileDefinition)->((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(
+			Optional.of(config.getProfileDefinition())
+					.ifPresent((profileDefinition)->((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(
 							BeanUtils.instantiateClass(profileDefinition)));
 
 			if(Validate.isNotEmpty(config.getAuthorizationGenerator())){
