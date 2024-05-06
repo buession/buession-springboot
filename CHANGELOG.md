@@ -2,6 +2,29 @@
 ===========================
 
 
+## [2.3.3](https://github.com/buession/buession-springboot/releases/tag/v2.3.3) (2024-05-06)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.3)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-boot：** 新增线程池自动配置类 ThreadPoolConfiguration
+- **buession-springboot-mybatis：** ConfiguredMapperScannerRegistrar，增加 spring.mybatis.scanner.enabled 开关配置
+
+
+### ⏪ 优化
+
+- **buession-springboot-pac4j：** 优化 Pac4jFilter 类
+- **buession-springboot-shiro：** 优化 Shiro Filter 初始化及处理流程
+- **buession-springboot-mybatis：** SqlSessionFactoryBean 初始化速度优化
+
+
+---
+
+
 ## [2.3.2](https://github.com/buession/buession-springboot/releases/tag/v2.3.2) (2023-12-27)
 
 ### 🔨依赖升级

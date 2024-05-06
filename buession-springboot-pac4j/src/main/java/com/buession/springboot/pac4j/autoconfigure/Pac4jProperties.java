@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -92,7 +92,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 启用认证的客户端类型名称
 	 */
-	public Set<String> getClients(){
+	public Set<String> getClients() {
 		return clients;
 	}
 
@@ -102,7 +102,7 @@ public class Pac4jProperties {
 	 * @param clients
 	 * 		启用认证的客户端类型名称
 	 */
-	public void setClients(Set<String> clients){
+	public void setClients(Set<String> clients) {
 		this.clients = clients;
 	}
 
@@ -111,7 +111,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 默认客户端类型名称
 	 */
-	public String getDefaultClient(){
+	public String getDefaultClient() {
 		return defaultClient;
 	}
 
@@ -121,7 +121,7 @@ public class Pac4jProperties {
 	 * @param defaultClient
 	 * 		默认客户端类型名称
 	 */
-	public void setDefaultClient(String defaultClient){
+	public void setDefaultClient(String defaultClient) {
 		this.defaultClient = defaultClient;
 	}
 
@@ -130,7 +130,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 客户端配置
 	 */
-	public Client getClient(){
+	public Client getClient() {
 		return client;
 	}
 
@@ -140,7 +140,7 @@ public class Pac4jProperties {
 	 * @param client
 	 * 		客户端配置
 	 */
-	public void setClient(Client client){
+	public void setClient(Client client) {
 		this.client = client;
 	}
 
@@ -149,7 +149,7 @@ public class Pac4jProperties {
 	 *
 	 * @return Compute if a HTTP request is an AJAX one and the appropriate response.
 	 */
-	public Class<? extends AjaxRequestResolver> getAjaxRequestResolverClass(){
+	public Class<? extends AjaxRequestResolver> getAjaxRequestResolverClass() {
 		return ajaxRequestResolverClass;
 	}
 
@@ -160,7 +160,7 @@ public class Pac4jProperties {
 	 * 		Compute if a HTTP request is an AJAX one and the appropriate response
 	 */
 	public void setAjaxRequestResolverClass(
-			Class<? extends AjaxRequestResolver> ajaxRequestResolverClass){
+			Class<? extends AjaxRequestResolver> ajaxRequestResolverClass) {
 		this.ajaxRequestResolverClass = ajaxRequestResolverClass;
 	}
 
@@ -169,7 +169,7 @@ public class Pac4jProperties {
 	 *
 	 * @return The HTTP action adapter for the {@link JEEContext}.
 	 */
-	public Class<? extends HttpActionAdapter<?, ? extends WebContext>> getHttpActionAdapterClass(){
+	public Class<? extends HttpActionAdapter<?, ? extends WebContext>> getHttpActionAdapterClass() {
 		return httpActionAdapterClass;
 	}
 
@@ -180,7 +180,7 @@ public class Pac4jProperties {
 	 * 		The HTTP action adapter for the {@link JEEContext}.
 	 */
 	public void setHttpActionAdapterClass(
-			Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass){
+			Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass) {
 		this.httpActionAdapterClass = httpActionAdapterClass;
 	}
 
@@ -189,7 +189,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 是否允许多个 Profile
 	 */
-	public boolean isMultiProfile(){
+	public boolean isMultiProfile() {
 		return multiProfile;
 	}
 
@@ -199,7 +199,7 @@ public class Pac4jProperties {
 	 * @param multiProfile
 	 * 		是否允许多个 Profile
 	 */
-	public void setMultiProfile(boolean multiProfile){
+	public void setMultiProfile(boolean multiProfile) {
 		this.multiProfile = multiProfile;
 	}
 
@@ -208,7 +208,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 是否保存到 SESSION 中
 	 */
-	public boolean isSaveInSession(){
+	public boolean isSaveInSession() {
 		return saveInSession;
 	}
 
@@ -218,7 +218,7 @@ public class Pac4jProperties {
 	 * @param saveInSession
 	 * 		是否保存到 SESSION 中
 	 */
-	public void setSaveInSession(boolean saveInSession){
+	public void setSaveInSession(boolean saveInSession) {
 		this.saveInSession = saveInSession;
 	}
 
@@ -227,7 +227,7 @@ public class Pac4jProperties {
 	 *
 	 * @return 过滤器配置
 	 */
-	public Filter getFilter(){
+	public Filter getFilter() {
 		return filter;
 	}
 
@@ -237,7 +237,7 @@ public class Pac4jProperties {
 	 * @param filter
 	 * 		过滤器配置
 	 */
-	public void setFilter(Filter filter){
+	public void setFilter(Filter filter) {
 		this.filter = filter;
 	}
 
@@ -266,7 +266,7 @@ public class Pac4jProperties {
 		 *
 		 * @return {@link io.buji.pac4j.filter.SecurityFilter} 配置
 		 */
-		public Security getSecurity(){
+		public Security getSecurity() {
 			return security;
 		}
 
@@ -276,7 +276,7 @@ public class Pac4jProperties {
 		 * @param security
 		 *        {@link io.buji.pac4j.filter.SecurityFilter} 配置
 		 */
-		public void setSecurity(Security security){
+		public void setSecurity(Security security) {
 			this.security = security;
 		}
 
@@ -285,7 +285,7 @@ public class Pac4jProperties {
 		 *
 		 * @return {@link io.buji.pac4j.filter.CallbackFilter} 配置
 		 */
-		public Callback getCallback(){
+		public Callback getCallback() {
 			return callback;
 		}
 
@@ -295,7 +295,7 @@ public class Pac4jProperties {
 		 * @param callback
 		 *        {@link io.buji.pac4j.filter.CallbackFilter} 配置
 		 */
-		public void setCallback(Callback callback){
+		public void setCallback(Callback callback) {
 			this.callback = callback;
 		}
 
@@ -304,7 +304,7 @@ public class Pac4jProperties {
 		 *
 		 * @return {@link io.buji.pac4j.filter.LogoutFilter} 配置
 		 */
-		public Logout getLogout(){
+		public Logout getLogout() {
 			return logout;
 		}
 
@@ -314,7 +314,7 @@ public class Pac4jProperties {
 		 * @param logout
 		 *        {@link io.buji.pac4j.filter.LogoutFilter} 配置
 		 */
-		public void setLogout(Logout logout){
+		public void setLogout(Logout logout) {
 			this.logout = logout;
 		}
 
@@ -335,7 +335,7 @@ public class Pac4jProperties {
 			 *
 			 * @return 过滤器名称
 			 */
-			public String getName(){
+			public String getName() {
 				return name;
 			}
 
@@ -345,7 +345,7 @@ public class Pac4jProperties {
 			 * @param name
 			 * 		过滤器名称
 			 */
-			public void setName(String name){
+			public void setName(String name) {
 				this.name = name;
 			}
 
@@ -355,10 +355,6 @@ public class Pac4jProperties {
 		 * {@link io.buji.pac4j.filter.SecurityFilter} 配置
 		 */
 		public final static class Security extends BaseFilter {
-
-			public Security(){
-				setName("securityFilter");
-			}
 
 			/**
 			 * 认证器名称列表
@@ -370,12 +366,16 @@ public class Pac4jProperties {
 			 */
 			private Set<String> matchers;
 
+			public Security() {
+				setName("securityFilter");
+			}
+
 			/**
 			 * 返回认证器名称列表
 			 *
 			 * @return 认证器名称列表
 			 */
-			public Set<String> getAuthorizers(){
+			public Set<String> getAuthorizers() {
 				return authorizers;
 			}
 
@@ -385,7 +385,7 @@ public class Pac4jProperties {
 			 * @param authorizers
 			 * 		认证器名称列表
 			 */
-			public void setAuthorizers(Set<String> authorizers){
+			public void setAuthorizers(Set<String> authorizers) {
 				this.authorizers = authorizers;
 			}
 
@@ -394,7 +394,7 @@ public class Pac4jProperties {
 			 *
 			 * @return 匹配器名称列表
 			 */
-			public Set<String> getMatchers(){
+			public Set<String> getMatchers() {
 				return matchers;
 			}
 
@@ -404,7 +404,7 @@ public class Pac4jProperties {
 			 * @param matchers
 			 * 		匹配器名称列表
 			 */
-			public void setMatchers(Set<String> matchers){
+			public void setMatchers(Set<String> matchers) {
 				this.matchers = matchers;
 			}
 
@@ -415,21 +415,21 @@ public class Pac4jProperties {
 		 */
 		public final static class Callback extends BaseFilter {
 
-			public Callback(){
-				setName("callbackFilter");
-			}
-
 			/**
 			 * 默认跳转地址
 			 */
 			private String defaultUrl;
+
+			public Callback() {
+				setName("callbackFilter");
+			}
 
 			/**
 			 * 返回默认跳转地址
 			 *
 			 * @return 默认跳转地址
 			 */
-			public String getDefaultUrl(){
+			public String getDefaultUrl() {
 				return defaultUrl;
 			}
 
@@ -439,7 +439,7 @@ public class Pac4jProperties {
 			 * @param defaultUrl
 			 * 		默认跳转地址
 			 */
-			public void setDefaultUrl(String defaultUrl){
+			public void setDefaultUrl(String defaultUrl) {
 				this.defaultUrl = defaultUrl;
 			}
 
@@ -449,10 +449,6 @@ public class Pac4jProperties {
 		 * {@link io.buji.pac4j.filter.LogoutFilter} 配置
 		 */
 		public final static class Logout extends BaseFilter {
-
-			public Logout(){
-				setName("logoutFilter");
-			}
 
 			/**
 			 * 登出成功默认跳转地址
@@ -474,12 +470,16 @@ public class Pac4jProperties {
 			 */
 			private boolean centralLogout = true;
 
+			public Logout() {
+				setName("logoutFilter");
+			}
+
 			/**
 			 * 返回登出成功默认跳转地址
 			 *
 			 * @return 登出成功默认跳转地址
 			 */
-			public String getDefaultUrl(){
+			public String getDefaultUrl() {
 				return defaultUrl;
 			}
 
@@ -489,7 +489,7 @@ public class Pac4jProperties {
 			 * @param defaultUrl
 			 * 		登出成功默认跳转地址
 			 */
-			public void setDefaultUrl(String defaultUrl){
+			public void setDefaultUrl(String defaultUrl) {
 				this.defaultUrl = defaultUrl;
 			}
 
@@ -498,7 +498,7 @@ public class Pac4jProperties {
 			 *
 			 * @return 登出地址模式
 			 */
-			public String getLogoutUrlPattern(){
+			public String getLogoutUrlPattern() {
 				return logoutUrlPattern;
 			}
 
@@ -508,7 +508,7 @@ public class Pac4jProperties {
 			 * @param logoutUrlPattern
 			 * 		登出地址模式
 			 */
-			public void setLogoutUrlPattern(String logoutUrlPattern){
+			public void setLogoutUrlPattern(String logoutUrlPattern) {
 				this.logoutUrlPattern = logoutUrlPattern;
 			}
 
@@ -517,7 +517,7 @@ public class Pac4jProperties {
 			 *
 			 * @return 本地是否退出登录
 			 */
-			public boolean isLocalLogout(){
+			public boolean isLocalLogout() {
 				return localLogout;
 			}
 
@@ -527,7 +527,7 @@ public class Pac4jProperties {
 			 * @param localLogout
 			 * 		本地是否退出登录
 			 */
-			public void setLocalLogout(boolean localLogout){
+			public void setLocalLogout(boolean localLogout) {
 				this.localLogout = localLogout;
 			}
 
@@ -536,7 +536,7 @@ public class Pac4jProperties {
 			 *
 			 * @return 认证中心是否退出登录
 			 */
-			public boolean isCentralLogout(){
+			public boolean isCentralLogout() {
 				return centralLogout;
 			}
 
@@ -546,7 +546,7 @@ public class Pac4jProperties {
 			 * @param centralLogout
 			 * 		认证中心是否退出登录
 			 */
-			public void setCentralLogout(boolean centralLogout){
+			public void setCentralLogout(boolean centralLogout) {
 				this.centralLogout = centralLogout;
 			}
 
@@ -584,7 +584,7 @@ public class Pac4jProperties {
 		 *
 		 * @return CAS 配置
 		 */
-		public Cas getCas(){
+		public Cas getCas() {
 			return cas;
 		}
 
@@ -594,7 +594,7 @@ public class Pac4jProperties {
 		 * @param cas
 		 * 		CAS 配置
 		 */
-		public void setCas(Cas cas){
+		public void setCas(Cas cas) {
 			this.cas = cas;
 		}
 
@@ -603,7 +603,7 @@ public class Pac4jProperties {
 		 *
 		 * @return HTTP 配置
 		 */
-		public Http getHttp(){
+		public Http getHttp() {
 			return http;
 		}
 
@@ -613,7 +613,7 @@ public class Pac4jProperties {
 		 * @param http
 		 * 		HTTP 配置
 		 */
-		public void setHttp(Http http){
+		public void setHttp(Http http) {
 			this.http = http;
 		}
 
@@ -622,7 +622,7 @@ public class Pac4jProperties {
 		 *
 		 * @return JWT 配置
 		 */
-		public Jwt getJwt(){
+		public Jwt getJwt() {
 			return jwt;
 		}
 
@@ -632,7 +632,7 @@ public class Pac4jProperties {
 		 * @param jwt
 		 * 		JWT 配置
 		 */
-		public void setJwt(Jwt jwt){
+		public void setJwt(Jwt jwt) {
 			this.jwt = jwt;
 		}
 
@@ -641,7 +641,7 @@ public class Pac4jProperties {
 		 *
 		 * @return OAuth 配置
 		 */
-		public OAuth getOAuth(){
+		public OAuth getOAuth() {
 			return oAuth;
 		}
 
@@ -651,7 +651,7 @@ public class Pac4jProperties {
 		 * @param oAuth
 		 * 		OAuth 配置
 		 */
-		public void setOAuth(OAuth oAuth){
+		public void setOAuth(OAuth oAuth) {
 			this.oAuth = oAuth;
 		}
 

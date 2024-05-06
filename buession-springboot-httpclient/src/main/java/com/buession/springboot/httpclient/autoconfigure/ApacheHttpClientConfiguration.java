@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
-import com.buession.core.utils.ObjectUtils;
 import com.buession.httpclient.ApacheHttpAsyncClient;
 import com.buession.httpclient.ApacheHttpClient;
 import com.buession.httpclient.conn.ApacheClientConnectionManager;
@@ -37,6 +36,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Optional;
 
 /**
  * Apache HttpClient Auto Configuration
@@ -99,10 +100,10 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 					new ApacheNioClientConnectionManager(properties);
 
 			if(properties.getApacheClient() != null){
-				ObjectUtils.invokeIfAvailable(properties.getApacheClient().getIoReactor(),
-						clientConnectionManager::setIoReactorConfig);
-				ObjectUtils.invokeIfAvailable(properties.getApacheClient().getThreadFactory(),
-						(threadFactory)->clientConnectionManager.setThreadFactory(
+				Optional.ofNullable(properties.getApacheClient().getIoReactor())
+						.ifPresent(clientConnectionManager::setIoReactorConfig);
+				Optional.ofNullable(properties.getApacheClient().getThreadFactory())
+						.ifPresent((threadFactory)->clientConnectionManager.setThreadFactory(
 								BeanUtils.instantiateClass(threadFactory)));
 			}
 

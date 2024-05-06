@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -76,7 +76,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 	private final ShiroProperties properties;
 
-	public ShiroWebConfiguration(ShiroProperties properties){
+	public ShiroWebConfiguration(ShiroProperties properties) {
 		this.properties = properties;
 
 		SameSiteConverter sameSiteConverter = new SameSiteConverter();
@@ -160,28 +160,28 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SubjectDAO subjectDAO(){
+	protected SubjectDAO subjectDAO() {
 		return super.subjectDAO();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionStorageEvaluator sessionStorageEvaluator(){
+	protected SessionStorageEvaluator sessionStorageEvaluator() {
 		return super.sessionStorageEvaluator();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionFactory sessionFactory(){
+	protected SessionFactory sessionFactory() {
 		return super.sessionFactory();
 	}
 
 	@Bean(name = "sessionDAO")
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager){
+	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager) {
 		ShiroProperties.Session session = properties.getSession();
 		return new RedisSessionDAO(redisManager.getIfAvailable(), session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
@@ -190,14 +190,14 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean(name = "sessionDAO")
 	@ConditionalOnMissingBean({SessionDAO.class})
 	@Override
-	protected SessionDAO sessionDAO(){
+	protected SessionDAO sessionDAO() {
 		return super.sessionDAO();
 	}
 
 	@Bean(name = "sessionCookieTemplate")
 	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
 	@Override
-	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate(){
+	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate() {
 		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
 
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -211,7 +211,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean(name = "rememberMeCookieTemplate")
 	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
 	@Override
-	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate(){
+	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate() {
 		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
 
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -225,55 +225,55 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected RememberMeManager rememberMeManager(){
+	protected RememberMeManager rememberMeManager() {
 		return super.rememberMeManager();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({SubjectFactory.class})
 	@Override
-	protected SubjectFactory subjectFactory(){
+	protected SubjectFactory subjectFactory() {
 		return super.subjectFactory();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected Authorizer authorizer(){
+	protected Authorizer authorizer() {
 		return super.authorizer();
 	}
 
 	@Bean
 	@Override
-	protected AuthenticationStrategy authenticationStrategy(){
+	protected AuthenticationStrategy authenticationStrategy() {
 		return super.authenticationStrategy();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected Authenticator authenticator(){
+	protected Authenticator authenticator() {
 		return super.authenticator();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionManager sessionManager(){
+	protected SessionManager sessionManager() {
 		return super.sessionManager();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionsSecurityManager securityManager(List<Realm> realms){
+	protected SessionsSecurityManager securityManager(List<Realm> realms) {
 		return super.securityManager(realms);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean({ShiroFilterChainDefinition.class})
 	@ConditionalOnResource(resources = "classpath:chainDefinition.ini")
-	protected ShiroFilterChainDefinition iniShiroFilterChainDefinition(){
+	protected ShiroFilterChainDefinition iniShiroFilterChainDefinition() {
 		Ini ini = Ini.fromResourcePath("classpath:chainDefinition.ini");
 
 		if(Validate.isEmpty(ini)){
@@ -294,7 +294,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean({ShiroFilterChainDefinition.class})
 	@Override
-	protected ShiroFilterChainDefinition shiroFilterChainDefinition(){
+	protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
 		return super.shiroFilterChainDefinition();
 	}
 

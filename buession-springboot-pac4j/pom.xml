@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>2.3.2</version>
+		<version>2.3.3</version>
 	</parent>
 	<artifactId>buession-springboot-pac4j</artifactId>
 	<url>https://springboot.buession.com/</url>
@@ -67,6 +67,7 @@
 			<artifactId>buession-security-pac4j</artifactId>
 			<version>${buession.security.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -69,7 +69,7 @@ public abstract class AbstractDataSourceFactoryBean<DS extends DataSource> imple
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if(dataSource == null){
-			PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			dataSource = createDataSource();
 
 			propertyMapper.alwaysApplyingWhenHasText().from(properties.getClientName()).to(dataSource::setClientName);

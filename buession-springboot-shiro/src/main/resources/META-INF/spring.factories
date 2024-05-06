@@ -7,5 +7,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.shiro.autoconfigure.ShiroBeanConfiguration, \
   com.buession.springboot.shiro.autoconfigure.ShiroConfiguration, \
   com.buession.springboot.shiro.autoconfigure.ShiroAnnotationProcessorAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.buession.springboot.shiro.env.ShiroEnvironmentPostProcessor
 org.springframework.boot.diagnostics.FailureAnalyzer=\
   com.buession.springboot.shiro.ShiroNoRealmConfiguredFailureAnalyzer

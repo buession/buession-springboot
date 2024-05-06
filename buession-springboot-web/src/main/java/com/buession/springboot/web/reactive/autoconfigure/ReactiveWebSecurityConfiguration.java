@@ -19,20 +19,18 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
 
-import com.buession.core.validator.Validate;
 import com.buession.security.web.config.Configurer;
+import com.buession.security.web.config.Xss;
 import com.buession.security.web.reactive.config.ReactiveWebSecurityConfigurerAdapterConfiguration;
-import com.buession.security.web.utils.PolicyUtils;
+import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.reactive.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
-import org.owasp.validator.html.Policy;
-import org.owasp.validator.html.PolicyException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,8 +40,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-
-import java.io.IOException;
 
 /**
  * @author Yong.Teng
@@ -56,22 +52,29 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
 
-	public ReactiveWebSecurityConfiguration(WebSecurityProperties properties){
+	public ReactiveWebSecurityConfiguration(WebSecurityProperties properties) {
 		super(properties);
 	}
 
 	@Bean
-	@ConditionalOnClass({Policy.class})
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
-	public XssFilter xssFilter() throws PolicyException, IOException{
-		XssFilter xssFilter = new XssFilter();
-		String policyConfigLocation = properties.getXss().getPolicyConfigLocation();
+	public XssFilter xssFilter() {
+		final Xss xss = properties.getXss();
+		final Options.Builder optionsBuilder = Options.Builder.getInstance();
 
-		if(Validate.hasText(policyConfigLocation)){
-			xssFilter.setPolicy(PolicyUtils.createFromConfigFile(policyConfigLocation));
+		optionsBuilder.policy(xss.getPolicy());
+
+		if(xss.getPolicy() == Options.Policy.ESCAPE){
+			optionsBuilder.escape(new Options.Escape());
+		}else{
+			final Options.Clean clean = new Options.Clean();
+
+			clean.setPolicyConfigLocation(xss.getPolicyConfigLocation());
+
+			optionsBuilder.clean(clean);
 		}
 
-		return xssFilter;
+		return new XssFilter(optionsBuilder.build());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -81,7 +84,7 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 			ReactiveWebSecurityConfigurerAdapterConfiguration {
 
 		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties,
-																ObjectProvider<ServerHttpSecurity> serverHttpSecurity){
+																ObjectProvider<ServerHttpSecurity> serverHttpSecurity) {
 			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
 					properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
 					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),

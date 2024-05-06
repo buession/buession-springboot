@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mongodb.autoconfigure;
@@ -54,31 +54,31 @@ public class MongoDBProperties {
 	@Deprecated
 	private Class<ReadPreference> readPreference;
 
-	public Class<? extends MongoTypeMapper> getTypeMapper(){
+	public Class<? extends MongoTypeMapper> getTypeMapper() {
 		return typeMapper;
 	}
 
-	public void setTypeMapper(Class<? extends MongoTypeMapper> typeMapper){
+	public void setTypeMapper(Class<? extends MongoTypeMapper> typeMapper) {
 		this.typeMapper = typeMapper;
 	}
 
-	public String getTypeKey(){
+	public String getTypeKey() {
 		return typeKey;
 	}
 
-	public void setTypeKey(String typeKey){
+	public void setTypeKey(String typeKey) {
 		this.typeKey = typeKey;
 	}
 
 	@Deprecated
 	@DeprecatedConfigurationProperty
-	public Class<ReadPreference> getReadPreference(){
+	public Class<ReadPreference> getReadPreference() {
 		return readPreference;
 	}
 
 	@Deprecated
 	@DeprecatedConfigurationProperty
-	public void setReadPreference(Class<ReadPreference> readPreference){
+	public void setReadPreference(Class<ReadPreference> readPreference) {
 		this.readPreference = readPreference;
 	}
 

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -72,7 +72,7 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 
 		if(logger.isInfoEnabled()){
 			logger.info("Create master datasource: by driver {}, type {}", properties.getDriverClassName(),
-					this.type.getName());
+					type.getName());
 		}
 
 		if(Validate.isEmpty(properties.getSlaves())){
@@ -84,7 +84,7 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 
 		if(logger.isInfoEnabled()){
 			logger.info("Create {} size slave datasource: by driver {}, type {}", dataSource.getSlaves().size(),
-					properties.getDriverClassName(), this.type.getName());
+					properties.getDriverClassName(), type.getName());
 		}
 
 		return dataSource;

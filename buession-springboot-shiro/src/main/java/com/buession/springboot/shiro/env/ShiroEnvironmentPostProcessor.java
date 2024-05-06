@@ -22,7 +22,25 @@
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.shiro.env;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+
+import java.util.Collections;
+
 /**
  * @author Yong.Teng
+ * @since 2.3.3
  */
-package com.buession.springboot.mongodb.autoconfigure;
+public class ShiroEnvironmentPostProcessor implements EnvironmentPostProcessor {
+
+	@Override
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+		environment.getPropertySources().addFirst(new MapPropertySource("shiro",
+				Collections.singletonMap("spring.mvc.pathmatch.matching-strategy", "ant_path_matcher")));
+	}
+
+}
