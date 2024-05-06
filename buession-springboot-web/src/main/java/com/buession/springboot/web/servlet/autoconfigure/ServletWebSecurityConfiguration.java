@@ -27,13 +27,13 @@
 package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.security.web.config.Configurer;
+import com.buession.security.web.config.Xss;
 import com.buession.security.web.servlet.config.ServletWebSecurityConfigurerAdapterConfiguration;
+import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.servlet.WebMvcXssConfigurer;
 import com.buession.security.web.xss.servlet.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.PolicyFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -60,10 +60,24 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	}
 
 	@Bean
-	@ConditionalOnClass({PolicyFactory.class})
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	public XssFilter xssFilter() {
-		return new XssFilter(new HtmlPolicyBuilder().toFactory());
+		final Xss xss = properties.getXss();
+		final Options.Builder optionsBuilder = Options.Builder.getInstance();
+
+		optionsBuilder.policy(xss.getPolicy());
+
+		if(xss.getPolicy() == Options.Policy.ESCAPE){
+			optionsBuilder.escape(new Options.Escape());
+		}else{
+			final Options.Clean clean = new Options.Clean();
+
+			clean.setPolicyConfigLocation(xss.getPolicyConfigLocation());
+
+			optionsBuilder.clean(clean);
+		}
+
+		return new XssFilter(optionsBuilder.build());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -82,7 +96,6 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({PolicyFactory.class})
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue =
 			"true")
 	static class WebMvcXssConfigurerConfiguration extends WebMvcXssConfigurer {

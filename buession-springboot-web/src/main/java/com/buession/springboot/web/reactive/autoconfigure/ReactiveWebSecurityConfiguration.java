@@ -25,12 +25,12 @@
 package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.security.web.config.Configurer;
+import com.buession.security.web.config.Xss;
 import com.buession.security.web.reactive.config.ReactiveWebSecurityConfigurerAdapterConfiguration;
+import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.reactive.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.PolicyFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -57,10 +57,24 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 	}
 
 	@Bean
-	@ConditionalOnClass({PolicyFactory.class})
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	public XssFilter xssFilter() {
-		return new XssFilter(new HtmlPolicyBuilder().toFactory());
+		final Xss xss = properties.getXss();
+		final Options.Builder optionsBuilder = Options.Builder.getInstance();
+
+		optionsBuilder.policy(xss.getPolicy());
+
+		if(xss.getPolicy() == Options.Policy.ESCAPE){
+			optionsBuilder.escape(new Options.Escape());
+		}else{
+			final Options.Clean clean = new Options.Clean();
+
+			clean.setPolicyConfigLocation(xss.getPolicyConfigLocation());
+
+			optionsBuilder.clean(clean);
+		}
+
+		return new XssFilter(optionsBuilder.build());
 	}
 
 	@Configuration(proxyBeanMethods = false)

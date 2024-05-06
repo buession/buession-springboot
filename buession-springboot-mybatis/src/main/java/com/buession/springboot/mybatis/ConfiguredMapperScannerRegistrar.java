@@ -28,8 +28,6 @@ import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.lang.Constants;
 import com.buession.springboot.mybatis.autoconfigure.MybatisProperties;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +37,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -130,22 +127,6 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 				.ifPresent((x)->builder.addPropertyValue("defaultScope", getProperty("mapper-default-scope",
 						"mapperDefaultScope", Constants.EMPTY_STRING)));
 
-		if(beanFactory instanceof ListableBeanFactory){
-			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
-
-			Optional<String> sqlSessionTemplateBeanName = Optional
-					.ofNullable(getBeanNameForType(listableBeanFactory, SqlSessionTemplate.class));
-			Optional<String> sqlSessionFactoryBeanName = Optional
-					.ofNullable(getBeanNameForType(listableBeanFactory, SqlSessionFactory.class));
-
-			if(sqlSessionTemplateBeanName.isPresent() || sqlSessionFactoryBeanName.isPresent() == false){
-				builder.addPropertyValue("sqlSessionTemplateBeanName", sqlSessionTemplateBeanName.orElse(
-						"masterSqlSessionTemplate"));
-			}else{
-				builder.addPropertyValue("sqlSessionFactoryBeanName", sqlSessionFactoryBeanName.get());
-			}
-		}
-
 		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
 		registry.registerBeanDefinition(MapperScannerConfigurer.class.getName(), builder.getBeanDefinition());
@@ -172,11 +153,6 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 	private <T> T getProperty(final String key, final String humpKey, final Class<T> targetType, final T defaultValue) {
 		T value = getProperty(key, humpKey, targetType);
 		return Optional.ofNullable(value).orElse(defaultValue);
-	}
-
-	private static String getBeanNameForType(final ListableBeanFactory factory, final Class<?> type) {
-		String[] beanNames = factory.getBeanNamesForType(type);
-		return beanNames.length > 0 ? beanNames[0] : null;
 	}
 
 }
