@@ -24,21 +24,9 @@
  */
 package com.buession.springboot.canal.autoconfigure;
 
-import com.buession.canal.client.adapter.AdapterClient;
-import com.buession.canal.client.adapter.KafkaAdapterClient;
-import com.buession.canal.client.adapter.PulsarMQAdapterClient;
-import com.buession.canal.client.adapter.RabbitMQAdapterClient;
-import com.buession.canal.client.adapter.RocketMQAdapterClient;
-import com.buession.canal.client.adapter.TcpAdapterClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Yong.Teng
@@ -46,154 +34,8 @@ import java.util.stream.Collectors;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CanalProperties.class)
-public class AdapterClientConfiguration {
-
-	@FunctionalInterface
-	interface CanalAdapterClientBuilder<IC extends com.buession.canal.core.Configuration,
-			C extends AdapterClient> {
-
-		C newInstance(final String destination, final IC instance);
-
-	}
-
-	interface IAdapterClientConfiguration {
-
-		/**
-		 * 初始化 {@link AdapterClient} 列表 bean
-		 *
-		 * @return {@link AdapterClient} 列表 bean
-		 */
-		Set<AdapterClient> createAdapterClients();
-
-	}
-
-	static abstract class AbstractAdapterClientConfiguration implements IAdapterClientConfiguration {
-
-		protected CanalProperties canalProperties;
-
-		AbstractAdapterClientConfiguration(final CanalProperties canalProperties) {
-			this.canalProperties = canalProperties;
-		}
-
-		protected <IC extends com.buession.canal.core.Configuration, C extends AdapterClient> Set<AdapterClient> createCanalAdapterClients(
-				final AdapterProperties<IC> properties, final CanalAdapterClientBuilder<IC, C> builder) {
-			return properties.getInstances().entrySet().stream().map((e)->builder.newInstance(e.getKey(), e.getValue()))
-					.collect(Collectors.toSet());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CanalProperties.class)
-	@Conditional(AdapterClientConfiguredCondition.KafkaCanalAdapterClientConfiguredCondition.class)
-	@ConditionalOnMissingBean(IAdapterClientConfiguration.class)
-	@ConfigurationProperties(prefix = CanalProperties.PREFIX + ".kafka")
-	static class KafkaAdapterClientConfiguration extends AbstractAdapterClientConfiguration {
-
-		public KafkaAdapterClientConfiguration(final CanalProperties canalProperties) {
-			super(canalProperties);
-		}
-
-		@Bean
-		@Override
-		public Set<AdapterClient> createAdapterClients() {
-			final KafkaProperties kafka = canalProperties.getKafka();
-			return createCanalAdapterClients(kafka, (topic, instance)->new KafkaAdapterClient(kafka.getServers(), topic,
-					instance.getGroupId(), instance.getPartition(), instance, instance.isFlatMessage()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CanalProperties.class)
-	@Conditional(AdapterClientConfiguredCondition.PulsarCanalAdapterClientConfiguredCondition.class)
-	@ConditionalOnMissingBean(IAdapterClientConfiguration.class)
-	@ConfigurationProperties(prefix = CanalProperties.PREFIX + ".pulsar")
-	static class PulsarAdapterClientConfiguration extends AbstractAdapterClientConfiguration {
-
-		public PulsarAdapterClientConfiguration(final CanalProperties canalProperties) {
-			super(canalProperties);
-		}
-
-		@Bean
-		@Override
-		public Set<AdapterClient> createAdapterClients() {
-			final PulsarProperties pulsar = canalProperties.getPulsar();
-			return createCanalAdapterClients(pulsar, (topic, instance)->new PulsarMQAdapterClient(
-					pulsar.getServiceUrl(), pulsar.getRoleToken(), topic, instance.getSubscriptName(),
-					pulsar.getGetBatchTimeout(), pulsar.getBatchProcessTimeout(), pulsar.getRedeliveryDelay(),
-					pulsar.getAckTimeout(), pulsar.isRetry(), pulsar.isRetryDLQUpperCase(),
-					pulsar.getMaxRedeliveryCount(), instance, instance.isFlatMessage()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CanalProperties.class)
-	@Conditional(AdapterClientConfiguredCondition.RabbitCanalAdapterClientConfiguredCondition.class)
-	@ConditionalOnMissingBean(IAdapterClientConfiguration.class)
-	@ConfigurationProperties(prefix = CanalProperties.PREFIX + ".rabbit")
-	static class RabbitAdapterClientConfiguration extends AbstractAdapterClientConfiguration {
-
-		public RabbitAdapterClientConfiguration(final CanalProperties canalProperties) {
-			super(canalProperties);
-		}
-
-		@Bean
-		@Override
-		public Set<AdapterClient> createAdapterClients() {
-			final RabbitProperties rabbit = canalProperties.getRabbit();
-			return createCanalAdapterClients(rabbit,
-					(queueName, instance)->new RabbitMQAdapterClient(rabbit.getServer(),
-							rabbit.getVirtualHost(), rabbit.getUsername(), rabbit.getPassword(), queueName,
-							instance, instance.isFlatMessage()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CanalProperties.class)
-	@Conditional(AdapterClientConfiguredCondition.RocketCanalAdapterClientConfiguredCondition.class)
-	@ConditionalOnMissingBean(IAdapterClientConfiguration.class)
-	@ConfigurationProperties(prefix = CanalProperties.PREFIX + ".rocket")
-	static class RocketAdapterClientConfiguration extends AbstractAdapterClientConfiguration {
-
-		public RocketAdapterClientConfiguration(final CanalProperties canalProperties) {
-			super(canalProperties);
-		}
-
-		@Bean
-		@Override
-		public Set<AdapterClient> createAdapterClients() {
-			final RocketProperties rocket = canalProperties.getRocket();
-			return createCanalAdapterClients(rocket, (topic, instance)->new RocketMQAdapterClient(
-					rocket.getNameServer(), topic, instance.getGroupId(), rocket.getEnableMessageTrace(),
-					rocket.getCustomizedTraceTopic(), rocket.getAccessChannel(), instance,
-					instance.isFlatMessage()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(CanalProperties.class)
-	@Conditional(AdapterClientConfiguredCondition.TcpCanalAdapterClientConfiguredCondition.class)
-	@ConditionalOnMissingBean(IAdapterClientConfiguration.class)
-	@ConfigurationProperties(prefix = CanalProperties.PREFIX + ".tcp")
-	static class TcpAdapterClientConfiguration extends AbstractAdapterClientConfiguration {
-
-		public TcpAdapterClientConfiguration(final CanalProperties canalProperties) {
-			super(canalProperties);
-		}
-
-		@Bean
-		@Override
-		public Set<AdapterClient> createAdapterClients() {
-			final TcpProperties tcp = canalProperties.getTcp();
-			return createCanalAdapterClients(tcp,
-					(destination, instance)->new TcpAdapterClient(tcp.getServer(),
-							tcp.getZkServers(), destination, tcp.getUsername(), tcp.getPassword(), instance));
-		}
-
-	}
+@ConditionalOnMissingBean(com.buession.canal.springboot.autoconfigure.AdapterClientConfiguration.class)
+@Deprecated
+public class AdapterClientConfiguration extends com.buession.canal.springboot.autoconfigure.AdapterClientConfiguration {
 
 }

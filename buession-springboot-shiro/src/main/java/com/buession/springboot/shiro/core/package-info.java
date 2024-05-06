@@ -19,64 +19,10 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
-
-import com.buession.canal.core.Configuration;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Canal 适配器配置基类
- *
  * @author Yong.Teng
- * @since 0.0.1
  */
-abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.BaseInstanceConfiguration>
-		implements AdapterProperties<IC> {
-
-	/**
-	 * 实例清单
-	 */
-	private Map<String, IC> instances = new HashMap<>();
-
-	/**
-	 * 返回实例清单
-	 *
-	 * @return 实例清单
-	 */
-	@Override
-	public Map<String, IC> getInstances() {
-		return instances;
-	}
-
-	/**
-	 * 设置实例清单
-	 *
-	 * @param instances
-	 * 		实例清单
-	 */
-	public void setInstances(Map<String, IC> instances) {
-		this.instances = instances;
-	}
-
-	/**
-	 * 实例基本配置
-	 *
-	 * @author Yong.Teng
-	 * @since 0.0.1
-	 */
-	public static abstract class BaseInstanceConfiguration extends Configuration {
-
-		public BaseInstanceConfiguration() {
-			setTimeout(Duration.ofSeconds(10));
-			setBatchSize(10);
-		}
-
-	}
-
-}
+package com.buession.springboot.shiro.core;

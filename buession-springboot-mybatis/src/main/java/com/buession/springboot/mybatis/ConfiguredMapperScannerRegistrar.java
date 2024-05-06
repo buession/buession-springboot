@@ -26,6 +26,7 @@ package com.buession.springboot.mybatis;
 
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
+import com.buession.lang.Constants;
 import com.buession.springboot.mybatis.autoconfigure.MybatisProperties;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ import org.springframework.util.ClassUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -67,12 +69,12 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 	private final static Logger logger = LoggerFactory.getLogger(ConfiguredMapperScannerRegistrar.class);
 
 	@Override
-	public void setEnvironment(Environment environment) {
+	public void setEnvironment(@NonNull Environment environment) {
 		this.environment = environment;
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
 
@@ -87,18 +89,10 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 	}
 
 	public void registerBeanDefinition(@NonNull BeanDefinitionRegistry registry) {
-		String basePackage = getProperty("base-package", "basePackage", String.class);
-		List<String> basePackages = Validate.isBlank(basePackage) ? AutoConfigurationPackages.get(
-				beanFactory) : Arrays.asList(com.buession.core.utils.StringUtils.split(basePackage, ','));
+		final BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
+				MapperScannerConfigurer.class);
 
-		if(logger.isDebugEnabled()){
-			basePackages.forEach((pkg)->logger.debug("Using auto-configuration base package '{}'", pkg));
-		}
-
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
-		builder.addPropertyValue("processPropertyPlaceHolders", true);
-
-		String annotationClassName = getProperty("annotation-class", "annotationClass", String.class);
+		String annotationClassName = getProperty("annotation-class", "annotationClass");
 
 		try{
 			Class<?> annotationClass = annotationClassName == null ?
@@ -107,25 +101,39 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 			builder.addPropertyValue("annotationClass", annotationClass);
 
 			if(logger.isDebugEnabled()){
-				logger.debug("Searching for mappers annotated with @{}", annotationClass.getSimpleName());
+				logger.debug("Searching for mappers annotated with @{}", annotationClass.getName());
 			}
 		}catch(ClassNotFoundException e){
 			throw new BeanInitializationException(e.getMessage());
 		}
 
+		String basePackage = getProperty("base-package", "basePackage");
+		List<String> basePackages = Validate.isBlank(basePackage) ? AutoConfigurationPackages.get(
+				beanFactory) : Arrays.asList(com.buession.core.utils.StringUtils.split(basePackage, ','));
+
+		if(logger.isDebugEnabled()){
+			basePackages.forEach((pkg)->logger.debug("Using auto-configuration base package '{}'", pkg));
+		}
+
+		builder.addPropertyValue("processPropertyPlaceHolders", true);
 		builder.addPropertyValue("basePackage", StringUtils.join(basePackages, ','));
 
 		BeanWrapper beanWrapper = new BeanWrapperImpl(MapperScannerConfigurer.class);
 
 		Stream.of(beanWrapper.getPropertyDescriptors()).filter((x)->"lazyInitialization".equals(x.getName())).findAny()
 				.ifPresent((x)->builder.addPropertyValue("lazyInitialization",
-						"${" + PREFIX + ".lazy-initialization:false}"));
+						getProperty("lazy-initialization", "lazyInitialization", Boolean.class, false)));
 		Stream.of(beanWrapper.getPropertyDescriptors()).filter((x)->"defaultScope".equals(x.getName())).findAny()
-				.ifPresent((x)->builder.addPropertyValue("defaultScope", "${" + PREFIX + ".mapper-default-scope:}"));
+				.ifPresent((x)->builder.addPropertyValue("defaultScope", getProperty("mapper-default-scope",
+						"mapperDefaultScope", Constants.EMPTY_STRING)));
 
 		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
 		registry.registerBeanDefinition(MapperScannerConfigurer.class.getName(), builder.getBeanDefinition());
+	}
+
+	private String getProperty(final String key, final String humpKey) {
+		return getProperty(key, humpKey, String.class);
 	}
 
 	private <T> T getProperty(final String key, final String humpKey, final Class<T> targetType) {
@@ -136,6 +144,15 @@ public class ConfiguredMapperScannerRegistrar implements EnvironmentAware, BeanF
 		}
 
 		return value;
+	}
+
+	private String getProperty(final String key, final String humpKey, final String defaultValue) {
+		return getProperty(key, humpKey, String.class, defaultValue);
+	}
+
+	private <T> T getProperty(final String key, final String humpKey, final Class<T> targetType, final T defaultValue) {
+		T value = getProperty(key, humpKey, targetType);
+		return Optional.ofNullable(value).orElse(defaultValue);
 	}
 
 }

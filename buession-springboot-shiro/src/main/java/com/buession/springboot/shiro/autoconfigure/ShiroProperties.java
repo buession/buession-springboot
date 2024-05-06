@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -81,7 +81,7 @@ public class ShiroProperties {
 	 *
 	 * @return 登录地址
 	 */
-	public String getLoginUrl(){
+	public String getLoginUrl() {
 		return loginUrl;
 	}
 
@@ -91,7 +91,7 @@ public class ShiroProperties {
 	 * @param loginUrl
 	 * 		登录地址
 	 */
-	public void setLoginUrl(String loginUrl){
+	public void setLoginUrl(String loginUrl) {
 		this.loginUrl = loginUrl;
 	}
 
@@ -100,7 +100,7 @@ public class ShiroProperties {
 	 *
 	 * @return 登录成功跳转地址
 	 */
-	public String getSuccessUrl(){
+	public String getSuccessUrl() {
 		return successUrl;
 	}
 
@@ -110,7 +110,7 @@ public class ShiroProperties {
 	 * @param successUrl
 	 * 		登录成功跳转地址
 	 */
-	public void setSuccessUrl(String successUrl){
+	public void setSuccessUrl(String successUrl) {
 		this.successUrl = successUrl;
 	}
 
@@ -119,7 +119,7 @@ public class ShiroProperties {
 	 *
 	 * @return 授权失败跳转地址
 	 */
-	public String getUnauthorizedUrl(){
+	public String getUnauthorizedUrl() {
 		return unauthorizedUrl;
 	}
 
@@ -129,7 +129,7 @@ public class ShiroProperties {
 	 * @param unauthorizedUrl
 	 * 		授权失败跳转地址
 	 */
-	public void setUnauthorizedUrl(String unauthorizedUrl){
+	public void setUnauthorizedUrl(String unauthorizedUrl) {
 		this.unauthorizedUrl = unauthorizedUrl;
 	}
 
@@ -138,7 +138,7 @@ public class ShiroProperties {
 	 *
 	 * @return Session 配置
 	 */
-	public Session getSession(){
+	public Session getSession() {
 		return session;
 	}
 
@@ -148,7 +148,7 @@ public class ShiroProperties {
 	 * @param session
 	 * 		Session 配置
 	 */
-	public void setSession(Session session){
+	public void setSession(Session session) {
 		this.session = session;
 	}
 
@@ -157,7 +157,7 @@ public class ShiroProperties {
 	 *
 	 * @return 缓存配置
 	 */
-	public Cache getCache(){
+	public Cache getCache() {
 		return cache;
 	}
 
@@ -167,7 +167,7 @@ public class ShiroProperties {
 	 * @param cache
 	 * 		缓存配置
 	 */
-	public void setCache(Cache cache){
+	public void setCache(Cache cache) {
 		this.cache = cache;
 	}
 
@@ -176,7 +176,7 @@ public class ShiroProperties {
 	 *
 	 * @return 记住我配置
 	 */
-	public RememberMe getRememberMe(){
+	public RememberMe getRememberMe() {
 		return rememberMe;
 	}
 
@@ -186,7 +186,7 @@ public class ShiroProperties {
 	 * @param rememberMe
 	 * 		记住我配置
 	 */
-	public void setRememberMe(RememberMe rememberMe){
+	public void setRememberMe(RememberMe rememberMe) {
 		this.rememberMe = rememberMe;
 	}
 
@@ -249,7 +249,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否使用原生 Session 管理器
 		 */
-		public boolean isUseNativeSessionManager(){
+		public boolean isUseNativeSessionManager() {
 			return getUseNativeSessionManager();
 		}
 
@@ -258,7 +258,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否使用原生 Session 管理器
 		 */
-		public boolean getUseNativeSessionManager(){
+		public boolean getUseNativeSessionManager() {
 			return useNativeSessionManager;
 		}
 
@@ -268,7 +268,7 @@ public class ShiroProperties {
 		 * @param useNativeSessionManager
 		 * 		是否使用原生 Session 管理器
 		 */
-		public void setUseNativeSessionManager(boolean useNativeSessionManager){
+		public void setUseNativeSessionManager(boolean useNativeSessionManager) {
 			this.useNativeSessionManager = useNativeSessionManager;
 		}
 
@@ -277,7 +277,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 SESSION ID Cookie
 		 */
-		public boolean isSessionIdCookieEnabled(){
+		public boolean isSessionIdCookieEnabled() {
 			return getSessionIdCookieEnabled();
 		}
 
@@ -286,7 +286,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 SESSION ID Cookie
 		 */
-		public boolean getSessionIdCookieEnabled(){
+		public boolean getSessionIdCookieEnabled() {
 			return sessionIdCookieEnabled;
 		}
 
@@ -296,7 +296,7 @@ public class ShiroProperties {
 		 * @param sessionIdCookieEnabled
 		 * 		是否开启 SESSION ID Cookie
 		 */
-		public void setSessionIdCookieEnabled(boolean sessionIdCookieEnabled){
+		public void setSessionIdCookieEnabled(boolean sessionIdCookieEnabled) {
 			this.sessionIdCookieEnabled = sessionIdCookieEnabled;
 		}
 
@@ -305,7 +305,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 URL 重写
 		 */
-		public boolean isSessionIdUrlRewritingEnabled(){
+		public boolean isSessionIdUrlRewritingEnabled() {
 			return getSessionIdUrlRewritingEnabled();
 		}
 
@@ -314,7 +314,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 URL 重写
 		 */
-		public boolean getSessionIdUrlRewritingEnabled(){
+		public boolean getSessionIdUrlRewritingEnabled() {
 			return sessionIdUrlRewritingEnabled;
 		}
 
@@ -324,7 +324,7 @@ public class ShiroProperties {
 		 * @param sessionIdUrlRewritingEnabled
 		 * 		是否开启 URL 重写
 		 */
-		public void setSessionIdUrlRewritingEnabled(boolean sessionIdUrlRewritingEnabled){
+		public void setSessionIdUrlRewritingEnabled(boolean sessionIdUrlRewritingEnabled) {
 			this.sessionIdUrlRewritingEnabled = sessionIdUrlRewritingEnabled;
 		}
 
@@ -333,7 +333,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 Session 在内存中保存
 		 */
-		public boolean isSessionInMemoryEnabled(){
+		public boolean isSessionInMemoryEnabled() {
 			return getSessionInMemoryEnabled();
 		}
 
@@ -342,7 +342,7 @@ public class ShiroProperties {
 		 *
 		 * @return 是否开启 Session 在内存中保存
 		 */
-		public boolean getSessionInMemoryEnabled(){
+		public boolean getSessionInMemoryEnabled() {
 			return sessionInMemoryEnabled;
 		}
 
@@ -352,7 +352,7 @@ public class ShiroProperties {
 		 * @param sessionInMemoryEnabled
 		 * 		是否开启 Session 在内存中保存
 		 */
-		public void setSessionInMemoryEnabled(boolean sessionInMemoryEnabled){
+		public void setSessionInMemoryEnabled(boolean sessionInMemoryEnabled) {
 			this.sessionInMemoryEnabled = sessionInMemoryEnabled;
 		}
 
@@ -361,7 +361,7 @@ public class ShiroProperties {
 		 *
 		 * @return Session 在内存中保存超时时间
 		 */
-		public long getSessionInMemoryTimeout(){
+		public long getSessionInMemoryTimeout() {
 			return sessionInMemoryTimeout;
 		}
 
@@ -371,7 +371,7 @@ public class ShiroProperties {
 		 * @param sessionInMemoryTimeout
 		 * 		Session 在内存中保存超时时间
 		 */
-		public void setSessionInMemoryTimeout(long sessionInMemoryTimeout){
+		public void setSessionInMemoryTimeout(long sessionInMemoryTimeout) {
 			this.sessionInMemoryTimeout = sessionInMemoryTimeout;
 		}
 
@@ -380,7 +380,7 @@ public class ShiroProperties {
 		 *
 		 * @return Session 名称前缀
 		 */
-		public String getPrefix(){
+		public String getPrefix() {
 			return prefix;
 		}
 
@@ -390,7 +390,7 @@ public class ShiroProperties {
 		 * @param prefix
 		 * 		Session 名称前缀
 		 */
-		public void setPrefix(String prefix){
+		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 
@@ -399,7 +399,7 @@ public class ShiroProperties {
 		 *
 		 * @return Session 有效期
 		 */
-		public int getExpire(){
+		public int getExpire() {
 			return expire;
 		}
 
@@ -409,7 +409,7 @@ public class ShiroProperties {
 		 * @param expire
 		 * 		Session 有效期
 		 */
-		public void setExpire(int expire){
+		public void setExpire(int expire) {
 			this.expire = expire;
 		}
 
@@ -418,7 +418,7 @@ public class ShiroProperties {
 		 *
 		 * @return 如果 Session 过期或者无效后，是否删除
 		 */
-		public boolean isSessionManagerDeleteInvalidSessions(){
+		public boolean isSessionManagerDeleteInvalidSessions() {
 			return getSessionManagerDeleteInvalidSessions();
 		}
 
@@ -427,7 +427,7 @@ public class ShiroProperties {
 		 *
 		 * @return 如果 Session 过期或者无效后，是否删除
 		 */
-		public boolean getSessionManagerDeleteInvalidSessions(){
+		public boolean getSessionManagerDeleteInvalidSessions() {
 			return sessionManagerDeleteInvalidSessions;
 		}
 
@@ -437,7 +437,7 @@ public class ShiroProperties {
 		 * @param sessionManagerDeleteInvalidSessions
 		 * 		如果 Session 过期或者无效后，是否删除
 		 */
-		public void setSessionManagerDeleteInvalidSessions(boolean sessionManagerDeleteInvalidSessions){
+		public void setSessionManagerDeleteInvalidSessions(boolean sessionManagerDeleteInvalidSessions) {
 			this.sessionManagerDeleteInvalidSessions = sessionManagerDeleteInvalidSessions;
 		}
 
@@ -446,7 +446,7 @@ public class ShiroProperties {
 		 *
 		 * @return Session Cookie
 		 */
-		public Cookie getCookie(){
+		public Cookie getCookie() {
 			return cookie;
 		}
 
@@ -456,7 +456,7 @@ public class ShiroProperties {
 		 * @param cookie
 		 * 		Session Cookie
 		 */
-		public void setCookie(Cookie cookie){
+		public void setCookie(Cookie cookie) {
 			this.cookie = cookie;
 		}
 
@@ -490,7 +490,7 @@ public class ShiroProperties {
 		 *
 		 * @return 缓存 Key 前缀
 		 */
-		public String getPrefix(){
+		public String getPrefix() {
 			return prefix;
 		}
 
@@ -500,7 +500,7 @@ public class ShiroProperties {
 		 * @param prefix
 		 * 		缓存 Key 前缀
 		 */
-		public void setPrefix(String prefix){
+		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 
@@ -509,7 +509,7 @@ public class ShiroProperties {
 		 *
 		 * @return 缓存过期时间（单位：秒）
 		 */
-		public int getExpire(){
+		public int getExpire() {
 			return expire;
 		}
 
@@ -519,7 +519,7 @@ public class ShiroProperties {
 		 * @param expire
 		 * 		缓存过期时间
 		 */
-		public void setExpire(int expire){
+		public void setExpire(int expire) {
 			this.expire = expire;
 		}
 
@@ -528,7 +528,7 @@ public class ShiroProperties {
 		 *
 		 * @return Principal Id
 		 */
-		public String getPrincipalIdFieldName(){
+		public String getPrincipalIdFieldName() {
 			return principalIdFieldName;
 		}
 
@@ -538,7 +538,7 @@ public class ShiroProperties {
 		 * @param principalIdFieldName
 		 * 		Principal Id
 		 */
-		public void setPrincipalIdFieldName(String principalIdFieldName){
+		public void setPrincipalIdFieldName(String principalIdFieldName) {
 			this.principalIdFieldName = principalIdFieldName;
 		}
 
@@ -563,7 +563,7 @@ public class ShiroProperties {
 		 *
 		 * @return 记住我 Cookie
 		 */
-		public Cookie getCookie(){
+		public Cookie getCookie() {
 			return cookie;
 		}
 
@@ -573,7 +573,7 @@ public class ShiroProperties {
 		 * @param cookie
 		 * 		记住我 Cookie
 		 */
-		public void setCookie(Cookie cookie){
+		public void setCookie(Cookie cookie) {
 			this.cookie = cookie;
 		}
 

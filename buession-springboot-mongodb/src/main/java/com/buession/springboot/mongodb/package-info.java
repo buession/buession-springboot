@@ -19,29 +19,10 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
-
-import com.buession.canal.core.Configuration;
-
-import java.util.Map;
-
 /**
- * Canal 适配器配置
- *
  * @author Yong.Teng
- * @since 2.3.1
  */
-@FunctionalInterface
-interface AdapterProperties<C extends Configuration> {
-
-	/**
-	 * 返回实例清单
-	 *
-	 * @return 实例清单
-	 */
-	Map<String, C> getInstances();
-
-}
+package com.buession.springboot.mongodb;

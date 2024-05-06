@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -65,7 +65,7 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 
 	private final ShiroProperties properties;
 
-	public ShiroConfiguration(ShiroProperties properties){
+	public ShiroConfiguration(ShiroProperties properties) {
 		this.properties = properties;
 
 		// Session info
@@ -78,49 +78,49 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionsSecurityManager securityManager(List<Realm> realms){
+	protected SessionsSecurityManager securityManager(List<Realm> realms) {
 		return super.securityManager(realms);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionManager sessionManager(){
+	protected SessionManager sessionManager() {
 		return super.sessionManager();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SubjectDAO subjectDAO(){
+	protected SubjectDAO subjectDAO() {
 		return super.subjectDAO();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionStorageEvaluator sessionStorageEvaluator(){
+	protected SessionStorageEvaluator sessionStorageEvaluator() {
 		return super.sessionStorageEvaluator();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({SubjectFactory.class})
 	@Override
-	protected SubjectFactory subjectFactory(){
+	protected SubjectFactory subjectFactory() {
 		return super.subjectFactory();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionFactory sessionFactory(){
+	protected SessionFactory sessionFactory() {
 		return super.sessionFactory();
 	}
 
 	@Bean(name = "sessionDAO")
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager){
+	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager) {
 		ShiroProperties.Session session = properties.getSession();
 		return new RedisSessionDAO(redisManager.getIfAvailable(), session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
@@ -129,53 +129,53 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean(name = "sessionDAO")
 	@ConditionalOnMissingBean({SessionDAO.class})
 	@Override
-	protected SessionDAO sessionDAO(){
+	protected SessionDAO sessionDAO() {
 		return super.sessionDAO();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected Authorizer authorizer(){
+	protected Authorizer authorizer() {
 		return super.authorizer();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected AuthenticationStrategy authenticationStrategy(){
+	protected AuthenticationStrategy authenticationStrategy() {
 		return super.authenticationStrategy();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected Authenticator authenticator(){
+	protected Authenticator authenticator() {
 		return super.authenticator();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected RememberMeManager rememberMeManager(){
+	protected RememberMeManager rememberMeManager() {
 		return super.rememberMeManager();
 	}
 
 	@Bean
 	@ConditionalOnResource(resources = "classpath:shiro.ini")
-	protected Realm iniClasspathRealm(){
+	protected Realm iniClasspathRealm() {
 		return iniRealmFromLocation("classpath:shiro.ini");
 	}
 
 	@Bean
 	@ConditionalOnResource(resources = "classpath:META-INF/shiro.ini")
-	protected Realm iniMetaInfClasspathRealm(){
+	protected Realm iniMetaInfClasspathRealm() {
 		return iniRealmFromLocation("classpath:META-INF/shiro.ini");
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(Realm.class)
-	protected Realm missingRealm(){
+	protected Realm missingRealm() {
 		throw new NoRealmBeanConfiguredException();
 	}
 

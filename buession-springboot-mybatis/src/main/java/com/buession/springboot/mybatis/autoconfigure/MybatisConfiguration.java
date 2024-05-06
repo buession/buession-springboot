@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -29,6 +29,7 @@ package com.buession.springboot.mybatis.autoconfigure;
 import com.buession.core.collect.Arrays;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.Assert;
+import com.buession.core.utils.FieldUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
@@ -47,13 +48,13 @@ import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,12 +63,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Yong.Teng
@@ -76,7 +74,7 @@ import java.util.stream.Stream;
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnBean({DataSource.class})
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
-@AutoConfigureAfter({DataSourceConfiguration.class})
+@AutoConfigureAfter({DataSourceConfiguration.class, MybatisLanguageDriverConfiguration.class})
 public class MybatisConfiguration {
 
 	private final MybatisProperties properties;
@@ -87,11 +85,15 @@ public class MybatisConfiguration {
 
 	private final ResourceLoader resourceLoader;
 
+	private Resource configLocationResource = null;
+
 	private final DatabaseIdProvider databaseIdProvider;
 
 	private final List<ConfigurationCustomizer> configurationCustomizers;
 
 	private final LanguageDriver[] languageDrivers;
+
+	private final Resource[] mapperLocations;
 
 	private final static Logger logger = LoggerFactory.getLogger(MybatisConfiguration.class);
 
@@ -109,6 +111,12 @@ public class MybatisConfiguration {
 		this.languageDrivers = languageDrivers.getIfAvailable();
 
 		checkConfigFileExists();
+
+		if(Validate.hasText(properties.getConfigLocation())){
+			configLocationResource = resourceLoader.getResource(properties.getConfigLocation());
+		}
+
+		this.mapperLocations = resolveMapperLocations();
 	}
 
 	@Bean
@@ -125,21 +133,18 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public List<SqlSessionTemplate> slaveSqlSessionTemplates(List<SqlSessionFactory> slaveSqlSessionFactories) {
-		if(Validate.isEmpty(slaveSqlSessionFactories)){
+	public List<SqlSessionTemplate> slaveSqlSessionTemplates(
+			ObjectProvider<List<SqlSessionFactory>> slaveSqlSessionFactories) {
+		return slaveSqlSessionFactories.getIfAvailable(()->{
 			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
-		}
-
-		return slaveSqlSessionFactories.stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
+		}).stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public List<SqlSessionFactoryBean> slaveSqlSessionFactories() {
-		if(Validate.isEmpty(dataSource.getSlaves())){
-			throw new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty");
-		}
-
+		Assert.isEmpty(dataSource.getSlaves(), ()->
+				new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty"));
 		return dataSource.getSlaves().parallelStream().map(this::createSqlSessionFactory).collect(Collectors.toList());
 	}
 
@@ -151,8 +156,7 @@ public class MybatisConfiguration {
 		sessionFactoryBean.setVfs(SpringBootVFS.class);
 		sessionFactoryBean.setFailFast(properties.getFailFast());
 
-		mapper.from(properties::getConfigLocation).as(resourceLoader::getResource)
-				.to(sessionFactoryBean::setConfigLocation);
+		mapper.from(this.configLocationResource).to(sessionFactoryBean::setConfigLocation);
 
 		applyConfiguration(sessionFactoryBean);
 
@@ -164,13 +168,12 @@ public class MybatisConfiguration {
 			sessionFactoryBean.setPlugins(interceptors);
 		}
 
-		mapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
-		mapper.from(properties.getTypeAliasesSuperType()).to(sessionFactoryBean::setTypeAliasesSuperType);
-		mapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
-
 		if(Validate.isNotEmpty(properties.getTypeAliases())){
 			sessionFactoryBean.setTypeAliases(properties.getTypeAliases());
 		}
+		mapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
+		mapper.from(properties.getTypeAliasesSuperType()).to(sessionFactoryBean::setTypeAliasesSuperType);
+		mapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
 
 		if(Validate.isNotEmpty(properties.getTypeHandlers())){
 			sessionFactoryBean.setTypeHandlers(properties.getTypeHandlers());
@@ -179,28 +182,34 @@ public class MybatisConfiguration {
 		mapper.alwaysApplyingWhenNonNull().from(properties.getDefaultEnumTypeHandler())
 				.to(sessionFactoryBean::setDefaultEnumTypeHandler);
 
-		Resource[] resolveMapperLocations = resolveMapperLocations();
-		if(Validate.isNotEmpty(resolveMapperLocations)){
-			sessionFactoryBean.setMapperLocations(resolveMapperLocations);
+		if(Validate.isNotEmpty(this.mapperLocations)){
+			sessionFactoryBean.setMapperLocations(this.mapperLocations);
 		}
 
-		Set<String> factoryPropertyNames = Stream
-				.of(new BeanWrapperImpl(SqlSessionFactoryBean.class).getPropertyDescriptors())
-				.map(PropertyDescriptor::getName)
-				.collect(Collectors.toSet());
-
 		Class<? extends LanguageDriver> defaultLanguageDriver = properties.getDefaultScriptingLanguageDriver();
-		if(factoryPropertyNames.contains("scriptingLanguageDrivers") && Validate.isNotEmpty(languageDrivers)){
-			// Need to mybatis-spring 2.0.2+
-			sessionFactoryBean.setScriptingLanguageDrivers(languageDrivers);
+		if(Validate.isNotEmpty(languageDrivers)){
+			try{
+				FieldUtils.writeField(sessionFactoryBean, "scriptingLanguageDrivers", languageDrivers);
+			}catch(IllegalAccessException e){
+				if(logger.isWarnEnabled()){
+					logger.warn("Set field 'scriptingLanguageDrivers' for {} error: {}",
+							SqlSessionFactoryBean.class.getName(), e.getMessage());
+				}
+			}
+
 			if(defaultLanguageDriver == null && languageDrivers.length == 1){
 				defaultLanguageDriver = languageDrivers[0].getClass();
 			}
 		}
 
-		if(factoryPropertyNames.contains("defaultScriptingLanguageDriver")){
-			// Need to mybatis-spring 2.0.2+
-			sessionFactoryBean.setDefaultScriptingLanguageDriver(defaultLanguageDriver);
+		try{
+			FieldUtils.writeDeclaredField(sessionFactoryBean, "defaultScriptingLanguageDriver", defaultLanguageDriver,
+					true);
+		}catch(IllegalAccessException e){
+			if(logger.isWarnEnabled()){
+				logger.warn("Set field 'defaultScriptingLanguageDriver' for {} error: {}",
+						SqlSessionFactoryBean.class.getName(), e.getMessage());
+			}
 		}
 
 		return sessionFactoryBean;
@@ -243,8 +252,7 @@ public class MybatisConfiguration {
 
 			for(String mapperLocation : properties.getMapperLocations()){
 				try{
-					Resource[] mappers = resourceResolver.getResources(mapperLocation);
-					resources = Arrays.addAll(resources, mappers);
+					resources = Arrays.addAll(resources, resourceResolver.getResources(mapperLocation));
 				}catch(IOException e){
 					if(logger.isErrorEnabled()){
 						logger.error("Load mapper resource error: {}.", e.getMessage());
@@ -261,6 +269,7 @@ public class MybatisConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@Import(ConfiguredMapperScannerRegistrar.class)
 	@ConditionalOnMissingBean({MapperFactoryBean.class, MapperScannerConfigurer.class})
+	@ConditionalOnProperty(prefix = MybatisProperties.PREFIX, name = "scanner.enabled", havingValue = "true", matchIfMissing = true)
 	static class MapperScannerRegistrarNotFoundConfiguration implements InitializingBean {
 
 		@Override

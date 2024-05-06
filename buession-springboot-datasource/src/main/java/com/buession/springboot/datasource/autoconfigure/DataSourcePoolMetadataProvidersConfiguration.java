@@ -19,13 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.alibaba.druid.pool.DruidDataSourceMBean;
-import com.buession.core.utils.ObjectUtils;
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.datasource.Dbcp2DataSource;
 import com.buession.jdbc.datasource.DruidDataSource;
@@ -46,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * DataSource Pool Metadata Providers {@link DataSourcePoolMetadataProvider} Auto Configuration
@@ -75,8 +75,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(),
 						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
 
-				ObjectUtils.invokeIfAvailable(hikariDataSource,
-						(ds)->dataSourcePoolMetadata.setMaster(new HikariDataSourcePoolMetadata(ds)));
+				Optional.ofNullable(hikariDataSource)
+						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new HikariDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
@@ -84,7 +84,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
 						hikariDataSource = DataSourceUnwrapper.unwrap(datasource, HikariConfigMXBean.class,
 								com.zaxxer.hikari.HikariDataSource.class);
-						ObjectUtils.invokeIfAvailable(hikariDataSource,
+						Optional.ofNullable(hikariDataSource).ifPresent(
 								(ds)->dataSourcePoolMetadata.getSlaves().add(new HikariDataSourcePoolMetadata(ds)));
 					}
 				}
@@ -109,8 +109,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), BasicDataSourceMXBean.class,
 						org.apache.commons.dbcp2.BasicDataSource.class);
 
-				ObjectUtils.invokeIfAvailable(dbcp2DataSource,
-						(ds)->dataSourcePoolMetadata.setMaster(new CommonsDbcp2DataSourcePoolMetadata(ds)));
+				Optional.ofNullable(dbcp2DataSource)
+						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new CommonsDbcp2DataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
@@ -118,9 +118,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
 						dbcp2DataSource = DataSourceUnwrapper.unwrap(datasource, BasicDataSourceMXBean.class,
 								org.apache.commons.dbcp2.BasicDataSource.class);
-						ObjectUtils.invokeIfAvailable(dbcp2DataSource,
-								(ds)->dataSourcePoolMetadata.getSlaves()
-										.add(new CommonsDbcp2DataSourcePoolMetadata(ds)));
+						Optional.ofNullable(dbcp2DataSource).ifPresent((ds)->dataSourcePoolMetadata.getSlaves()
+								.add(new CommonsDbcp2DataSourcePoolMetadata(ds)));
 					}
 				}
 
@@ -144,8 +143,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), DruidDataSourceMBean.class,
 						com.alibaba.druid.pool.DruidDataSource.class);
 
-				ObjectUtils.invokeIfAvailable(druidDataSource,
-						(ds)->dataSourcePoolMetadata.setMaster(new DruidDataSourcePoolMetadata(ds)));
+				Optional.ofNullable(druidDataSource)
+						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new DruidDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
@@ -153,7 +152,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
 						druidDataSource = DataSourceUnwrapper.unwrap(datasource, DruidDataSourceMBean.class,
 								com.alibaba.druid.pool.DruidDataSource.class);
-						ObjectUtils.invokeIfAvailable(druidDataSource,
+						Optional.ofNullable(druidDataSource).ifPresent(
 								(ds)->dataSourcePoolMetadata.getSlaves().add(new DruidDataSourcePoolMetadata(ds)));
 					}
 				}
@@ -178,8 +177,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), ConnectionPoolMBean.class,
 						org.apache.tomcat.jdbc.pool.DataSource.class);
 
-				ObjectUtils.invokeIfAvailable(tomcatDataSource,
-						(ds)->dataSourcePoolMetadata.setMaster(new TomcatDataSourcePoolMetadata(ds)));
+				Optional.ofNullable(tomcatDataSource)
+						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new TomcatDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
@@ -187,7 +186,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
 						tomcatDataSource = DataSourceUnwrapper.unwrap(datasource, ConnectionPoolMBean.class,
 								org.apache.tomcat.jdbc.pool.DataSource.class);
-						ObjectUtils.invokeIfAvailable(tomcatDataSource,
+						Optional.ofNullable(tomcatDataSource).ifPresent(
 								(ds)->dataSourcePoolMetadata.getSlaves().add(new TomcatDataSourcePoolMetadata(ds)));
 					}
 				}
