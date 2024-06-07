@@ -29,7 +29,6 @@ import org.apache.shiro.spring.config.AbstractShiroAnnotationProcessorConfigurat
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.springframework.aop.config.AopConfigUtils;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,14 +51,14 @@ public class ShiroAnnotationProcessorAutoConfiguration extends AbstractShiroAnno
 	@ConditionalOnMissingBean(name = AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME, value =
 			DefaultAdvisorAutoProxyCreator.class)
 	@Override
-	protected DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+	protected DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
 		return super.defaultAdvisorAutoProxyCreator();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+	protected AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
 		return super.authorizationAttributeSourceAdvisor(securityManager);
 	}
 

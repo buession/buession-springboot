@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -28,6 +28,8 @@ import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import org.pac4j.core.client.BaseClient;
 import org.pac4j.core.credentials.Credentials;
+
+import java.util.Optional;
 
 /**
  * @author Yong.Teng
@@ -39,18 +41,15 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 
 	protected C config;
 
-	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config){
+	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config) {
 		this.properties = properties;
 		this.config = config;
 	}
 
 	protected void afterClientInitialized(final BaseClient<? extends Credentials> client,
-										  final BaseConfig.BaseClientConfig config){
+										  final BaseConfig.BaseClientConfig config) {
 		client.setName(Validate.hasText(config.getName()) ? config.getName() : config.getDefaultName());
-
-		if(config.getCustomProperties() != null){
-			client.setCustomProperties(config.getCustomProperties());
-		}
+		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
 	}
 
 }

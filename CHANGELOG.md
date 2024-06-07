@@ -15,6 +15,13 @@
 - **buession-springboot-httpclient：** 新增支持 apache httpcomponents 5
 
 
+### 🔔 变化
+
+- **buession-springboot-canal：** 迁移至 com.buession.canal:buession-canal-springboot
+- **buession-springboot-cache：** 拆分 DataSource AutoConfiguration 类为 JedisDataSourceConfiguration 和 LettuceDataSourceConfiguration
+- **buession-springboot-httpclient：** 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
+
+
 ### ⏪ 优化
 
 - **buession-springboot-pac4j：** 优化 Pac4jFilter 类

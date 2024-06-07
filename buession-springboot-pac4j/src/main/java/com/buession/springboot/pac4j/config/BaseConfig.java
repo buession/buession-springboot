@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
@@ -45,7 +45,7 @@ public abstract class BaseConfig {
 	 *
 	 * @return 客户自定义属性
 	 */
-	public Map<String, Object> getCustomProperties(){
+	public Map<String, Object> getCustomProperties() {
 		return customProperties;
 	}
 
@@ -55,7 +55,7 @@ public abstract class BaseConfig {
 	 * @param customProperties
 	 * 		客户自定义属性
 	 */
-	public void setCustomProperties(Map<String, Object> customProperties){
+	public void setCustomProperties(Map<String, Object> customProperties) {
 		this.customProperties = customProperties;
 	}
 
@@ -69,7 +69,7 @@ public abstract class BaseConfig {
 		/**
 		 * 默认 Client 名称
 		 */
-		private String defaultName;
+		private final String defaultName;
 
 		/**
 		 * 构造函数
@@ -77,7 +77,7 @@ public abstract class BaseConfig {
 		 * @param name
 		 * 		Client 名称
 		 */
-		public BaseClientConfig(String name){
+		public BaseClientConfig(String name) {
 			this.name = name;
 			this.defaultName = name;
 		}
@@ -87,7 +87,7 @@ public abstract class BaseConfig {
 		 *
 		 * @return Client 名称
 		 */
-		public String getName(){
+		public String getName() {
 			return name;
 		}
 
@@ -97,7 +97,7 @@ public abstract class BaseConfig {
 		 * @param name
 		 * 		Client 名称
 		 */
-		public void setName(String name){
+		public void setName(String name) {
 			this.name = name;
 		}
 
@@ -106,7 +106,7 @@ public abstract class BaseConfig {
 		 *
 		 * @return 默认 Client 名称
 		 */
-		public String getDefaultName(){
+		public String getDefaultName() {
 			return defaultName;
 		}
 

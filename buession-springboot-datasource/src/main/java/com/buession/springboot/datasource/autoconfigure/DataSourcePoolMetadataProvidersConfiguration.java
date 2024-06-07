@@ -44,8 +44,9 @@ import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * DataSource Pool Metadata Providers {@link DataSourcePoolMetadataProvider} Auto Configuration
@@ -79,14 +80,10 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new HikariDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
-
-					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
-						hikariDataSource = DataSourceUnwrapper.unwrap(datasource, HikariConfigMXBean.class,
-								com.zaxxer.hikari.HikariDataSource.class);
-						Optional.ofNullable(hikariDataSource).ifPresent(
-								(ds)->dataSourcePoolMetadata.getSlaves().add(new HikariDataSourcePoolMetadata(ds)));
-					}
+					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
+							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, HikariConfigMXBean.class,
+									com.zaxxer.hikari.HikariDataSource.class)).filter(Objects::nonNull)
+							.map(HikariDataSourcePoolMetadata::new).collect(Collectors.toList()));
 				}
 
 				return dataSourcePoolMetadata;
@@ -113,14 +110,10 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new CommonsDbcp2DataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
-
-					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
-						dbcp2DataSource = DataSourceUnwrapper.unwrap(datasource, BasicDataSourceMXBean.class,
-								org.apache.commons.dbcp2.BasicDataSource.class);
-						Optional.ofNullable(dbcp2DataSource).ifPresent((ds)->dataSourcePoolMetadata.getSlaves()
-								.add(new CommonsDbcp2DataSourcePoolMetadata(ds)));
-					}
+					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
+							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, BasicDataSourceMXBean.class,
+									org.apache.commons.dbcp2.BasicDataSource.class)).filter(Objects::nonNull)
+							.map(CommonsDbcp2DataSourcePoolMetadata::new).collect(Collectors.toList()));
 				}
 
 				return dataSourcePoolMetadata;
@@ -147,14 +140,10 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new DruidDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
-
-					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
-						druidDataSource = DataSourceUnwrapper.unwrap(datasource, DruidDataSourceMBean.class,
-								com.alibaba.druid.pool.DruidDataSource.class);
-						Optional.ofNullable(druidDataSource).ifPresent(
-								(ds)->dataSourcePoolMetadata.getSlaves().add(new DruidDataSourcePoolMetadata(ds)));
-					}
+					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
+							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, DruidDataSourceMBean.class,
+									com.alibaba.druid.pool.DruidDataSource.class)).filter(Objects::nonNull)
+							.map(DruidDataSourcePoolMetadata::new).collect(Collectors.toList()));
 				}
 
 				return dataSourcePoolMetadata;
@@ -181,14 +170,10 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new TomcatDataSourcePoolMetadata(ds)));
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(new ArrayList<>(dataSource.getSlaves().size()));
-
-					for(javax.sql.DataSource datasource : dataSource.getSlaves()){
-						tomcatDataSource = DataSourceUnwrapper.unwrap(datasource, ConnectionPoolMBean.class,
-								org.apache.tomcat.jdbc.pool.DataSource.class);
-						Optional.ofNullable(tomcatDataSource).ifPresent(
-								(ds)->dataSourcePoolMetadata.getSlaves().add(new TomcatDataSourcePoolMetadata(ds)));
-					}
+					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
+							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, ConnectionPoolMBean.class,
+									org.apache.tomcat.jdbc.pool.DataSource.class)).filter(Objects::nonNull)
+							.map(TomcatDataSourcePoolMetadata::new).collect(Collectors.toList()));
 				}
 
 				return dataSourcePoolMetadata;

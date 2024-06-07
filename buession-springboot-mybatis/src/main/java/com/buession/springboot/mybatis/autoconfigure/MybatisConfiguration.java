@@ -156,7 +156,7 @@ public class MybatisConfiguration {
 		sessionFactoryBean.setVfs(SpringBootVFS.class);
 		sessionFactoryBean.setFailFast(properties.getFailFast());
 
-		mapper.from(this.configLocationResource).to(sessionFactoryBean::setConfigLocation);
+		mapper.from(configLocationResource).to(sessionFactoryBean::setConfigLocation);
 
 		applyConfiguration(sessionFactoryBean);
 
