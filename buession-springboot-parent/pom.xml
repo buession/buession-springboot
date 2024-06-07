@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.4.0</version>
+		<version>3.0.0</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://springboot.buession.com/</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>2.4.0</version>
+	<version>3.0.0</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -72,8 +72,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>2.4.0</buession.version>
-		<buession.security.version>2.4.0</buession.security.version>
+		<buession.version>3.0.0</buession.version>
+		<buession.security.version>3.0.0</buession.security.version>
 	</properties>
 
 	<dependencyManagement>

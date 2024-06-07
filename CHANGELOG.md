@@ -2,6 +2,29 @@
 ===========================
 
 
+## [3.0.0](https://github.com/buession/buession-springboot/releases/tag/v3.0.0) (2024-xx-xx)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v3.0.0)
+
+
+### ⭐ 新特性
+
+- **buession-springboot-httpclient：** 新增代理支持
+- **buession-springboot-httpclient：** 新增支持 apache httpcomponents 5
+
+
+### ⏪ 优化
+
+- **buession-springboot-pac4j：** 优化 Pac4jFilter 类
+- **buession-springboot-shiro：** 优化 Shiro Filter 初始化及处理流程
+- **buession-springboot-mybatis：** SqlSessionFactoryBean 初始化速度优化
+
+
+---
+
+
 ## [2.3.3](https://github.com/buession/buession-springboot/releases/tag/v2.3.3) (2024-05-06)
 
 ### 🔨依赖升级
