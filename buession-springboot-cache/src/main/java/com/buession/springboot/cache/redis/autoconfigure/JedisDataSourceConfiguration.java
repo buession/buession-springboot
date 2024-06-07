@@ -24,13 +24,14 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
-import com.buession.redis.RedisTemplate;
+import com.buession.redis.client.connection.datasource.ClusterDataSource;
 import com.buession.redis.client.connection.datasource.DataSource;
-import com.buession.redis.core.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import com.buession.redis.client.connection.datasource.SentinelDataSource;
+import com.buession.redis.client.connection.datasource.StandaloneDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisClusterDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisRedisDataSource;
+import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,40 +39,48 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Redis 自动配置类
+ * Redis 数据源 {@link DataSource} 自动配置类
  *
  * @author Yong.Teng
+ * @see DataSource
+ * @see StandaloneDataSource
+ * @see SentinelDataSource
+ * @see ClusterDataSource
+ * @see JedisRedisDataSource
+ * @see JedisDataSource
+ * @see JedisSentinelDataSource
+ * @see JedisClusterDataSource
+ * @since 3.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
-@ConditionalOnClass({RedisTemplate.class})
-public class RedisConfiguration {
+@ConditionalOnClass(name = "redis.clients.jedis.Jedis")
+@ConditionalOnMissingBean(name = "redisDataSource", value = DataSource.class)
+public class JedisDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
-	private final RedisProperties properties;
-
-	private final static Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
-
-	public RedisConfiguration(RedisProperties properties) {
-		this.properties = properties;
+	public JedisDataSourceConfiguration(RedisProperties properties) {
+		super(properties);
 	}
 
-	@Bean
-	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource) {
-		final RedisTemplate template = new RedisTemplate(dataSource.getIfAvailable());
-		final Options.Builder builder = Options.Builder.getInstance()
-				.prefix(properties.getKeyPrefix())
-				.serializer(properties.getSerializer())
-				.enableTransactionSupport(properties.isEnableTransactionSupport());
+	@Bean(name = "redisDataSource")
+	@Override
+	public DataSource dataSource() {
+		return super.dataSource();
+	}
 
-		template.setOptions(builder.build());
+	@Override
+	protected StandaloneDataSource createStandaloneDataSource() {
+		return createStandaloneDataSource(new JedisDataSource());
+	}
 
-		if(logger.isTraceEnabled()){
-			logger.trace("RedisTemplate bean initialized success.");
-		}
+	@Override
+	protected SentinelDataSource createSentinelDataSource() {
+		return createSentinelDataSource(new JedisSentinelDataSource());
+	}
 
-		return template;
+	@Override
+	protected ClusterDataSource createClusterDataSource() {
+		return createClusterDataSource(new JedisClusterDataSource());
 	}
 
 }
