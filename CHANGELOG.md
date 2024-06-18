@@ -11,22 +11,24 @@
 
 ### ⭐ 新特性
 
-- **buession-springboot-httpclient：** 新增代理支持
-- **buession-springboot-httpclient：** 新增支持 apache httpcomponents 5
+- httpclient 新增代理支持
+- httpclient 新增支持 apache httpcomponents 5
+- buession-springboot-cache 新增支持 lettuce 支持
 
 
 ### 🔔 变化
 
-- **buession-springboot-canal：** 迁移至 com.buession.canal:buession-canal-springboot
-- **buession-springboot-cache：** 拆分 DataSource AutoConfiguration 类为 JedisDataSourceConfiguration 和 LettuceDataSourceConfiguration
-- **buession-springboot-httpclient：** 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
+- buession-springboot-canal 迁移至 com.buession.canal:buession-canal-springboot
+- 拆分 cache DataSource AutoConfiguration 类为 JedisDataSourceConfiguration 和 LettuceDataSourceConfiguration
+- 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
+
+
+### 🐞 Bug 修复
+
+- JDBC 修复连接池配置不生效的问题
 
 
 ### ⏪ 优化
-
-- **buession-springboot-pac4j：** 优化 Pac4jFilter 类
-- **buession-springboot-shiro：** 优化 Shiro Filter 初始化及处理流程
-- **buession-springboot-mybatis：** SqlSessionFactoryBean 初始化速度优化
 
 
 ---

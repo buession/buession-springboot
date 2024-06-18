@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
@@ -34,95 +33,45 @@ import org.springframework.boot.jdbc.DatabaseDriver;
  */
 class DataSources {
 
-	protected static <T extends javax.sql.DataSource> T createDataSource(final DataSourceProperties properties,
-																		 final Class<T> type) {
-		return properties.initializeDataSourceBuilder().type(type).build();
-	}
-
 	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource {
-
-		private final DataSourceProperties properties;
 
 		public HikariDataSource(final DataSourceProperties properties) {
 			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
 					properties.determinePassword());
-			this.properties = properties;
-		}
-
-		@Override
-		public com.zaxxer.hikari.HikariDataSource createDataSource() {
-			final com.zaxxer.hikari.HikariDataSource dataSource = DataSources.createDataSource(properties,
-					com.zaxxer.hikari.HikariDataSource.class);
-
-			initialize(dataSource);
-
-			return dataSource;
 		}
 
 	}
 
 	public final static class Dbcp2DataSource extends com.buession.jdbc.datasource.Dbcp2DataSource {
 
-		private final DataSourceProperties properties;
-
 		public Dbcp2DataSource(final DataSourceProperties properties) {
 			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
 					properties.determinePassword());
-			this.properties = properties;
-		}
-
-		@Override
-		public BasicDataSource createDataSource() {
-			final BasicDataSource dataSource = DataSources.createDataSource(properties,
-					org.apache.commons.dbcp2.BasicDataSource.class);
-
-			initialize(dataSource);
-
-			return dataSource;
 		}
 
 	}
 
 	public final static class DruidDataSource extends com.buession.jdbc.datasource.DruidDataSource {
 
-		private final DataSourceProperties properties;
-
 		public DruidDataSource(final DataSourceProperties properties) {
 			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
 					properties.determinePassword());
-			this.properties = properties;
-		}
-
-		@Override
-		public com.alibaba.druid.pool.DruidDataSource createDataSource() {
-			final com.alibaba.druid.pool.DruidDataSource dataSource = DataSources.createDataSource(properties,
-					com.alibaba.druid.pool.DruidDataSource.class);
-
-			initialize(dataSource);
-
-			return dataSource;
 		}
 
 	}
 
 	public final static class TomcatDataSource extends com.buession.jdbc.datasource.TomcatDataSource {
 
-		private final DataSourceProperties properties;
-
 		public TomcatDataSource(final DataSourceProperties properties) {
 			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
 					properties.determinePassword());
-			this.properties = properties;
 		}
 
 		@Override
 		public org.apache.tomcat.jdbc.pool.DataSource createDataSource() {
-			final org.apache.tomcat.jdbc.pool.DataSource dataSource = DataSources.createDataSource(properties,
-					org.apache.tomcat.jdbc.pool.DataSource.class);
+			final org.apache.tomcat.jdbc.pool.DataSource dataSource = super.createDataSource();
 
-			initialize(dataSource);
-
-			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(getUrl());
 			String validationQuery = databaseDriver.getValidationQuery();
 
 			if(validationQuery != null){
@@ -137,21 +86,9 @@ class DataSources {
 
 	public final static class GenericDataSource extends com.buession.jdbc.datasource.GenericDataSource {
 
-		private final DataSourceProperties properties;
-
 		public GenericDataSource(final DataSourceProperties properties) {
 			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
 					properties.determinePassword());
-			this.properties = properties;
-		}
-
-		@Override
-		public javax.sql.DataSource createDataSource() {
-			final javax.sql.DataSource dataSource = DataSources.createDataSource(properties, null);
-
-			initialize(dataSource);
-
-			return dataSource;
 		}
 
 	}
