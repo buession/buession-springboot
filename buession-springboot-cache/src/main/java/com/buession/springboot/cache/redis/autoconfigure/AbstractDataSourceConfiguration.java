@@ -36,7 +36,6 @@ import com.buession.springboot.cache.redis.utils.RedisNodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.context.annotation.Bean;
 
 import java.text.ParseException;
 import java.util.List;
@@ -54,8 +53,9 @@ public abstract class AbstractDataSourceConfiguration {
 	public AbstractDataSourceConfiguration(RedisProperties properties) {
 		this.properties = properties;
 	}
-	
+
 	public DataSource dataSource() {
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		DataSource dataSource;
 
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
@@ -66,29 +66,21 @@ public abstract class AbstractDataSourceConfiguration {
 			dataSource = createStandaloneDataSource();
 		}
 
-		afterInitialized(dataSource);
+		// 处理全局通用属性赋值
+		propertyMapper.alwaysApplyingWhenHasText().from(properties.getClientName()).to(dataSource::setClientName);
+		propertyMapper.from(properties.getConnectTimeout()).as((v)->(int) v.toMillis())
+				.to(dataSource::setConnectTimeout);
+		propertyMapper.from(properties.getSoTimeout()).as((v)->(int) v.toMillis()).to(dataSource::setSoTimeout);
+		propertyMapper.from(properties.getInfiniteSoTimeout()).as((v)->(int) v.toMillis())
+				.to(dataSource::setInfiniteSoTimeout);
+		propertyMapper.from(properties.getPool()).to(dataSource::setPoolConfig);
+
+		if(logger.isInfoEnabled()){
+			logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
+					dataSource.getPoolConfig() == null ? "without" : "with");
+		}
 
 		return dataSource;
-	}
-
-	protected void afterInitialized(final DataSource dataSource) {
-		if(dataSource == null){
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-			// 处理全局通用属性赋值
-			propertyMapper.alwaysApplyingWhenHasText().from(properties.getClientName()).to(dataSource::setClientName);
-			propertyMapper.from(properties.getConnectTimeout()).as((v)->(int) v.toMillis())
-					.to(dataSource::setConnectTimeout);
-			propertyMapper.from(properties.getSoTimeout()).as((v)->(int) v.toMillis()).to(dataSource::setSoTimeout);
-			propertyMapper.from(properties.getInfiniteSoTimeout()).as((v)->(int) v.toMillis())
-					.to(dataSource::setInfiniteSoTimeout);
-			propertyMapper.from(properties.getPool()).to(dataSource::setPoolConfig);
-
-			if(logger.isInfoEnabled()){
-				logger.info("Initialized {} {} pool", dataSource.getClass().getName(),
-						dataSource.getPoolConfig() == null ? "without" : "with");
-			}
-		}
 	}
 
 	protected StandaloneDataSource createStandaloneDataSource(final StandaloneDataSource dataSource) {
