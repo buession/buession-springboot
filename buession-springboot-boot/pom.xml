@@ -82,6 +82,8 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure-processor</artifactId>
+			<version>${springframework.boot.version}</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -207,6 +209,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-spring-boot</artifactId>
+			<version>${apache.logging.log4j.version}</version>
 		</dependency>
 
 		<dependency>
