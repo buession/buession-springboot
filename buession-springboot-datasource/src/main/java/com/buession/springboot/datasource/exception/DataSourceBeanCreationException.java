@@ -21,10 +21,40 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.exception;/**
- * 
+ */
+package com.buession.springboot.datasource.exception;
+
+import com.buession.springboot.datasource.core.DataSourceConfig;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+
+/**
+ * 数据源初始化异常
  *
  * @author Yong.Teng
  * @since 3.0.0
- */public class DataSourceBeanCreationException {
+ */
+public class DataSourceBeanCreationException extends BeanCreationException {
+
+	private final static long serialVersionUID = -2201475744925829392L;
+
+	private final DataSourceConfig dataSourceConfig;
+
+	private final EmbeddedDatabaseConnection connection;
+
+	public DataSourceBeanCreationException(DataSourceConfig dataSourceConfig,
+										   EmbeddedDatabaseConnection connection, String message) {
+		super(message);
+		this.dataSourceConfig = dataSourceConfig;
+		this.connection = connection;
+	}
+
+	public DataSourceConfig getDataSourceConfig() {
+		return dataSourceConfig;
+	}
+
+	public EmbeddedDatabaseConnection getConnection() {
+		return connection;
+	}
+
 }

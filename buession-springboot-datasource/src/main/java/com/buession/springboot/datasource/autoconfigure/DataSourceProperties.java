@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -29,6 +29,7 @@ import com.buession.jdbc.datasource.config.DruidPoolConfiguration;
 import com.buession.jdbc.datasource.config.GenericPoolConfiguration;
 import com.buession.jdbc.datasource.config.HikariPoolConfiguration;
 import com.buession.jdbc.datasource.config.TomcatPoolConfiguration;
+import com.buession.springboot.datasource.core.DataSourceConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -63,53 +64,48 @@ public class DataSourceProperties {
 	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
 	 */
 	@NestedConfigurationProperty
-	private org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master = new org.springframework.boot.autoconfigure.jdbc.DataSourceProperties();
+	private DataSourceConfig master = new DataSourceConfig();
 
 	/**
 	 * Slaves 配置
-	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
+	 * {@link DataSourceConfig}
 	 */
-	private List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves = new ArrayList<>();
+	private List<DataSourceConfig> slaves = new ArrayList<>();
 
 	/**
 	 * Hikari 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	@NestedConfigurationProperty
-	private HikariPoolConfiguration hikari = new HikariPoolConfiguration();
+	private HikariPoolConfiguration hikari;
 
 	/**
 	 * Dbcp2 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	@NestedConfigurationProperty
-	private Dbcp2PoolConfiguration dbcp2 = new Dbcp2PoolConfiguration();
+	private Dbcp2PoolConfiguration dbcp2;
 
 	/**
 	 * Druid 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	@NestedConfigurationProperty
-	private DruidPoolConfiguration druid = new DruidPoolConfiguration();
+	private DruidPoolConfiguration druid;
 
 	/**
 	 * Tomcat 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	@NestedConfigurationProperty
-	private TomcatPoolConfiguration tomcat = new TomcatPoolConfiguration();
+	private TomcatPoolConfiguration tomcat;
 
 	/**
 	 * Generic 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	@NestedConfigurationProperty
-	private GenericPoolConfiguration generic = new GenericPoolConfiguration();
+	private GenericPoolConfiguration generic;
 
 	@Deprecated
 	public Class<? extends DataSource> getType() {
@@ -145,7 +141,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Master 配置
 	 */
-	public org.springframework.boot.autoconfigure.jdbc.DataSourceProperties getMaster() {
+	public DataSourceConfig getMaster() {
 		return master;
 	}
 
@@ -155,7 +151,7 @@ public class DataSourceProperties {
 	 * @param master
 	 * 		Master 配置
 	 */
-	public void setMaster(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties master) {
+	public void setMaster(DataSourceConfig master) {
 		this.master = master;
 	}
 
@@ -164,7 +160,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Slaves 配置
 	 */
-	public List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> getSlaves() {
+	public List<DataSourceConfig> getSlaves() {
 		return slaves;
 	}
 
@@ -174,7 +170,7 @@ public class DataSourceProperties {
 	 * @param slaves
 	 * 		Slaves 配置
 	 */
-	public void setSlaves(List<org.springframework.boot.autoconfigure.jdbc.DataSourceProperties> slaves) {
+	public void setSlaves(List<DataSourceConfig> slaves) {
 		this.slaves = slaves;
 	}
 

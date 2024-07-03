@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import com.buession.springboot.datasource.core.DataSourceConfig;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 /**
@@ -35,36 +35,36 @@ class DataSources {
 
 	public final static class HikariDataSource extends com.buession.jdbc.datasource.HikariDataSource {
 
-		public HikariDataSource(final DataSourceProperties properties) {
-			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
-					properties.determinePassword());
+		public HikariDataSource(final DataSourceConfig dataSourceConfig) {
+			super(dataSourceConfig.determineDriverClassName(), dataSourceConfig.determineUrl(),
+					dataSourceConfig.determineUsername(), dataSourceConfig.determinePassword());
 		}
 
 	}
 
 	public final static class Dbcp2DataSource extends com.buession.jdbc.datasource.Dbcp2DataSource {
 
-		public Dbcp2DataSource(final DataSourceProperties properties) {
-			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
-					properties.determinePassword());
+		public Dbcp2DataSource(final DataSourceConfig dataSourceConfig) {
+			super(dataSourceConfig.determineDriverClassName(), dataSourceConfig.determineUrl(),
+					dataSourceConfig.determineUsername(), dataSourceConfig.determinePassword());
 		}
 
 	}
 
 	public final static class DruidDataSource extends com.buession.jdbc.datasource.DruidDataSource {
 
-		public DruidDataSource(final DataSourceProperties properties) {
-			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
-					properties.determinePassword());
+		public DruidDataSource(final DataSourceConfig dataSourceConfig) {
+			super(dataSourceConfig.determineDriverClassName(), dataSourceConfig.determineUrl(),
+					dataSourceConfig.determineUsername(), dataSourceConfig.determinePassword());
 		}
 
 	}
 
 	public final static class TomcatDataSource extends com.buession.jdbc.datasource.TomcatDataSource {
 
-		public TomcatDataSource(final DataSourceProperties properties) {
-			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
-					properties.determinePassword());
+		public TomcatDataSource(final DataSourceConfig dataSourceConfig) {
+			super(dataSourceConfig.determineDriverClassName(), dataSourceConfig.determineUrl(),
+					dataSourceConfig.determineUsername(), dataSourceConfig.determinePassword());
 		}
 
 		@Override
@@ -86,9 +86,9 @@ class DataSources {
 
 	public final static class GenericDataSource extends com.buession.jdbc.datasource.GenericDataSource {
 
-		public GenericDataSource(final DataSourceProperties properties) {
-			super(properties.determineDriverClassName(), properties.determineUrl(), properties.determineUsername(),
-					properties.determinePassword());
+		public GenericDataSource(final DataSourceConfig dataSourceConfig) {
+			super(dataSourceConfig.determineDriverClassName(), dataSourceConfig.determineUrl(),
+					dataSourceConfig.determineUsername(), dataSourceConfig.determinePassword());
 		}
 
 	}

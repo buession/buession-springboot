@@ -28,6 +28,7 @@ import com.buession.core.builder.ListBuilder;
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.datasource.config.PoolConfiguration;
 import com.buession.springboot.datasource.core.DataSource;
+import com.buession.springboot.datasource.core.DataSourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -90,11 +91,10 @@ class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfig
 		return dataSource;
 	}
 
-	private T createDataSource(final org.springframework.boot.autoconfigure.jdbc.DataSourceProperties properties) {
+	private T createDataSource(final DataSourceConfig dataSourceConfig) {
 		try{
-			final Constructor<D> constructor = type.getConstructor(
-					org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.class);
-			final D instance = BeanUtils.instantiateClass(constructor, properties);
+			final Constructor<D> constructor = type.getConstructor(DataSourceConfig.class);
+			final D instance = BeanUtils.instantiateClass(constructor, dataSourceConfig);
 
 			instance.setPoolConfiguration(poolConfiguration);
 
