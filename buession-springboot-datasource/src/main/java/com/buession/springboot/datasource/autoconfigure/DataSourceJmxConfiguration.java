@@ -24,9 +24,9 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.jdbc.datasource.DruidDataSource;
-import com.buession.jdbc.datasource.HikariDataSource;
+import com.alibaba.druid.pool.DruidDataSource;
 import com.buession.springboot.datasource.core.DataSourceType;
+import com.zaxxer.hikari.HikariDataSource;
 import oracle.ucp.jdbc.PoolDataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

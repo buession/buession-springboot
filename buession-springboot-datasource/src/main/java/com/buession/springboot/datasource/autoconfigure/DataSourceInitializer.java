@@ -27,7 +27,7 @@ package com.buession.springboot.datasource.autoconfigure;
 import com.buession.core.Customizer;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.pool.PoolConfiguration;
-import com.buession.springboot.datasource.core.BaseDataSourceConfig;
+import com.buession.springboot.datasource.config.BaseDataSourceConfig;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 

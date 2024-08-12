@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.datasource.core;
+package com.buession.springboot.datasource.config;

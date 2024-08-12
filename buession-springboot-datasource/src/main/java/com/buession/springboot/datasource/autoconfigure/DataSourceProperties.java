@@ -27,7 +27,7 @@ package com.buession.springboot.datasource.autoconfigure;
 import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.lang.Constants;
-import com.buession.springboot.datasource.core.*;
+import com.buession.springboot.datasource.config.TomcatDataSourceConfig;
 import com.buession.springboot.datasource.exception.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;

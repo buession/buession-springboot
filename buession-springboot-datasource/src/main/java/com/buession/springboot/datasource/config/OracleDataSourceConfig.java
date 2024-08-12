@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.core;
+package com.buession.springboot.datasource.config;
 
 import java.time.Duration;
 import java.util.Properties;

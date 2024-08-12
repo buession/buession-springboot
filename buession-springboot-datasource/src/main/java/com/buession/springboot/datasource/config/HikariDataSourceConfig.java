@@ -22,14 +22,12 @@
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.core;
+package com.buession.springboot.datasource.config;
 
 import com.zaxxer.hikari.metrics.MetricsTrackerFactory;
 
 import java.time.Duration;
 import java.util.Properties;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Hikari 数据源配置
