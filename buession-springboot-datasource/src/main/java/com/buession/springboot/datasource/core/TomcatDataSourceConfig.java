@@ -19,88 +19,17 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.core;
 
-import java.io.Serializable;
-import java.util.List;
-
 /**
- * 主从数据源
+ * Oracle 数据源配置
  *
  * @author Yong.Teng
+ * @since 3.0.0
  */
-public class DataSource implements Serializable {
-
-	private final static long serialVersionUID = 1181748178611062130L;
-
-	/**
-	 * Master 库数据源
-	 */
-	private javax.sql.DataSource master;
-
-	/**
-	 * Slave 库数据源列表
-	 */
-	private List<javax.sql.DataSource> slaves;
-
-	/**
-	 * 构造函数
-	 */
-	public DataSource() {
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param master
-	 * 		Master 库数据源
-	 * @param slaves
-	 * 		Slave 库数据源列表
-	 */
-	public DataSource(final javax.sql.DataSource master, final List<javax.sql.DataSource> slaves) {
-		this.master = master;
-		this.slaves = slaves;
-	}
-
-	/**
-	 * 返回 Master 库数据源
-	 *
-	 * @return Master 库数据源
-	 */
-	public javax.sql.DataSource getMaster() {
-		return master;
-	}
-
-	/**
-	 * 设置 Master 库数据源
-	 *
-	 * @param master
-	 * 		Master 库数据源
-	 */
-	public void setMaster(javax.sql.DataSource master) {
-		this.master = master;
-	}
-
-	/**
-	 * 返回 Slave 库数据源列表
-	 *
-	 * @return Slave 库数据源列表
-	 */
-	public List<javax.sql.DataSource> getSlaves() {
-		return slaves;
-	}
-
-	/**
-	 * 设置 Slave 库数据源列表
-	 *
-	 * @param slaves
-	 * 		Slave 库数据源列表
-	 */
-	public void setSlaves(List<javax.sql.DataSource> slaves) {
-		this.slaves = slaves;
-	}
+public class OracleDataSourceConfig extends BaseDataSourceConfig {
 
 }

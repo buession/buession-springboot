@@ -19,68 +19,17 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.metadata;
-
-import java.util.List;
+package com.buession.springboot.datasource.core;
 
 /**
- * Provides access meta-data that is commonly available from most pooled
- * {@link javax.sql.DataSource} implementations.
+ * Tomcat 数据源配置
  *
  * @author Yong.Teng
- * @since 1.3.2
+ * @since 3.0.0
  */
-public class DataSourcePoolMetadata {
-
-	/**
-	 * Master 库连接池 Metadata
-	 */
-	private org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata master;
-
-	/**
-	 * Slave 库连接池 Metadata
-	 */
-	private List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> slaves;
-
-	/**
-	 * 获取 Master 库连接池 Metadata
-	 *
-	 * @return Master 库连接池 Metadata
-	 */
-	public org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata getMaster(){
-		return master;
-	}
-
-	/**
-	 * 设置 Master 库连接池 Metadata
-	 *
-	 * @param master
-	 * 		Master 库连接池 Metadata
-	 */
-	public void setMaster(org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata master){
-		this.master = master;
-	}
-
-	/**
-	 * 获取 Slave 库连接池 Metadata
-	 *
-	 * @return Slave 库连接池 Metadata
-	 */
-	public List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> getSlaves(){
-		return slaves;
-	}
-
-	/**
-	 * 设置 Slave 库连接池 Metadata
-	 *
-	 * @param slaves
-	 * 		Slave 库连接池 Metadata
-	 */
-	public void setSlaves(List<org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata> slaves){
-		this.slaves = slaves;
-	}
+public class TomcatDataSourceConfig extends BaseDataSourceConfig {
 
 }

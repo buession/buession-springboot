@@ -19,39 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.springboot.datasource.autoconfigure;
-
-import com.buession.springboot.datasource.core.DataSource;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-
-/**
+ */package com.buession.springboot.datasource.core;/**
+ * 
+ *
  * @author Yong.Teng
- */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnBean({DataSourceConfiguration.class, DataSource.class})
-@Import({DataSourceConfiguration.class})
-public class DataSourceTransactionConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public DataSourceTransactionManager transactionManager(ObjectProvider<DataSource> dataSource,
-														   ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers){
-		final DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
-				dataSource.getIfAvailable().getMaster());
-
-		transactionManagerCustomizers.ifAvailable((customizers)->customizers.customize(transactionManager));
-
-		return transactionManager;
-	}
-
+ * @since 3.0.0
+ */public class HikariDataSourceConfig {
 }

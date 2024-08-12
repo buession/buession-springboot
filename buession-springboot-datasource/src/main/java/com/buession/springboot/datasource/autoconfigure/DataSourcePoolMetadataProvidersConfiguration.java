@@ -25,6 +25,7 @@
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.alibaba.druid.pool.DruidDataSourceMBean;
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.datasource.Dbcp2DataSource;
 import com.buession.jdbc.datasource.DruidDataSource;
@@ -45,7 +46,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +58,8 @@ import java.util.stream.Collectors;
 public class DataSourcePoolMetadataProvidersConfiguration {
 
 	abstract static class AbstractPoolDataSourceMetadataProviderConfiguration<PMP extends DataSourcePoolMetadataProvider<?>> {
+
+		protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
 		abstract PMP poolDataSourceMetadataProvider();
 
@@ -76,8 +78,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(),
 						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
 
-				Optional.ofNullable(hikariDataSource)
-						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new HikariDataSourcePoolMetadata(ds)));
+				propertyMapper.from(hikariDataSource).as(HikariDataSourcePoolMetadata::new)
+						.to(dataSourcePoolMetadata::setMaster);
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
@@ -106,8 +108,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), BasicDataSourceMXBean.class,
 						org.apache.commons.dbcp2.BasicDataSource.class);
 
-				Optional.ofNullable(dbcp2DataSource)
-						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new CommonsDbcp2DataSourcePoolMetadata(ds)));
+				propertyMapper.from(dbcp2DataSource).as(CommonsDbcp2DataSourcePoolMetadata::new)
+						.to(dataSourcePoolMetadata::setMaster);
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
@@ -136,8 +138,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), DruidDataSourceMBean.class,
 						com.alibaba.druid.pool.DruidDataSource.class);
 
-				Optional.ofNullable(druidDataSource)
-						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new DruidDataSourcePoolMetadata(ds)));
+				propertyMapper.from(druidDataSource).as(DruidDataSourcePoolMetadata::new)
+						.to(dataSourcePoolMetadata::setMaster);
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
@@ -166,8 +168,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 						dataSource.getMaster(), ConnectionPoolMBean.class,
 						org.apache.tomcat.jdbc.pool.DataSource.class);
 
-				Optional.ofNullable(tomcatDataSource)
-						.ifPresent((ds)->dataSourcePoolMetadata.setMaster(new TomcatDataSourcePoolMetadata(ds)));
+				propertyMapper.from(tomcatDataSource).as(TomcatDataSourcePoolMetadata::new)
+						.to(dataSourcePoolMetadata::setMaster);
 
 				if(Validate.isNotEmpty(dataSource.getSlaves())){
 					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()

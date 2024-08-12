@@ -19,30 +19,25 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2021 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.session.autoconfigure;
-
-import com.buession.redis.RedisTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+package com.buession.springboot.datasource.core;
 
 /**
  * @author Yong.Teng
+ * @since 3.0.0
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnWebApplication
-@Deprecated
-public class SessionConfiguration {
+public class DataSources {
 
-	@Configuration
-	@EnableRedisHttpSession
-	@ConditionalOnBean({RedisTemplate.class})
-	public static class RedisSessionConfiguration extends SessionConfiguration {
+	String DHCP2 = "org.apache.commons.dbcp2.BasicDataSource";
 
-	}
+	String DRUID = "com.alibaba.druid.pool.DruidDataSource";
+
+	String HIKARI = "com.zaxxer.hikari.HikariDataSource";
+
+	String ORACLE = "oracle.ucp.jdbc.PoolDataSource";
+
+	String TOMCAT = "org.apache.tomcat.jdbc.pool.DataSource";
 
 }

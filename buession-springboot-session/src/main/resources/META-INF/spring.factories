@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.session.autoconfigure.SessionConfiguration.RedisSessionConfiguration

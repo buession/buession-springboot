@@ -19,47 +19,15 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.pac4j.core;
+package com.buession.springboot.datasource.core;
 
 /**
  * @author Yong.Teng
- * @since 2.0.1
+ * @since 3.0.0
  */
-@Deprecated
-public enum EncryptionMethod {
-	A128CBC_HS256(com.nimbusds.jose.EncryptionMethod.A128CBC_HS256.getName(),
-			com.nimbusds.jose.EncryptionMethod.A128CBC_HS256),
-
-	A192CBC_HS384(com.nimbusds.jose.EncryptionMethod.A192CBC_HS384.getName(),
-			com.nimbusds.jose.EncryptionMethod.A192CBC_HS384),
-
-	A256CBC_HS512(com.nimbusds.jose.EncryptionMethod.A256CBC_HS512.getName(),
-			com.nimbusds.jose.EncryptionMethod.A256CBC_HS512),
-
-	A128GCM(com.nimbusds.jose.EncryptionMethod.A128GCM.getName(), com.nimbusds.jose.EncryptionMethod.A128GCM),
-
-	A192GCM(com.nimbusds.jose.EncryptionMethod.A192GCM.getName(), com.nimbusds.jose.EncryptionMethod.A192GCM),
-
-	A256GCM(com.nimbusds.jose.EncryptionMethod.A256GCM.getName(), com.nimbusds.jose.EncryptionMethod.A256GCM);
-
-	private final String name;
-
-	private final com.nimbusds.jose.EncryptionMethod source;
-
-	EncryptionMethod(final String name, final com.nimbusds.jose.EncryptionMethod source){
-		this.name = name;
-		this.source = source;
-	}
-
-	public String getName(){
-		return name;
-	}
-
-	public com.nimbusds.jose.EncryptionMethod getSource(){
-		return source;
-	}
+public class DataSourceConfig {
 
 }
