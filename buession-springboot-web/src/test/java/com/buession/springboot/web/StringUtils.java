@@ -26,15 +26,14 @@ package com.buession.springboot.web;
 
 import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.ServerProperties;
-import org.junit.Test;
 
 /**
  * @author Yong.Teng
  */
 public class StringUtils {
 
-	@Test
-	public void substr(){
+	//@Test
+	public void substr() {
 		ServerProperties serverProperties = new ServerProperties();
 		String str = "liangvi-web-s-6fb77bc686-qsnj4";
 
@@ -47,7 +46,7 @@ public class StringUtils {
 		System.out.println(buildServerInfo(serverProperties, str));
 	}
 
-	private final static String buildServerInfo(final ServerProperties serverProperties, final String serverName){
+	private static String buildServerInfo(final ServerProperties serverProperties, final String serverName) {
 		String s = serverName;
 		StringBuffer sb = new StringBuffer();
 
@@ -55,11 +54,13 @@ public class StringUtils {
 			sb.append(serverProperties.getServerInfoPrefix());
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) && s.startsWith(serverProperties.getStripServerInfoPrefix())){
+		if(Validate.hasText(serverProperties.getStripServerInfoPrefix()) &&
+				s.startsWith(serverProperties.getStripServerInfoPrefix())){
 			s = s.substring(serverProperties.getStripServerInfoPrefix().length());
 		}
 
-		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) && s.endsWith(serverProperties.getStripServerInfoSuffix())){
+		if(Validate.hasText(serverProperties.getStripServerInfoSuffix()) &&
+				s.endsWith(serverProperties.getStripServerInfoSuffix())){
 			s = s.substring(0, s.length() - serverProperties.getStripServerInfoSuffix().length());
 		}
 

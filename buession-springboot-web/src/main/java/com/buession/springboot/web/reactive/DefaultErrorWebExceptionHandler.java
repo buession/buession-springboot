@@ -19,38 +19,30 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive;
 
-import com.buession.core.validator.Validate;
 import com.buession.web.reactive.ErrorWebExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.server.RequestPredicate;
-import org.springframework.web.reactive.function.server.RequestPredicates;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.MediaTypeNotSupportedStatusException;
@@ -62,9 +54,8 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,31 +63,42 @@ import java.util.Set;
 /**
  * @author Yong.Teng
  */
-public abstract class AbstractErrorWebExceptionHandler
-		extends org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
+public class DefaultErrorWebExceptionHandler
+		extends org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorWebExceptionHandler
 		implements ErrorWebExceptionHandler {
 
-	protected final ErrorProperties errorProperties;
+	protected final static MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
 
-	protected final ErrorAttributes errorAttributes;
+	private final ErrorProperties errorProperties;
 
-	protected String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
+	private String cacheControl = CACHE_CONTROL;
 
-	protected String cacheControl = CACHE_CONTROL;
-
-	protected Map<HttpStatus, String> errorViews;
+	private String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
 
 	protected Map<Exception, String> exceptionViews;
 
-	private final static Logger logger = LoggerFactory.getLogger(AbstractErrorWebExceptionHandler.class);
+	private final static Logger logger = LoggerFactory.getLogger(DefaultErrorWebExceptionHandler.class);
 
 	private final static Logger pageNotFoundLogger = LoggerFactory.getLogger(PAGE_NOT_FOUND_LOG_CATEGORY);
 
-	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
-											ErrorProperties errorProperties, ApplicationContext applicationContext) {
-		super(errorAttributes, resourceProperties, applicationContext);
+	/**
+	 * 构造函数
+	 *
+	 * @param errorAttributes
+	 * 		The error attributes
+	 * @param resources
+	 * 		The resources configuration properties
+	 * @param errorProperties
+	 * 		the error configuration properties
+	 * @param applicationContext
+	 * 		The application context
+	 *
+	 * @since 3.0.0
+	 */
+	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties.Resources resources,
+										   ErrorProperties errorProperties, ApplicationContext applicationContext) {
+		super(errorAttributes, resources, errorProperties, applicationContext);
 		this.errorProperties = errorProperties;
-		this.errorAttributes = errorAttributes;
 	}
 
 	public String getCacheControl() {
@@ -107,12 +109,12 @@ public abstract class AbstractErrorWebExceptionHandler
 		this.cacheControl = cacheControl;
 	}
 
-	public Map<HttpStatus, String> getErrorViews() {
-		return errorViews;
+	public String getExceptionAttribute() {
+		return exceptionAttribute;
 	}
 
-	public void setErrorViews(Map<HttpStatus, String> errorViews) {
-		this.errorViews = errorViews;
+	public void setExceptionAttribute(String exceptionAttribute) {
+		this.exceptionAttribute = exceptionAttribute;
 	}
 
 	public Map<Exception, String> getExceptionViews() {
@@ -123,59 +125,69 @@ public abstract class AbstractErrorWebExceptionHandler
 		this.exceptionViews = exceptionViews;
 	}
 
+	protected Exception getException(Map<String, Object> errorAttributes) {
+		return errorAttributes.containsKey("exception") ? (Exception) errorAttributes.get("exception") : null;
+	}
+
 	@Override
-	protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
-		return RouterFunctions.route(this.acceptJson(), this::renderErrorJsonView).andRoute(RequestPredicates.all(),
-				this::renderErrorHtmlView);
+	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
+		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML));
+		int errorStatus = getHttpStatus(error);
+		Throwable throwable = getError(request);
+
+		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
+
+		return Flux.just(getViews(errorStatus, throwable).toArray(new String[]{}))
+				.flatMap((viewName)->renderErrorView(viewName, responseBody, error))
+				.switchIfEmpty(errorProperties.getWhitelabel().isEnabled()
+						? renderDefaultErrorView(responseBody, error) : Mono.error(throwable))
+				.next();
 	}
 
-	protected Map<String, Object> doSpecialResolveException(final ServerRequest request, final Throwable throwable) {
-		return null;
-	}
+	@Override
+	protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		Map<String, Object> error = super.getErrorAttributes(request, ErrorAttributeOptions.defaults());
+		Throwable throwable = getError(request);
 
-	protected Map<String, Object> doDefaultResolveException(final ServerRequest request, final Throwable throwable) {
-		return null;
-	}
-
-	protected Map<String, Object> doResolveException(final ServerRequest request, final ServerResponse response,
-													 final Throwable throwable) {
 		try{
+			final ServerResponse response = null;
+
 			if(throwable instanceof MethodArgumentNotValidException){
-				return handleMethodArgumentNotValidException(request, response,
+				handleMethodArgumentNotValidException(request, response, error,
 						(MethodArgumentNotValidException) throwable);
 			}else if(throwable instanceof BindException){
-				return handleBindException(request, response, (BindException) throwable);
+				handleBindException(request, response, error, (BindException) throwable);
 			}else if(throwable instanceof WebExchangeBindException){
-				return handleWebExchangeBindException(request, response, (WebExchangeBindException) throwable);
+				handleWebExchangeBindException(request, response, error, (WebExchangeBindException) throwable);
 			}else if(throwable instanceof ServerWebInputException){
-				return handleServerWebInputException(request, response, (ServerWebInputException) throwable);
+				handleServerWebInputException(request, response, error, (ServerWebInputException) throwable);
 			}else if(throwable instanceof TypeMismatchException){
-				return handleTypeMismatchException(request, response, (TypeMismatchException) throwable);
+				handleTypeMismatchException(request, response, error, (TypeMismatchException) throwable);
 			}else if(throwable instanceof HttpMessageNotReadableException){
-				return handleHttpMessageNotReadableException(request, response,
+				handleHttpMessageNotReadableException(request, response, error,
 						(HttpMessageNotReadableException) throwable);
 			}else if(throwable instanceof MethodNotAllowedException){
-				return handleMethodNotAllowedException(request, response, (MethodNotAllowedException) throwable);
+				handleMethodNotAllowedException(request, response, error, (MethodNotAllowedException) throwable);
 			}else if(throwable instanceof NotAcceptableStatusException){
-				return handleNotAcceptableException(request, response, (NotAcceptableStatusException) throwable);
+				handleNotAcceptableException(request, response, error, (NotAcceptableStatusException) throwable);
 			}else if(throwable instanceof MediaTypeNotSupportedStatusException){
-				return handleMediaTypeNotSupportedException(request, response,
+				handleMediaTypeNotSupportedException(request, response, error,
 						(MediaTypeNotSupportedStatusException) throwable);
 			}else if(throwable instanceof UnsupportedMediaTypeStatusException){
-				return handleUnsupportedMediaTypeException(request, response,
+				handleUnsupportedMediaTypeException(request, response, error,
 						(UnsupportedMediaTypeStatusException) throwable);
 				//}else if(throwable instanceof MissingPathVariableException){
-				//return handleMissingPathVariable(request, response, (MissingPathVariableException) throwable);
+				//handleMissingPathVariable(request, response, error, (MissingPathVariableException) throwable);
 			}else if(throwable instanceof ConversionNotSupportedException){
-				return handleConversionNotSupportedException(request, response,
+				handleConversionNotSupportedException(request, response, error,
 						(ConversionNotSupportedException) throwable);
 			}else if(throwable instanceof HttpMessageNotWritableException){
-				return handleHttpMessageNotWritableException(request, response,
+				handleHttpMessageNotWritableException(request, response, error,
 						(HttpMessageNotWritableException) throwable);
 			}else if(throwable instanceof ResponseStatusException){
-				return handleResponseStatusException(request, response, (ResponseStatusException) throwable);
+				handleResponseStatusException(request, response, error, (ResponseStatusException) throwable);
 			}else if(throwable instanceof AsyncRequestTimeoutException){
-				return handleAsyncRequestTimeoutException(request, response, (AsyncRequestTimeoutException) throwable);
+				handleAsyncRequestTimeoutException(request, response, error, (AsyncRequestTimeoutException) throwable);
 			}
 		}catch(Exception handlerEx){
 			if(logger.isWarnEnabled()){
@@ -184,7 +196,9 @@ public abstract class AbstractErrorWebExceptionHandler
 			}
 		}
 
-		return doDefaultResolveException(request, throwable);
+		error.put("code", getHttpStatus(error));
+
+		return error;
 	}
 
 	/**
@@ -194,6 +208,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link MethodArgumentNotValidException}
 	 *
@@ -201,8 +217,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request,
 																		final ServerResponse response,
+																		final Map<String, Object> errorAttributes,
 																		final MethodArgumentNotValidException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -212,14 +229,17 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link BindException}
 	 *
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
+													  final Map<String, Object> errorAttributes,
 													  final BindException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -229,6 +249,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link WebExchangeBindException}
 	 *
@@ -236,8 +258,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request,
 																 final ServerResponse response,
+																 final Map<String, Object> errorAttributes,
 																 final WebExchangeBindException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -247,6 +270,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link ServerWebInputException}
 	 *
@@ -254,8 +279,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleServerWebInputException(final ServerRequest request,
 																final ServerResponse response,
+																final Map<String, Object> errorAttributes,
 																final ServerWebInputException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -274,6 +300,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link TypeMismatchException}
 	 *
@@ -281,8 +309,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request,
 															  final ServerResponse response,
+															  final Map<String, Object> errorAttributes,
 															  final TypeMismatchException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -292,6 +321,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link HttpMessageNotReadableException}
 	 *
@@ -299,8 +330,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request,
 																		final ServerResponse response,
+																		final Map<String, Object> errorAttributes,
 																		final HttpMessageNotReadableException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -310,6 +342,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link MethodNotAllowedException}
 	 *
@@ -317,13 +351,14 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request,
 																  final ServerResponse response,
+																  final Map<String, Object> errorAttributes,
 																  final MethodNotAllowedException ex) {
 		Set<HttpMethod> supportedMethods = ex.getSupportedMethods();
 		if(supportedMethods != null && response.headers() != null){
 			response.headers().setAllow(supportedMethods);
 		}
 
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -333,6 +368,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link NotAcceptableStatusException}
 	 *
@@ -340,8 +377,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request,
 															   final ServerResponse response,
+															   final Map<String, Object> errorAttributes,
 															   final NotAcceptableStatusException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -351,6 +389,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link MediaTypeNotSupportedStatusException}
 	 *
@@ -358,13 +398,14 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request,
 																	   final ServerResponse response,
+																	   final Map<String, Object> errorAttributes,
 																	   final MediaTypeNotSupportedStatusException ex) {
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(Validate.isNotEmpty(mediaTypes) && response.headers() != null){
+		if(mediaTypes != null && response.headers() != null){
 			response.headers().setAccept(mediaTypes);
 		}
 
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -374,6 +415,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link UnsupportedMediaTypeStatusException}
 	 *
@@ -381,13 +424,14 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request,
 																	  final ServerResponse response,
+																	  final Map<String, Object> errorAttributes,
 																	  final UnsupportedMediaTypeStatusException ex) {
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(Validate.isNotEmpty(mediaTypes) && response.headers() != null){
+		if(mediaTypes != null && response.headers() != null){
 			response.headers().setAccept(mediaTypes);
 		}
 
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -397,6 +441,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link MissingPathVariableException}
 	 *
@@ -415,6 +461,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link ConversionNotSupportedException}
 	 *
@@ -422,8 +470,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request,
 																		final ServerResponse response,
+																		final Map<String, Object> errorAttributes,
 																		final ConversionNotSupportedException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -433,6 +482,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link HttpMessageNotWritableException}
 	 *
@@ -440,8 +491,9 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request,
 																		final ServerResponse response,
+																		final Map<String, Object> errorAttributes,
 																		final HttpMessageNotWritableException ex) {
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -451,6 +503,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link ResponseStatusException}
 	 *
@@ -458,11 +512,12 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleResponseStatusException(final ServerRequest request,
 																final ServerResponse response,
+																final Map<String, Object> errorAttributes,
 																final ResponseStatusException ex) {
 		if(ex.getStatus() == HttpStatus.NOT_FOUND){
 			pageNotFoundLogger.warn(ex.getMessage());
 		}
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
 	/**
@@ -472,6 +527,8 @@ public abstract class AbstractErrorWebExceptionHandler
 	 *        {@link ServerRequest}
 	 * @param response
 	 *        {@link ServerResponse}
+	 * @param errorAttributes
+	 * 		错误属性
 	 * @param ex
 	 *        {@link AsyncRequestTimeoutException}
 	 *
@@ -479,6 +536,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	 */
 	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request,
 																	 final ServerResponse response,
+																	 final Map<String, Object> errorAttributes,
 																	 final AsyncRequestTimeoutException ex) {
 		if(request.exchange().getResponse().isCommitted() == false){
 			//response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
@@ -486,178 +544,47 @@ public abstract class AbstractErrorWebExceptionHandler
 			logger.warn("Async request timed out");
 		}
 
-		return doResolve(request, ex);
+		return doResolve(request, errorAttributes, ex);
 	}
 
-	protected RequestPredicate acceptTextHtml() {
-		return (serverRequest)->{
-			try{
-				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
+	protected Map<String, Object> doResolve(final ServerRequest request, final Map<String, Object> errorAttributes,
+											final Throwable throwable) {
+		//HttpStatus httpStatus = getHttpStatus(request);
 
-				acceptedMediaTypes.remove(MediaType.ALL);
-				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
+		errorAttributes.put("state", false);
 
-				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
-			}catch(InvalidMediaTypeException ex){
-				return false;
-			}
-		};
-	}
-
-	protected RequestPredicate acceptJson() {
-		return (serverRequest)->{
-			try{
-				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-
-				acceptedMediaTypes.remove(MediaType.ALL);
-				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
-
-				return acceptedMediaTypes.stream().anyMatch(MediaType.APPLICATION_JSON::isCompatibleWith);
-			}catch(InvalidMediaTypeException ex){
-				return false;
-			}
-		};
-	}
-
-	protected ServerHttpResponse getServerHttpResponse(final ServerRequest request) {
-		return request.exchange().getResponse();
-	}
-
-	protected boolean isIncludeStackTrace(final ServerRequest request, final MediaType produces) {
-		ErrorProperties.IncludeStacktrace include = errorProperties.getIncludeStacktrace();
-		if(include == ErrorProperties.IncludeStacktrace.ALWAYS){
-			return true;
-		}
-
-		if(include == ErrorProperties.IncludeStacktrace.ON_TRACE_PARAM){
-			return isTraceEnabled(request);
-		}
-
-		return false;
-	}
-
-	protected HttpStatus getHttpStatus(final ServerRequest request) {
-		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
-		Map<String, Object> errorAttributes = getErrorAttributes(request, includeStackTrace);
-		Object status = errorAttributes.get("status");
-
-		if(status instanceof HttpStatus){
-			return (HttpStatus) status;
-		}else if(status instanceof Integer){
-			return HttpStatus.resolve((Integer) status);
-		}
-
-		return null;
-	}
-
-	protected String[] determineViewName(final ServerRequest request, final Throwable throwable,
-										 final HttpStatus httpStatus) {
-		Set<String> views = new LinkedHashSet<>(4);
-		String viewName = null;
-
-		if(getExceptionViews() != null){
-			viewName = getExceptionViews().get(throwable);
-			if(viewName != null){
-				views.add(buildView(viewName));
-			}
-		}
-
-		if(viewName == null && getErrorViews() != null){
-			viewName = getErrorViews().get(httpStatus);
-			if(viewName != null){
-				views.add(buildView(viewName));
-			}
-		}
-
-		if(viewName == null){
-			viewName = SERIES_VIEWS.get(httpStatus.series());
-			if(viewName != null){
-				views.add(buildView(viewName));
-			}
-		}
-
-		views.add(buildView(DEFAULT_ERROR_VIEW));
-
-		return views.toArray(new String[]{});
-	}
-
-	protected Map<String, Object> doResolve(final ServerRequest request, final Throwable throwable) {
-		HttpStatus httpStatus = getHttpStatus(request);
-
-		Map<String, Object> result = new HashMap<>(6);
-
-		result.put("state", false);
-		result.put("code", httpStatus.value());
-		result.put("message", httpStatus.getReasonPhrase());
-		result.put("status", httpStatus);
-		result.put("timestamp", new Date());
-		result.put(exceptionAttribute, throwable);
+		//result.put("message", httpStatus.getReasonPhrase());
+		//result.put("status", httpStatus);
+		//result.put("timestamp", new Date());
+		errorAttributes.put(exceptionAttribute, throwable);
 
 		if(getCacheControl() != null){
 			request.exchange().getResponse().getHeaders().setCacheControl(getCacheControl());
 		}
 
-		return result;
+		return errorAttributes;
 	}
 
-	protected Mono<ServerResponse> renderErrorHtmlView(final ServerRequest request) {
-		boolean whitelabelEnabled = errorProperties.getWhitelabel().isEnabled();
-		Throwable throwable = determineException(request);
-		Map<String, Object> exceptionAttributes = doSpecialResolveException(request, throwable);
+	private List<String> getViews(int errorStatus, Throwable throwable) {
+		final List<String> views = new ArrayList<>();
 
-		if(exceptionAttributes == null){
-			exceptionAttributes = doResolveException(request, null, throwable);
+		views.add("error/" + errorStatus);
+
+		HttpStatus.Series series = HttpStatus.Series.resolve(errorStatus);
+		if(series != null){
+			views.add("error/" + SERIES_VIEWS.get(series));
 		}
 
-		Map<String, Object> errorAttributes = exceptionAttributes != null ? exceptionAttributes : doResolve(request,
-				throwable);
-		HttpStatus httpStatus = getHttpStatus(request);
-		String[] views = determineViewName(request, throwable, httpStatus);
-		ServerResponse.BodyBuilder responseBody = responseBody(httpStatus, MediaType.TEXT_HTML);
-
-		return Flux.just(views).flatMap((viewName)->renderErrorView(viewName, responseBody, errorAttributes))
-				.switchIfEmpty(whitelabelEnabled ? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error(
-						getError(request))).next();
-	}
-
-	protected Mono<ServerResponse> renderErrorJsonView(final ServerRequest request) {
-		Throwable throwable = determineException(request);
-		Map<String, Object> exceptionAttributes = doSpecialResolveException(request, throwable);
-
-		if(exceptionAttributes == null){
-			exceptionAttributes = doResolveException(request, null, throwable);
+		if(throwable != null && getExceptionViews() != null){
+			String exceptionView = getExceptionViews().get(throwable);
+			if(exceptionView != null){
+				views.add("error/" + exceptionView);
+			}
 		}
 
-		HttpStatus httpStatus = getHttpStatus(request);
-		Map<String, Object> errorAttributes = exceptionAttributes != null ? exceptionAttributes : doResolve(request,
-				throwable);
-		ServerResponse.BodyBuilder responseBody = responseBody(httpStatus, MediaType.APPLICATION_JSON);
+		views.add("error/error");
 
-		return responseBody.body(BodyInserters.fromValue(errorAttributes));
-	}
-
-	protected static ServerResponse.BodyBuilder responseBody(final HttpStatus httpStatus, final MediaType contentType) {
-		return ServerResponse.status(httpStatus).contentType(contentType);
-	}
-
-	protected Throwable determineException(final ServerRequest request) {
-		return determineException(getError(request));
-	}
-
-	protected Throwable determineException(final Throwable throwable) {
-		if(throwable instanceof ResponseStatusException){
-			return (throwable.getCause() != null) ? throwable.getCause() : throwable;
-		}else{
-			return throwable;
-		}
-	}
-
-	protected static String buildView(final String viewName) {
-		final StringBuilder sb = new StringBuilder(viewName.length() + 6);
-
-		sb.append("error/").append(viewName);
-
-		return sb.toString();
+		return views;
 	}
 
 }
