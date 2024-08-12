@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 
 import java.util.Date;
 
@@ -42,11 +44,6 @@ import java.util.Date;
  * @author Yong.Teng
  */
 public abstract class AbstractApplication implements Application {
-
-	/**
-	 * 可配置的应用上下文类
-	 */
-	private Class<? extends ConfigurableApplicationContext> configurableApplicationContext;
 
 	/**
 	 * {@link Banner}
@@ -63,6 +60,19 @@ public abstract class AbstractApplication implements Application {
 	private Banner.Mode bannerMode;
 
 	/**
+	 * if the application is headless and should not instantiate AWT.
+	 *
+	 * @since 3.0.0
+	 */
+	private Boolean headless;
+
+	/**
+	 * Flag to indicate if the {@link ApplicationConversionService} should be added to the application context's
+	 * {@link Environment}.
+	 */
+	private Boolean addConversionService;
+
+	/**
 	 * 是否延迟初始化
 	 *
 	 * @since 2.3.0
@@ -74,7 +84,7 @@ public abstract class AbstractApplication implements Application {
 	/**
 	 * 构造函数
 	 */
-	protected AbstractApplication(){
+	protected AbstractApplication() {
 	}
 
 	/**
@@ -90,7 +100,7 @@ public abstract class AbstractApplication implements Application {
 	 * @since 1.3.1
 	 */
 	protected AbstractApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
+			IllegalAccessException {
 		if(banner != null){
 			this.banner = banner.newInstance();
 		}
@@ -104,53 +114,62 @@ public abstract class AbstractApplication implements Application {
 	 *
 	 * @since 1.3.1
 	 */
-	protected AbstractApplication(final Banner banner){
+	protected AbstractApplication(final Banner banner) {
 		this.banner = banner;
 	}
 
 	@Override
-	public Banner getBanner(){
+	public Banner getBanner() {
 		return banner;
 	}
 
 	@Override
-	public void setBanner(Banner banner){
+	public void setBanner(Banner banner) {
 		this.banner = banner;
 	}
 
 	@Override
-	public Banner.Mode getBannerMode(){
+	public Banner.Mode getBannerMode() {
 		return bannerMode;
 	}
 
 	@Override
-	public void setBannerMode(Banner.Mode bannerMode){
+	public void setBannerMode(Banner.Mode bannerMode) {
 		this.bannerMode = bannerMode;
 	}
 
 	@Override
-	public Boolean getLazyInitialization(){
+	public Boolean getHeadless() {
+		return headless;
+	}
+
+	@Override
+	public void setHeadless(Boolean headless) {
+		this.headless = headless;
+	}
+
+	@Override
+	public Boolean getAddConversionService() {
+		return addConversionService;
+	}
+
+	@Override
+	public void setAddConversionService(Boolean addConversionService) {
+		this.addConversionService = addConversionService;
+	}
+
+	@Override
+	public Boolean getLazyInitialization() {
 		return lazyInitialization;
 	}
 
 	@Override
-	public void setLazyInitialization(Boolean lazyInitialization){
+	public void setLazyInitialization(Boolean lazyInitialization) {
 		this.lazyInitialization = lazyInitialization;
 	}
 
 	@Override
-	public Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext(){
-		return configurableApplicationContext;
-	}
-
-	@Override
-	public void setConfigurableApplicationContext(
-			Class<? extends ConfigurableApplicationContext> configurableApplicationContext){
-		this.configurableApplicationContext = configurableApplicationContext;
-	}
-
-	@Override
-	public void startup(final String[] args){
+	public void startup(final String[] args) {
 		startup(getClass(), args);
 
 		if(logger.isInfoEnabled()){
@@ -159,17 +178,18 @@ public abstract class AbstractApplication implements Application {
 	}
 
 	@Override
-	public void startup(final Class<? extends Application> clazz, final String[] args){
+	public void startup(final Class<? extends Application> clazz, final String[] args) {
 		doStartup(clazz, args);
 	}
 
-	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz) {
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		final SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(clazz);
 
 		propertyMapper.from(getBanner()).to(springApplicationBuilder::banner);
 		propertyMapper.from(getBannerMode()).to(springApplicationBuilder::bannerMode);
-		propertyMapper.from(getConfigurableApplicationContext()).to(springApplicationBuilder::contextClass);
+		propertyMapper.from(getHeadless()).to(springApplicationBuilder::headless);
+		propertyMapper.from(getAddConversionService()).to(springApplicationBuilder::setAddConversionService);
 		propertyMapper.from(getLazyInitialization()).to(springApplicationBuilder::lazyInitialization);
 
 		springApplicationBuilder.properties(createRuntimeProperties()).logStartupInfo(true);
@@ -177,11 +197,23 @@ public abstract class AbstractApplication implements Application {
 		return springApplicationBuilder;
 	}
 
-	protected void doStartup(final Class<? extends Application> clazz, final String[] args){
-		springApplicationBuilder(clazz).run(args);
+	protected void doStartup(final Class<? extends Application> clazz, final String[] args) {
+		final SpringApplicationBuilder builder = springApplicationBuilder(clazz);
+		customize(builder);
+
+		final ConfigurableApplicationContext applicationContext = builder.run(args);
+		applicationStartedHook(applicationContext);
 	}
 
-	protected RuntimeProperties createRuntimeProperties(){
+	protected void customize(final SpringApplicationBuilder springApplicationBuilder) {
+
+	}
+
+	protected void applicationStartedHook(final ConfigurableApplicationContext applicationContext) {
+
+	}
+
+	protected RuntimeProperties createRuntimeProperties() {
 		return new RuntimeProperties();
 	}
 

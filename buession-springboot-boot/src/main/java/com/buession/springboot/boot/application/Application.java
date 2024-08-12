@@ -21,13 +21,14 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
 
 import org.springframework.boot.Banner;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.core.env.Environment;
 
 /**
  * 应用接口
@@ -73,6 +74,48 @@ public interface Application extends Launcher, Daemon {
 	void setBannerMode(Banner.Mode bannerMode);
 
 	/**
+	 * Return if the application is headless and should not instantiate AWT.
+	 *
+	 * @return if the application is headless and should not instantiate AWT.
+	 *
+	 * @since 3.0.0
+	 */
+	Boolean getHeadless();
+
+	/**
+	 * Sets if the application is headless and should not instantiate AWT.
+	 *
+	 * @param headless
+	 * 		if the application is headless and should not instantiate AWT.
+	 *
+	 * @since 3.0.0
+	 */
+	void setHeadless(Boolean headless);
+
+	/**
+	 * Return flag to indicate if the {@link ApplicationConversionService} should be added to the application context's
+	 * {@link Environment}.
+	 *
+	 * @return Flag to indicate if the {@link ApplicationConversionService} should be added to the application context's
+	 * {@link Environment}.
+	 *
+	 * @since 3.0.0
+	 */
+	Boolean getAddConversionService();
+
+	/**
+	 * Sets Flag to indicate if the {@link ApplicationConversionService} should be added to the application context's
+	 * {@link Environment}.
+	 *
+	 * @param addConversionService
+	 * 		Flag to indicate if the {@link ApplicationConversionService} should be added to the application context's
+	 *        {@link Environment}.
+	 *
+	 * @since 3.0.0
+	 */
+	void setAddConversionService(Boolean addConversionService);
+
+	/**
 	 * 返回是否延迟初始化
 	 *
 	 * @return 是否延迟初始化
@@ -92,32 +135,12 @@ public interface Application extends Launcher, Daemon {
 	void setLazyInitialization(Boolean lazyInitialization);
 
 	/**
-	 * 返回可配置的应用上下文类
-	 *
-	 * @return 可配置的应用上下文类
-	 *
-	 * @see ConfigurableApplicationContext
-	 */
-	Class<? extends ConfigurableApplicationContext> getConfigurableApplicationContext();
-
-	/**
-	 * 设置可配置的应用上下文类
-	 *
-	 * @param configurableApplicationContext
-	 * 		可配置的应用上下文类
-	 *
-	 * @see ConfigurableApplicationContext
-	 */
-	void setConfigurableApplicationContext(Class<? extends ConfigurableApplicationContext>
-												   configurableApplicationContext);
-
-	/**
 	 * 启动应用程序
 	 *
 	 * @param args
 	 * 		启动参数
 	 */
-	default void run(final String[] args){
+	default void run(final String[] args) {
 		startup(args);
 	}
 
@@ -129,7 +152,7 @@ public interface Application extends Launcher, Daemon {
 	 * @param args
 	 * 		启动参数
 	 */
-	default void run(final Class<? extends Application> clazz, final String[] args){
+	default void run(final Class<? extends Application> clazz, final String[] args) {
 		startup(clazz, args);
 	}
 
