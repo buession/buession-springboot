@@ -1,5 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration, \
-  com.buession.springboot.datasource.autoconfigure.DataSourceAutoConfiguration, \
-  com.buession.springboot.datasource.autoconfigure.DataSourcePoolMetadataProvidersConfiguration, \
-  com.buession.springboot.datasource.autoconfigure.DataSourceTransactionConfiguration
+  com.buession.springboot.datasource.autoconfigure.DataSourceAutoConfiguration

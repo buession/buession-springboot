@@ -24,7 +24,7 @@
  */
 package com.buession.springboot.datasource.exception;
 
-import com.buession.springboot.datasource.core.DataSourceConfig;
+import com.buession.springboot.datasource.autoconfigure.DataSourceProperties;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 
@@ -38,19 +38,19 @@ public class DataSourceBeanCreationException extends BeanCreationException {
 
 	private final static long serialVersionUID = -2201475744925829392L;
 
-	private final DataSourceConfig dataSourceConfig;
+	private final DataSourceProperties properties;
 
 	private final EmbeddedDatabaseConnection connection;
 
-	public DataSourceBeanCreationException(DataSourceConfig dataSourceConfig,
-										   EmbeddedDatabaseConnection connection, String message) {
+	public DataSourceBeanCreationException(DataSourceProperties properties, EmbeddedDatabaseConnection connection,
+										   String message) {
 		super(message);
-		this.dataSourceConfig = dataSourceConfig;
+		this.properties = properties;
 		this.connection = connection;
 	}
 
-	public DataSourceConfig getDataSourceConfig() {
-		return dataSourceConfig;
+	public DataSourceProperties getProperties() {
+		return properties;
 	}
 
 	public EmbeddedDatabaseConnection getConnection() {

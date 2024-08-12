@@ -28,7 +28,7 @@ package com.buession.springboot.datasource.core;
  * @author Yong.Teng
  * @since 3.0.0
  */
-public class DataSources {
+public interface DataSourceType {
 
 	String DHCP2 = "org.apache.commons.dbcp2.BasicDataSource";
 

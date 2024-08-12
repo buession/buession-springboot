@@ -21,10 +21,65 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.springboot.datasource.autoconfigure;/**
- * 
+ */
+package com.buession.springboot.datasource.autoconfigure;
+
+import com.buession.jdbc.datasource.DruidDataSource;
+import com.buession.jdbc.datasource.HikariDataSource;
+import com.buession.springboot.datasource.core.DataSourceType;
+import oracle.ucp.jdbc.PoolDataSource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Configures DataSource related MBeans.
  *
  * @author Yong.Teng
  * @since 3.0.0
- */public class DataSourceJmxConfiguration {
+ */
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+public class DataSourceJmxConfiguration {
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DHCP2,
+			matchIfMissing = true)
+	static class Dbcp2 {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(DruidDataSource.class)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DRUID,
+			matchIfMissing = true)
+	static class Druid {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(HikariDataSource.class)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.HIKARI,
+			matchIfMissing = true)
+	static class Hikari {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(PoolDataSource.class)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.ORACLE,
+			matchIfMissing = true)
+	static class Oracle {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.TOMCAT,
+			matchIfMissing = true)
+	static class Tomcat {
+
+	}
+
 }

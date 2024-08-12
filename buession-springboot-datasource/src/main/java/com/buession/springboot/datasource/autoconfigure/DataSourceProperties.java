@@ -24,18 +24,18 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.jdbc.datasource.config.Dbcp2PoolConfiguration;
-import com.buession.jdbc.datasource.config.DruidPoolConfiguration;
-import com.buession.jdbc.datasource.config.GenericPoolConfiguration;
-import com.buession.jdbc.datasource.config.HikariPoolConfiguration;
-import com.buession.jdbc.datasource.config.TomcatPoolConfiguration;
-import com.buession.springboot.datasource.core.DataSourceConfig;
+import com.buession.core.utils.Assert;
+import com.buession.core.validator.Validate;
+import com.buession.lang.Constants;
+import com.buession.springboot.datasource.core.*;
+import com.buession.springboot.datasource.exception.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.util.ClassUtils;
 
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.util.Properties;
 
 /**
  * 数据源配置
@@ -47,12 +47,9 @@ public class DataSourceProperties {
 
 	public final static String PREFIX = "spring.datasource";
 
-	/**
-	 * Fully qualified name of the connection pool implementation to use. By default, it
-	 * is auto-detected from the classpath.
-	 */
-	@Deprecated
-	private Class<? extends DataSource> type;
+	public final static String DEFAULT_NAME = "testdb";
+
+	public final static String DEFAULT_USERNAME = "sa";
 
 	/**
 	 * 数据库驱动类名
@@ -60,61 +57,181 @@ public class DataSourceProperties {
 	private String driverClassName;
 
 	/**
-	 * Master 配置
-	 * {@link org.springframework.boot.autoconfigure.jdbc.DataSourceProperties}
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 *
+	 * @since 3.0.0
 	 */
-	@NestedConfigurationProperty
-	private DataSourceConfig master = new DataSourceConfig();
+	private String determineDriverClassName;
 
 	/**
-	 * Slaves 配置
-	 * {@link DataSourceConfig}
+	 * @since 3.0.0
 	 */
-	private List<DataSourceConfig> slaves = new ArrayList<>();
+	private final EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
 	/**
-	 * Hikari 数据源配置
+	 * JDBC URL of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String url;
+
+	/**
+	 * JDBC URL of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String determineUrl;
+
+	/**
+	 * Name of the datasource. Default to "testdb" when using an embedded database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String name;
+
+	/**
+	 * Login username of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String username;
+
+	/**
+	 * Login username of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String determineUsername;
+
+	/**
+	 * Login password of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String password;
+
+	/**
+	 * Login password of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	private String determinePassword;
+
+	/**
+	 * 登录超时
+	 *
+	 * @since 3.0.0
+	 */
+	private Duration loginTimeout;
+
+	/**
+	 * 为支持 catalog 概念的数据库设置默认 catalog
+	 *
+	 * @since 3.0.0
+	 */
+	private String defaultCatalog;
+
+	/**
+	 * 设置的默认模式为支持模式的概念数据库
+	 *
+	 * @since 3.0.0
+	 */
+	private String defaultSchema;
+
+	/**
+	 * 设置一个SQL语句，在将每个新连接创建后，将其添加到池中之前执行该语句
+	 *
+	 * @since 3.0.0
+	 */
+	private String initSQL;
+
+	/**
+	 * 连接属性
+	 */
+	private Properties connectionProperties;
+
+	/**
+	 * DBCP2 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private HikariPoolConfiguration hikari;
-
-	/**
-	 * Dbcp2 数据源配置
-	 *
-	 * @since 1.3.2
-	 */
-	private Dbcp2PoolConfiguration dbcp2;
+	private Dbcp2DataSourceConfig dbcp2;
 
 	/**
 	 * Druid 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private DruidPoolConfiguration druid;
+	private DruidDataSourceConfig druid;
+
+	/**
+	 * Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	private HikariDataSourceConfig hikari;
+
+	/**
+	 * Oracle 数据源配置
+	 *
+	 * @since 3.0.0
+	 */
+	private OracleDataSourceConfig oracle;
 
 	/**
 	 * Tomcat 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private TomcatPoolConfiguration tomcat;
+	private TomcatDataSourceConfig tomcat;
 
 	/**
 	 * Generic 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private GenericPoolConfiguration generic;
+	private GenericDataSourceConfig generic;
 
-	@Deprecated
-	public Class<? extends DataSource> getType() {
-		return type;
+	/**
+	 * 构造函数
+	 */
+	public DataSourceProperties() {
+		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(DataSourceProperties.class.getClassLoader());
 	}
 
-	@Deprecated
-	public void setType(Class<? extends DataSource> type) {
-		this.type = type;
+	/**
+	 * Determine the driver to use based on this configuration and the environment.
+	 *
+	 * @return The driver to use
+	 *
+	 * @since 3.0.0
+	 */
+	public String determineDriverClassName() {
+		if(Validate.hasText(determineDriverClassName)){
+			return determineDriverClassName;
+		}
+
+		if(Validate.hasText(driverClassName)){
+			Assert.isFalse(driverClassIsLoadable(),
+					()->new IllegalStateException("Cannot load driver class: " + driverClassName));
+			determineDriverClassName = driverClassName;
+			return determineDriverClassName;
+		}
+
+		if(Validate.hasText(url)){
+			determineDriverClassName = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
+		}
+
+		if(Validate.isBlank(determineDriverClassName)){
+			determineDriverClassName = embeddedDatabaseConnection.getDriverClassName();
+		}
+
+		if(Validate.isBlank(determineDriverClassName)){
+			throw new DataSourceBeanCreationException(this, embeddedDatabaseConnection,
+					"Failed to determine a suitable driver class");
+		}
+
+		return determineDriverClassName;
 	}
 
 	/**
@@ -137,64 +254,284 @@ public class DataSourceProperties {
 	}
 
 	/**
-	 * 返回 Master 配置
+	 * Determine the url to use based on this configuration and the environment.
 	 *
-	 * @return Master 配置
+	 * @return The url to use
+	 *
+	 * @since 3.0.0
 	 */
-	public DataSourceConfig getMaster() {
-		return master;
+	public String determineUrl() {
+		if(Validate.hasText(determineUrl)){
+			return determineUrl;
+		}
+
+		if(Validate.hasText(url)){
+			determineUrl = url;
+			return determineUrl;
+		}
+
+		String databaseName = getName();
+
+		if(Validate.isBlank(databaseName)){
+			if(embeddedDatabaseConnection != EmbeddedDatabaseConnection.NONE){
+				databaseName = DEFAULT_NAME;
+			}
+		}
+
+		String url = databaseName != null ? embeddedDatabaseConnection.getUrl(databaseName) : null;
+		if(Validate.isBlank(url)){
+			throw new DataSourceBeanCreationException(this, embeddedDatabaseConnection, "Failed to determine suitable" +
+					" jdbc url");
+		}
+
+		return url;
 	}
 
 	/**
-	 * 设置 Master 配置
+	 * Return JDBC URL of the database.
 	 *
-	 * @param master
-	 * 		Master 配置
+	 * @return The JDBC URL of the database.
+	 *
+	 * @since 3.0.0
 	 */
-	public void setMaster(DataSourceConfig master) {
-		this.master = master;
+	public String getUrl() {
+		return url;
 	}
 
 	/**
-	 * 返回 Slaves 配置
+	 * Sets JDBC URL of the database.
 	 *
-	 * @return Slaves 配置
+	 * @param url
+	 * 		The JDBC URL of the database.
+	 *
+	 * @since 3.0.0
 	 */
-	public List<DataSourceConfig> getSlaves() {
-		return slaves;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	/**
-	 * 设置 Slaves 配置
+	 * Return name of the datasource.
 	 *
-	 * @param slaves
-	 * 		Slaves 配置
+	 * @return The name of the datasource.
+	 *
+	 * @since 3.0.0
 	 */
-	public void setSlaves(List<DataSourceConfig> slaves) {
-		this.slaves = slaves;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * 返回 Hikari 数据源配置
+	 * Sets name of the datasource.
 	 *
-	 * @return Hikari 数据源配置
+	 * @param name
+	 * 		The name of the datasource.
 	 *
-	 * @since 1.3.2
+	 * @since 3.0.0
 	 */
-	public HikariPoolConfiguration getHikari() {
-		return hikari;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
-	 * 设置 Hikari 数据源配置
+	 * Determine the username to use based on this configuration and the environment.
 	 *
-	 * @param hikari
-	 * 		Hikari 数据源配置
+	 * @return The username to use
 	 *
-	 * @since 1.3.2
+	 * @since 3.0.0
 	 */
-	public void setHikari(HikariPoolConfiguration hikari) {
-		this.hikari = hikari;
+	public String determineUsername() {
+		if(Validate.hasText(determineUsername)){
+			return determineUsername;
+		}
+
+		if(Validate.hasText(username)){
+			determineUsername = username;
+		}else{
+			determineUsername = EmbeddedDatabaseConnection.isEmbedded(
+					determineDriverClassName(), determineUrl()) ? DEFAULT_USERNAME : null;
+		}
+
+		return determineUsername;
+	}
+
+	/**
+	 * Return login username of the database.
+	 *
+	 * @return The login username of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * Sets login username of the database.
+	 *
+	 * @param username
+	 * 		The login username of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * Determine the password to use based on this configuration and the environment.
+	 *
+	 * @return The password to use
+	 *
+	 * @since 3.0.0
+	 */
+	public String determinePassword() {
+		if(Validate.hasText(determinePassword)){
+			return determinePassword;
+		}
+
+		if(Validate.hasText(password)){
+			determinePassword = password;
+		}else{
+			determinePassword = EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl()) ?
+					Constants.EMPTY_STRING : null;
+		}
+
+		return determinePassword;
+	}
+
+	/**
+	 * Return login password of the database.
+	 *
+	 * @return The login password of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * Sets login password of the database.
+	 *
+	 * @param password
+	 * 		The login password of the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * 返回登录超时
+	 *
+	 * @return 登录超时
+	 *
+	 * @since 3.0.0
+	 */
+	public Duration getLoginTimeout() {
+		return loginTimeout;
+	}
+
+	/**
+	 * 设置登录超时
+	 *
+	 * @param loginTimeout
+	 * 		登录超时
+	 *
+	 * @since 3.0.0
+	 */
+	public void setLoginTimeout(Duration loginTimeout) {
+		this.loginTimeout = loginTimeout;
+	}
+
+	/**
+	 * 返回为支持 catalog 概念的数据库设置默认 catalog
+	 *
+	 * @return 为支持 catalog 概念的数据库设置默认 catalog
+	 *
+	 * @since 3.0.0
+	 */
+	public String getDefaultCatalog() {
+		return defaultCatalog;
+	}
+
+	/**
+	 * 设置为支持 catalog 概念的数据库设置默认 catalog
+	 *
+	 * @param defaultCatalog
+	 * 		为支持 catalog 概念的数据库设置默认 catalog
+	 *
+	 * @since 3.0.0
+	 */
+	public void setDefaultCatalog(String defaultCatalog) {
+		this.defaultCatalog = defaultCatalog;
+	}
+
+	/**
+	 * 返回设置的默认模式为支持模式的概念数据库
+	 *
+	 * @return 设置的默认模式为支持模式的概念数据库
+	 *
+	 * @since 3.0.0
+	 */
+	public String getDefaultSchema() {
+		return defaultSchema;
+	}
+
+	/**
+	 * 设置默认模式为支持模式的概念数据库
+	 *
+	 * @param defaultSchema
+	 * 		默认模式为支持模式的概念数据库
+	 *
+	 * @since 3.0.0
+	 */
+	public void setDefaultSchema(String defaultSchema) {
+		this.defaultSchema = defaultSchema;
+	}
+
+	/**
+	 * 返回在将每个新连接创建后，将其添加到池中之前执行的SQL语句
+	 *
+	 * @return 每个新连接创建后，将其添加到池中之前执行的SQL语句
+	 *
+	 * @since 3.0.0
+	 */
+	public String getInitSQL() {
+		return initSQL;
+	}
+
+	/**
+	 * 设置每个新连接创建后，将其添加到池中之前执行的SQL语句
+	 *
+	 * @param initSQL
+	 * 		每个新连接创建后，将其添加到池中之前执行的SQL语句
+	 *
+	 * @since 3.0.0
+	 */
+	public void setInitSQL(String initSQL) {
+		this.initSQL = initSQL;
+	}
+
+	/**
+	 * 返回连接属性
+	 *
+	 * @return 连接属性
+	 */
+	public Properties getConnectionProperties() {
+		return connectionProperties;
+	}
+
+	/**
+	 * 设置连接属性
+	 *
+	 * @param connectionProperties
+	 * 		连接属性
+	 */
+	public void setConnectionProperties(Properties connectionProperties) {
+		this.connectionProperties = connectionProperties;
 	}
 
 	/**
@@ -204,7 +541,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public Dbcp2PoolConfiguration getDbcp2() {
+	public Dbcp2DataSourceConfig getDbcp2() {
 		return dbcp2;
 	}
 
@@ -216,7 +553,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setDbcp2(Dbcp2PoolConfiguration dbcp2) {
+	public void setDbcp2(Dbcp2DataSourceConfig dbcp2) {
 		this.dbcp2 = dbcp2;
 	}
 
@@ -225,7 +562,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Druid 数据源配置
 	 */
-	public DruidPoolConfiguration getDruid() {
+	public DruidDataSourceConfig getDruid() {
 		return druid;
 	}
 
@@ -235,8 +572,54 @@ public class DataSourceProperties {
 	 * @param druid
 	 * 		Druid 数据源配置
 	 */
-	public void setDruid(DruidPoolConfiguration druid) {
+	public void setDruid(DruidDataSourceConfig druid) {
 		this.druid = druid;
+	}
+
+	/**
+	 * 返回 Hikari 数据源配置
+	 *
+	 * @return Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public HikariDataSourceConfig getHikari() {
+		return hikari;
+	}
+
+	/**
+	 * 设置 Hikari 数据源配置
+	 *
+	 * @param hikari
+	 * 		Hikari 数据源配置
+	 *
+	 * @since 1.3.2
+	 */
+	public void setHikari(HikariDataSourceConfig hikari) {
+		this.hikari = hikari;
+	}
+
+	/**
+	 * 返回 Oracle 数据源配置
+	 *
+	 * @return Oracle 数据源配置
+	 *
+	 * @since 3.0.0
+	 */
+	public OracleDataSourceConfig getOracle() {
+		return oracle;
+	}
+
+	/**
+	 * 设置 Oracle 数据源配置
+	 *
+	 * @param oracle
+	 * 		Oracle 数据源配置
+	 *
+	 * @since 3.0.0
+	 */
+	public void setOracle(OracleDataSourceConfig oracle) {
+		this.oracle = oracle;
 	}
 
 	/**
@@ -244,7 +627,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Tomcat 数据源配置
 	 */
-	public TomcatPoolConfiguration getTomcat() {
+	public TomcatDataSourceConfig getTomcat() {
 		return tomcat;
 	}
 
@@ -254,7 +637,7 @@ public class DataSourceProperties {
 	 * @param tomcat
 	 * 		Tomcat 数据源配置
 	 */
-	public void setTomcat(TomcatPoolConfiguration tomcat) {
+	public void setTomcat(TomcatDataSourceConfig tomcat) {
 		this.tomcat = tomcat;
 	}
 
@@ -263,7 +646,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Generic 数据源配置
 	 */
-	public GenericPoolConfiguration getGeneric() {
+	public GenericDataSourceConfig getGeneric() {
 		return generic;
 	}
 
@@ -273,8 +656,20 @@ public class DataSourceProperties {
 	 * @param generic
 	 * 		Generic 数据源配置
 	 */
-	public void setGeneric(GenericPoolConfiguration generic) {
+	public void setGeneric(GenericDataSourceConfig generic) {
 		this.generic = generic;
+	}
+
+	private boolean driverClassIsLoadable() {
+		try{
+			ClassUtils.forName(driverClassName, null);
+			return true;
+		}catch(UnsupportedClassVersionError e){
+			// Driver library has been compiled with a later JDK, propagate error
+			throw e;
+		}catch(Throwable e){
+			return false;
+		}
 	}
 
 }

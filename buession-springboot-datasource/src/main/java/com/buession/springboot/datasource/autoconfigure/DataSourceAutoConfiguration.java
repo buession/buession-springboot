@@ -19,11 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.buession.core.validator.Validate;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -32,14 +34,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -57,14 +62,24 @@ import javax.sql.XADataSource;
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({DataSourcePoolMetadataProvidersConfiguration.class})
+@AutoConfigureBefore({org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class})
 public class DataSourceAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({DataSource.class, XADataSource.class})
-	@Import({DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
-			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class})
+	@Import({DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Druid.class,
+			DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Oracle.class,
+			DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Generic.class})
 	static class PooledDataSourceConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Conditional(EmbeddedDatabaseCondition.class)
+	@ConditionalOnMissingBean({DataSource.class, XADataSource.class})
+	@Import(EmbeddedDataSourceConfiguration.class)
+	protected static class EmbeddedDatabaseConfiguration {
 
 	}
 
@@ -98,10 +113,51 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("PooledDataSource");
+
 			if(DataSourceBuilder.findType(context.getClassLoader()) != null){
 				return ConditionOutcome.match(message.foundExactly("supported DataSource"));
 			}
+
 			return ConditionOutcome.noMatch(message.didNotFind("supported DataSource").atAll());
+		}
+
+	}
+
+	static class EmbeddedDatabaseCondition extends SpringBootCondition {
+
+		private final static String DATASOURCE_URL_PROPERTY = "spring.datasource.url";
+
+		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("EmbeddedDataSource");
+			if(hasDataSourceUrlProperty(context)){
+				return ConditionOutcome.noMatch(message.because(DATASOURCE_URL_PROPERTY + " is set"));
+			}
+
+			if(anyMatches(context, metadata, pooledCondition)){
+				return ConditionOutcome.noMatch(message.foundExactly("supported pooled data source"));
+			}
+
+			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(context.getClassLoader()).getType();
+			if(type == null){
+				return ConditionOutcome.noMatch(message.didNotFind("embedded database").atAll());
+			}
+
+			return ConditionOutcome.match(message.found("embedded database").items(type));
+		}
+
+		private boolean hasDataSourceUrlProperty(ConditionContext context) {
+			Environment environment = context.getEnvironment();
+			if(environment.containsProperty(DATASOURCE_URL_PROPERTY)){
+				try{
+					return Validate.hasText(environment.getProperty(DATASOURCE_URL_PROPERTY));
+				}catch(IllegalArgumentException ex){
+					// Ignore unresolvable placeholder errors
+				}
+			}
+			return false;
 		}
 
 	}

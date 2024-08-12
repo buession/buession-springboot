@@ -25,11 +25,11 @@
 package com.buession.springboot.datasource.core;
 
 /**
- * Tomcat 数据源配置
+ * 一般数据源配置
  *
  * @author Yong.Teng
  * @since 3.0.0
  */
-public class TomcatDataSourceConfig extends BaseDataSourceConfig {
+public class GenericDataSourceConfig extends BaseDataSourceConfig {
 
 }

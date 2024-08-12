@@ -24,29 +24,25 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceMBean;
-import com.buession.core.converter.mapper.PropertyMapper;
-import com.buession.core.validator.Validate;
-import com.buession.jdbc.datasource.Dbcp2DataSource;
-import com.buession.jdbc.datasource.DruidDataSource;
-import com.buession.jdbc.datasource.HikariDataSource;
-import com.buession.jdbc.datasource.TomcatDataSource;
-import com.buession.springboot.datasource.metadata.DataSourcePoolMetadata;
-import com.buession.springboot.datasource.metadata.DataSourcePoolMetadataProvider;
 import com.zaxxer.hikari.HikariConfigMXBean;
+import com.zaxxer.hikari.HikariDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceMXBean;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DruidDataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.OracleUcpDataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * DataSource Pool Metadata Providers {@link DataSourcePoolMetadataProvider} Auto Configuration
@@ -55,70 +51,24 @@ import java.util.stream.Collectors;
  * @since 1.3.2
  */
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureBefore({
+		org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration.class})
 public class DataSourcePoolMetadataProvidersConfiguration {
 
-	abstract static class AbstractPoolDataSourceMetadataProviderConfiguration<PMP extends DataSourcePoolMetadataProvider<?>> {
-
-		protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-		abstract PMP poolDataSourceMetadataProvider();
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(HikariDataSource.class)
-	static class HikariPoolDataSourceMetadataProviderConfiguration extends
-			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider> {
+	@ConditionalOnBean(BasicDataSource.class)
+	static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		@Override
-		public DataSourcePoolMetadataProvider.HikariDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
+		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
-				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				com.zaxxer.hikari.HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource.getMaster(),
-						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
-
-				propertyMapper.from(hikariDataSource).as(HikariDataSourcePoolMetadata::new)
-						.to(dataSourcePoolMetadata::setMaster);
-
-				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
-							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, HikariConfigMXBean.class,
-									com.zaxxer.hikari.HikariDataSource.class)).filter(Objects::nonNull)
-							.map(HikariDataSourcePoolMetadata::new).collect(Collectors.toList()));
+				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSourceMXBean.class,
+						BasicDataSource.class);
+				if(dbcpDataSource != null){
+					return new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
 				}
 
-				return dataSourcePoolMetadata;
-			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(Dbcp2DataSource.class)
-	static class Dbcp2PoolDataSourceMetadataProviderConfiguration extends
-			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider> {
-
-		@Bean
-		@Override
-		public DataSourcePoolMetadataProvider.Dbcp2DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
-			return (dataSource)->{
-				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				org.apache.commons.dbcp2.BasicDataSource dbcp2DataSource = DataSourceUnwrapper.unwrap(
-						dataSource.getMaster(), BasicDataSourceMXBean.class,
-						org.apache.commons.dbcp2.BasicDataSource.class);
-
-				propertyMapper.from(dbcp2DataSource).as(CommonsDbcp2DataSourcePoolMetadata::new)
-						.to(dataSourcePoolMetadata::setMaster);
-
-				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
-							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, BasicDataSourceMXBean.class,
-									org.apache.commons.dbcp2.BasicDataSource.class)).filter(Objects::nonNull)
-							.map(CommonsDbcp2DataSourcePoolMetadata::new).collect(Collectors.toList()));
-				}
-
-				return dataSourcePoolMetadata;
+				return null;
 			};
 		}
 
@@ -126,59 +76,77 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DruidDataSource.class)
-	static class DruidPoolDataSourceMetadataProviderConfiguration extends
-			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider> {
+	static class DruidPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		@Override
-		public DataSourcePoolMetadataProvider.DruidDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
+		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
-				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				com.alibaba.druid.pool.DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(
-						dataSource.getMaster(), DruidDataSourceMBean.class,
-						com.alibaba.druid.pool.DruidDataSource.class);
-
-				propertyMapper.from(druidDataSource).as(DruidDataSourcePoolMetadata::new)
-						.to(dataSourcePoolMetadata::setMaster);
-
-				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
-							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, DruidDataSourceMBean.class,
-									com.alibaba.druid.pool.DruidDataSource.class)).filter(Objects::nonNull)
-							.map(DruidDataSourcePoolMetadata::new).collect(Collectors.toList()));
+				DruidDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, DruidDataSourceMBean.class,
+						DruidDataSource.class);
+				if(dbcpDataSource != null){
+					return new DruidDataSourcePoolMetadata(dbcpDataSource);
 				}
 
-				return dataSourcePoolMetadata;
+				return null;
 			};
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(TomcatDataSource.class)
-	static class TomcatDataSourcePoolMetadataProviderConfiguration extends
-			AbstractPoolDataSourceMetadataProviderConfiguration<DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider> {
+	@ConditionalOnBean(HikariDataSource.class)
+	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		@Override
-		public DataSourcePoolMetadataProvider.TomcatDataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
+		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
-				DataSourcePoolMetadata dataSourcePoolMetadata = new DataSourcePoolMetadata();
-				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(
-						dataSource.getMaster(), ConnectionPoolMBean.class,
-						org.apache.tomcat.jdbc.pool.DataSource.class);
-
-				propertyMapper.from(tomcatDataSource).as(TomcatDataSourcePoolMetadata::new)
-						.to(dataSourcePoolMetadata::setMaster);
-
-				if(Validate.isNotEmpty(dataSource.getSlaves())){
-					dataSourcePoolMetadata.setSlaves(dataSource.getSlaves().stream()
-							.map((datasource)->DataSourceUnwrapper.unwrap(datasource, ConnectionPoolMBean.class,
-									org.apache.tomcat.jdbc.pool.DataSource.class)).filter(Objects::nonNull)
-							.map(TomcatDataSourcePoolMetadata::new).collect(Collectors.toList()));
+				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource,
+						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
+				if(hikariDataSource != null){
+					return new HikariDataSourcePoolMetadata(hikariDataSource);
 				}
 
-				return dataSourcePoolMetadata;
+				return null;
+			};
+		}
+
+	}
+
+	/**
+	 * @since 3.0.0
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(PoolDataSource.class)
+	static class OraclePoolDataSourceMetadataProviderConfiguration {
+
+		@Bean
+		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
+			return (dataSource)->{
+				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);
+				if(ucpDataSource != null){
+					return new OracleUcpDataSourcePoolMetadata(ucpDataSource);
+				}
+
+				return null;
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(org.apache.tomcat.jdbc.pool.DataSource.class)
+	static class TomcatDataSourcePoolMetadataProviderConfiguration {
+
+		@Bean
+		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
+			return (dataSource)->{
+				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
+						ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
+				if(tomcatDataSource != null){
+					return new TomcatDataSourcePoolMetadata(tomcatDataSource);
+				}
+
+				return null;
 			};
 		}
 

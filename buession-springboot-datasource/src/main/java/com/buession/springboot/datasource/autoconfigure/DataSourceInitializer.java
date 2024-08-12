@@ -24,81 +24,122 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.core.builder.ListBuilder;
-import com.buession.core.validator.Validate;
-import com.buession.jdbc.datasource.config.PoolConfiguration;
-import com.buession.springboot.datasource.core.DataSource;
-import com.buession.springboot.datasource.core.DataSourceConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.buession.core.Customizer;
+import com.buession.jdbc.core.Callback;
+import com.buession.jdbc.datasource.pool.PoolConfiguration;
+import com.buession.springboot.datasource.core.BaseDataSourceConfig;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Constructor;
-import java.util.stream.Collectors;
 
 /**
  * 数据源初始化器
  *
- * @param <T>
- *        {@link javax.sql.DataSource 实现类}
+ * @param <C>
+ * 		数据源配置
  * @param <P>
  *        {@link PoolConfiguration 实现类}
- * @param <D>
+ * @param <ODS>
+ *        {@link javax.sql.DataSource 实现类}
+ * @param <DS>
  *        {@link com.buession.jdbc.datasource.DataSource 实现类}
  *
  * @author Yong.Teng
  * @since 1.3.2
  */
-class DataSourceInitializer<T extends javax.sql.DataSource, P extends PoolConfiguration, D extends com.buession.jdbc.datasource.DataSource<T, P>> {
+class DataSourceInitializer<C extends BaseDataSourceConfig, P extends PoolConfiguration, ODS extends javax.sql.DataSource,
+		DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> {
 
-	private final Class<D> type;
-
-	private final P poolConfiguration;
+	private final Class<DS> type;
 
 	private final DataSourceProperties properties;
 
-	private final static Logger logger = LoggerFactory.getLogger(DataSourceInitializer.class);
+	private final C dataSourceConfig;
 
-	DataSourceInitializer(final Class<D> type, final P poolConfiguration, final DataSourceProperties properties) {
+	private final P poolConfiguration;
+
+	private final Customizer<DS, C> customizer;
+
+	private final Callback<ODS, DataSourceProperties> callback;
+
+	DataSourceInitializer(final Class<DS> type, final DataSourceProperties properties, final C dataSourceConfig,
+						  final P poolConfiguration, final Customizer<DS, C> customizer, final Callback<ODS,
+			DataSourceProperties> callback) {
 		this.type = type;
-		this.poolConfiguration = poolConfiguration;
 		this.properties = properties;
+		this.dataSourceConfig = dataSourceConfig;
+		this.poolConfiguration = poolConfiguration;
+		this.customizer = customizer;
+		this.callback = callback;
 	}
 
-	public DataSource createDataSource() {
-		final DataSource dataSource = new DataSource();
-
-		dataSource.setMaster(createDataSource(properties.getMaster()));
-
-		if(logger.isInfoEnabled()){
-			logger.info("Create master datasource: by driver {}, type {}", properties.getDriverClassName(),
-					type.getName());
-		}
-
-		if(Validate.isEmpty(properties.getSlaves())){
-			dataSource.setSlaves(ListBuilder.of(createDataSource(properties.getMaster())));
-		}else{
-			dataSource.setSlaves(properties.getSlaves().parallelStream().map(this::createDataSource)
-					.collect(Collectors.toList()));
-		}
-
-		if(logger.isInfoEnabled()){
-			logger.info("Create {} size slave datasource: by driver {}, type {}", dataSource.getSlaves().size(),
-					properties.getDriverClassName(), type.getName());
-		}
-
-		return dataSource;
-	}
-
-	private T createDataSource(final DataSourceConfig dataSourceConfig) {
+	public ODS createDataSource() {
 		try{
-			final Constructor<D> constructor = type.getConstructor(DataSourceConfig.class);
-			final D instance = BeanUtils.instantiateClass(constructor, dataSourceConfig);
+			final Constructor<DS> constructor = type.getConstructor(String.class, String.class, String.class,
+					String.class);
+			final DS instance = BeanUtils.instantiateClass(constructor, properties.determineDriverClassName(),
+					properties.determineUrl(), properties.determineUsername(), properties.determinePassword());
 
+			/*                     数据源基本配置开始                     */
+			instance.setDefaultCatalog(properties.getDefaultCatalog());
+			instance.setDefaultSchema(properties.getDefaultSchema());
+
+			instance.setLoginTimeout(properties.getLoginTimeout());
+
+			instance.setInitSQL(properties.getInitSQL());
+
+			instance.setQueryTimeout(dataSourceConfig.getQueryTimeout());
+			instance.setDefaultTransactionIsolation(dataSourceConfig.getDefaultTransactionIsolation());
+			instance.setDefaultAutoCommit(dataSourceConfig.getDefaultAutoCommit());
+
+			instance.setDefaultReadOnly(dataSourceConfig.getDefaultReadOnly());
+
+			instance.setAccessToUnderlyingConnectionAllowed(dataSourceConfig.getAccessToUnderlyingConnectionAllowed());
+
+			instance.setConnectionProperties(properties.getConnectionProperties());
+			/*                     数据源基本配置结束                     */
+
+
+			/*                       连接池配置开始                      */
+			if(poolConfiguration != null){
+				poolConfiguration.setPoolName(dataSourceConfig.getPoolName());
+
+				poolConfiguration.setInitialSize(dataSourceConfig.getInitialSize());
+				poolConfiguration.setMinIdle(dataSourceConfig.getMinIdle());
+				poolConfiguration.setMaxIdle(dataSourceConfig.getMaxIdle());
+				poolConfiguration.setMaxTotal(dataSourceConfig.getMaxTotal());
+				poolConfiguration.setMaxWait(dataSourceConfig.getMaxWait());
+
+				poolConfiguration.setTestOnCreate(dataSourceConfig.getTestOnCreate());
+				poolConfiguration.setTestOnBorrow(dataSourceConfig.getTestOnBorrow());
+				poolConfiguration.setTestOnReturn(dataSourceConfig.getTestOnReturn());
+				poolConfiguration.setTestWhileIdle(dataSourceConfig.getTestWhileIdle());
+
+				poolConfiguration.setValidationQuery(dataSourceConfig.getValidationQuery());
+				poolConfiguration.setValidationQueryTimeout(dataSourceConfig.getValidationQueryTimeout());
+
+				poolConfiguration.setMinEvictableIdle(dataSourceConfig.getMinEvictableIdle());
+				poolConfiguration.setMaxEvictableIdle(dataSourceConfig.getMaxEvictableIdle());
+
+				poolConfiguration.setNumTestsPerEvictionRun(dataSourceConfig.getNumTestsPerEvictionRun());
+				poolConfiguration.setTimeBetweenEvictionRuns(dataSourceConfig.getTimeBetweenEvictionRuns());
+
+				poolConfiguration.setRemoveAbandonedTimeout(dataSourceConfig.getRemoveAbandonedTimeout());
+				poolConfiguration.setLogAbandoned(dataSourceConfig.getLogAbandoned());
+
+				poolConfiguration.setJmx(dataSourceConfig.getJmx());
+			}
 			instance.setPoolConfiguration(poolConfiguration);
+			/*                       连接池配置结束                      */
 
-			return instance.createDataSource();
+			customizer.customize(instance, this.dataSourceConfig);
+
+			final ODS dataSource = instance.createDataSource();
+
+			callback.apply(dataSource, properties);
+
+			return dataSource;
 		}catch(NoSuchMethodException e){
 			throw new BeanInstantiationException(type, "Can't specify more arguments than constructor parameters");
 		}
