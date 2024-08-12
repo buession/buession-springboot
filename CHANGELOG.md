@@ -14,6 +14,7 @@
 - httpclient 新增代理支持
 - httpclient 新增支持 apache httpcomponents 5
 - buession-springboot-cache 新增支持 lettuce 支持
+- AbstractApplication 新增 applicationStartedHook 便于应用启动后，可增加钩子用于扩展程序
 
 
 ### 🔔 变化
@@ -21,11 +22,13 @@
 - buession-springboot-canal 迁移至 com.buession.canal:buession-canal-springboot
 - 拆分 cache DataSource AutoConfiguration 类为 JedisDataSourceConfiguration 和 LettuceDataSourceConfiguration
 - 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
+- 删除 buession-springboot-canal、buession-springboot-session
+- Application 增加 springboot 更多原生配置
 
 
 ### 🐞 Bug 修复
 
-- JDBC 修复连接池配置不生效的问题
+- JDBC AutoConfiguration 修复连接池配置不生效的问题
 
 
 ### ⏪ 优化

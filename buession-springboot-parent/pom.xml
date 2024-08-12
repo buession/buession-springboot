@@ -56,7 +56,6 @@
 	<modules>
 		<module>../buession-springboot-boot</module>
 		<module>../buession-springboot-cache</module>
-		<module>../buession-springboot-canal</module>
 		<module>../buession-springboot-captcha</module>
 		<module>../buession-springboot-cli</module>
 		<module>../buession-springboot-datasource</module>
@@ -65,7 +64,6 @@
 		<module>../buession-springboot-mongodb</module>
 		<module>../buession-springboot-mybatis</module>
 		<module>../buession-springboot-pac4j</module>
-		<module>../buession-springboot-session</module>
 		<module>../buession-springboot-shiro</module>
 		<module>../buession-springboot-velocity</module>
 		<module>../buession-springboot-web</module>

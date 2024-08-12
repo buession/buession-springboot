@@ -96,20 +96,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${springframework.boot.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<!-- springframework boot end -->
-
-		<dependency>
-			<groupId>opensymphony</groupId>
-			<artifactId>sitemesh</artifactId>
-			<version>2.5.0</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>
@@ -120,6 +107,13 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>sitemesh</artifactId>
+			<version>2.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-parameter-names</artifactId>
@@ -133,11 +127,6 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
 
