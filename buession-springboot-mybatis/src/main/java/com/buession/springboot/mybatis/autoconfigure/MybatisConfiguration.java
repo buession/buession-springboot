@@ -32,7 +32,6 @@ import com.buession.core.utils.Assert;
 import com.buession.core.utils.FieldUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration;
-import com.buession.springboot.datasource.core.DataSource;
 import com.buession.springboot.mybatis.ConfigurationCustomizer;
 import com.buession.springboot.mybatis.ConfiguredMapperScannerRegistrar;
 import com.buession.springboot.mybatis.SpringBootVFS;
@@ -47,7 +46,6 @@ import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -63,6 +61,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -121,48 +120,22 @@ public class MybatisConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SqlSessionFactoryBean masterSqlSessionFactory() {
-		return createSqlSessionFactory(dataSource.getMaster());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public SqlSessionTemplate masterSqlSessionTemplate(ObjectProvider<SqlSessionFactory> masterSqlSessionFactory) {
-		return createSqlSessionTemplate(masterSqlSessionFactory.getIfAvailable());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public List<SqlSessionTemplate> slaveSqlSessionTemplates(
-			ObjectProvider<List<SqlSessionFactory>> slaveSqlSessionFactories) {
-		return slaveSqlSessionFactories.getIfAvailable(()->{
-			throw new BeanInstantiationException(SqlSessionTemplate.class, "slave sqlSessionFactory is null or empty");
-		}).stream().map(this::createSqlSessionTemplate).collect(Collectors.toList());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public List<SqlSessionFactoryBean> slaveSqlSessionFactories() {
-		Assert.isEmpty(dataSource.getSlaves(), ()->
-				new BeanInstantiationException(SqlSessionFactory.class, "slave dataSource is null or empty"));
-		return dataSource.getSlaves().parallelStream().map(this::createSqlSessionFactory).collect(Collectors.toList());
-	}
-
-	private SqlSessionFactoryBean createSqlSessionFactory(javax.sql.DataSource dataSource) {
+	public SqlSessionFactoryBean sqlSessionFactory() {
 		final SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
-		final PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		final PropertyMapper hasTextPropertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		final PropertyMapper nullTextPropertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
 		sessionFactoryBean.setDataSource(dataSource);
 		sessionFactoryBean.setVfs(SpringBootVFS.class);
 		sessionFactoryBean.setFailFast(properties.getFailFast());
 
-		mapper.from(configLocationResource).to(sessionFactoryBean::setConfigLocation);
+		nullTextPropertyMapper.from(configLocationResource).to(sessionFactoryBean::setConfigLocation);
 
 		applyConfiguration(sessionFactoryBean);
 
-		mapper.alwaysApplyingWhenNonNull().from(properties.getConfigurationProperties())
+		nullTextPropertyMapper.from(properties.getConfigurationProperties())
 				.to(sessionFactoryBean::setConfigurationProperties);
-		mapper.alwaysApplyingWhenNonNull().from(databaseIdProvider).to(sessionFactoryBean::setDatabaseIdProvider);
+		nullTextPropertyMapper.from(databaseIdProvider).to(sessionFactoryBean::setDatabaseIdProvider);
 
 		if(Validate.isNotEmpty(interceptors)){
 			sessionFactoryBean.setPlugins(interceptors);
@@ -171,15 +144,16 @@ public class MybatisConfiguration {
 		if(Validate.isNotEmpty(properties.getTypeAliases())){
 			sessionFactoryBean.setTypeAliases(properties.getTypeAliases());
 		}
-		mapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
-		mapper.from(properties.getTypeAliasesSuperType()).to(sessionFactoryBean::setTypeAliasesSuperType);
-		mapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
+		hasTextPropertyMapper.from(properties.getTypeAliasesPackage()).to(sessionFactoryBean::setTypeAliasesPackage);
+		nullTextPropertyMapper.from(properties.getTypeAliasesSuperType())
+				.to(sessionFactoryBean::setTypeAliasesSuperType);
+		hasTextPropertyMapper.from(properties.getTypeHandlersPackage()).to(sessionFactoryBean::setTypeHandlersPackage);
 
 		if(Validate.isNotEmpty(properties.getTypeHandlers())){
 			sessionFactoryBean.setTypeHandlers(properties.getTypeHandlers());
 		}
 
-		mapper.alwaysApplyingWhenNonNull().from(properties.getDefaultEnumTypeHandler())
+		nullTextPropertyMapper.from(properties.getDefaultEnumTypeHandler())
 				.to(sessionFactoryBean::setDefaultEnumTypeHandler);
 
 		if(Validate.isNotEmpty(this.mapperLocations)){
@@ -215,10 +189,12 @@ public class MybatisConfiguration {
 		return sessionFactoryBean;
 	}
 
-	private SqlSessionTemplate createSqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+	@Bean
+	@ConditionalOnMissingBean
+	public SqlSessionTemplate sqlSessionTemplate(ObjectProvider<SqlSessionFactory> sqlSessionFactory) {
 		ExecutorType executorType = properties.getExecutorType();
-		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory, executorType) : new SqlSessionTemplate(
-				sqlSessionFactory);
+		return executorType != null ? new SqlSessionTemplate(sqlSessionFactory.getIfAvailable(),
+				executorType) : new SqlSessionTemplate(sqlSessionFactory.getIfAvailable());
 	}
 
 	private void checkConfigFileExists() {
