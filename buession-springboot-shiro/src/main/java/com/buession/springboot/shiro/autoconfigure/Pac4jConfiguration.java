@@ -33,12 +33,11 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Pac4j for shiro 自动加载类
@@ -46,16 +45,15 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = {com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 @ConditionalOnClass({Pac4jRealm.class, SubjectFactory.class})
-@AutoConfigureAfter({com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 public class Pac4jConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean({Pac4jFilter.class})
-	public ShiroFilter shiroFilter(ObjectProvider<Pac4jFilter> pac4jFilter) {
-		return new ShiroFilter(pac4jFilter.getIfAvailable());
+	public ShiroFilter shiroFilter(Pac4jFilter pac4jFilter) {
+		return new ShiroFilter(pac4jFilter);
 	}
 
 	@Bean

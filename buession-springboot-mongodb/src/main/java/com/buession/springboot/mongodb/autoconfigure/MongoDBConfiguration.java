@@ -27,10 +27,10 @@ package com.buession.springboot.mongodb.autoconfigure;
 import com.buession.core.validator.Validate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
@@ -40,22 +40,21 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(MongoDBProperties.class)
 @AutoConfigureAfter(MongoDataAutoConfiguration.class)
 @Import({MongoDataAutoConfiguration.class})
 public class MongoDBConfiguration {
 
-	public MongoDBConfiguration(MongoDBProperties properties, ObjectProvider<MongoMappingContext> mongoMappingContext,
+	public MongoDBConfiguration(MongoMappingContext mongoMappingContext, MongoDBProperties properties,
 								ObjectProvider<MappingMongoConverter> mappingMongoConverter) {
-		MongoMappingContext mappingContext = mongoMappingContext.getIfAvailable();
 		MongoTypeMapper mongoTypeMapper;
 
 		if(properties.getTypeMapper() != null){
 			mongoTypeMapper = BeanUtils.instantiateClass(properties.getTypeMapper());
 		}else{
 			mongoTypeMapper = new DefaultMongoTypeMapper(
-					Validate.hasText(properties.getTypeKey()) ? properties.getTypeKey() : null, mappingContext);
+					Validate.hasText(properties.getTypeKey()) ? properties.getTypeKey() : null, mongoMappingContext);
 		}
 
 		mappingMongoConverter.ifAvailable((mongoConverter)->mongoConverter.setTypeMapper(mongoTypeMapper));

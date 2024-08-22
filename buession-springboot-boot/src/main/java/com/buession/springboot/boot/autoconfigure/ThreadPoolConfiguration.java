@@ -30,11 +30,11 @@ import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 2.3.3
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(ThreadPoolProperties.class)
 @ConditionalOnProperty(prefix = ThreadPoolProperties.PREFIX, name = "enabled", havingValue = "true")
 public class ThreadPoolConfiguration {
@@ -111,7 +111,7 @@ public class ThreadPoolConfiguration {
 			threadPoolConfiguration.setKeepAliveTime(threadPoolProperties.getKeepAliveTime().toMillis());
 			threadPoolConfiguration.setKeepAliveTimeTimeUnit(TimeUnit.MILLISECONDS);
 		}
-		
+
 		workQueue.ifAvailable(threadPoolConfiguration::setWorkQueue);
 		threadFactory.ifAvailable(threadPoolConfiguration::setThreadFactory);
 		rejectedHandler.ifAvailable(threadPoolConfiguration::setRejectedHandler);

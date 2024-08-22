@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -29,40 +29,39 @@ import com.buession.security.shiro.DefaultRedisManager;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.cache.RedisCacheManager;
 import org.apache.shiro.cache.CacheManager;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(ShiroProperties.class)
 public class ShiroBaseConfiguration {
 
 	private final ShiroProperties properties;
 
-	public ShiroBaseConfiguration(ShiroProperties properties){
+	public ShiroBaseConfiguration(ShiroProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnBean(RedisTemplate.class)
 	@ConditionalOnMissingBean
-	public RedisManager redisManager(ObjectProvider<RedisTemplate> redisTemplate){
-		return new DefaultRedisManager(redisTemplate.getIfAvailable());
+	public RedisManager redisManager(RedisTemplate redisTemplate) {
+		return new DefaultRedisManager(redisTemplate);
 	}
 
 	@Bean
 	@ConditionalOnBean(RedisManager.class)
 	@ConditionalOnMissingBean
-	public CacheManager cacheManager(ObjectProvider<RedisManager> redisManager){
+	public CacheManager cacheManager(RedisManager redisManager) {
 		ShiroProperties.Cache cache = properties.getCache();
-		return new RedisCacheManager(redisManager.getIfAvailable(), cache.getPrefix(), cache.getExpire(),
+		return new RedisCacheManager(redisManager, cache.getPrefix(), cache.getExpire(),
 				cache.getPrincipalIdFieldName());
 	}
 

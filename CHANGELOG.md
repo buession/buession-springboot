@@ -24,6 +24,8 @@
 - 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
 - 删除 buession-springboot-canal、buession-springboot-session
 - Application 增加 springboot 更多原生配置
+- MyBatis 废弃 masterTemplate、slaveSqlSessionTemplate bean，通过其它数据库本身或其它中间件实现读写分离
+- Pac4jJwtConfiguration 不再初始化 Client Bean ，移至 Pac4jHttpConfiguration
 
 
 ### 🐞 Bug 修复

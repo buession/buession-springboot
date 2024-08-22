@@ -19,35 +19,34 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.autoconfigure;
 
 import com.buession.core.codec.MessagePropertyBeanPostProcessor;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 消息属性自动配置
  *
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 public class MessagePropertyConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	public MessagePropertyConfiguration(ObjectProvider<ApplicationContext> applicationContext){
-		this.applicationContext = applicationContext.getIfAvailable();
+	public MessagePropertyConfiguration(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MessagePropertyBeanPostProcessor messagePropertyBeanPostProcessor(){
+	public MessagePropertyBeanPostProcessor messagePropertyBeanPostProcessor() {
 		return new MessagePropertyBeanPostProcessor(applicationContext.getEnvironment());
 	}
 

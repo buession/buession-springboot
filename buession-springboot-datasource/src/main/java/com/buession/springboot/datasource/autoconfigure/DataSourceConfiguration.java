@@ -24,14 +24,15 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.core.Customizer;
+import com.buession.core.Configurer;
+import com.buession.jdbc.config.*;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.*;
 import com.buession.jdbc.datasource.pool.*;
-import com.buession.springboot.datasource.config.*;
 import com.buession.springboot.datasource.core.DataSourceType;
 import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,7 +40,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
@@ -48,7 +48,7 @@ import javax.sql.DataSource;
  *
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnProperty(name = DataSourceProperties.PREFIX)
 public class DataSourceConfiguration {
 
@@ -58,18 +58,18 @@ public class DataSourceConfiguration {
 		this.properties = properties;
 	}
 
-	protected static <ODS extends javax.sql.DataSource, C extends BaseDataSourceConfig, P extends PoolConfiguration,
+	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration,
 			DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
 			final Class<DS> type, final DataSourceProperties dataSourceProperties, final C dataSourceConfig,
-			final P poolConfiguration, final Customizer<DS, C> customizer) {
+			final P poolConfiguration, final Configurer<DS, C> customizer) {
 		return createDataSource(type, dataSourceProperties, dataSourceConfig, poolConfiguration, customizer,
 				(dataSource, properties)->dataSource);
 	}
 
-	protected static <ODS extends javax.sql.DataSource, C extends BaseDataSourceConfig, P extends PoolConfiguration,
+	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration,
 			DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
 			final Class<DS> type, final DataSourceProperties dataSourceProperties, final C dataSourceConfig,
-			final P poolConfiguration, final Customizer<DS, C> customizer,
+			final P poolConfiguration, final Configurer<DS, C> customizer,
 			final Callback<ODS, DataSourceProperties> callback) {
 		final DataSourceInitializer<C, P, ODS, DS> dataSourceInitializer = new DataSourceInitializer<>(type,
 				dataSourceProperties, dataSourceConfig, poolConfiguration, customizer, callback);
@@ -81,7 +81,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 1.3.2
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
@@ -114,7 +114,7 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final Dbcp2PoolConfiguration poolConfiguration,
-									   final Dbcp2DataSourceConfig dataSourceConfig) {
+									   final Dbcp2Config dataSourceConfig) {
 			poolConfiguration.setMaxConnLifetime(dataSourceConfig.getMaxConnLifetime());
 
 			poolConfiguration.setPoolPreparedStatements(dataSourceConfig.getPoolPreparedStatements());
@@ -140,7 +140,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 1.3.2
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(DruidDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
@@ -209,7 +209,7 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final DruidPoolConfiguration poolConfiguration,
-									   final DruidDataSourceConfig dataSourceConfig) {
+									   final DruidConfig dataSourceConfig) {
 			poolConfiguration.setMaxActive(dataSourceConfig.getMaxActive());
 
 			poolConfiguration.setKeepAlive(dataSourceConfig.getKeepAlive());
@@ -249,7 +249,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 1.3.2
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
@@ -277,7 +277,7 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final HikariPoolConfiguration poolConfiguration,
-									   final HikariDataSourceConfig dataSourceConfig) {
+									   final HikariConfig dataSourceConfig) {
 			poolConfiguration.setInitializationFailTimeout(dataSourceConfig.getInitializationFailTimeout());
 
 			poolConfiguration.setMaxPoolSize(dataSourceConfig.getMaxPoolSize());
@@ -306,7 +306,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 3.0.0
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(PoolDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
@@ -349,7 +349,7 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final OraclePoolConfiguration poolConfiguration,
-									   final OracleDataSourceConfig dataSourceConfig) {
+									   final OracleConfig dataSourceConfig) {
 			poolConfiguration.setMinPoolSize(dataSourceConfig.getMinPoolSize());
 			poolConfiguration.setMaxPoolSize(dataSourceConfig.getMaxPoolSize());
 
@@ -383,7 +383,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 1.3.2
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
@@ -429,7 +429,7 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final TomcatPoolConfiguration poolConfiguration,
-									   final TomcatDataSourceConfig dataSourceConfig) {
+									   final TomcatConfig dataSourceConfig) {
 			poolConfiguration.setMaxActive(dataSourceConfig.getMaxActive());
 			poolConfiguration.setMaxAge(dataSourceConfig.getMaxAge());
 
@@ -459,7 +459,7 @@ public class DataSourceConfiguration {
 	 *
 	 * @since 1.3.2
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type")

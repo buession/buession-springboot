@@ -78,6 +78,8 @@
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
 			<version>${cas.client.version}</version>
+			<optional>true</optional>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bouncycastle</groupId>
@@ -97,6 +99,8 @@
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-support-saml</artifactId>
 			<version>${cas.client.version}</version>
+			<optional>true</optional>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>joda-time</groupId>

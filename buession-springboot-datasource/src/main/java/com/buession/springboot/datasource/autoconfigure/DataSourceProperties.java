@@ -26,8 +26,8 @@ package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
+import com.buession.jdbc.config.*;
 import com.buession.lang.Constants;
-import com.buession.springboot.datasource.config.TomcatDataSourceConfig;
 import com.buession.springboot.datasource.exception.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -155,42 +155,42 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	private Dbcp2DataSourceConfig dbcp2;
+	private Dbcp2Config dbcp2;
 
 	/**
 	 * Druid 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private DruidDataSourceConfig druid;
+	private DruidConfig druid;
 
 	/**
 	 * Hikari 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private HikariDataSourceConfig hikari;
+	private HikariConfig hikari;
 
 	/**
 	 * Oracle 数据源配置
 	 *
 	 * @since 3.0.0
 	 */
-	private OracleDataSourceConfig oracle;
+	private OracleConfig oracle;
 
 	/**
 	 * Tomcat 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private TomcatDataSourceConfig tomcat;
+	private TomcatConfig tomcat;
 
 	/**
 	 * Generic 数据源配置
 	 *
 	 * @since 1.3.2
 	 */
-	private GenericDataSourceConfig generic;
+	private GenericConfig generic;
 
 	/**
 	 * 构造函数
@@ -541,7 +541,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public Dbcp2DataSourceConfig getDbcp2() {
+	public Dbcp2Config getDbcp2() {
 		return dbcp2;
 	}
 
@@ -553,7 +553,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setDbcp2(Dbcp2DataSourceConfig dbcp2) {
+	public void setDbcp2(Dbcp2Config dbcp2) {
 		this.dbcp2 = dbcp2;
 	}
 
@@ -562,7 +562,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Druid 数据源配置
 	 */
-	public DruidDataSourceConfig getDruid() {
+	public DruidConfig getDruid() {
 		return druid;
 	}
 
@@ -572,7 +572,7 @@ public class DataSourceProperties {
 	 * @param druid
 	 * 		Druid 数据源配置
 	 */
-	public void setDruid(DruidDataSourceConfig druid) {
+	public void setDruid(DruidConfig druid) {
 		this.druid = druid;
 	}
 
@@ -583,7 +583,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public HikariDataSourceConfig getHikari() {
+	public HikariConfig getHikari() {
 		return hikari;
 	}
 
@@ -595,7 +595,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 1.3.2
 	 */
-	public void setHikari(HikariDataSourceConfig hikari) {
+	public void setHikari(HikariConfig hikari) {
 		this.hikari = hikari;
 	}
 
@@ -606,7 +606,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 3.0.0
 	 */
-	public OracleDataSourceConfig getOracle() {
+	public OracleConfig getOracle() {
 		return oracle;
 	}
 
@@ -618,7 +618,7 @@ public class DataSourceProperties {
 	 *
 	 * @since 3.0.0
 	 */
-	public void setOracle(OracleDataSourceConfig oracle) {
+	public void setOracle(OracleConfig oracle) {
 		this.oracle = oracle;
 	}
 
@@ -627,7 +627,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Tomcat 数据源配置
 	 */
-	public TomcatDataSourceConfig getTomcat() {
+	public TomcatConfig getTomcat() {
 		return tomcat;
 	}
 
@@ -637,7 +637,7 @@ public class DataSourceProperties {
 	 * @param tomcat
 	 * 		Tomcat 数据源配置
 	 */
-	public void setTomcat(TomcatDataSourceConfig tomcat) {
+	public void setTomcat(TomcatConfig tomcat) {
 		this.tomcat = tomcat;
 	}
 
@@ -646,7 +646,7 @@ public class DataSourceProperties {
 	 *
 	 * @return Generic 数据源配置
 	 */
-	public GenericDataSourceConfig getGeneric() {
+	public GenericConfig getGeneric() {
 		return generic;
 	}
 
@@ -656,7 +656,7 @@ public class DataSourceProperties {
 	 * @param generic
 	 * 		Generic 数据源配置
 	 */
-	public void setGeneric(GenericDataSourceConfig generic) {
+	public void setGeneric(GenericConfig generic) {
 		this.generic = generic;
 	}
 

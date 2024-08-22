@@ -51,11 +51,11 @@ import java.util.stream.Collectors;
  * @author Yong.Teng
  * @since 3.0.0
  */
-@AutoConfiguration(before = WebFluxAutoConfiguration.class)
+@AutoConfiguration(before = {WebFluxAutoConfiguration.class,
+		org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @EnableConfigurationProperties({ServerProperties.class, WebProperties.class})
-@AutoConfigureBefore({org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration.class})
 public class ErrorWebFluxAutoConfiguration {
 
 	private final ServerProperties serverProperties;
@@ -67,18 +67,18 @@ public class ErrorWebFluxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
 	@Order(-1)
-	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
+	public ErrorWebExceptionHandler errorWebExceptionHandler(ApplicationContext applicationContext,
+															 ErrorAttributes errorAttributes,
 															 WebProperties webProperties,
 															 ObjectProvider<ViewResolver> viewResolvers,
-															 ServerCodecConfigurer serverCodecConfigurer,
-															 ApplicationContext applicationContext) {
+															 ServerCodecConfigurer serverCodecConfigurer) {
 		final DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				webProperties.getResources(), serverProperties.getError(), applicationContext);
 
 		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().collect(Collectors.toList()));
 		exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
 		exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
-		
+
 		return exceptionHandler;
 	}
 

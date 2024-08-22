@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
@@ -31,7 +31,7 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,21 +39,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.DispatcherType;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = {ShiroWebConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@AutoConfigureAfter({ShiroWebConfiguration.class})
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	public ShiroWebFilterConfiguration(ShiroProperties properties) {
@@ -74,38 +71,17 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnBean({ShiroFilter.class})
 	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(
-			ObjectProvider<ShiroFilter> shiroFilterProvider) throws Exception {
-		return filterShiroFilterRegistrationBean((shiroFilterFactoryBean)->{
-			shiroFilterProvider.ifAvailable((shiroFilter)->{
-				if(shiroFilterFactoryBean.getFilters() == null){
-					shiroFilterFactoryBean.setFilters(shiroFilter.getFilters());
-				}else{
-					shiroFilterFactoryBean.getFilters().putAll(shiroFilter.getFilters());
-				}
-			});
-		});
-	}
-
-	@Bean(name = "filterShiroFilterRegistrationBean")
-	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
-	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception {
-		return filterShiroFilterRegistrationBean((shiroFilterFactoryBean)->{
-		});
-	}
-
-	@Bean(name = "globalFilters")
-	@ConditionalOnMissingBean
-	@Override
-	protected List<String> globalFilters() {
-		return super.globalFilters();
-	}
-
-	private FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(
-			Consumer<ShiroFilterFactoryBean> consumer) throws Exception {
+			ObjectProvider<ShiroFilter> shiroFilter) throws Exception {
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 		ShiroFilterFactoryBean shiroFilterFactoryBean = super.shiroFilterFactoryBean();
 
-		consumer.accept(shiroFilterFactoryBean);
+		shiroFilter.ifAvailable((filter)->{
+			if(shiroFilterFactoryBean.getFilters() == null){
+				shiroFilterFactoryBean.setFilters(filter.getFilters());
+			}else{
+				shiroFilterFactoryBean.getFilters().putAll(filter.getFilters());
+			}
+		});
 
 		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
@@ -114,6 +90,13 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;
+	}
+
+	@Bean(name = "globalFilters")
+	@ConditionalOnMissingBean
+	@Override
+	protected List<String> globalFilters() {
+		return super.globalFilters();
 	}
 
 }

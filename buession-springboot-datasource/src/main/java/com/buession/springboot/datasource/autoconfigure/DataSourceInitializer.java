@@ -24,10 +24,10 @@
  */
 package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.core.Customizer;
+import com.buession.core.Configurer;
+import com.buession.jdbc.config.BaseConfig;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.pool.PoolConfiguration;
-import com.buession.springboot.datasource.config.BaseDataSourceConfig;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 
@@ -48,7 +48,7 @@ import java.lang.reflect.Constructor;
  * @author Yong.Teng
  * @since 1.3.2
  */
-class DataSourceInitializer<C extends BaseDataSourceConfig, P extends PoolConfiguration, ODS extends javax.sql.DataSource,
+class DataSourceInitializer<C extends BaseConfig, P extends PoolConfiguration, ODS extends javax.sql.DataSource,
 		DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> {
 
 	private final Class<DS> type;
@@ -59,18 +59,18 @@ class DataSourceInitializer<C extends BaseDataSourceConfig, P extends PoolConfig
 
 	private final P poolConfiguration;
 
-	private final Customizer<DS, C> customizer;
+	private final Configurer<DS, C> configurer;
 
 	private final Callback<ODS, DataSourceProperties> callback;
 
 	DataSourceInitializer(final Class<DS> type, final DataSourceProperties properties, final C dataSourceConfig,
-						  final P poolConfiguration, final Customizer<DS, C> customizer, final Callback<ODS,
+						  final P poolConfiguration, final Configurer<DS, C> configurer, final Callback<ODS,
 			DataSourceProperties> callback) {
 		this.type = type;
 		this.properties = properties;
 		this.dataSourceConfig = dataSourceConfig;
 		this.poolConfiguration = poolConfiguration;
-		this.customizer = customizer;
+		this.configurer = configurer;
 		this.callback = callback;
 	}
 
@@ -133,7 +133,7 @@ class DataSourceInitializer<C extends BaseDataSourceConfig, P extends PoolConfig
 			instance.setPoolConfiguration(poolConfiguration);
 			/*                       连接池配置结束                      */
 
-			customizer.customize(instance, this.dataSourceConfig);
+			configurer.configure(instance, this.dataSourceConfig);
 
 			final ODS dataSource = instance.createDataSource();
 

@@ -49,9 +49,7 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -59,19 +57,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(before = {ShiroConfiguration.class}, after = {ShiroWebMvcConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "web.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@AutoConfigureBefore({ShiroConfiguration.class})
-@AutoConfigureAfter({ShiroWebMvcConfiguration.class})
 public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 	private final ShiroProperties properties;
@@ -181,9 +176,9 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean(name = "sessionDAO")
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager) {
+	protected SessionDAO sessionDAO(RedisManager redisManager) {
 		ShiroProperties.Session session = properties.getSession();
-		return new RedisSessionDAO(redisManager.getIfAvailable(), session.getPrefix(), session.getExpire(),
+		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
 	}
 

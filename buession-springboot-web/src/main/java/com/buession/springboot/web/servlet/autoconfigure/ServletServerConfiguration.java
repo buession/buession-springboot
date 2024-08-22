@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2024 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.servlet.autoconfigure;
@@ -33,28 +33,28 @@ import com.buession.springboot.web.servlet.filter.ServerInfoFilter;
 import com.buession.web.servlet.filter.PoweredByFilter;
 import com.buession.web.servlet.filter.PrintUrlFilter;
 import com.buession.web.servlet.filter.ResponseHeadersFilter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ServletServerConfiguration extends AbstractServerConfiguration {
 
-	public ServletServerConfiguration(ServerProperties serverProperties){
+	public ServletServerConfiguration(ServerProperties serverProperties) {
 		super(serverProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ResponseHeadersFilter responseHeadersFilter(){
+	public ResponseHeadersFilter responseHeadersFilter() {
 		final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
 
 		if(Validate.isNotEmpty(properties.getResponseHeaders())){
@@ -67,14 +67,14 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "poweredby.enabled", havingValue = "true", matchIfMissing = true)
-	public PoweredByFilter poweredByFilter(){
+	public PoweredByFilter poweredByFilter() {
 		return new PoweredByFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "server-info.enabled", havingValue = "true", matchIfMissing = true)
-	public ServerInfoFilter serverInfoFilter(){
+	public ServerInfoFilter serverInfoFilter() {
 		return new ServerInfoFilter(properties.getServerInfoName(), properties.getServerInfoPrefix(),
 				properties.getServerInfoSuffix(), properties.getStripServerInfoPrefix(),
 				properties.getStripServerInfoSuffix());
@@ -83,11 +83,11 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "print-url.enabled", havingValue = "true")
-	public PrintUrlFilter printUrlFilter(){
+	public PrintUrlFilter printUrlFilter() {
 		return new PrintUrlFilter();
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	static class AnnotationProcessorConfiguration
 			extends com.buession.web.servlet.config.ServletAnnotationProcessorConfiguration {
 

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
@@ -29,12 +29,12 @@ import com.buession.httpclient.OkHttpHttpClient;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpNioClientConnectionManager;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * OkHttp HttpClient Auto Configuration
@@ -42,36 +42,38 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(HttpClientProperties.class)
 public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
-	public OkHttpHttpClientConfiguration(HttpClientProperties properties){
+	public OkHttpHttpClientConfiguration(HttpClientProperties properties) {
 		super(properties);
 	}
 
 	/**
 	 * OkHttp 同步 HttpClient Auto Configuration
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass(okhttp3.OkHttpClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
 	static class HttpClient extends OkHttpHttpClientConfiguration {
 
-		public HttpClient(HttpClientProperties properties){
+		public HttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public OkHttpClientConnectionManager clientConnectionManager(){
+		@ConditionalOnMissingBean
+		public OkHttpClientConnectionManager okHttpClientConnectionManager() {
 			return new OkHttpClientConnectionManager(properties);
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpClient httpClient(ObjectProvider<OkHttpClientConnectionManager> connectionManager){
-			return new OkHttpHttpClient(connectionManager.getIfAvailable());
+		public OkHttpHttpClient httpClient(ObjectProvider<OkHttpClientConnectionManager> clientConnectionManager) {
+			OkHttpClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
+			return connectionManager == null ? new OkHttpHttpClient() : new OkHttpHttpClient(connectionManager);
 		}
 
 	}
@@ -79,25 +81,29 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 	/**
 	 * OkHttp 异步 HttpClient Auto Configuration
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass(okhttp3.OkHttpClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpAsyncClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.async.enabled", havingValue = "true", matchIfMissing = true)
 	static class AsyncHttpClient extends OkHttpHttpClientConfiguration {
 
-		public AsyncHttpClient(HttpClientProperties properties){
+		public AsyncHttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public OkHttpNioClientConnectionManager clientConnectionManager(){
+		@ConditionalOnMissingBean
+		public OkHttpNioClientConnectionManager okHttpNioClientConnectionManager() {
 			return new OkHttpNioClientConnectionManager(properties);
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpAsyncClient httpClient(ObjectProvider<OkHttpNioClientConnectionManager> connectionManager){
-			return new OkHttpHttpAsyncClient(connectionManager.getIfAvailable());
+		public OkHttpHttpAsyncClient httpClient(
+				ObjectProvider<OkHttpNioClientConnectionManager> clientConnectionManager) {
+			OkHttpNioClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
+			return connectionManager == null ? new OkHttpHttpAsyncClient() :
+					new OkHttpHttpAsyncClient(connectionManager);
 		}
 
 	}

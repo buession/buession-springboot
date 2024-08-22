@@ -32,20 +32,20 @@ import com.buession.security.web.xss.reactive.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnClass({ServerHttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -77,7 +77,7 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 		return new XssFilter(optionsBuilder.build());
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(WebSecurityProperties.class)
 	@ConditionalOnBean({ServerHttpSecurity.class})
 	static class DefaultWebSecurityConfigurerAdapterConfiguration extends

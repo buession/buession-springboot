@@ -25,6 +25,7 @@
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.validator.Validate;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -42,7 +43,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -57,7 +57,7 @@ import javax.sql.XADataSource;
  * @author Yong.Teng
  * @since 1.3.2
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class})
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
@@ -65,7 +65,7 @@ import javax.sql.XADataSource;
 @AutoConfigureBefore({org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class})
 public class DataSourceAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({DataSource.class, XADataSource.class})
 	@Import({DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Druid.class,
@@ -75,7 +75,7 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({DataSource.class, XADataSource.class})
 	@Import(EmbeddedDataSourceConfiguration.class)

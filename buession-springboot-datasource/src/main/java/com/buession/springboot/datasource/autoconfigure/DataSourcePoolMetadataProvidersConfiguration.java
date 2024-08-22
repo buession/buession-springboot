@@ -32,12 +32,11 @@ import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceMXBean;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * DataSource Pool Metadata Providers {@link DataSourcePoolMetadataProvider} Auto Configuration
@@ -45,12 +44,11 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 1.3.2
  */
-@Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({
-		org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration.class})
-public class DataSourcePoolMetadataProvidersConfiguration {
+@AutoConfiguration
+public class DataSourcePoolMetadataProvidersConfiguration
+		extends org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnBean(BasicDataSource.class)
 	static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
 
@@ -69,7 +67,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnBean(DruidDataSource.class)
 	static class DruidPoolDataSourceMetadataProviderConfiguration {
 
@@ -88,7 +86,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnBean(HikariDataSource.class)
 	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
@@ -110,7 +108,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	/**
 	 * @since 3.0.0
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnBean(PoolDataSource.class)
 	static class OraclePoolDataSourceMetadataProviderConfiguration {
 
@@ -128,7 +126,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnBean(org.apache.tomcat.jdbc.pool.DataSource.class)
 	static class TomcatDataSourcePoolMetadataProviderConfiguration {
 

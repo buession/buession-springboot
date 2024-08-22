@@ -32,11 +32,11 @@ import com.buession.redis.client.connection.datasource.jedis.JedisClusterDataSou
 import com.buession.redis.client.connection.datasource.jedis.JedisDataSource;
 import com.buession.redis.client.connection.datasource.jedis.JedisRedisDataSource;
 import com.buession.redis.client.connection.datasource.jedis.JedisSentinelDataSource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Redis 数据源 {@link DataSource} 自动配置类
@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Configuration;
  * @see JedisClusterDataSource
  * @since 3.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass(name = "redis.clients.jedis.Jedis")
 @ConditionalOnMissingBean(name = "redisDataSource", value = DataSource.class)

@@ -29,7 +29,6 @@ import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.core.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -58,8 +57,8 @@ public class RedisConfiguration {
 	@Bean
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource) {
-		final RedisTemplate template = new RedisTemplate(dataSource.getIfAvailable());
+	public RedisTemplate redisTemplate(DataSource dataSource) {
+		final RedisTemplate template = new RedisTemplate(dataSource);
 		final Options.Builder builder = Options.Builder.getInstance()
 				.prefix(properties.getKeyPrefix())
 				.serializer(properties.getSerializer())

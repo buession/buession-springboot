@@ -34,8 +34,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -49,7 +48,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -61,10 +59,9 @@ import java.util.Properties;
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = {WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
 @EnableConfigurationProperties(VelocityProperties.class)
 @ConditionalOnClass({VelocityEngine.class})
-@AutoConfigureAfter({WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
 public class VelocityConfiguration {
 
 	private final ApplicationContext applicationContext;
@@ -73,9 +70,9 @@ public class VelocityConfiguration {
 
 	private final static Logger logger = LoggerFactory.getLogger(VelocityConfiguration.class);
 
-	public VelocityConfiguration(VelocityProperties properties, ObjectProvider<ApplicationContext> applicationContext) {
+	public VelocityConfiguration(ApplicationContext applicationContext, VelocityProperties properties) {
+		this.applicationContext = applicationContext;
 		this.properties = properties;
-		this.applicationContext = applicationContext.getIfAvailable();
 	}
 
 	@PostConstruct
@@ -119,11 +116,10 @@ public class VelocityConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration(after = {WebMvcAutoConfiguration.class})
 	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnClass({Servlet.class})
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 	static class VelocityServletWebConfiguration extends AbstractVelocityConfiguration {
 
 		public VelocityServletWebConfiguration(VelocityProperties properties) {
@@ -164,11 +160,10 @@ public class VelocityConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration(after = {WebFluxAutoConfiguration.class})
 	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnClass(WebFluxConfigurer.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
 	static class VelocityReactiveWebConfiguration extends AbstractVelocityConfiguration {
 
 		public VelocityReactiveWebConfiguration(VelocityProperties properties) {
@@ -185,7 +180,7 @@ public class VelocityConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(VelocityProperties.class)
 	@ConditionalOnNotWebApplication
 	static class VelocityNonWebConfiguration extends AbstractVelocityConfiguration {

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
@@ -28,28 +28,26 @@ import com.buession.web.reactive.config.WebFluxConfiguration;
 import com.buession.web.reactive.filter.RequestContextFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ReactiveAdapterRegistry;
-
-import java.util.Objects;
 
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveWebFluxConfiguration extends WebFluxConfiguration {
 
-	public ReactiveWebFluxConfiguration(ObjectProvider<ConfigurableApplicationContext> context,
-										@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> registry){
-		super(Objects.requireNonNull(context.getIfAvailable()).getBeanFactory(), registry.getIfAvailable());
+	public ReactiveWebFluxConfiguration(ConfigurableApplicationContext applicationContext,
+										@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> registry) {
+		super(applicationContext.getBeanFactory(), registry.getIfAvailable());
 	}
 
 	@Bean
-	public RequestContextFilter requestContextFilter(){
+	public RequestContextFilter requestContextFilter() {
 		return new RequestContextFilter();
 	}
 

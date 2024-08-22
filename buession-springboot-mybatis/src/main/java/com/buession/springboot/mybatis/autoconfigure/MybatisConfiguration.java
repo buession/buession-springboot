@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -55,7 +56,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -64,12 +64,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(MybatisProperties.class)
 @ConditionalOnBean({DataSource.class})
 @ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
@@ -242,7 +241,7 @@ public class MybatisConfiguration {
 		return null;
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@Import(ConfiguredMapperScannerRegistrar.class)
 	@ConditionalOnMissingBean({MapperFactoryBean.class, MapperScannerConfigurer.class})
 	@ConditionalOnProperty(prefix = MybatisProperties.PREFIX, name = "scanner.enabled", havingValue = "true", matchIfMissing = true)
