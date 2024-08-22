@@ -60,27 +60,26 @@ public class Pac4jJwtConfiguration {
 
 	private final static int PAD_SIZE = 32;
 
-	private final Pac4jProperties properties;
+	private final Jwt properties;
 
 	public Pac4jJwtConfiguration(Pac4jProperties properties) {
-		this.properties = properties;
+		this.properties = properties.getClient().getJwt();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SecretSignatureConfiguration secretSignatureConfiguration() {
-		Jwt config = properties.getClient().getJwt();
-		String jwtSecret = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
-		return new SecretSignatureConfiguration(jwtSecret, config.getSecretSignatureAlgorithm());
+		String jwtSecret = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE, properties.getEncryptionKey());
+		return new SecretSignatureConfiguration(jwtSecret, properties.getSecretSignatureAlgorithm());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SecretEncryptionConfiguration secretEncryptionConfiguration() {
-		Jwt config = properties.getClient().getJwt();
-		String jwtEncryptionKey = StringUtils.leftPad(config.getEncryptionKey(), PAD_SIZE, config.getEncryptionKey());
-		return new SecretEncryptionConfiguration(jwtEncryptionKey, config.getSecretEncryptionAlgorithm(),
-				config.getEncryptionMethod());
+		String jwtEncryptionKey = StringUtils.leftPad(properties.getEncryptionKey(), PAD_SIZE,
+				properties.getEncryptionKey());
+		return new SecretEncryptionConfiguration(jwtEncryptionKey, properties.getSecretEncryptionAlgorithm(),
+				properties.getEncryptionMethod());
 	}
 
 	@Bean
@@ -94,12 +93,11 @@ public class Pac4jJwtConfiguration {
 	@ConditionalOnMissingBean
 	public JwtAuthenticator jwtAuthenticator(SecretSignatureConfiguration signatureConfiguration,
 											 SecretEncryptionConfiguration secretEncryptionConfiguration) {
-		Jwt config = properties.getClient().getJwt();
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
 
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-		propertyMapper.from(config::getIdentifierGenerator).as(BeanUtils::instantiateClass)
+		propertyMapper.from(properties::getIdentifierGenerator).as(BeanUtils::instantiateClass)
 				.to(jwtAuthenticator::setIdentifierGenerator);
 
 		return jwtAuthenticator;

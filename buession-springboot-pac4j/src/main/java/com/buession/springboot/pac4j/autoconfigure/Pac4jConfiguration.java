@@ -127,8 +127,8 @@ public class Pac4jConfiguration {
 
 		private final ConfigurableApplicationContext context;
 
-		public WebFluxPac4jConfigurerAdapterConfiguration(ObjectProvider<ConfigurableApplicationContext> context) {
-			this.context = context.getIfAvailable();
+		public WebFluxPac4jConfigurerAdapterConfiguration(ConfigurableApplicationContext context) {
+			this.context = context;
 		}
 
 		@Bean
