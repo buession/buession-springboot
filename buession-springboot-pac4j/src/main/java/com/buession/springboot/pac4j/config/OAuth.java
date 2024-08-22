@@ -27,7 +27,6 @@ package com.buession.springboot.pac4j.config;
 import com.github.scribejava.core.model.Verb;
 import org.pac4j.oauth.client.QQClient;
 import org.pac4j.oauth.client.WechatClient;
-import org.pac4j.oauth.client.WeiboClient;
 import org.pac4j.oauth.config.OAuthConfiguration;
 import org.pac4j.oauth.profile.facebook.FacebookProfileDefinition;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -197,7 +196,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Key
 	 */
-	public String getKey(){
+	public String getKey() {
 		return key;
 	}
 
@@ -207,7 +206,7 @@ public class OAuth extends BaseConfig {
 	 * @param key
 	 * 		Key
 	 */
-	public void setKey(String key){
+	public void setKey(String key) {
 		this.key = key;
 	}
 
@@ -216,7 +215,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Secret
 	 */
-	public String getSecret(){
+	public String getSecret() {
 		return secret;
 	}
 
@@ -226,7 +225,7 @@ public class OAuth extends BaseConfig {
 	 * @param secret
 	 * 		Secret
 	 */
-	public void setSecret(String secret){
+	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
@@ -235,7 +234,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return 登录成功跳转地址
 	 */
-	public String getCallbackUrl(){
+	public String getCallbackUrl() {
 		return callbackUrl;
 	}
 
@@ -245,7 +244,7 @@ public class OAuth extends BaseConfig {
 	 * @param callbackUrl
 	 * 		登录成功跳转地址
 	 */
-	public void setCallbackUrl(String callbackUrl){
+	public void setCallbackUrl(String callbackUrl) {
 		this.callbackUrl = callbackUrl;
 	}
 
@@ -254,7 +253,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Bitbucket 配置
 	 */
-	public Bitbucket getBitbucket(){
+	public Bitbucket getBitbucket() {
 		return bitbucket;
 	}
 
@@ -264,7 +263,7 @@ public class OAuth extends BaseConfig {
 	 * @param bitbucket
 	 * 		Bitbucket 配置
 	 */
-	public void setBitbucket(Bitbucket bitbucket){
+	public void setBitbucket(Bitbucket bitbucket) {
 		this.bitbucket = bitbucket;
 	}
 
@@ -273,7 +272,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Twitter 配置
 	 */
-	public Twitter getTwitter(){
+	public Twitter getTwitter() {
 		return twitter;
 	}
 
@@ -283,7 +282,7 @@ public class OAuth extends BaseConfig {
 	 * @param twitter
 	 * 		Twitter 配置
 	 */
-	public void setTwitter(Twitter twitter){
+	public void setTwitter(Twitter twitter) {
 		this.twitter = twitter;
 	}
 
@@ -292,7 +291,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Yahoo 配置
 	 */
-	public Yahoo getYahoo(){
+	public Yahoo getYahoo() {
 		return yahoo;
 	}
 
@@ -302,7 +301,7 @@ public class OAuth extends BaseConfig {
 	 * @param yahoo
 	 * 		Yahoo 配置
 	 */
-	public void setYahoo(Yahoo yahoo){
+	public void setYahoo(Yahoo yahoo) {
 		this.yahoo = yahoo;
 	}
 
@@ -311,7 +310,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return 通用 OAuth2 配置
 	 */
-	public Generic getGeneric(){
+	public Generic getGeneric() {
 		return generic;
 	}
 
@@ -321,7 +320,7 @@ public class OAuth extends BaseConfig {
 	 * @param generic
 	 * 		通用 OAuth2 配置
 	 */
-	public void setGeneric(Generic generic){
+	public void setGeneric(Generic generic) {
 		this.generic = generic;
 	}
 
@@ -330,7 +329,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return CAS 配置
 	 */
-	public Cas getCas(){
+	public Cas getCas() {
 		return cas;
 	}
 
@@ -340,7 +339,7 @@ public class OAuth extends BaseConfig {
 	 * @param cas
 	 * 		CAS 配置
 	 */
-	public void setCas(Cas cas){
+	public void setCas(Cas cas) {
 		this.cas = cas;
 	}
 
@@ -349,7 +348,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return DropBox 配置
 	 */
-	public DropBox getDropBox(){
+	public DropBox getDropBox() {
 		return dropBox;
 	}
 
@@ -359,7 +358,7 @@ public class OAuth extends BaseConfig {
 	 * @param dropBox
 	 * 		DropBox 配置
 	 */
-	public void setDropBox(DropBox dropBox){
+	public void setDropBox(DropBox dropBox) {
 		this.dropBox = dropBox;
 	}
 
@@ -368,7 +367,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Facebook 配置
 	 */
-	public Facebook getFacebook(){
+	public Facebook getFacebook() {
 		return facebook;
 	}
 
@@ -378,7 +377,7 @@ public class OAuth extends BaseConfig {
 	 * @param facebook
 	 * 		Facebook 配置
 	 */
-	public void setFacebook(Facebook facebook){
+	public void setFacebook(Facebook facebook) {
 		this.facebook = facebook;
 	}
 
@@ -387,7 +386,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return FigShare 配置
 	 */
-	public FigShare getFigShare(){
+	public FigShare getFigShare() {
 		return figShare;
 	}
 
@@ -397,7 +396,7 @@ public class OAuth extends BaseConfig {
 	 * @param figShare
 	 * 		FigShare 配置
 	 */
-	public void setFigShare(FigShare figShare){
+	public void setFigShare(FigShare figShare) {
 		this.figShare = figShare;
 	}
 
@@ -406,7 +405,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Foursquare 配置
 	 */
-	public Foursquare getFoursquare(){
+	public Foursquare getFoursquare() {
 		return foursquare;
 	}
 
@@ -416,7 +415,7 @@ public class OAuth extends BaseConfig {
 	 * @param foursquare
 	 * 		Foursquare 配置
 	 */
-	public void setFoursquare(Foursquare foursquare){
+	public void setFoursquare(Foursquare foursquare) {
 		this.foursquare = foursquare;
 	}
 
@@ -425,7 +424,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return GitHub 配置
 	 */
-	public GitHub getGitHub(){
+	public GitHub getGitHub() {
 		return gitHub;
 	}
 
@@ -435,7 +434,7 @@ public class OAuth extends BaseConfig {
 	 * @param gitHub
 	 * 		GitHub 配置
 	 */
-	public void setGitHub(GitHub gitHub){
+	public void setGitHub(GitHub gitHub) {
 		this.gitHub = gitHub;
 	}
 
@@ -444,7 +443,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Google2 配置
 	 */
-	public Google2 getGoogle2(){
+	public Google2 getGoogle2() {
 		return google2;
 	}
 
@@ -454,7 +453,7 @@ public class OAuth extends BaseConfig {
 	 * @param google2
 	 * 		Google2 配置
 	 */
-	public void setGoogle2(Google2 google2){
+	public void setGoogle2(Google2 google2) {
 		this.google2 = google2;
 	}
 
@@ -463,7 +462,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return HiOrgServer 配置
 	 */
-	public HiOrgServer getHiOrgServer(){
+	public HiOrgServer getHiOrgServer() {
 		return hiOrgServer;
 	}
 
@@ -473,7 +472,7 @@ public class OAuth extends BaseConfig {
 	 * @param hiOrgServer
 	 * 		HiOrgServer 配置
 	 */
-	public void setHiOrgServer(HiOrgServer hiOrgServer){
+	public void setHiOrgServer(HiOrgServer hiOrgServer) {
 		this.hiOrgServer = hiOrgServer;
 	}
 
@@ -482,7 +481,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return LinkedIn2 配置
 	 */
-	public LinkedIn2 getLinkedIn2(){
+	public LinkedIn2 getLinkedIn2() {
 		return linkedIn2;
 	}
 
@@ -492,7 +491,7 @@ public class OAuth extends BaseConfig {
 	 * @param linkedIn2
 	 * 		LinkedIn2 配置
 	 */
-	public void setLinkedIn2(LinkedIn2 linkedIn2){
+	public void setLinkedIn2(LinkedIn2 linkedIn2) {
 		this.linkedIn2 = linkedIn2;
 	}
 
@@ -501,7 +500,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Ok 配置
 	 */
-	public Ok getOk(){
+	public Ok getOk() {
 		return ok;
 	}
 
@@ -511,7 +510,7 @@ public class OAuth extends BaseConfig {
 	 * @param ok
 	 * 		Ok 配置
 	 */
-	public void setOk(Ok ok){
+	public void setOk(Ok ok) {
 		this.ok = ok;
 	}
 
@@ -520,7 +519,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return PayPal 配置
 	 */
-	public PayPal getPayPal(){
+	public PayPal getPayPal() {
 		return payPal;
 	}
 
@@ -530,7 +529,7 @@ public class OAuth extends BaseConfig {
 	 * @param payPal
 	 * 		PayPal 配置
 	 */
-	public void setPayPal(PayPal payPal){
+	public void setPayPal(PayPal payPal) {
 		this.payPal = payPal;
 	}
 
@@ -539,7 +538,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return QQ 配置
 	 */
-	public Qq getQq(){
+	public Qq getQq() {
 		return qq;
 	}
 
@@ -549,7 +548,7 @@ public class OAuth extends BaseConfig {
 	 * @param qq
 	 * 		QQ 配置
 	 */
-	public void setQq(Qq qq){
+	public void setQq(Qq qq) {
 		this.qq = qq;
 	}
 
@@ -558,7 +557,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Strava 配置
 	 */
-	public Strava getStrava(){
+	public Strava getStrava() {
 		return strava;
 	}
 
@@ -568,7 +567,7 @@ public class OAuth extends BaseConfig {
 	 * @param strava
 	 * 		Strava 配置
 	 */
-	public void setStrava(Strava strava){
+	public void setStrava(Strava strava) {
 		this.strava = strava;
 	}
 
@@ -577,7 +576,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Vk 配置
 	 */
-	public Vk getVk(){
+	public Vk getVk() {
 		return vk;
 	}
 
@@ -587,7 +586,7 @@ public class OAuth extends BaseConfig {
 	 * @param vk
 	 * 		Vk 配置
 	 */
-	public void setVk(Vk vk){
+	public void setVk(Vk vk) {
 		this.vk = vk;
 	}
 
@@ -596,7 +595,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return 微博配置
 	 */
-	public Weibo getWeibo(){
+	public Weibo getWeibo() {
 		return weibo;
 	}
 
@@ -606,7 +605,7 @@ public class OAuth extends BaseConfig {
 	 * @param weibo
 	 * 		微博配置
 	 */
-	public void setWeibo(Weibo weibo){
+	public void setWeibo(Weibo weibo) {
 		this.weibo = weibo;
 	}
 
@@ -615,7 +614,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return 微信配置
 	 */
-	public Wechat getWechat(){
+	public Wechat getWechat() {
 		return wechat;
 	}
 
@@ -625,7 +624,7 @@ public class OAuth extends BaseConfig {
 	 * @param wechat
 	 * 		微信配置
 	 */
-	public void setWechat(Wechat wechat){
+	public void setWechat(Wechat wechat) {
 		this.wechat = wechat;
 	}
 
@@ -634,7 +633,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return Windows Live 配置
 	 */
-	public WindowsLive getWindowsLive(){
+	public WindowsLive getWindowsLive() {
 		return windowsLive;
 	}
 
@@ -644,7 +643,7 @@ public class OAuth extends BaseConfig {
 	 * @param windowsLive
 	 * 		Windows Live 配置
 	 */
-	public void setWindowsLive(WindowsLive windowsLive){
+	public void setWindowsLive(WindowsLive windowsLive) {
 		this.windowsLive = windowsLive;
 	}
 
@@ -653,7 +652,7 @@ public class OAuth extends BaseConfig {
 	 *
 	 * @return WordPress 配置
 	 */
-	public WordPress getWordPress(){
+	public WordPress getWordPress() {
 		return wordPress;
 	}
 
@@ -663,13 +662,13 @@ public class OAuth extends BaseConfig {
 	 * @param wordPress
 	 * 		WordPress 配置
 	 */
-	public void setWordPress(WordPress wordPress){
+	public void setWordPress(WordPress wordPress) {
 		this.wordPress = wordPress;
 	}
 
 	public abstract static class BaseOAuthConfig extends BaseClientConfig {
 
-		protected boolean tokenAsHeader;
+		protected Boolean tokenAsHeader;
 
 		/**
 		 * 授权类型
@@ -687,15 +686,19 @@ public class OAuth extends BaseConfig {
 		 * @param name
 		 * 		Client 名称
 		 */
-		public BaseOAuthConfig(String name){
+		public BaseOAuthConfig(String name) {
 			super(name);
 		}
 
-		public boolean isTokenAsHeader(){
+		public Boolean isTokenAsHeader() {
+			return getTokenAsHeader();
+		}
+
+		public Boolean getTokenAsHeader() {
 			return tokenAsHeader;
 		}
 
-		public void setTokenAsHeader(boolean tokenAsHeader){
+		public void setTokenAsHeader(Boolean tokenAsHeader) {
 			this.tokenAsHeader = tokenAsHeader;
 		}
 
@@ -704,7 +707,7 @@ public class OAuth extends BaseConfig {
 		 *
 		 * @return 授权类型
 		 */
-		public String getResponseType(){
+		public String getResponseType() {
 			return responseType;
 		}
 
@@ -714,7 +717,7 @@ public class OAuth extends BaseConfig {
 		 * @param responseType
 		 * 		授权类型
 		 */
-		public void setResponseType(String responseType){
+		public void setResponseType(String responseType) {
 			this.responseType = responseType;
 		}
 
@@ -723,7 +726,7 @@ public class OAuth extends BaseConfig {
 		 *
 		 * @return 申请的权限范围
 		 */
-		public String getScope(){
+		public String getScope() {
 			return scope;
 		}
 
@@ -733,7 +736,7 @@ public class OAuth extends BaseConfig {
 		 * @param scope
 		 * 		申请的权限范围
 		 */
-		public void setScope(String scope){
+		public void setScope(String scope) {
 			this.scope = scope;
 		}
 
@@ -747,7 +750,7 @@ public class OAuth extends BaseConfig {
 		 * @param name
 		 * 		Client 名称
 		 */
-		public BaseOAuth10Config(String name){
+		public BaseOAuth10Config(String name) {
 			super(name);
 		}
 
@@ -755,7 +758,7 @@ public class OAuth extends BaseConfig {
 
 	public abstract static class BaseOAuth20Config extends BaseOAuthConfig {
 
-		private boolean withState;
+		private Boolean withState;
 
 		/**
 		 * 客户自定义参数
@@ -768,15 +771,19 @@ public class OAuth extends BaseConfig {
 		 * @param name
 		 * 		Client 名称
 		 */
-		public BaseOAuth20Config(String name){
+		public BaseOAuth20Config(String name) {
 			super(name);
 		}
 
-		public boolean isWithState(){
+		public Boolean isWithState() {
+			return getWithState();
+		}
+
+		public Boolean getWithState() {
 			return withState;
 		}
 
-		public void setWithState(boolean withState){
+		public void setWithState(Boolean withState) {
 			this.withState = withState;
 		}
 
@@ -785,7 +792,7 @@ public class OAuth extends BaseConfig {
 		 *
 		 * @return 客户自定义参数
 		 */
-		public Map<String, String> getCustomParameters(){
+		public Map<String, String> getCustomParameters() {
 			return customParameters;
 		}
 
@@ -795,7 +802,7 @@ public class OAuth extends BaseConfig {
 		 * @param customParameters
 		 * 		客户自定义参数
 		 */
-		public void setCustomParameters(Map<String, String> customParameters){
+		public void setCustomParameters(Map<String, String> customParameters) {
 			this.customParameters = customParameters;
 		}
 
@@ -806,7 +813,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Bitbucket extends BaseOAuth10Config {
 
-		public Bitbucket(){
+		public Bitbucket() {
 			super("bitbucket");
 		}
 
@@ -820,14 +827,14 @@ public class OAuth extends BaseConfig {
 		/**
 		 * 是否总是需要确认授权
 		 */
-		private boolean alwaysConfirmAuthorization = false;
+		private Boolean alwaysConfirmAuthorization;
 
 		/**
 		 * 是否包含 E-mail
 		 */
-		private boolean includeEmail = false;
+		private Boolean includeEmail;
 
-		public Twitter(){
+		public Twitter() {
 			super("twitter");
 		}
 
@@ -836,7 +843,16 @@ public class OAuth extends BaseConfig {
 		 *
 		 * @return 是否总是需要确认授权
 		 */
-		public boolean isAlwaysConfirmAuthorization(){
+		public Boolean isAlwaysConfirmAuthorization() {
+			return getAlwaysConfirmAuthorization();
+		}
+
+		/**
+		 * 返回是否总是需要确认授权
+		 *
+		 * @return 是否总是需要确认授权
+		 */
+		public Boolean getAlwaysConfirmAuthorization() {
 			return alwaysConfirmAuthorization;
 		}
 
@@ -846,7 +862,7 @@ public class OAuth extends BaseConfig {
 		 * @param alwaysConfirmAuthorization
 		 * 		是否总是需要确认授权
 		 */
-		public void setAlwaysConfirmAuthorization(boolean alwaysConfirmAuthorization){
+		public void setAlwaysConfirmAuthorization(Boolean alwaysConfirmAuthorization) {
 			this.alwaysConfirmAuthorization = alwaysConfirmAuthorization;
 		}
 
@@ -855,7 +871,16 @@ public class OAuth extends BaseConfig {
 		 *
 		 * @return 是否包含 E-mail
 		 */
-		public boolean isIncludeEmail(){
+		public Boolean isIncludeEmail() {
+			return getIncludeEmail();
+		}
+
+		/**
+		 * 返回是否包含 E-mail
+		 *
+		 * @return 是否包含 E-mail
+		 */
+		public Boolean getIncludeEmail() {
 			return includeEmail;
 		}
 
@@ -865,7 +890,7 @@ public class OAuth extends BaseConfig {
 		 * @param includeEmail
 		 * 		是否包含 E-mail
 		 */
-		public void setIncludeEmail(boolean includeEmail){
+		public void setIncludeEmail(Boolean includeEmail) {
 			this.includeEmail = includeEmail;
 		}
 
@@ -876,7 +901,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Yahoo extends BaseOAuth10Config {
 
-		public Yahoo(){
+		public Yahoo() {
 			super("yahoo");
 		}
 
@@ -903,71 +928,71 @@ public class OAuth extends BaseConfig {
 
 		private Map<String, String> profileAttrs;
 
-		public Generic(){
+		public Generic() {
 			super("oauth2");
 		}
 
-		public String getAuthUrl(){
+		public String getAuthUrl() {
 			return authUrl;
 		}
 
-		public void setAuthUrl(String authUrl){
+		public void setAuthUrl(String authUrl) {
 			this.authUrl = authUrl;
 		}
 
-		public String getTokenUrl(){
+		public String getTokenUrl() {
 			return tokenUrl;
 		}
 
-		public void setTokenUrl(String tokenUrl){
+		public void setTokenUrl(String tokenUrl) {
 			this.tokenUrl = tokenUrl;
 		}
 
-		public String getProfileUrl(){
+		public String getProfileUrl() {
 			return profileUrl;
 		}
 
-		public void setProfileUrl(String profileUrl){
+		public void setProfileUrl(String profileUrl) {
 			this.profileUrl = profileUrl;
 		}
 
-		public String getProfilePath(){
+		public String getProfilePath() {
 			return profilePath;
 		}
 
-		public void setProfilePath(String profilePath){
+		public void setProfilePath(String profilePath) {
 			this.profilePath = profilePath;
 		}
 
-		public String getProfileId(){
+		public String getProfileId() {
 			return profileId;
 		}
 
-		public void setProfileId(String profileId){
+		public void setProfileId(String profileId) {
 			this.profileId = profileId;
 		}
 
-		public String getClientAuthenticationMethod(){
+		public String getClientAuthenticationMethod() {
 			return clientAuthenticationMethod;
 		}
 
-		public void setClientAuthenticationMethod(String clientAuthenticationMethod){
+		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
-		public Verb getProfileVerb(){
+		public Verb getProfileVerb() {
 			return profileVerb;
 		}
 
-		public void setProfileVerb(Verb profileVerb){
+		public void setProfileVerb(Verb profileVerb) {
 			this.profileVerb = profileVerb;
 		}
 
-		public Map<String, String> getProfileAttrs(){
+		public Map<String, String> getProfileAttrs() {
 			return profileAttrs;
 		}
 
-		public void setProfileAttrs(Map<String, String> profileAttrs){
+		public void setProfileAttrs(Map<String, String> profileAttrs) {
 			this.profileAttrs = profileAttrs;
 		}
 
@@ -982,43 +1007,51 @@ public class OAuth extends BaseConfig {
 
 		private String casLogoutUrl;
 
-		private boolean springSecurityCompliant = false;
+		private Boolean springSecurityCompliant;
 
-		private boolean implicitFlow = false;
+		private Boolean implicitFlow;
 
-		public Cas(){
+		public Cas() {
 			super("cas");
 		}
 
-		public String getCasOAuthUrl(){
+		public String getCasOAuthUrl() {
 			return casOAuthUrl;
 		}
 
-		public void setCasOAuthUrl(String casOAuthUrl){
+		public void setCasOAuthUrl(String casOAuthUrl) {
 			this.casOAuthUrl = casOAuthUrl;
 		}
 
-		public String getCasLogoutUrl(){
+		public String getCasLogoutUrl() {
 			return casLogoutUrl;
 		}
 
-		public void setCasLogoutUrl(String casLogoutUrl){
+		public void setCasLogoutUrl(String casLogoutUrl) {
 			this.casLogoutUrl = casLogoutUrl;
 		}
 
-		public boolean isSpringSecurityCompliant(){
+		public Boolean isSpringSecurityCompliant() {
+			return getSpringSecurityCompliant();
+		}
+
+		public Boolean getSpringSecurityCompliant() {
 			return springSecurityCompliant;
 		}
 
-		public void setSpringSecurityCompliant(boolean springSecurityCompliant){
+		public void setSpringSecurityCompliant(Boolean springSecurityCompliant) {
 			this.springSecurityCompliant = springSecurityCompliant;
 		}
 
-		public boolean isImplicitFlow(){
+		public Boolean isImplicitFlow() {
+			return getImplicitFlow();
+		}
+
+		public Boolean getImplicitFlow() {
 			return implicitFlow;
 		}
 
-		public void setImplicitFlow(boolean implicitFlow){
+		public void setImplicitFlow(Boolean implicitFlow) {
 			this.implicitFlow = implicitFlow;
 		}
 
@@ -1029,7 +1062,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class DropBox extends BaseOAuth20Config {
 
-		public DropBox(){
+		public DropBox() {
 			super("dropbox");
 		}
 
@@ -1044,23 +1077,23 @@ public class OAuth extends BaseConfig {
 
 		private int limit = FacebookProfileDefinition.DEFAULT_LIMIT;
 
-		public Facebook(){
+		public Facebook() {
 			super("facebook");
 		}
 
-		public String getFields(){
+		public String getFields() {
 			return fields;
 		}
 
-		public void setFields(String fields){
+		public void setFields(String fields) {
 			this.fields = fields;
 		}
 
-		public int getLimit(){
+		public int getLimit() {
 			return limit;
 		}
 
-		public void setLimit(int limit){
+		public void setLimit(int limit) {
 			this.limit = limit;
 		}
 	}
@@ -1070,7 +1103,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class FigShare extends BaseOAuth20Config {
 
-		public FigShare(){
+		public FigShare() {
 			super("FigShare");
 		}
 
@@ -1081,7 +1114,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Foursquare extends BaseOAuth20Config {
 
-		public Foursquare(){
+		public Foursquare() {
 			super("foursquare");
 		}
 
@@ -1092,7 +1125,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class GitHub extends BaseOAuth20Config {
 
-		public GitHub(){
+		public GitHub() {
 			super("github");
 		}
 
@@ -1103,7 +1136,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Google2 extends BaseOAuth20Config {
 
-		public Google2(){
+		public Google2() {
 			super("google2");
 		}
 
@@ -1114,7 +1147,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class HiOrgServer extends BaseOAuth20Config {
 
-		public HiOrgServer(){
+		public HiOrgServer() {
 			super("HiOrgServer");
 		}
 
@@ -1125,7 +1158,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class LinkedIn2 extends BaseOAuth20Config {
 
-		public LinkedIn2(){
+		public LinkedIn2() {
 			super("linkedIn2");
 		}
 
@@ -1138,15 +1171,15 @@ public class OAuth extends BaseConfig {
 
 		private String publicKey;
 
-		public Ok(){
+		public Ok() {
 			super("ok");
 		}
 
-		public String getPublicKey(){
+		public String getPublicKey() {
 			return publicKey;
 		}
 
-		public void setPublicKey(String publicKey){
+		public void setPublicKey(String publicKey) {
 			this.publicKey = publicKey;
 		}
 
@@ -1157,7 +1190,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class PayPal extends BaseOAuth20Config {
 
-		public PayPal(){
+		public PayPal() {
 			super("paypal");
 		}
 
@@ -1170,15 +1203,15 @@ public class OAuth extends BaseConfig {
 
 		private List<QQClient.QQScope> scopes;
 
-		public Qq(){
+		public Qq() {
 			super("qq");
 		}
 
-		public List<QQClient.QQScope> getScopes(){
+		public List<QQClient.QQScope> getScopes() {
 			return scopes;
 		}
 
-		public void setScopes(List<QQClient.QQScope> scopes){
+		public void setScopes(List<QQClient.QQScope> scopes) {
 			this.scopes = scopes;
 		}
 
@@ -1191,15 +1224,15 @@ public class OAuth extends BaseConfig {
 
 		private String approvalPrompt = "auto";
 
-		public Strava(){
+		public Strava() {
 			super("strava");
 		}
 
-		public String getApprovalPrompt(){
+		public String getApprovalPrompt() {
 			return approvalPrompt;
 		}
 
-		public void setApprovalPrompt(String approvalPrompt){
+		public void setApprovalPrompt(String approvalPrompt) {
 			this.approvalPrompt = approvalPrompt;
 		}
 
@@ -1210,7 +1243,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Vk extends BaseOAuth20Config {
 
-		public Vk(){
+		public Vk() {
 			super("vk");
 		}
 
@@ -1221,7 +1254,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Weibo extends BaseOAuth20Config {
 
-		public Weibo(){
+		public Weibo() {
 			super("weibo");
 		}
 
@@ -1234,15 +1267,15 @@ public class OAuth extends BaseConfig {
 
 		private List<WechatClient.WechatScope> scopes;
 
-		public Wechat(){
+		public Wechat() {
 			super("wechat");
 		}
 
-		public List<WechatClient.WechatScope> getScopes(){
+		public List<WechatClient.WechatScope> getScopes() {
 			return scopes;
 		}
 
-		public void setScopes(List<WechatClient.WechatScope> scopes){
+		public void setScopes(List<WechatClient.WechatScope> scopes) {
 			this.scopes = scopes;
 		}
 
@@ -1253,7 +1286,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class WindowsLive extends BaseOAuth20Config {
 
-		public WindowsLive(){
+		public WindowsLive() {
 			super("WindowsLive");
 		}
 
@@ -1264,7 +1297,7 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class WordPress extends BaseOAuth20Config {
 
-		public WordPress(){
+		public WordPress() {
 			super("WordPress");
 		}
 

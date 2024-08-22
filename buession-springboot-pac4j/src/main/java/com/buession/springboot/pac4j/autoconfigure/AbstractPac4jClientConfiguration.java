@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import org.pac4j.core.client.BaseClient;
@@ -37,18 +38,25 @@ import java.util.Optional;
  */
 public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 
-	protected Pac4jProperties properties;
+	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-	protected C config;
+	protected final static PropertyMapper hasTextpropertyMapper = propertyMapper.alwaysApplyingWhenHasText();
+
+	protected final Pac4jProperties properties;
+
+	protected final C config;
 
 	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config) {
 		this.properties = properties;
 		this.config = config;
 	}
 
-	protected void afterClientInitialized(final BaseClient<? extends Credentials> client,
-										  final BaseConfig.BaseClientConfig config) {
-		client.setName(Validate.hasText(config.getName()) ? config.getName() : config.getDefaultName());
+	protected <CONF extends BaseConfig, CLIENTCONF extends BaseConfig.BaseClientConfig,
+			CLIENT extends BaseClient<? extends Credentials>> void afterClientInitialized(
+			final CLIENT client, final CONF config, final CLIENTCONF clientConfig) {
+		client.setName(
+				Validate.hasText(clientConfig.getName()) ? clientConfig.getName() : clientConfig.getDefaultName());
+
 		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
 	}
 

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
@@ -28,11 +28,13 @@ import org.pac4j.cas.config.CasProtocol;
 import org.pac4j.cas.profile.CasProfileDefinition;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * CAS 配置
@@ -60,6 +62,13 @@ public class Cas extends BaseConfig {
 	private String prefixUrl;
 
 	/**
+	 * REST URL
+	 *
+	 * @since 3.0.0
+	 */
+	private String restUrl;
+
+	/**
 	 * CAS 登录成功跳转地址
 	 */
 	private String callbackUrl;
@@ -85,7 +94,7 @@ public class Cas extends BaseConfig {
 	private Boolean renew;
 
 	/**
-	 *
+	 * 认证票据时间戳验证容忍度范围
 	 */
 	private Long timeTolerance;
 
@@ -97,12 +106,26 @@ public class Cas extends BaseConfig {
 	/**
 	 * Profile 定义，可用于处理 CAS Server 登录返回字段
 	 */
-	private Class<CasProfileDefinition> profileDefinition;
+	private Class<? extends CasProfileDefinition> profileDefinition;
 
 	/**
 	 * 授权生成器
 	 */
-	private List<Class<AuthorizationGenerator>> authorizationGenerator;
+	private List<Class<? extends AuthorizationGenerator>> authorizationGenerator;
+
+	/**
+	 * 是否接受来自任何代理的请求
+	 *
+	 * @since 3.0.0
+	 */
+	private Boolean acceptAnyProxy;
+
+	/**
+	 * 允许的代理链
+	 *
+	 * @since 3.0.0
+	 */
+	private Set<String> allowedProxyChains;
 
 	/**
 	 * 客户自定义参数
@@ -110,16 +133,17 @@ public class Cas extends BaseConfig {
 	private Map<String, String> customParameters = new LinkedHashMap<>();
 
 	/**
+	 * SSL 配置
+	 *
+	 * @since 3.0.0
+	 */
+	private Ssl ssl = new Ssl();
+
+	/**
 	 * 常规配置
 	 */
 	@NestedConfigurationProperty
 	private General general = new General();
-
-	/**
-	 * Rest 表单配置
-	 */
-	@NestedConfigurationProperty
-	private RestForm restForm = new RestForm();
 
 	/**
 	 * Direct Client 配置
@@ -139,11 +163,17 @@ public class Cas extends BaseConfig {
 	private RestBasicAuth restBasicAuth = new RestBasicAuth();
 
 	/**
+	 * Rest 表单配置
+	 */
+	@NestedConfigurationProperty
+	private RestForm restForm = new RestForm();
+
+	/**
 	 * 返回 CAS 协议
 	 *
 	 * @return CAS 协议
 	 */
-	public CasProtocol getProtocol(){
+	public CasProtocol getProtocol() {
 		return protocol;
 	}
 
@@ -153,7 +183,7 @@ public class Cas extends BaseConfig {
 	 * @param protocol
 	 * 		CAS 协议
 	 */
-	public void setProtocol(final CasProtocol protocol){
+	public void setProtocol(final CasProtocol protocol) {
 		this.protocol = protocol;
 	}
 
@@ -162,7 +192,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return CAS 登录地址
 	 */
-	public String getLoginUrl(){
+	public String getLoginUrl() {
 		return loginUrl;
 	}
 
@@ -172,7 +202,7 @@ public class Cas extends BaseConfig {
 	 * @param loginUrl
 	 * 		CAS 登录地址
 	 */
-	public void setLoginUrl(String loginUrl){
+	public void setLoginUrl(String loginUrl) {
 		this.loginUrl = loginUrl;
 	}
 
@@ -181,7 +211,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return CAS URL 前缀
 	 */
-	public String getPrefixUrl(){
+	public String getPrefixUrl() {
 		return prefixUrl;
 	}
 
@@ -191,8 +221,31 @@ public class Cas extends BaseConfig {
 	 * @param prefixUrl
 	 * 		CAS URL 前缀
 	 */
-	public void setPrefixUrl(String prefixUrl){
+	public void setPrefixUrl(String prefixUrl) {
 		this.prefixUrl = prefixUrl;
+	}
+
+	/**
+	 * 返回 REST URL
+	 *
+	 * @return REST URL
+	 *
+	 * @since 3.0.0
+	 */
+	public String getRestUrl() {
+		return restUrl;
+	}
+
+	/**
+	 * 设置 REST URL
+	 *
+	 * @param restUrl
+	 * 		REST URL
+	 *
+	 * @since 3.0.0
+	 */
+	public void setRestUrl(String restUrl) {
+		this.restUrl = restUrl;
 	}
 
 	/**
@@ -200,7 +253,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return CAS 登录成功跳转地址
 	 */
-	public String getCallbackUrl(){
+	public String getCallbackUrl() {
 		return callbackUrl;
 	}
 
@@ -210,7 +263,7 @@ public class Cas extends BaseConfig {
 	 * @param callbackUrl
 	 * 		CAS 登录成功跳转地址
 	 */
-	public void setCallbackUrl(String callbackUrl){
+	public void setCallbackUrl(String callbackUrl) {
 		this.callbackUrl = callbackUrl;
 	}
 
@@ -219,7 +272,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 编码
 	 */
-	public String getEncoding(){
+	public String getEncoding() {
 		return encoding;
 	}
 
@@ -229,7 +282,7 @@ public class Cas extends BaseConfig {
 	 * @param encoding
 	 * 		编码
 	 */
-	public void setEncoding(String encoding){
+	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
 
@@ -238,7 +291,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 请求方法
 	 */
-	public String getMethod(){
+	public String getMethod() {
 		return method;
 	}
 
@@ -248,7 +301,7 @@ public class Cas extends BaseConfig {
 	 * @param method
 	 * 		请求方法
 	 */
-	public void setMethod(String method){
+	public void setMethod(String method) {
 		this.method = method;
 	}
 
@@ -257,7 +310,16 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return Gateway
 	 */
-	public Boolean getGateway(){
+	public Boolean isGateway() {
+		return getGateway();
+	}
+
+	/**
+	 * 返回 Gateway
+	 *
+	 * @return Gateway
+	 */
+	public Boolean getGateway() {
 		return gateway;
 	}
 
@@ -267,7 +329,7 @@ public class Cas extends BaseConfig {
 	 * @param gateway
 	 * 		Gateway
 	 */
-	public void setGateway(Boolean gateway){
+	public void setGateway(Boolean gateway) {
 		this.gateway = gateway;
 	}
 
@@ -276,7 +338,16 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 是否重新认证
 	 */
-	public Boolean getRenew(){
+	public Boolean isRenew() {
+		return getRenew();
+	}
+
+	/**
+	 * 返回是否重新认证
+	 *
+	 * @return 是否重新认证
+	 */
+	public Boolean getRenew() {
 		return renew;
 	}
 
@@ -286,15 +357,26 @@ public class Cas extends BaseConfig {
 	 * @param renew
 	 * 		是否重新认证
 	 */
-	public void setRenew(Boolean renew){
+	public void setRenew(Boolean renew) {
 		this.renew = renew;
 	}
 
-	public Long getTimeTolerance(){
+	/**
+	 * 返回认证票据时间戳验证容忍度范围
+	 *
+	 * @return 认证票据时间戳验证容忍度范围
+	 */
+	public Long getTimeTolerance() {
 		return timeTolerance;
 	}
 
-	public void setTimeTolerance(Long timeTolerance){
+	/**
+	 * 设置认证票据时间戳验证容忍度范围
+	 *
+	 * @param timeTolerance
+	 * 		认证票据时间戳验证容忍度范围
+	 */
+	public void setTimeTolerance(Long timeTolerance) {
 		this.timeTolerance = timeTolerance;
 	}
 
@@ -303,7 +385,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 退出登录请求参数
 	 */
-	public String getPostLogoutUrlParameter(){
+	public String getPostLogoutUrlParameter() {
 		return postLogoutUrlParameter;
 	}
 
@@ -313,7 +395,7 @@ public class Cas extends BaseConfig {
 	 * @param postLogoutUrlParameter
 	 * 		退出登录请求参数
 	 */
-	public void setPostLogoutUrlParameter(String postLogoutUrlParameter){
+	public void setPostLogoutUrlParameter(String postLogoutUrlParameter) {
 		this.postLogoutUrlParameter = postLogoutUrlParameter;
 	}
 
@@ -322,7 +404,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return Profile 定义
 	 */
-	public Class<CasProfileDefinition> getProfileDefinition(){
+	public Class<? extends CasProfileDefinition> getProfileDefinition() {
 		return profileDefinition;
 	}
 
@@ -332,7 +414,7 @@ public class Cas extends BaseConfig {
 	 * @param profileDefinition
 	 * 		Profile 定义
 	 */
-	public void setProfileDefinition(Class<CasProfileDefinition> profileDefinition){
+	public void setProfileDefinition(Class<? extends CasProfileDefinition> profileDefinition) {
 		this.profileDefinition = profileDefinition;
 	}
 
@@ -341,7 +423,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 授权生成器
 	 */
-	public List<Class<AuthorizationGenerator>> getAuthorizationGenerator(){
+	public List<Class<? extends AuthorizationGenerator>> getAuthorizationGenerator() {
 		return authorizationGenerator;
 	}
 
@@ -351,8 +433,65 @@ public class Cas extends BaseConfig {
 	 * @param authorizationGenerator
 	 * 		授权生成器
 	 */
-	public void setAuthorizationGenerator(List<Class<AuthorizationGenerator>> authorizationGenerator){
+	public void setAuthorizationGenerator(List<Class<? extends AuthorizationGenerator>> authorizationGenerator) {
 		this.authorizationGenerator = authorizationGenerator;
+	}
+
+	/**
+	 * 返回是否接受来自任何代理的请求
+	 *
+	 * @return 是否接受来自任何代理的请求
+	 *
+	 * @since 3.0.0
+	 */
+	public Boolean isAcceptAnyProxy() {
+		return getAcceptAnyProxy();
+	}
+
+	/**
+	 * 返回是否接受来自任何代理的请求
+	 *
+	 * @return 是否接受来自任何代理的请求
+	 *
+	 * @since 3.0.0
+	 */
+	public Boolean getAcceptAnyProxy() {
+		return acceptAnyProxy;
+	}
+
+	/**
+	 * 设置是否接受来自任何代理的请求
+	 *
+	 * @param acceptAnyProxy
+	 * 		是否接受来自任何代理的请求
+	 *
+	 * @since 3.0.0
+	 */
+	public void setAcceptAnyProxy(Boolean acceptAnyProxy) {
+		this.acceptAnyProxy = acceptAnyProxy;
+	}
+
+	/**
+	 * 返回允许的代理链
+	 *
+	 * @return 允许的代理链
+	 *
+	 * @since 3.0.0
+	 */
+	public Set<String> getAllowedProxyChains() {
+		return allowedProxyChains;
+	}
+
+	/**
+	 * 设置允许的代理链
+	 *
+	 * @param allowedProxyChains
+	 * 		允许的代理链
+	 *
+	 * @since 3.0.0
+	 */
+	public void setAllowedProxyChains(Set<String> allowedProxyChains) {
+		this.allowedProxyChains = allowedProxyChains;
 	}
 
 	/**
@@ -360,7 +499,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 客户自定义参数
 	 */
-	public Map<String, String> getCustomParameters(){
+	public Map<String, String> getCustomParameters() {
 		return customParameters;
 	}
 
@@ -370,8 +509,27 @@ public class Cas extends BaseConfig {
 	 * @param customParameters
 	 * 		客户自定义参数
 	 */
-	public void setCustomParameters(Map<String, String> customParameters){
+	public void setCustomParameters(Map<String, String> customParameters) {
 		this.customParameters = customParameters;
+	}
+
+	/**
+	 * 返回SSL 配置
+	 *
+	 * @return SSL 配置
+	 */
+	public Ssl getSsl() {
+		return ssl;
+	}
+
+	/**
+	 * 设置SSL 配置
+	 *
+	 * @param ssl
+	 * 		SSL 配置
+	 */
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
 	}
 
 	/**
@@ -379,7 +537,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return 常规配置
 	 */
-	public General getGeneral(){
+	public General getGeneral() {
 		return general;
 	}
 
@@ -389,27 +547,8 @@ public class Cas extends BaseConfig {
 	 * @param general
 	 * 		常规配置
 	 */
-	public void setGeneral(General general){
+	public void setGeneral(General general) {
 		this.general = general;
-	}
-
-	/**
-	 * 返回 Rest 表单配置
-	 *
-	 * @return Rest 表单配置
-	 */
-	public RestForm getRestForm(){
-		return restForm;
-	}
-
-	/**
-	 * 设置 Rest 表单配置
-	 *
-	 * @param restForm
-	 * 		Rest 表单配置
-	 */
-	public void setRestForm(RestForm restForm){
-		this.restForm = restForm;
 	}
 
 	/**
@@ -417,7 +556,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return Direct Client 配置
 	 */
-	public Direct getDirect(){
+	public Direct getDirect() {
 		return direct;
 	}
 
@@ -427,7 +566,7 @@ public class Cas extends BaseConfig {
 	 * @param direct
 	 * 		Direct Client 配置
 	 */
-	public void setDirect(Direct direct){
+	public void setDirect(Direct direct) {
 		this.direct = direct;
 	}
 
@@ -436,7 +575,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return Direct Proxy Client 配置
 	 */
-	public DirectProxy getDirectProxy(){
+	public DirectProxy getDirectProxy() {
 		return directProxy;
 	}
 
@@ -446,7 +585,7 @@ public class Cas extends BaseConfig {
 	 * @param directProxy
 	 * 		Direct Proxy Client 配置
 	 */
-	public void setDirectProxy(DirectProxy directProxy){
+	public void setDirectProxy(DirectProxy directProxy) {
 		this.directProxy = directProxy;
 	}
 
@@ -455,7 +594,7 @@ public class Cas extends BaseConfig {
 	 *
 	 * @return Rest Basic Auth Client 配置
 	 */
-	public RestBasicAuth getRestBasicAuth(){
+	public RestBasicAuth getRestBasicAuth() {
 		return restBasicAuth;
 	}
 
@@ -465,8 +604,84 @@ public class Cas extends BaseConfig {
 	 * @param restBasicAuth
 	 * 		Rest Basic Auth Client 配置
 	 */
-	public void setRestBasicAuth(RestBasicAuth restBasicAuth){
+	public void setRestBasicAuth(RestBasicAuth restBasicAuth) {
 		this.restBasicAuth = restBasicAuth;
+	}
+
+	/**
+	 * 返回 Rest 表单配置
+	 *
+	 * @return Rest 表单配置
+	 */
+	public RestForm getRestForm() {
+		return restForm;
+	}
+
+	/**
+	 * 设置 Rest 表单配置
+	 *
+	 * @param restForm
+	 * 		Rest 表单配置
+	 */
+	public void setRestForm(RestForm restForm) {
+		this.restForm = restForm;
+	}
+
+	/**
+	 * SSL 配置
+	 *
+	 * @since 3.0.0
+	 */
+	public final static class Ssl {
+
+		/**
+		 * 私钥路径
+		 */
+		private String privateKeyPath;
+
+		/**
+		 * 私钥算法
+		 */
+		private String privateKeyAlgorithm;
+
+		/**
+		 * 返回私钥路径
+		 *
+		 * @return 私钥路径
+		 */
+		public String getPrivateKeyPath() {
+			return privateKeyPath;
+		}
+
+		/**
+		 * 设置私钥路径
+		 *
+		 * @param privateKeyPath
+		 * 		私钥路径
+		 */
+		public void setPrivateKeyPath(String privateKeyPath) {
+			this.privateKeyPath = privateKeyPath;
+		}
+
+		/**
+		 * 返回私钥算法
+		 *
+		 * @return 私钥算法
+		 */
+		public String getPrivateKeyAlgorithm() {
+			return privateKeyAlgorithm;
+		}
+
+		/**
+		 * 设置私钥算法
+		 *
+		 * @param privateKeyAlgorithm
+		 * 		私钥算法
+		 */
+		public void setPrivateKeyAlgorithm(String privateKeyAlgorithm) {
+			this.privateKeyAlgorithm = privateKeyAlgorithm;
+		}
+
 	}
 
 	/**
@@ -477,7 +692,7 @@ public class Cas extends BaseConfig {
 		/**
 		 * 构造函数
 		 */
-		public General(){
+		public General() {
 			super("cas");
 		}
 
@@ -486,61 +701,15 @@ public class Cas extends BaseConfig {
 	/**
 	 * CAS Rest 表单配置
 	 */
-	public final static class RestForm extends BaseClientConfig {
-
-		/**
-		 * 用户名参数名称
-		 */
-		private String usernameParameter = "username";
-
-		/**
-		 * 密码参数名称
-		 */
-		private String passwordParameter = "password";
+	public final static class RestForm extends BaseFormConfig {
 
 		/**
 		 * 构造函数
 		 */
-		public RestForm(){
+		public RestForm() {
 			super("cas-rest-form");
-		}
-
-		/**
-		 * 返回用户名参数名称
-		 *
-		 * @return 用户名参数名称
-		 */
-		public String getUsernameParameter(){
-			return usernameParameter;
-		}
-
-		/**
-		 * 设置用户名参数名称
-		 *
-		 * @param usernameParameter
-		 * 		用户名参数名称
-		 */
-		public void setUsernameParameter(String usernameParameter){
-			this.usernameParameter = usernameParameter;
-		}
-
-		/**
-		 * 返回密码参数名称
-		 *
-		 * @return 密码参数名称
-		 */
-		public String getPasswordParameter(){
-			return passwordParameter;
-		}
-
-		/**
-		 * 设置密码参数名称
-		 *
-		 * @param passwordParameter
-		 * 		密码参数名称
-		 */
-		public void setPasswordParameter(String passwordParameter){
-			this.passwordParameter = passwordParameter;
+			setUsernameParameter(Pac4jConstants.USERNAME);
+			setPasswordParameter(Pac4jConstants.PASSWORD);
 		}
 
 	}
@@ -553,7 +722,7 @@ public class Cas extends BaseConfig {
 		/**
 		 * 构造函数
 		 */
-		public Direct(){
+		public Direct() {
 			super("direct-cas");
 		}
 
@@ -567,7 +736,7 @@ public class Cas extends BaseConfig {
 		/**
 		 * 构造函数
 		 */
-		public DirectProxy(){
+		public DirectProxy() {
 			super("direct-cas-proxy");
 		}
 
@@ -576,61 +745,15 @@ public class Cas extends BaseConfig {
 	/**
 	 * Cas Rest Basic Auth 配置
 	 */
-	public final static class RestBasicAuth extends BaseClientConfig {
-
-		/**
-		 * 请求头名称
-		 */
-		private String headerName = HttpConstants.AUTHORIZATION_HEADER;
-
-		/**
-		 * 请求头前缀
-		 */
-		private String prefixHeader = HttpConstants.BASIC_HEADER_PREFIX;
+	public final static class RestBasicAuth extends BaseHeaderConfig {
 
 		/**
 		 * 构造函数
 		 */
-		public RestBasicAuth(){
+		public RestBasicAuth() {
 			super("cas-rest-basic-auth");
-		}
-
-		/**
-		 * 返回请求头名称
-		 *
-		 * @return 请求头名称
-		 */
-		public String getHeaderName(){
-			return headerName;
-		}
-
-		/**
-		 * 设置请求头名称
-		 *
-		 * @param headerName
-		 * 		请求头名称
-		 */
-		public void setHeaderName(String headerName){
-			this.headerName = headerName;
-		}
-
-		/**
-		 * 返回请求头前缀
-		 *
-		 * @return 请求头前缀
-		 */
-		public String getPrefixHeader(){
-			return prefixHeader;
-		}
-
-		/**
-		 * 设置请求头前缀
-		 *
-		 * @param prefixHeader
-		 * 		请求头前缀
-		 */
-		public void setPrefixHeader(String prefixHeader){
-			this.prefixHeader = prefixHeader;
+			setHeaderName(HttpConstants.AUTHORIZATION_HEADER);
+			setPrefixHeader(HttpConstants.BASIC_HEADER_PREFIX);
 		}
 
 	}

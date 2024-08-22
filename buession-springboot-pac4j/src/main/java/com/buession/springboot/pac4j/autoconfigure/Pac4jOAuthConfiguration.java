@@ -19,25 +19,22 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.EnumUtils;
-import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.OAuth;
 import org.pac4j.oauth.client.*;
 import org.pac4j.oauth.config.OAuth10Configuration;
 import org.pac4j.oauth.config.OAuth20Configuration;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Pac4j HTTP 自动配置类
@@ -45,382 +42,333 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(before = {Pac4jConfiguration.class})
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({OAuth10Client.class, OAuth20Client.class})
 @ConditionalOnProperty(prefix = OAuth.PREFIX, name = "enabled", havingValue = "true")
-@AutoConfigureBefore({Pac4jConfiguration.class})
-public class Pac4jOAuthConfiguration {
+public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OAuth> {
+
+	public Pac4jOAuthConfiguration(Pac4jProperties properties) {
+		super(properties, properties.getClient().getOAuth());
+	}
+
+	@Bean(name = "bitbucketClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "true")
+	public BitbucketClient bitbucketClient() {
+		final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret());
 
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(Pac4jProperties.class)
-	static class Pac4JOAuthClientConfiguration extends AbstractPac4jClientConfiguration<OAuth> {
+		initOAuth10Client(bitbucketClient, config.getBitbucket());
+
+		return bitbucketClient;
+	}
+
+	@Bean(name = "casOAuthWrapperClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "cas.enabled", havingValue = "true")
+	public CasOAuthWrapperClient casOAuthWrapperClient() {
+		final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
+				config.getSecret(), config.getCas().getCasOAuthUrl());
+		final OAuth.Cas cas = config.getCas();
 
-		public Pac4JOAuthClientConfiguration(Pac4jProperties properties){
-			super(properties, properties.getClient().getOAuth());
-		}
+		propertyMapper.from(cas::getCasLogoutUrl).to(casOAuthWrapperClient::setCasLogoutUrl);
+		propertyMapper.from(cas::getSpringSecurityCompliant).to(casOAuthWrapperClient::setSpringSecurityCompliant);
+		propertyMapper.from(cas::getImplicitFlow).to(casOAuthWrapperClient::setImplicitFlow);
+		hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
+
+		initOAuth20Client(casOAuthWrapperClient, cas);
+
+		return casOAuthWrapperClient;
+	}
 
-		// *********************************************** //
-		// *************** start oauth 1.0 *************** //
-		// *********************************************** //
+	@Bean(name = "dropboxClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "true")
+	public DropBoxClient dropboxClient() {
+		final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret());
 
-		@Bean(name = "bitbucketClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "true")
-		public BitbucketClient bitbucketClient(){
-			final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(dropboxClient, config.getDropBox());
+
+		return dropboxClient;
+	}
 
-			initOAuth10Client(bitbucketClient, config.getBitbucket(), propertyMapper);
+	@Bean(name = "facebookClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "facebook.enabled", havingValue = "true")
+	public FacebookClient facebookClient() {
+		final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret());
+		final OAuth.Facebook facebook = config.getFacebook();
 
-			return bitbucketClient;
-		}
+		propertyMapper.from(facebook::getFields).to(facebookClient::setFields);
+		propertyMapper.from(facebook::getLimit).to(facebookClient::setLimit);
 
-		@Bean(name = "twitterClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "twitter.enabled", havingValue = "true")
-		public TwitterClient twitterClient(){
-			final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret());
+		initOAuth20Client(facebookClient, facebook);
 
-			twitterClient.setAlwaysConfirmAuthorization(config.getTwitter().isAlwaysConfirmAuthorization());
-			twitterClient.setIncludeEmail(config.getTwitter().isIncludeEmail());
+		return facebookClient;
+	}
 
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+	@Bean(name = "figShareClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "fig-share.enabled", havingValue = "true")
+	public FigShareClient figShareClient() {
+		final FigShareClient figShareClient = new FigShareClient();
 
-			initOAuth10Client(twitterClient, config.getTwitter(), propertyMapper);
+		figShareClient.setKey(config.getKey());
+		figShareClient.setSecret(config.getSecret());
 
-			return twitterClient;
-		}
+		initOAuth20Client(figShareClient, config.getFigShare());
 
-		@Bean(name = "yahooClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "true")
-		public YahooClient yahooClient(){
-			final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return figShareClient;
+	}
 
-			initOAuth10Client(yahooClient, config.getYahoo(), propertyMapper);
+	@Bean(name = "foursquareClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "true")
+	public FoursquareClient foursquareClient() {
+		final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret());
 
-			return yahooClient;
-		}
+		initOAuth20Client(foursquareClient, config.getFoursquare());
 
-		// ********************************************* //
-		// *************** end oauth 1.0 *************** //
-		// ********************************************* //
+		return foursquareClient;
+	}
 
+	@Bean(name = "genericOAuth20Client")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "generic.enabled", havingValue = "true")
+	public GenericOAuth20Client genericOAuth20Client() {
+		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client();
+		final OAuth.Generic generic = config.getGeneric();
 
-		// *********************************************** //
-		// *************** start oauth 2.0 *************** //
-		// *********************************************** //
+		genericOAuth20Client.setKey(config.getKey());
+		genericOAuth20Client.setSecret(config.getSecret());
 
-		@Bean(name = "genericOAuth20Client")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "generic.enabled", havingValue = "true")
-		public GenericOAuth20Client genericOAuth20Client(){
-			final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client();
+		hasTextpropertyMapper.from(generic.getAuthUrl()).to(genericOAuth20Client::setAuthUrl);
+		hasTextpropertyMapper.from(generic.getTokenUrl()).to(genericOAuth20Client::setTokenUrl);
+		hasTextpropertyMapper.from(generic.getProfileUrl()).to(genericOAuth20Client::setProfileUrl);
+		hasTextpropertyMapper.from(generic.getProfilePath()).to(genericOAuth20Client::setProfileNodePath);
+		hasTextpropertyMapper.from(generic.getProfileId()).to(genericOAuth20Client::setProfileId);
+		hasTextpropertyMapper.from(generic.getClientAuthenticationMethod())
+				.to(genericOAuth20Client::setClientAuthenticationMethod);
+		hasTextpropertyMapper.from(generic.getProfileVerb()).to(genericOAuth20Client::setProfileVerb);
+		hasTextpropertyMapper.from(generic.getProfileAttrs()).to(genericOAuth20Client::setProfileAttrs);
 
-			genericOAuth20Client.setKey(config.getKey());
-			genericOAuth20Client.setSecret(config.getSecret());
+		initOAuth20Client(genericOAuth20Client, generic);
 
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return genericOAuth20Client;
+	}
 
-			propertyMapper.from(config.getGeneric().getAuthUrl()).to(genericOAuth20Client::setAuthUrl);
-			propertyMapper.from(config.getGeneric().getTokenUrl()).to(genericOAuth20Client::setTokenUrl);
-			propertyMapper.from(config.getGeneric().getProfileUrl()).to(genericOAuth20Client::setProfileUrl);
-			propertyMapper.from(config.getGeneric().getProfilePath()).to(genericOAuth20Client::setProfileNodePath);
-			propertyMapper.from(config.getGeneric().getProfileId()).to(genericOAuth20Client::setProfileId);
-			propertyMapper.from(config.getGeneric().getClientAuthenticationMethod())
-					.to(genericOAuth20Client::setClientAuthenticationMethod);
-			propertyMapper.from(config.getGeneric().getProfileVerb()).to(genericOAuth20Client::setProfileVerb);
-			propertyMapper.from(config.getGeneric().getProfileAttrs()).to(genericOAuth20Client::setProfileAttrs);
+	@Bean(name = "githubClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "true")
+	public GitHubClient githubClient() {
+		final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret());
 
-			initOAuth20Client(genericOAuth20Client, config.getGeneric(), propertyMapper);
+		initOAuth20Client(gitHubClient, config.getGitHub());
 
-			return genericOAuth20Client;
-		}
+		return gitHubClient;
+	}
 
-		@Bean(name = "casOAuthWrapperClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "cas.enabled", havingValue = "true")
-		public CasOAuthWrapperClient casOAuthWrapperClient(){
-			final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
-					config.getSecret(), config.getCas().getCasOAuthUrl());
+	@Bean(name = "google2Client")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
+	public Google2Client google2Client() {
+		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
 
-			casOAuthWrapperClient.setSpringSecurityCompliant(config.getCas().isSpringSecurityCompliant());
-			casOAuthWrapperClient.setImplicitFlow(config.getCas().isImplicitFlow());
+		propertyMapper.from(config.getGoogle2()::getScope)
+				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class,
+						v)).to(google2Client::setScope);
 
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(google2Client, config.getGoogle2());
 
-			initOAuth20Client(casOAuthWrapperClient, config.getCas(), propertyMapper);
+		return google2Client;
+	}
 
-			propertyMapper.from(config.getCas().getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
+	@Bean(name = "hiOrgServerClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "hi-org-server.enabled", havingValue = "true")
+	public HiOrgServerClient hiOrgServerClient() {
+		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret());
 
-			return casOAuthWrapperClient;
-		}
+		initOAuth20Client(hiOrgServerClient, config.getHiOrgServer());
 
-		@Bean(name = "dropboxClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "true")
-		public DropBoxClient dropboxClient(){
-			final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return hiOrgServerClient;
+	}
 
-			initOAuth20Client(dropboxClient, config.getDropBox(), propertyMapper);
+	@Bean(name = "linkedin2Client")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "true")
+	public LinkedIn2Client linkedin2Client() {
+		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret());
 
-			return dropboxClient;
-		}
+		initOAuth20Client(linkedIn2Client, config.getLinkedIn2());
 
-		@Bean(name = "facebookClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "facebook.enabled", havingValue = "true")
-		public FacebookClient facebookClient(){
-			final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret());
+		return linkedIn2Client;
+	}
 
-			facebookClient.setFields(config.getFacebook().getFields());
-			facebookClient.setLimit(config.getFacebook().getLimit());
+	@Bean(name = "okClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "true")
+	public OkClient okClient() {
+		final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
 
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(okClient, config.getOk());
 
-			initOAuth20Client(facebookClient, config.getFacebook(), propertyMapper);
+		return okClient;
+	}
 
-			return facebookClient;
-		}
+	@Bean(name = "paypalClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "true")
+	public PayPalClient paypalClient() {
+		final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret());
 
-		@Bean(name = "figShareClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "fig-share.enabled", havingValue = "true")
-		public FigShareClient figShareClient(){
-			final FigShareClient figShareClient = new FigShareClient();
+		initOAuth20Client(payPalClient, config.getPayPal());
 
-			figShareClient.setKey(config.getKey());
-			figShareClient.setSecret(config.getSecret());
+		return payPalClient;
+	}
 
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+	@Bean(name = "qqClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "true")
+	public QQClient qqClient() {
+		final QQClient qqClient = new QQClient(config.getKey(), config.getSecret());
+		final OAuth.Qq qq = config.getQq();
 
-			initOAuth20Client(figShareClient, config.getFigShare(), propertyMapper);
+		propertyMapper.from(qq::getScopes).to(qqClient::setScopes);
 
-			return figShareClient;
-		}
+		initOAuth20Client(qqClient, qq);
 
-		@Bean(name = "foursquareClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "true")
-		public FoursquareClient foursquareClient(){
-			final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return qqClient;
+	}
 
-			initOAuth20Client(foursquareClient, config.getFoursquare(), propertyMapper);
+	@Bean(name = "stravaClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "true")
+	public StravaClient stravaClient() {
+		final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret());
+		final OAuth.Strava strava = config.getStrava();
 
-			return foursquareClient;
-		}
+		propertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
 
-		@Bean(name = "githubClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "true")
-		public GitHubClient githubClient(){
-			final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(stravaClient, strava);
 
-			initOAuth20Client(gitHubClient, config.getGitHub(), propertyMapper);
+		return stravaClient;
+	}
 
-			return gitHubClient;
-		}
+	@Bean(name = "twitterClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "twitter.enabled", havingValue = "true")
+	public TwitterClient twitterClient() {
+		final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret());
+		final OAuth.Twitter twitter = config.getTwitter();
 
-		@Bean(name = "google2Client")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
-		public Google2Client google2Client(){
-			final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		propertyMapper.from(twitter::getAlwaysConfirmAuthorization).to(twitterClient::setAlwaysConfirmAuthorization);
+		propertyMapper.from(twitter::getIncludeEmail).to(twitterClient::setIncludeEmail);
 
-			initOAuth20Client(google2Client, config.getGoogle2(), propertyMapper);
-			propertyMapper.from(config.getGoogle2()::getScope)
-					.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class,
-							v)).to(google2Client::setScope);
+		initOAuth10Client(twitterClient, twitter);
 
-			return google2Client;
-		}
+		return twitterClient;
+	}
 
-		@Bean(name = "google2Client")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
-		public HiOrgServerClient hiOrgServerClient(){
-			final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+	@Bean(name = "vkClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "true")
+	public VkClient vkClient() {
+		final VkClient vkClient = new VkClient(config.getKey(), config.getSecret());
 
-			initOAuth20Client(hiOrgServerClient, config.getHiOrgServer(), propertyMapper);
+		initOAuth20Client(vkClient, config.getVk());
 
-			return hiOrgServerClient;
-		}
+		return vkClient;
+	}
 
-		@Bean(name = "linkedin2Client")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "true")
-		public LinkedIn2Client linkedin2Client(){
-			final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+	@Bean(name = "wechatClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "true")
+	public WechatClient wechatClient() {
+		final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret());
+		final OAuth.Wechat wechat = config.getWechat();
 
-			initOAuth20Client(linkedIn2Client, config.getLinkedIn2(), propertyMapper);
+		propertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
 
-			return linkedIn2Client;
-		}
+		initOAuth20Client(wechatClient, wechat);
 
-		@Bean(name = "okClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "true")
-		public OkClient okClient(){
-			final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return wechatClient;
+	}
 
-			initOAuth20Client(okClient, config.getOk(), propertyMapper);
+	@Bean(name = "weiboClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "true")
+	public WeiboClient weiboClient() {
+		final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret());
+		final OAuth.Weibo weibo = config.getWeibo();
 
-			return okClient;
-		}
+		propertyMapper.from(weibo::getScope)
+				.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
 
-		@Bean(name = "paypalClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "true")
-		public PayPalClient paypalClient(){
-			final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(weiboClient, weibo);
 
-			initOAuth20Client(payPalClient, config.getPayPal(), propertyMapper);
+		return weiboClient;
+	}
 
-			return payPalClient;
-		}
+	@Bean(name = "windowsLiveClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled", havingValue = "true")
+	public WindowsLiveClient windowsLiveClient() {
+		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
 
-		@Bean(name = "qqClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "true")
-		public QQClient qqClient(){
-			final QQClient qqClient = new QQClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		initOAuth20Client(windowsLiveClient, config.getWindowsLive());
 
-			initOAuth20Client(qqClient, config.getQq(), propertyMapper);
+		return windowsLiveClient;
+	}
 
-			if(Validate.isNotEmpty(config.getQq().getScopes())){
-				qqClient.setScopes(config.getQq().getScopes());
-			}
+	@Bean(name = "wordpressClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "word-press.enabled", havingValue = "true")
+	public WordPressClient wordPressClient() {
+		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
 
-			return qqClient;
-		}
+		initOAuth20Client(wordPressClient, config.getWordPress());
 
-		@Bean(name = "stravaClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "true")
-		public StravaClient stravaClient(){
-			final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		return wordPressClient;
+	}
 
-			initOAuth20Client(stravaClient, config.getStrava(), propertyMapper);
+	@Bean(name = "yahooClient")
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "true")
+	public YahooClient yahooClient() {
+		final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret());
 
-			propertyMapper.from(config.getStrava()::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
+		initOAuth10Client(yahooClient, config.getYahoo());
 
-			return stravaClient;
-		}
+		return yahooClient;
+	}
 
-		@Bean(name = "vkClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "true")
-		public VkClient vkClient(){
-			final VkClient vkClient = new VkClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+	// ********************************************* //
+	// *************** end oauth 2.0 *************** //
+	// ********************************************* //
 
-			initOAuth20Client(vkClient, config.getVk(), propertyMapper);
+	protected void initOAuth10Client(final OAuth10Client client, final OAuth.BaseOAuth10Config oAuth10Config) {
+		final OAuth10Configuration configuration = client.getConfiguration();
 
-			return vkClient;
-		}
+		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
+		propertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
+		propertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
+		propertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 
-		@Bean(name = "weiboClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "true")
-		public WeiboClient weiboClient(){
-			final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
+		afterClientInitialized(client, config, oAuth10Config);
+	}
 
-			initOAuth20Client(weiboClient, config.getWeibo(), propertyMapper);
+	protected void initOAuth20Client(final OAuth20Client client, final OAuth.BaseOAuth20Config oAuth20Config) {
+		final OAuth20Configuration configuration = client.getConfiguration();
 
-			propertyMapper.from(config.getWeibo()::getScope)
-					.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
+		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
+		propertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
+		propertyMapper.from(oAuth20Config::getScope).to(configuration::setScope);
+		propertyMapper.from(oAuth20Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
+		propertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
+		propertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
 
-			return weiboClient;
-		}
-
-		@Bean(name = "wechatClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "true")
-		public WechatClient wechatClient(){
-			final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
-
-			initOAuth20Client(wechatClient, config.getWechat(), propertyMapper);
-
-			if(Validate.isNotEmpty(config.getWechat().getScopes())){
-				wechatClient.setScopes(config.getWechat().getScopes());
-			}
-
-			return wechatClient;
-		}
-
-		@Bean(name = "windowsLiveClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled", havingValue = "true")
-		public WindowsLiveClient windowsLiveClient(){
-			final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
-
-			initOAuth20Client(windowsLiveClient, config.getWindowsLive(), propertyMapper);
-
-			return windowsLiveClient;
-		}
-
-		@Bean(name = "wordpressClient")
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "word-press.enabled", havingValue = "true")
-		public WordPressClient wordPressClient(){
-			final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
-			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
-
-			initOAuth20Client(wordPressClient, config.getWordPress(), propertyMapper);
-
-			return wordPressClient;
-		}
-
-		// ********************************************* //
-		// *************** end oauth 2.0 *************** //
-		// ********************************************* //
-
-		protected void initOAuth10Client(final OAuth10Client client, final OAuth.BaseOAuth10Config config,
-										 final PropertyMapper propertyMapper){
-			final OAuth10Configuration configuration = client.getConfiguration();
-
-			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
-
-			propertyMapper.from(config::getResponseType).to(configuration::setResponseType);
-			propertyMapper.from(config::getScope).to(configuration::setScope);
-
-			configuration.setTokenAsHeader(config.isTokenAsHeader());
-
-			afterClientInitialized(client, config);
-		}
-
-		protected void initOAuth20Client(final OAuth20Client client, final OAuth.BaseOAuth20Config config,
-										 final PropertyMapper propertyMapper){
-			final OAuth20Configuration configuration = client.getConfiguration();
-
-			propertyMapper.from(this.config::getCallbackUrl).to(client::setCallbackUrl);
-
-			propertyMapper.from(config::getResponseType).to(configuration::setResponseType);
-			propertyMapper.from(config::getScope).to(configuration::setScope);
-			propertyMapper.from(config::getCustomParameters).to(configuration::setCustomParams);
-
-			configuration.setWithState(config.isWithState());
-			configuration.setTokenAsHeader(config.isTokenAsHeader());
-			configuration.setTokenAsHeader(config.isTokenAsHeader());
-
-			afterClientInitialized(client, config);
-		}
-
+		afterClientInitialized(client, config, oAuth20Config);
 	}
 
 }

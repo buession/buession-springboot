@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -33,19 +33,19 @@ import io.buji.pac4j.filter.SecurityFilter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
@@ -57,14 +57,14 @@ public class Pac4jWebFilterConfiguration {
 
 	private final Config config;
 
-	public Pac4jWebFilterConfiguration(Pac4jProperties properties, ObjectProvider<Config> config){
+	public Pac4jWebFilterConfiguration(Pac4jProperties properties, ObjectProvider<Config> config) {
 		this.properties = properties;
 		this.config = config.getIfAvailable();
 	}
 
 	@Bean(name = "pac4jFilter")
 	@ConditionalOnMissingBean
-	public Pac4jFilter pac4jFilter(){
+	public Pac4jFilter pac4jFilter() {
 		final Pac4jFilter pac4jFilter = new Pac4jFilter();
 
 		final Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
@@ -79,7 +79,7 @@ public class Pac4jWebFilterConfiguration {
 		return pac4jFilter;
 	}
 
-	private SecurityFilter securityFilter(final Pac4jProperties.Filter.Security securityConfig){
+	private SecurityFilter securityFilter(final Pac4jProperties.Filter.Security securityConfig) {
 		final SecurityFilter securityFilter = new SecurityFilter();
 
 		securityFilter.setConfig(config);
@@ -102,7 +102,7 @@ public class Pac4jWebFilterConfiguration {
 		return securityFilter;
 	}
 
-	private CallbackFilter callbackFilter(final Pac4jProperties.Filter.Callback callbackConfig){
+	private CallbackFilter callbackFilter(final Pac4jProperties.Filter.Callback callbackConfig) {
 		final CallbackFilter callbackFilter = new CallbackFilter();
 
 		callbackFilter.setConfig(config);
@@ -114,7 +114,7 @@ public class Pac4jWebFilterConfiguration {
 		return callbackFilter;
 	}
 
-	private LogoutFilter logoutFilter(final Pac4jProperties.Filter.Logout logoutConfig){
+	private LogoutFilter logoutFilter(final Pac4jProperties.Filter.Logout logoutConfig) {
 		final LogoutFilter logoutFilter = new LogoutFilter();
 
 		logoutFilter.setConfig(config);

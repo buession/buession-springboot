@@ -26,6 +26,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
 import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
 import org.pac4j.core.client.Client;
@@ -34,25 +35,26 @@ import org.pac4j.core.config.Config;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ReactiveAdapterRegistry;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Pac4j 基础配置自动加载类
  *
  * @author Yong.Teng
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(Pac4jProperties.class)
 public class Pac4jConfiguration {
+
+	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
 	private final Pac4jProperties properties;
 
@@ -75,8 +77,8 @@ public class Pac4jConfiguration {
 	public Clients clients(List<Client> clientList) {
 		final Clients clients = new Clients(clientList);
 
-		Optional.ofNullable(properties.getAjaxRequestResolverClass()).ifPresent(
-				(ajaxRequestResolver)->clients.setAjaxRequestResolver(BeanUtils.instantiateClass(ajaxRequestResolver)));
+		propertyMapper.from(properties::getAjaxRequestResolverClass).as(BeanUtils::instantiateClass)
+				.to(clients::setAjaxRequestResolver);
 
 		return clients;
 	}
@@ -91,13 +93,12 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config config(ObjectProvider<Clients> clients) {
+	public Config config(Clients clients) {
 		final Config config = Config.INSTANCE;
 
-		clients.ifAvailable(config::setClients);
-
-		Optional.ofNullable(properties.getHttpActionAdapterClass()).ifPresent(
-				(httpActionAdapter)->config.setHttpActionAdapter(BeanUtils.instantiateClass(httpActionAdapter)));
+		config.setClients(clients);
+		propertyMapper.from(properties::getHttpActionAdapterClass).as(BeanUtils::instantiateClass)
+				.to(config::setHttpActionAdapter);
 
 		return config;
 	}
@@ -105,7 +106,7 @@ public class Pac4jConfiguration {
 	/**
 	 * @since 2.1.0
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	static class ServletPac4jConfigurerAdapterConfiguration {
 
@@ -120,7 +121,7 @@ public class Pac4jConfiguration {
 	/**
 	 * @since 2.1.0
 	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	static class WebFluxPac4jConfigurerAdapterConfiguration {
 
