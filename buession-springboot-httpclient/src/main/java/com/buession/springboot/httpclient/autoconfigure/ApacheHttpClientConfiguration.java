@@ -89,14 +89,14 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
 		public com.buession.httpclient.ApacheHttpClient httpClient(
 				ObjectProvider<com.buession.httpclient.apache.ApacheClientConnectionManager> clientConnectionManager) {
-			com.buession.httpclient.apache.ApacheClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
-			return connectionManager ==
-					null ? new com.buession.httpclient.ApacheHttpClient() : new com.buession.httpclient.ApacheHttpClient(
-					connectionManager);
+			final com.buession.httpclient.ApacheHttpClient apacheHttpClient = new com.buession.httpclient.ApacheHttpClient();
+
+			clientConnectionManager.ifAvailable(apacheHttpClient::setConnectionManager);
+
+			return apacheHttpClient;
 		}
 
 	}
-
 
 	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
@@ -158,9 +158,11 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
 		public ApacheHttpAsyncClient httpAsyncClient(
 				ObjectProvider<com.buession.httpclient.apache.ApacheNioClientConnectionManager> clientConnectionManager) {
-			com.buession.httpclient.apache.ApacheNioClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
-			return connectionManager == null ? new ApacheHttpAsyncClient() : new ApacheHttpAsyncClient(
-					connectionManager);
+			final ApacheHttpAsyncClient apacheHttpAsyncClient = new ApacheHttpAsyncClient();
+
+			clientConnectionManager.ifAvailable(apacheHttpAsyncClient::setConnectionManager);
+
+			return apacheHttpAsyncClient;
 		}
 
 	}

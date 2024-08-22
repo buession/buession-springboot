@@ -72,8 +72,11 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
 		public OkHttpHttpClient httpClient(ObjectProvider<OkHttpClientConnectionManager> clientConnectionManager) {
-			OkHttpClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
-			return connectionManager == null ? new OkHttpHttpClient() : new OkHttpHttpClient(connectionManager);
+			final OkHttpHttpClient okHttpClient = new OkHttpHttpClient();
+
+			clientConnectionManager.ifAvailable(okHttpClient::setConnectionManager);
+
+			return okHttpClient;
 		}
 
 	}
@@ -101,9 +104,11 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
 		public OkHttpHttpAsyncClient httpClient(
 				ObjectProvider<OkHttpNioClientConnectionManager> clientConnectionManager) {
-			OkHttpNioClientConnectionManager connectionManager = clientConnectionManager.getIfAvailable();
-			return connectionManager == null ? new OkHttpHttpAsyncClient() :
-					new OkHttpHttpAsyncClient(connectionManager);
+			final OkHttpHttpAsyncClient okHttpHttpAsyncClient = new OkHttpHttpAsyncClient();
+
+			clientConnectionManager.ifAvailable(okHttpHttpAsyncClient::setConnectionManager);
+
+			return okHttpHttpAsyncClient;
 		}
 
 	}
