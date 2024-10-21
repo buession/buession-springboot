@@ -28,8 +28,9 @@ import com.buession.httpclient.OkHttpHttpAsyncClient;
 import com.buession.httpclient.OkHttpHttpClient;
 import com.buession.httpclient.conn.OkHttpClientConnectionManager;
 import com.buession.httpclient.conn.OkHttpNioClientConnectionManager;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -65,18 +66,16 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public OkHttpClientConnectionManager okHttpClientConnectionManager() {
 			return new OkHttpClientConnectionManager(properties);
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public OkHttpHttpClient httpClient(ObjectProvider<OkHttpClientConnectionManager> clientConnectionManager) {
-			final OkHttpHttpClient okHttpClient = new OkHttpHttpClient();
-
-			clientConnectionManager.ifAvailable(okHttpClient::setConnectionManager);
-
-			return okHttpClient;
+		@ConditionalOnBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public OkHttpHttpClient httpClient(
+				@Qualifier(CLIENT_CONNECTION_MANAGER_BEAN_NAME) OkHttpClientConnectionManager clientConnectionManager) {
+			return new OkHttpHttpClient(clientConnectionManager);
 		}
 
 	}
@@ -96,19 +95,16 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public OkHttpNioClientConnectionManager okHttpNioClientConnectionManager() {
 			return new OkHttpNioClientConnectionManager(properties);
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
+		@ConditionalOnBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public OkHttpHttpAsyncClient httpClient(
-				ObjectProvider<OkHttpNioClientConnectionManager> clientConnectionManager) {
-			final OkHttpHttpAsyncClient okHttpHttpAsyncClient = new OkHttpHttpAsyncClient();
-
-			clientConnectionManager.ifAvailable(okHttpHttpAsyncClient::setConnectionManager);
-
-			return okHttpHttpAsyncClient;
+				@Qualifier(NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME) OkHttpNioClientConnectionManager clientConnectionManager) {
+			return new OkHttpHttpAsyncClient(clientConnectionManager);
 		}
 
 	}

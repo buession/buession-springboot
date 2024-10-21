@@ -25,13 +25,14 @@
 package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.ApacheHttpAsyncClient;
+import com.buession.httpclient.apache.ApacheClientConnectionManager;
+import com.buession.httpclient.apache.ApacheNioClientConnectionManager;
 import com.buession.httpclient.conn.Apache5ClientConnectionManager;
 import com.buession.httpclient.conn.Apache5NioClientConnectionManager;
-import com.buession.httpclient.conn.ApacheClientConnectionManager;
-import com.buession.httpclient.conn.ApacheNioClientConnectionManager;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -69,8 +70,8 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		 */
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
 		@ConditionalOnClass(name = {"org.apache.hc.client5.http.classic.HttpClient"})
-		@ConditionalOnMissingBean
-		public com.buession.httpclient.apache.ApacheClientConnectionManager apache5ClientConnectionManager() {
+		@ConditionalOnMissingBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheClientConnectionManager apache5ClientConnectionManager() {
 			return new Apache5ClientConnectionManager(properties);
 		}
 
@@ -81,19 +82,16 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		 */
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
 		@ConditionalOnClass(name = {"org.apache.http.client.HttpClient"})
-		@ConditionalOnMissingBean
-		public com.buession.httpclient.apache.ApacheClientConnectionManager apacheClientConnectionManager() {
-			return new ApacheClientConnectionManager(properties);
+		@ConditionalOnMissingBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheClientConnectionManager apacheClientConnectionManager() {
+			return new com.buession.httpclient.conn.ApacheClientConnectionManager(properties);
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
+		@ConditionalOnBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public com.buession.httpclient.ApacheHttpClient httpClient(
-				ObjectProvider<com.buession.httpclient.apache.ApacheClientConnectionManager> clientConnectionManager) {
-			final com.buession.httpclient.ApacheHttpClient apacheHttpClient = new com.buession.httpclient.ApacheHttpClient();
-
-			clientConnectionManager.ifAvailable(apacheHttpClient::setConnectionManager);
-
-			return apacheHttpClient;
+				@Qualifier(CLIENT_CONNECTION_MANAGER_BEAN_NAME) ApacheClientConnectionManager clientConnectionManager) {
+			return new com.buession.httpclient.ApacheHttpClient(clientConnectionManager);
 		}
 
 	}
@@ -116,8 +114,8 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		 */
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
 		@ConditionalOnClass(name = {"org.apache.hc.client5.http.async.HttpAsyncClient"})
-		@ConditionalOnMissingBean
-		public com.buession.httpclient.apache.ApacheNioClientConnectionManager apache5NioClientConnectionManager() {
+		@ConditionalOnMissingBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheNioClientConnectionManager apache5NioClientConnectionManager() {
 			final Apache5NioClientConnectionManager clientConnectionManager =
 					new Apache5NioClientConnectionManager(properties);
 
@@ -139,10 +137,10 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		 */
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
 		@ConditionalOnClass(name = {"org.apache.http.nio.client.HttpAsyncClient"})
-		@ConditionalOnMissingBean
-		public com.buession.httpclient.apache.ApacheNioClientConnectionManager apacheNioClientConnectionManager() {
-			final ApacheNioClientConnectionManager clientConnectionManager =
-					new ApacheNioClientConnectionManager(properties);
+		@ConditionalOnMissingBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheNioClientConnectionManager apacheNioClientConnectionManager() {
+			final com.buession.httpclient.conn.ApacheNioClientConnectionManager clientConnectionManager =
+					new com.buession.httpclient.conn.ApacheNioClientConnectionManager(properties);
 
 			if(properties.getApacheClient() != null){
 				propertyMapper.from(properties.getApacheClient()::getIoReactor)
@@ -156,13 +154,10 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
+		@ConditionalOnBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public ApacheHttpAsyncClient httpAsyncClient(
-				ObjectProvider<com.buession.httpclient.apache.ApacheNioClientConnectionManager> clientConnectionManager) {
-			final ApacheHttpAsyncClient apacheHttpAsyncClient = new ApacheHttpAsyncClient();
-
-			clientConnectionManager.ifAvailable(apacheHttpAsyncClient::setConnectionManager);
-
-			return apacheHttpAsyncClient;
+				@Qualifier(NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME) ApacheNioClientConnectionManager clientConnectionManager) {
+			return new ApacheHttpAsyncClient(clientConnectionManager);
 		}
 
 	}
