@@ -30,7 +30,6 @@ import com.buession.springboot.shiro.core.ShiroFilter;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,19 +69,16 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 	@Bean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnBean({ShiroFilter.class})
-	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(
-			ObjectProvider<ShiroFilter> shiroFilter) throws Exception {
+	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(ShiroFilter shiroFilter)
+			throws Exception {
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 		ShiroFilterFactoryBean shiroFilterFactoryBean = super.shiroFilterFactoryBean();
 
-		shiroFilter.ifAvailable((filter)->{
-			if(shiroFilterFactoryBean.getFilters() == null){
-				shiroFilterFactoryBean.setFilters(filter.getFilters());
-			}else{
-				shiroFilterFactoryBean.getFilters().putAll(filter.getFilters());
-			}
-		});
-
+		if(shiroFilterFactoryBean.getFilters() == null){
+			shiroFilterFactoryBean.setFilters(shiroFilter.getFilters());
+		}else{
+			shiroFilterFactoryBean.getFilters().putAll(shiroFilter.getFilters());
+		}
 		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);

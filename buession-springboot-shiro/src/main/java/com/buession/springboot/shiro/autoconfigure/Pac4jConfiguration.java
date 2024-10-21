@@ -32,7 +32,6 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -64,11 +63,10 @@ public class Pac4jConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({SubjectFactory.class})
-	public SubjectFactory subjectFactory(ObjectProvider<SecurityManager> securityManager) {
+	public SubjectFactory subjectFactory(SecurityManager securityManager) {
 		SubjectFactory subjectFactory = new Pac4jSubjectFactory();
 
-		securityManager.ifAvailable(
-				(securityMgr)->((DefaultSecurityManager) securityMgr).setSubjectFactory(subjectFactory));
+		((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory);
 
 		return subjectFactory;
 	}

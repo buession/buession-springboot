@@ -49,4 +49,5 @@ public class ShiroFilter {
 	public void setFilters(Map<String, Filter> filters) {
 		this.filters = filters;
 	}
+
 }
