@@ -54,7 +54,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(before = {Pac4jConfiguration.class})
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({FormClient.class})
-@ConditionalOnProperty(prefix = Http.PREFIX, name = "enabled", havingValue = "true")
 public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Http> {
 
 	public Pac4jHttpConfiguration(Pac4jProperties properties) {

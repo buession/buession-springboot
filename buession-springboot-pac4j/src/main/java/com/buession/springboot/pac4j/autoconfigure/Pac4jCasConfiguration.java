@@ -27,7 +27,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.security.pac4j.config.*;
-import com.buession.springboot.pac4j.config.BaseConfig;
 import com.buession.springboot.pac4j.config.Cas;
 import org.jasig.cas.client.validation.ProxyList;
 import org.pac4j.cas.client.CasClient;
@@ -36,9 +35,10 @@ import org.pac4j.cas.client.direct.*;
 import org.pac4j.cas.client.rest.*;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.cas.credentials.authenticator.CasAuthenticator;
+import org.pac4j.cas.profile.CasProfileDefinition;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.BaseClient;
-import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.credentials.TokenCredentials;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -60,7 +60,6 @@ import java.util.stream.Collectors;
 @AutoConfiguration(before = {Pac4jConfiguration.class})
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({CasConfiguration.class})
-@ConditionalOnProperty(prefix = Cas.PREFIX, name = "enabled", havingValue = "true")
 public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas> {
 
 	public Pac4jCasConfiguration(Pac4jProperties properties) {
@@ -73,9 +72,14 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	public CasProxyReceptor casProxyReceptor() {
 		final CasProxyReceptor proxyReceptor = new CasProxyReceptor();
 
-		proxyReceptor.setCallbackUrl(properties.getClient().getCas().getCallbackUrl());
+		proxyReceptor.setCallbackUrl(config.getCallbackUrl());
 
 		return proxyReceptor;
+	}
+
+	@Bean
+	public CasProfileDefinition profileDefinition() {
+		return BeanUtils.instantiateClass(config.getProfileDefinition());
 	}
 
 	@Bean
@@ -120,15 +124,24 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "casClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
-	public CasClient casClient(ObjectProvider<CasConfiguration> casConfiguration) {
-		final CasClient casClient = new CasClient();
+	public CasClient casClient(CasConfiguration casConfiguration, CasProfileDefinition casProfileDefinition) {
+		final CasClient casClient = new CasClient() {
 
-		casConfiguration.ifAvailable(casClient::setConfiguration);
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				doClientInit(this, casProfileDefinition);
+			}
+
+		};
+
+		casClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(config::getCallbackUrl).to(casClient::setCallbackUrl);
 		propertyMapper.from(config::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
 				.to(casClient::setAjaxRequestResolver);
 
-		afterClientInitialized(casClient, config.getGeneral());
+		afterClientInitialized(casClient, config, config.getGeneral());
 
 		return casClient;
 	}
@@ -138,12 +151,22 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "directCasClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
-	public DirectCasClient directCasClient(ObjectProvider<CasConfiguration> casConfiguration) {
-		final DirectCasClient directCasClient = new DirectCasClient();
+	public DirectCasClient directCasClient(CasConfiguration casConfiguration,
+										   CasProfileDefinition casProfileDefinition) {
+		final DirectCasClient directCasClient = new DirectCasClient() {
 
-		casConfiguration.ifAvailable(directCasClient::setConfiguration);
 
-		afterClientInitialized(directCasClient, config.getDirect());
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				doClientInit(this, casProfileDefinition);
+			}
+
+		};
+
+		directCasClient.setConfiguration(casConfiguration);
+
+		afterClientInitialized(directCasClient, config, config.getDirect());
 
 		return directCasClient;
 	}
@@ -151,13 +174,23 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "directCasProxyClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
-	public DirectCasProxyClient directCasProxyClient(ObjectProvider<CasConfiguration> casConfiguration) {
-		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient();
+	public DirectCasProxyClient directCasProxyClient(CasConfiguration casConfiguration,
+													 CasProfileDefinition casProfileDefinition) {
+		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient() {
 
-		casConfiguration.ifAvailable(directCasProxyClient::setConfiguration);
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				doClientInit(this, casProfileDefinition);
+			}
+
+		};
+
+		directCasProxyClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(config::getCallbackUrl).to(directCasProxyClient::setServiceUrl);
 
-		afterClientInitialized(directCasProxyClient, config.getDirectProxy());
+		afterClientInitialized(directCasProxyClient, config, config.getDirectProxy());
 
 		return directCasProxyClient;
 	}
@@ -169,15 +202,15 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "casRestBasicAuthClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
-	public CasRestBasicAuthClient casRestBasicAuthClient(ObjectProvider<CasConfiguration> casConfiguration) {
+	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration casConfiguration) {
 		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient();
 		final Cas.RestBasicAuth restBasicAuth = config.getRestBasicAuth();
 
-		casConfiguration.ifAvailable(casRestBasicAuthClient::setConfiguration);
+		casRestBasicAuthClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(restBasicAuth::getHeaderName).to(casRestBasicAuthClient::setHeaderName);
 		hasTextpropertyMapper.from(restBasicAuth::getPrefixHeader).to(casRestBasicAuthClient::setPrefixHeader);
 
-		afterClientInitialized(casRestBasicAuthClient, restBasicAuth);
+		afterClientInitialized(casRestBasicAuthClient, config, restBasicAuth);
 
 		return casRestBasicAuthClient;
 	}
@@ -185,26 +218,24 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "casRestFormClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
-	public CasRestFormClient casRestFormClient(ObjectProvider<CasConfiguration> casConfiguration) {
+	public CasRestFormClient casRestFormClient(CasConfiguration casConfiguration) {
 		final CasRestFormClient casRestFormClient = new CasRestFormClient();
 		final Cas.RestForm restForm = config.getRestForm();
 
-		casConfiguration.ifAvailable(casRestFormClient::setConfiguration);
+		casRestFormClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(restForm::getUsernameParameter).to(casRestFormClient::setUsernameParameter);
 		hasTextpropertyMapper.from(restForm::getPasswordParameter).to(casRestFormClient::setPasswordParameter);
 
-		afterClientInitialized(casRestFormClient, restForm);
+		afterClientInitialized(casRestFormClient, config, restForm);
 
 		return casRestFormClient;
 	}
 
 	/* Rest Client 结束 */
 
-	protected <CONF extends BaseConfig.BaseClientConfig, CLIENT extends BaseClient<? extends Credentials>> void afterClientInitialized(
-			final CLIENT client, final CONF clientConfig) {
-		propertyMapper.from(config::getProfileDefinition).as(BeanUtils::instantiateClass).to((casProfileDefinition)->{
-			((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(casProfileDefinition);
-		});
+	protected void doClientInit(final BaseClient<TokenCredentials> client,
+								final CasProfileDefinition casProfileDefinition) {
+		((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(casProfileDefinition);
 
 		if(Validate.isNotEmpty(config.getAuthorizationGenerator())){
 			final List<AuthorizationGenerator> authorizationGenerators = config.getAuthorizationGenerator()
@@ -213,8 +244,6 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 			client.setAuthorizationGenerators(authorizationGenerators);
 		}
-
-		super.afterClientInitialized(client, config, clientConfig);
 	}
 
 }

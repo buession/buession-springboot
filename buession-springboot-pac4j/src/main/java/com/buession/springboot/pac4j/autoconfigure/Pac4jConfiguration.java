@@ -74,6 +74,7 @@ public class Pac4jConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings({"rawtypes"})
 	public Clients clients(List<Client> clientList) {
 		final Clients clients = new Clients(clientList);
 

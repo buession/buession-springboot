@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.Customizer;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.filter.Pac4jFilter;
@@ -41,6 +42,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
+import javax.servlet.Filter;
+import java.util.Map;
+
 /**
  * @author Yong.Teng
  * @since 2.0.0
@@ -57,14 +61,14 @@ public class Pac4jWebFilterConfiguration {
 
 	private final Config config;
 
-	public Pac4jWebFilterConfiguration(Pac4jProperties properties, ObjectProvider<Config> config) {
+	public Pac4jWebFilterConfiguration(Pac4jProperties properties, Config config) {
 		this.properties = properties;
-		this.config = config.getIfAvailable();
+		this.config = config;
 	}
 
 	@Bean(name = "pac4jFilter")
 	@ConditionalOnMissingBean
-	public Pac4jFilter pac4jFilter() {
+	public Pac4jFilter pac4jFilter(ObjectProvider<Customizer<Pac4jFilter>> filterCustomizer) {
 		final Pac4jFilter pac4jFilter = new Pac4jFilter();
 
 		final Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
@@ -75,6 +79,8 @@ public class Pac4jWebFilterConfiguration {
 
 		final Pac4jProperties.Filter.Logout logoutConfig = properties.getFilter().getLogout();
 		pac4jFilter.addFilter(logoutConfig.getName(), logoutFilter(logoutConfig));
+
+		filterCustomizer.ifAvailable((filters)->filters.customize(pac4jFilter));
 
 		return pac4jFilter;
 	}

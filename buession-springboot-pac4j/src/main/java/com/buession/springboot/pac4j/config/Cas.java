@@ -106,7 +106,7 @@ public class Cas extends BaseConfig {
 	/**
 	 * Profile 定义，可用于处理 CAS Server 登录返回字段
 	 */
-	private Class<? extends CasProfileDefinition> profileDefinition;
+	private Class<? extends CasProfileDefinition> profileDefinition = org.pac4j.cas.profile.CasProfileDefinition.class;
 
 	/**
 	 * 授权生成器

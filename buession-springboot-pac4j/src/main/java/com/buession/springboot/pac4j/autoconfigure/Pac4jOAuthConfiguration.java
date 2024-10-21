@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(before = {Pac4jConfiguration.class})
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnClass({OAuth10Client.class, OAuth20Client.class})
-@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "enabled", havingValue = "true")
 public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OAuth> {
 
 	public Pac4jOAuthConfiguration(Pac4jProperties properties) {
@@ -175,8 +174,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
 
 		propertyMapper.from(config.getGoogle2()::getScope)
-				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class,
-						v)).to(google2Client::setScope);
+				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(google2Client::setScope);
 
 		initOAuth20Client(google2Client, config.getGoogle2());
 
