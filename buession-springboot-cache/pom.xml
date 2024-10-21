@@ -63,6 +63,12 @@
 			<artifactId>buession-redis</artifactId>
 			<version>${buession.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.buession</groupId>
+			<artifactId>buession-aop</artifactId>
+			<version>${buession.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
