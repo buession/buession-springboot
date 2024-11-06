@@ -35,7 +35,7 @@ import com.buession.security.captcha.validator.reactive.ReactiveTencentCaptchaVa
 import com.buession.security.captcha.validator.servlet.ServletAliYunCaptchaValidator;
 import com.buession.security.captcha.validator.servlet.ServletGeetestCaptchaValidator;
 import com.buession.security.captcha.validator.servlet.ServletTencentCaptchaValidator;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,7 +44,6 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 行为验证码客户端 Web 自动配置类
@@ -52,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Yong.Teng
  * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(CaptchaProperties.class)
 @AutoConfigureAfter({CaptchaConfiguration.class})
 public class CaptchaWebConfiguration {
@@ -72,7 +71,7 @@ public class CaptchaWebConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(CaptchaProperties.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
@@ -85,33 +84,27 @@ public class CaptchaWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({AliYunCaptchaClient.class})
-		public ServletAliYunCaptchaValidator aliYunCaptchaValidator(
-				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient) {
-			return new ServletAliYunCaptchaValidator(aliYunCaptchaClient.getIfAvailable(),
-					properties.getAliyun().getParameter());
+		public ServletAliYunCaptchaValidator aliYunCaptchaValidator(AliYunCaptchaClient aliYunCaptchaClient) {
+			return new ServletAliYunCaptchaValidator(aliYunCaptchaClient, properties.getAliyun().getParameter());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({GeetestCaptchaClient.class})
-		public ServletGeetestCaptchaValidator geetestCaptchaValidator(
-				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
-			return new ServletGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(),
-					getGeetestParameter(geetestCaptchaClient.getIfAvailable()));
+		public ServletGeetestCaptchaValidator geetestCaptchaValidator(GeetestCaptchaClient geetestCaptchaClient) {
+			return new ServletGeetestCaptchaValidator(geetestCaptchaClient, getGeetestParameter(geetestCaptchaClient));
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({TencentCaptchaClient.class})
-		public ServletTencentCaptchaValidator tencentCaptchaValidator(
-				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient) {
-			return new ServletTencentCaptchaValidator(tencentCaptchaClient.getIfAvailable(),
-					properties.getTencent().getParameter());
+		public ServletTencentCaptchaValidator tencentCaptchaValidator(TencentCaptchaClient tencentCaptchaClient) {
+			return new ServletTencentCaptchaValidator(tencentCaptchaClient, properties.getTencent().getParameter());
 		}
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(CaptchaProperties.class)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	@AutoConfigureAfter(WebFluxAutoConfiguration.class)
@@ -124,28 +117,22 @@ public class CaptchaWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({AliYunCaptchaClient.class})
-		public ReactiveAliYunCaptchaValidator aliYunCaptchaValidator(
-				ObjectProvider<AliYunCaptchaClient> aliYunCaptchaClient) {
-			return new ReactiveAliYunCaptchaValidator(aliYunCaptchaClient.getIfAvailable(),
-					properties.getAliyun().getParameter());
+		public ReactiveAliYunCaptchaValidator aliYunCaptchaValidator(AliYunCaptchaClient aliYunCaptchaClient) {
+			return new ReactiveAliYunCaptchaValidator(aliYunCaptchaClient, properties.getAliyun().getParameter());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({GeetestCaptchaClient.class})
-		public ReactiveGeetestCaptchaValidator geetestCaptchaValidator(
-				ObjectProvider<GeetestCaptchaClient> geetestCaptchaClient) {
-			return new ReactiveGeetestCaptchaValidator(geetestCaptchaClient.getIfAvailable(),
-					getGeetestParameter(geetestCaptchaClient.getIfAvailable()));
+		public ReactiveGeetestCaptchaValidator geetestCaptchaValidator(GeetestCaptchaClient geetestCaptchaClient) {
+			return new ReactiveGeetestCaptchaValidator(geetestCaptchaClient, getGeetestParameter(geetestCaptchaClient));
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({CaptchaValidator.class})
 		@ConditionalOnBean({TencentCaptchaClient.class})
-		public ReactiveTencentCaptchaValidator tencentCaptchaValidator(
-				ObjectProvider<TencentCaptchaClient> tencentCaptchaClient) {
-			return new ReactiveTencentCaptchaValidator(tencentCaptchaClient.getIfAvailable(),
-					properties.getTencent().getParameter());
+		public ReactiveTencentCaptchaValidator tencentCaptchaValidator(TencentCaptchaClient tencentCaptchaClient) {
+			return new ReactiveTencentCaptchaValidator(tencentCaptchaClient, properties.getTencent().getParameter());
 		}
 
 	}

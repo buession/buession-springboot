@@ -24,6 +24,8 @@
  */
 package com.buession.springboot.httpclient.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
+
 /**
  * @author Yong.Teng
  * @since 2.3.0
@@ -38,9 +40,11 @@ public abstract class AbstractHttpClientConfiguration {
 
 	protected final static String ASYNC_HTTP_CLIENT_BEAN_NAME = "$asyncHttpClient";
 
+	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
 	protected final HttpClientProperties properties;
 
-	public AbstractHttpClientConfiguration(HttpClientProperties properties){
+	public AbstractHttpClientConfiguration(HttpClientProperties properties) {
 		this.properties = properties;
 	}
 

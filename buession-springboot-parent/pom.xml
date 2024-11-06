@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.3.3</version>
+		<version>3.0.0</version>
 	</parent>
 	<groupId>com.buession.springboot</groupId>
 	<artifactId>buession-springboot-parent</artifactId>
 	<url>https://springboot.buession.com/</url>
 	<description>Buession Springboot Framework Parent</description>
-	<version>2.3.3</version>
+	<version>3.0.0</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -56,7 +56,6 @@
 	<modules>
 		<module>../buession-springboot-boot</module>
 		<module>../buession-springboot-cache</module>
-		<module>../buession-springboot-canal</module>
 		<module>../buession-springboot-captcha</module>
 		<module>../buession-springboot-cli</module>
 		<module>../buession-springboot-datasource</module>
@@ -65,15 +64,14 @@
 		<module>../buession-springboot-mongodb</module>
 		<module>../buession-springboot-mybatis</module>
 		<module>../buession-springboot-pac4j</module>
-		<module>../buession-springboot-session</module>
 		<module>../buession-springboot-shiro</module>
 		<module>../buession-springboot-velocity</module>
 		<module>../buession-springboot-web</module>
 	</modules>
 
 	<properties>
-		<buession.version>2.3.3</buession.version>
-		<buession.security.version>2.3.3</buession.security.version>
+		<buession.version>3.0.0</buession.version>
+		<buession.security.version>3.0.0</buession.security.version>
 	</properties>
 
 	<dependencyManagement>
@@ -92,15 +90,9 @@
 
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-autoconfigure-processor</artifactId>
+				<artifactId>spring-boot-test</artifactId>
 				<version>${springframework.boot.version}</version>
-				<optional>true</optional>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-spring-boot</artifactId>
-				<version>${apache.logging.log4j.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -130,20 +122,9 @@
 				<artifactId>maven-gpg-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 </project>

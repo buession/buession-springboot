@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cli.application;
@@ -29,6 +29,8 @@ import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Optional;
 
 /**
  * 命令行应用抽象类
@@ -47,7 +49,7 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	/**
 	 * 构造函数
 	 */
-	protected AbstractCliApplication(){
+	protected AbstractCliApplication() {
 		super();
 	}
 
@@ -64,7 +66,7 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	 * @since 1.3.1
 	 */
 	protected AbstractCliApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException{
+			IllegalAccessException {
 		super(banner);
 	}
 
@@ -76,7 +78,7 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	 *
 	 * @since 1.3.1
 	 */
-	protected AbstractCliApplication(final Banner banner){
+	protected AbstractCliApplication(final Banner banner) {
 		super(banner);
 	}
 
@@ -88,7 +90,7 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	 *
 	 * @since 2.3.0
 	 */
-	protected AbstractCliApplication(final boolean addCommandLineProperties){
+	protected AbstractCliApplication(final boolean addCommandLineProperties) {
 		super();
 		this.addCommandLineProperties = addCommandLineProperties;
 	}
@@ -108,7 +110,7 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	 * @since 2.3.0
 	 */
 	protected AbstractCliApplication(final Class<? extends Banner> banner, final boolean addCommandLineProperties)
-			throws InstantiationException, IllegalAccessException{
+			throws InstantiationException, IllegalAccessException {
 		super(banner);
 		this.addCommandLineProperties = addCommandLineProperties;
 	}
@@ -123,32 +125,31 @@ public abstract class AbstractCliApplication extends AbstractApplication impleme
 	 *
 	 * @since 2.3.0
 	 */
-	protected AbstractCliApplication(final Banner banner, final boolean addCommandLineProperties){
+	protected AbstractCliApplication(final Banner banner, final boolean addCommandLineProperties) {
 		super(banner);
 		this.addCommandLineProperties = addCommandLineProperties;
 	}
 
 	@Override
-	public Boolean getAddCommandLineProperties(){
+	public Boolean getAddCommandLineProperties() {
 		return addCommandLineProperties;
 	}
 
 	@Override
-	public void setAddCommandLineProperties(Boolean addCommandLineProperties){
+	public void setAddCommandLineProperties(Boolean addCommandLineProperties) {
 		this.addCommandLineProperties = addCommandLineProperties;
 	}
 
 	@Override
-	public final void run(final String[] args){
+	public final void run(final String[] args) {
 	}
 
 	@Override
-	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz){
+	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz) {
 		final SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz);
 
-		if(getAddCommandLineProperties() != null){
-			springApplicationBuilder.addCommandLineProperties(getAddCommandLineProperties());
-		}
+		Optional.ofNullable(getAddCommandLineProperties())
+				.ifPresent(springApplicationBuilder::addCommandLineProperties);
 
 		return springApplicationBuilder;
 	}

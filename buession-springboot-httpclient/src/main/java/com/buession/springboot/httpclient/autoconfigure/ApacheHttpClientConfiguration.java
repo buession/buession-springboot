@@ -25,19 +25,19 @@
 package com.buession.springboot.httpclient.autoconfigure;
 
 import com.buession.httpclient.ApacheHttpAsyncClient;
-import com.buession.httpclient.ApacheHttpClient;
-import com.buession.httpclient.conn.ApacheClientConnectionManager;
-import com.buession.httpclient.conn.ApacheNioClientConnectionManager;
+import com.buession.httpclient.apache.ApacheClientConnectionManager;
+import com.buession.httpclient.apache.ApacheNioClientConnectionManager;
+import com.buession.httpclient.conn.Apache5ClientConnectionManager;
+import com.buession.httpclient.conn.Apache5NioClientConnectionManager;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Optional;
 
 /**
  * Apache HttpClient Auto Configuration
@@ -45,7 +45,7 @@ import java.util.Optional;
  * @author Yong.Teng
  * @since 2.3.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(HttpClientProperties.class)
 public class ApacheHttpClientConfiguration extends AbstractHttpClientConfiguration {
 
@@ -53,66 +53,111 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		super(properties);
 	}
 
-	/**
-	 * Apache 同步 HttpClient Auto Configuration
-	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass(org.apache.http.impl.client.CloseableHttpClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
-	static class HttpClient extends ApacheHttpClientConfiguration {
+	static class ApacheHttpClient extends ApacheHttpClientConfiguration {
 
-		public HttpClient(HttpClientProperties properties) {
+		public ApacheHttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
+		/**
+		 * Apache 5 同步连接管理器
+		 *
+		 * @return Apache 5 同步连接管理器
+		 */
 		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public ApacheClientConnectionManager clientConnectionManager() {
-			return new ApacheClientConnectionManager(properties);
+		@ConditionalOnClass(name = {"org.apache.hc.client5.http.classic.HttpClient"})
+		@ConditionalOnMissingBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheClientConnectionManager apache5ClientConnectionManager() {
+			return new Apache5ClientConnectionManager(properties);
+		}
+
+		/**
+		 * Apache 4 同步连接管理器
+		 *
+		 * @return Apache 4 同步连接管理器
+		 */
+		@Bean(name = CLIENT_CONNECTION_MANAGER_BEAN_NAME)
+		@ConditionalOnClass(name = {"org.apache.http.client.HttpClient"})
+		@ConditionalOnMissingBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheClientConnectionManager apacheClientConnectionManager() {
+			return new com.buession.httpclient.conn.ApacheClientConnectionManager(properties);
 		}
 
 		@Bean(name = HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpClient httpClient(ObjectProvider<ApacheClientConnectionManager> connectionManager) {
-			return new ApacheHttpClient(connectionManager.getIfAvailable());
+		@ConditionalOnBean(name = {CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public com.buession.httpclient.ApacheHttpClient httpClient(
+				@Qualifier(CLIENT_CONNECTION_MANAGER_BEAN_NAME) ApacheClientConnectionManager clientConnectionManager) {
+			return new com.buession.httpclient.ApacheHttpClient(clientConnectionManager);
 		}
 
 	}
 
-	/**
-	 * Apache 异步 HttpClient Auto Configuration
-	 */
-	@Configuration(proxyBeanMethods = false)
+	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnClass(org.apache.http.nio.client.HttpAsyncClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpAsyncClient.class)
 	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.async.enabled", havingValue =
 			"true", matchIfMissing = true)
-	static class AsyncHttpClient extends ApacheHttpClientConfiguration {
+	static class AsyncApacheHttpClient extends ApacheHttpClientConfiguration {
 
-		public AsyncHttpClient(HttpClientProperties properties) {
+		public AsyncApacheHttpClient(HttpClientProperties properties) {
 			super(properties);
 		}
 
+		/**
+		 * Apache 5 异步连接管理器
+		 *
+		 * @return Apache 5 异步连接管理器
+		 */
 		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
-		public ApacheNioClientConnectionManager clientConnectionManager() {
-			final ApacheNioClientConnectionManager clientConnectionManager =
-					new ApacheNioClientConnectionManager(properties);
+		@ConditionalOnClass(name = {"org.apache.hc.client5.http.async.HttpAsyncClient"})
+		@ConditionalOnMissingBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheNioClientConnectionManager apache5NioClientConnectionManager() {
+			final Apache5NioClientConnectionManager clientConnectionManager =
+					new Apache5NioClientConnectionManager(properties);
 
 			if(properties.getApacheClient() != null){
-				Optional.ofNullable(properties.getApacheClient().getIoReactor())
-						.ifPresent(clientConnectionManager::setIoReactorConfig);
-				Optional.ofNullable(properties.getApacheClient().getThreadFactory())
-						.ifPresent((threadFactory)->clientConnectionManager.setThreadFactory(
-								BeanUtils.instantiateClass(threadFactory)));
+				propertyMapper.from(properties.getApacheClient()::getIoReactor)
+						.to(clientConnectionManager::setIoReactorConfig);
+				propertyMapper.from(properties.getApacheClient()::getThreadFactory)
+						.as(BeanUtils::instantiateClass)
+						.to(clientConnectionManager::setThreadFactory);
+			}
+
+			return clientConnectionManager;
+		}
+
+		/**
+		 * Apache 4 异步连接管理器
+		 *
+		 * @return Apache 4 异步连接管理器
+		 */
+		@Bean(name = NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME)
+		@ConditionalOnClass(name = {"org.apache.http.nio.client.HttpAsyncClient"})
+		@ConditionalOnMissingBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheNioClientConnectionManager apacheNioClientConnectionManager() {
+			final com.buession.httpclient.conn.ApacheNioClientConnectionManager clientConnectionManager =
+					new com.buession.httpclient.conn.ApacheNioClientConnectionManager(properties);
+
+			if(properties.getApacheClient() != null){
+				propertyMapper.from(properties.getApacheClient()::getIoReactor)
+						.to(clientConnectionManager::setIoReactorConfig);
+				propertyMapper.from(properties.getApacheClient()::getThreadFactory)
+						.as(BeanUtils::instantiateClass)
+						.to(clientConnectionManager::setThreadFactory);
 			}
 
 			return clientConnectionManager;
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
-		public ApacheHttpAsyncClient httpClient(ObjectProvider<ApacheNioClientConnectionManager> connectionManager) {
-			return new ApacheHttpAsyncClient(connectionManager.getIfAvailable());
+		@ConditionalOnBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
+		public ApacheHttpAsyncClient httpAsyncClient(
+				@Qualifier(NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME) ApacheNioClientConnectionManager clientConnectionManager) {
+			return new ApacheHttpAsyncClient(clientConnectionManager);
 		}
 
 	}

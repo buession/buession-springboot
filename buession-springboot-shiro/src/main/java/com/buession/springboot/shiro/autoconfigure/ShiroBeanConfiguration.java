@@ -28,37 +28,37 @@ import org.apache.shiro.event.EventBus;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.ShiroEventBusBeanPostProcessor;
 import org.apache.shiro.spring.config.AbstractShiroBeanConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "enabled", matchIfMissing = true)
 public class ShiroBeanConfiguration extends AbstractShiroBeanConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
+	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
 		return super.lifecycleBeanPostProcessor();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected EventBus eventBus(){
+	protected EventBus eventBus() {
 		return super.eventBus();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	public ShiroEventBusBeanPostProcessor shiroEventBusAwareBeanPostProcessor(){
+	public ShiroEventBusBeanPostProcessor shiroEventBusAwareBeanPostProcessor() {
 		return super.shiroEventBusAwareBeanPostProcessor();
 	}
 

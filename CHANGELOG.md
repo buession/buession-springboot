@@ -2,6 +2,43 @@
 ===========================
 
 
+## [3.0.0](https://github.com/buession/buession-springboot/releases/tag/v3.0.0) (2024-11-07)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v3.0.0)
+
+
+### ⭐ 新特性
+
+- httpclient 新增代理支持
+- httpclient 新增支持 apache httpcomponents 5
+- buession-springboot-cache 新增支持 lettuce 支持
+- AbstractApplication 新增 applicationStartedHook 便于应用启动后，可增加钩子用于扩展程序
+
+
+### 🔔 变化
+
+- buession-springboot-canal 迁移至 com.buession.canal:buession-canal-springboot
+- 拆分 cache DataSource AutoConfiguration 类为 JedisDataSourceConfiguration 和 LettuceDataSourceConfiguration
+- 删除 com.buession.springboot.httpclient.autoconfigure.HttpClientConfiguration
+- 删除 buession-springboot-canal、buession-springboot-session
+- Application 增加 springboot 更多原生配置
+- MyBatis 废弃 masterTemplate、slaveSqlSessionTemplate bean，通过其它数据库本身或其它中间件实现读写分离
+- Pac4jJwtConfiguration 不再初始化 Client Bean ，移至 Pac4jHttpConfiguration
+
+
+### 🐞 Bug 修复
+
+- JDBC AutoConfiguration 修复连接池配置不生效的问题
+
+
+### ⏪ 优化
+
+
+---
+
+
 ## [2.3.3](https://github.com/buession/buession-springboot/releases/tag/v2.3.3) (2024-05-06)
 
 ### 🔨依赖升级

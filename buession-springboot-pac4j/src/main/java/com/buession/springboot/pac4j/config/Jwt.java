@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
@@ -67,34 +67,19 @@ public class Jwt extends BaseConfig {
 	/**
 	 * 是否支持 GET 请求
 	 */
-	private boolean supportGetRequest = false;
+	private Boolean supportGetRequest;
 
 	/**
 	 * 是否支持 POST 请求
 	 */
-	private boolean supportPostRequest = true;
-
-	/**
-	 * Jwt 请求头模式配置
-	 */
-	private Header header = new Header();
-
-	/**
-	 * Jwt Cookie 模式配置
-	 */
-	private Cookie cookie = new Cookie();
-
-	/**
-	 * Jwt 参数模式配置
-	 */
-	private Parameter parameter = new Parameter();
+	private Boolean supportPostRequest;
 
 	/**
 	 * 返回 Secret 签名算法
 	 *
 	 * @return Secret 签名算法
 	 */
-	public JWSAlgorithm getSecretSignatureAlgorithm(){
+	public JWSAlgorithm getSecretSignatureAlgorithm() {
 		return secretSignatureAlgorithm;
 	}
 
@@ -104,7 +89,7 @@ public class Jwt extends BaseConfig {
 	 * @param secretSignatureAlgorithm
 	 * 		Secret 签名算法
 	 */
-	public void setSecretSignatureAlgorithm(JWSAlgorithm secretSignatureAlgorithm){
+	public void setSecretSignatureAlgorithm(JWSAlgorithm secretSignatureAlgorithm) {
 		this.secretSignatureAlgorithm = secretSignatureAlgorithm;
 	}
 
@@ -113,7 +98,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return Secret 加密算法
 	 */
-	public JWEAlgorithm getSecretEncryptionAlgorithm(){
+	public JWEAlgorithm getSecretEncryptionAlgorithm() {
 		return secretEncryptionAlgorithm;
 	}
 
@@ -123,7 +108,7 @@ public class Jwt extends BaseConfig {
 	 * @param secretEncryptionAlgorithm
 	 * 		Secret 加密算法
 	 */
-	public void setSecretEncryptionAlgorithm(JWEAlgorithm secretEncryptionAlgorithm){
+	public void setSecretEncryptionAlgorithm(JWEAlgorithm secretEncryptionAlgorithm) {
 		this.secretEncryptionAlgorithm = secretEncryptionAlgorithm;
 	}
 
@@ -132,7 +117,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 加密方法
 	 */
-	public EncryptionMethod getEncryptionMethod(){
+	public EncryptionMethod getEncryptionMethod() {
 		return encryptionMethod;
 	}
 
@@ -142,7 +127,7 @@ public class Jwt extends BaseConfig {
 	 * @param encryptionMethod
 	 * 		加密方法
 	 */
-	public void setEncryptionMethod(EncryptionMethod encryptionMethod){
+	public void setEncryptionMethod(EncryptionMethod encryptionMethod) {
 		this.encryptionMethod = encryptionMethod;
 	}
 
@@ -151,7 +136,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 加密 Key
 	 */
-	public String getEncryptionKey(){
+	public String getEncryptionKey() {
 		return encryptionKey;
 	}
 
@@ -161,7 +146,7 @@ public class Jwt extends BaseConfig {
 	 * @param encryptionKey
 	 * 		加密 Key
 	 */
-	public void setEncryptionKey(String encryptionKey){
+	public void setEncryptionKey(String encryptionKey) {
 		this.encryptionKey = encryptionKey;
 	}
 
@@ -170,7 +155,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 标识符生成器
 	 */
-	public Class<ValueGenerator> getIdentifierGenerator(){
+	public Class<ValueGenerator> getIdentifierGenerator() {
 		return identifierGenerator;
 	}
 
@@ -180,7 +165,7 @@ public class Jwt extends BaseConfig {
 	 * @param identifierGenerator
 	 * 		标识符生成器
 	 */
-	public void setIdentifierGenerator(Class<ValueGenerator> identifierGenerator){
+	public void setIdentifierGenerator(Class<ValueGenerator> identifierGenerator) {
 		this.identifierGenerator = identifierGenerator;
 	}
 
@@ -189,7 +174,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 是否支持 GET 请求
 	 */
-	public boolean isSupportGetRequest(){
+	public Boolean isSupportGetRequest() {
 		return getSupportGetRequest();
 	}
 
@@ -198,7 +183,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 是否支持 GET 请求
 	 */
-	public boolean getSupportGetRequest(){
+	public Boolean getSupportGetRequest() {
 		return supportGetRequest;
 	}
 
@@ -208,7 +193,7 @@ public class Jwt extends BaseConfig {
 	 * @param supportGetRequest
 	 * 		是否支持 GET 请求
 	 */
-	public void setSupportGetRequest(boolean supportGetRequest){
+	public void setSupportGetRequest(Boolean supportGetRequest) {
 		this.supportGetRequest = supportGetRequest;
 	}
 
@@ -217,7 +202,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 是否支持 POST 请求
 	 */
-	public boolean isSupportPostRequest(){
+	public Boolean isSupportPostRequest() {
 		return getSupportPostRequest();
 	}
 
@@ -226,7 +211,7 @@ public class Jwt extends BaseConfig {
 	 *
 	 * @return 是否支持 POST 请求
 	 */
-	public boolean getSupportPostRequest(){
+	public Boolean getSupportPostRequest() {
 		return supportPostRequest;
 	}
 
@@ -236,203 +221,8 @@ public class Jwt extends BaseConfig {
 	 * @param supportPostRequest
 	 * 		是否支持 POST 请求
 	 */
-	public void setSupportPostRequest(boolean supportPostRequest){
+	public void setSupportPostRequest(Boolean supportPostRequest) {
 		this.supportPostRequest = supportPostRequest;
-	}
-
-	/**
-	 * 返回 Jwt 请求头模式配置
-	 *
-	 * @return Jwt 请求头模式配置
-	 */
-	public Header getHeader(){
-		return header;
-	}
-
-	/**
-	 * 设置 Jwt 请求头模式配置
-	 *
-	 * @param header
-	 * 		Jwt 请求头模式配置
-	 */
-	public void setHeader(Header header){
-		this.header = header;
-	}
-
-	/**
-	 * 返回 Jwt Cookie 模式配置
-	 *
-	 * @return Jwt Cookie 模式配置
-	 */
-	public Cookie getCookie(){
-		return cookie;
-	}
-
-	/**
-	 * 设置 Jwt Cookie 模式配置
-	 *
-	 * @param cookie
-	 * 		Jwt Cookie 模式配置
-	 */
-	public void setCookie(Cookie cookie){
-		this.cookie = cookie;
-	}
-
-	/**
-	 * 返回 Jwt 参数模式配置
-	 *
-	 * @return Jwt 参数模式配置
-	 */
-	public Parameter getParameter(){
-		return parameter;
-	}
-
-	/**
-	 * 设置 Jwt 参数模式配置
-	 *
-	 * @param parameter
-	 * 		Jwt 参数模式配置
-	 */
-	public void setParameter(Parameter parameter){
-		this.parameter = parameter;
-	}
-
-	/**
-	 * Jwt 请求头模式配置
-	 */
-	public final static class Header extends BaseClientConfig {
-
-		/**
-		 * 请求头名称
-		 */
-		private String headerName = com.buession.lang.Constants.EMPTY_STRING;
-
-		/**
-		 * 请求头前缀
-		 */
-		private String prefixHeader = com.buession.lang.Constants.EMPTY_STRING;
-
-		/**
-		 * 构造函数
-		 */
-		public Header(){
-			super("jwt-header");
-		}
-
-		/**
-		 * 返回请求头名称
-		 *
-		 * @return 请求头名称
-		 */
-		public String getHeaderName(){
-			return headerName;
-		}
-
-		/**
-		 * 设置请求头名称
-		 *
-		 * @param headerName
-		 * 		请求头名称
-		 */
-		public void setHeaderName(String headerName){
-			this.headerName = headerName;
-		}
-
-		/**
-		 * 返回请求头前缀
-		 *
-		 * @return 请求头前缀
-		 */
-		public String getPrefixHeader(){
-			return prefixHeader;
-		}
-
-		/**
-		 * 设置请求头前缀
-		 *
-		 * @param prefixHeader
-		 * 		请求头前缀
-		 */
-		public void setPrefixHeader(String prefixHeader){
-			this.prefixHeader = prefixHeader;
-		}
-
-	}
-
-	/**
-	 * Jwt Cookie 模式配置
-	 */
-	public final static class Cookie extends BaseClientConfig {
-
-		/**
-		 * Cookie 名称
-		 */
-		private String cookieName;
-
-		/**
-		 * 构造函数
-		 */
-		public Cookie(){
-			super("jwt-cookie");
-		}
-
-		/**
-		 * 返回 Cookie 名称
-		 *
-		 * @return Cookie 名称
-		 */
-		public String getCookieName(){
-			return cookieName;
-		}
-
-		/**
-		 * 设置 Cookie 名称
-		 *
-		 * @param cookieName
-		 * 		Cookie 名称
-		 */
-		public void setCookieName(String cookieName){
-			this.cookieName = cookieName;
-		}
-
-	}
-
-	/**
-	 * Jwt 参数模式配置
-	 */
-	public final static class Parameter extends BaseClientConfig {
-
-		/**
-		 * 参数名称
-		 */
-		private String parameterName = com.buession.lang.Constants.EMPTY_STRING;
-
-		/**
-		 * 构造函数
-		 */
-		public Parameter(){
-			super("jwt-parameter");
-		}
-
-		/**
-		 * 返回参数名称
-		 *
-		 * @return 参数名称
-		 */
-		public String getParameterName(){
-			return parameterName;
-		}
-
-		/**
-		 * 设置参数名称
-		 *
-		 * @param parameterName
-		 * 		参数名称
-		 */
-		public void setParameterName(String parameterName){
-			this.parameterName = parameterName;
-		}
-
 	}
 
 }

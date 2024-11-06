@@ -41,14 +41,13 @@ import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.config.AbstractShiroConfiguration;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
@@ -58,7 +57,7 @@ import java.util.List;
  * @author Yong.Teng
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(ShiroProperties.class)
 @ConditionalOnProperty(prefix = ShiroProperties.PREFIX, name = "enabled", matchIfMissing = true)
 public class ShiroConfiguration extends AbstractShiroConfiguration {
@@ -120,9 +119,9 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean(name = "sessionDAO")
 	@ConditionalOnBean({RedisManager.class})
 	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(ObjectProvider<RedisManager> redisManager) {
+	protected SessionDAO sessionDAO(RedisManager redisManager) {
 		ShiroProperties.Session session = properties.getSession();
-		return new RedisSessionDAO(redisManager.getIfAvailable(), session.getPrefix(), session.getExpire(),
+		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
 				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
 	}
 

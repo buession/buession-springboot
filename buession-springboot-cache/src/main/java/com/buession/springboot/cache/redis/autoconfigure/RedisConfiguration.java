@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -27,16 +27,18 @@ package com.buession.springboot.cache.redis.autoconfigure;
 import com.buession.redis.RedisTemplate;
 import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.core.Options;
+import com.buession.springboot.cache.redis.core.RedisCacheInvocationHandler;
+import com.buession.springboot.cache.redis.core.RedisCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+import java.lang.reflect.Proxy;
 
 /**
  * Redis 自动配置类
@@ -46,7 +48,6 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass({RedisTemplate.class})
-@Import({RedisDataSourceConfiguration.class})
 public class RedisConfiguration {
 
 	private final RedisProperties properties;
@@ -60,8 +61,8 @@ public class RedisConfiguration {
 	@Bean
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
-	public RedisTemplate redisTemplate(ObjectProvider<DataSource> dataSource) {
-		final RedisTemplate template = new RedisTemplate(dataSource.getIfAvailable());
+	public RedisTemplate redisTemplate(DataSource dataSource) {
+		final RedisTemplate template = new RedisTemplate(dataSource);
 		final Options.Builder builder = Options.Builder.getInstance()
 				.prefix(properties.getKeyPrefix())
 				.serializer(properties.getSerializer())
@@ -74,6 +75,18 @@ public class RedisConfiguration {
 		}
 
 		return template;
+	}
+
+	@Bean
+	@ConditionalOnClass(name = {"com.buession.aop.DefaultMethodInvoker"})
+	@ConditionalOnBean(RedisTemplate.class)
+	public RedisCacheManager redisCacheManager(RedisTemplate redisTemplate) {
+		final Class<?>[] interfaces = new Class[]{RedisCacheManager.class};
+
+		final RedisCacheInvocationHandler cacheInvocationHandler = new RedisCacheInvocationHandler(redisTemplate,
+				interfaces);
+		return (RedisCacheManager) Proxy.newProxyInstance(RedisTemplate.class.getClassLoader(), interfaces,
+				cacheInvocationHandler);
 	}
 
 }
