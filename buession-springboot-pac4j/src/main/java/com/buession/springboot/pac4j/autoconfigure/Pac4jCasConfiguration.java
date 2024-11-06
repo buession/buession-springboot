@@ -26,7 +26,7 @@ package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
-import com.buession.security.pac4j.config.*;
+import com.buession.springboot.pac4j.CasConfigurationCustomizer;
 import com.buession.springboot.pac4j.config.Cas;
 import org.jasig.cas.client.validation.ProxyList;
 import org.pac4j.cas.client.CasClient;
