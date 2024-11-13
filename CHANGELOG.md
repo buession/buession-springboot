@@ -9,6 +9,11 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v3.0.1)
 
 
+### ⭐ 新特性
+
+- Pac4j Client 支持 com.buession.core.Customizer 定制
+
+
 ---
 
 
