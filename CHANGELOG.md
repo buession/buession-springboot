@@ -14,6 +14,11 @@
 - Pac4j Client 支持 com.buession.core.Customizer 定制
 
 
+### 🐞 Bug 修复
+
+- 修复 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration 和 com.buession.springboot.web.reactive.autoconfigure.ReactiveWebFluxConfiguration 循环依赖的 BUG
+
+
 ---
 
 
