@@ -26,43 +26,24 @@ package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.web.reactive.config.WebFluxConfiguration;
 import com.buession.web.reactive.filter.RequestContextFilter;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
 import org.springframework.core.ReactiveAdapterRegistry;
-import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * @author Yong.Teng
  */
-@AutoConfiguration(after = {ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class,
-		WebSessionIdResolverAutoConfiguration.class})
+@AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnClass(WebFluxConfigurer.class)
-@ConditionalOnMissingBean({WebFluxConfigurationSupport.class})
-@ConditionalOnBean({WebFluxAutoConfiguration.WebFluxConfig.class})
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+@ConditionalOnBean({ReactiveAdapterRegistry.class, RequestMappingHandlerAdapter.class})
 public class ReactiveWebFluxConfiguration extends WebFluxConfiguration {
 
-	public ReactiveWebFluxConfiguration(ConfigurableApplicationContext applicationContext,
-										@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> registry) {
-		super(applicationContext.getBeanFactory(), registry.getIfAvailable());
+	public ReactiveWebFluxConfiguration(ConfigurableBeanFactory factory) {
+		super(factory, new ReactiveAdapterRegistry());
 	}
 
 	@Bean
