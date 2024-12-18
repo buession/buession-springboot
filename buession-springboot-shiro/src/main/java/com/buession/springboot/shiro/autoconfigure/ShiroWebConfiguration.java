@@ -49,6 +49,7 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -71,7 +72,12 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 
 	private final ShiroProperties properties;
 
-	public ShiroWebConfiguration(ShiroProperties properties) {
+	/**
+	 * @since 3.0.1
+	 */
+	private final RedisManager redisManager;
+
+	public ShiroWebConfiguration(ShiroProperties properties, ObjectProvider<RedisManager> redisManager) {
 		this.properties = properties;
 
 		SameSiteConverter sameSiteConverter = new SameSiteConverter();
@@ -150,6 +156,8 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 				SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.sameSite", sameSiteOptions.name());
 			}
 		}
+
+		this.redisManager = redisManager.getIfAvailable();
 	}
 
 	@Bean
@@ -174,19 +182,16 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	}
 
 	@Bean(name = "sessionDAO")
-	@ConditionalOnBean({RedisManager.class})
-	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(RedisManager redisManager) {
-		ShiroProperties.Session session = properties.getSession();
-		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
-				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
-	}
-
-	@Bean(name = "sessionDAO")
 	@ConditionalOnMissingBean({SessionDAO.class})
 	@Override
 	protected SessionDAO sessionDAO() {
-		return super.sessionDAO();
+		if(redisManager == null){
+			return super.sessionDAO();
+		}else{
+			ShiroProperties.Session session = properties.getSession();
+			return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
+					session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+		}
 	}
 
 	@Bean(name = "sessionCookieTemplate")

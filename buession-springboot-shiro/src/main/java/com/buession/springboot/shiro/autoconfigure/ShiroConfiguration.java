@@ -41,6 +41,7 @@ import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.config.AbstractShiroConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -64,7 +65,12 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 
 	private final ShiroProperties properties;
 
-	public ShiroConfiguration(ShiroProperties properties) {
+	/**
+	 * @since 3.0.1
+	 */
+	private final RedisManager redisManager;
+
+	public ShiroConfiguration(ShiroProperties properties, ObjectProvider<RedisManager> redisManager) {
 		this.properties = properties;
 
 		// Session info
@@ -72,6 +78,8 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 
 		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
 				session.isSessionManagerDeleteInvalidSessions());
+
+		this.redisManager = redisManager.getIfAvailable();
 	}
 
 	@Bean
@@ -117,19 +125,16 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	}
 
 	@Bean(name = "sessionDAO")
-	@ConditionalOnBean({RedisManager.class})
-	@ConditionalOnMissingBean({SessionDAO.class})
-	protected SessionDAO sessionDAO(RedisManager redisManager) {
-		ShiroProperties.Session session = properties.getSession();
-		return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
-				session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
-	}
-
-	@Bean(name = "sessionDAO")
 	@ConditionalOnMissingBean({SessionDAO.class})
 	@Override
 	protected SessionDAO sessionDAO() {
-		return super.sessionDAO();
+		if(redisManager == null){
+			return super.sessionDAO();
+		}else{
+			ShiroProperties.Session session = properties.getSession();
+			return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
+					session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+		}
 	}
 
 	@Bean
