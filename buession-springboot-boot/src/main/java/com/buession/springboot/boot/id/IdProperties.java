@@ -42,7 +42,19 @@ public class IdProperties {
 	 * Nano ID 生成器配置
 	 */
 	@NestedConfigurationProperty
-	private NanoID nanoID;
+	private Nano nano;
+
+	/**
+	 * 随机数 ID 生成器配置
+	 */
+	@NestedConfigurationProperty
+	private RandomDigit randomDigit;
+
+	/**
+	 * 随机 ID 生成器配置
+	 */
+	@NestedConfigurationProperty
+	private Random random;
 
 	/**
 	 * 返回雪花算法 ID 生成器配置
@@ -55,18 +67,56 @@ public class IdProperties {
 	 *
 	 * @return Nano ID 生成器配置
 	 */
-	public NanoID getNanoID() {
-		return nanoID;
+	public Nano getNano() {
+		return nano;
 	}
 
 	/**
 	 * 设置 Nano ID 生成器配置
 	 *
-	 * @param nanoID
+	 * @param nano
 	 * 		Nano ID 生成器配置
 	 */
-	public void setNanoID(NanoID nanoID) {
-		this.nanoID = nanoID;
+	public void setNano(Nano nano) {
+		this.nano = nano;
+	}
+
+	/**
+	 * 返回随机数 ID 生成器配置
+	 *
+	 * @return 随机数 ID 生成器配置
+	 */
+	public RandomDigit getRandomDigit() {
+		return randomDigit;
+	}
+
+	/**
+	 * 返回随机 ID 生成器配置
+	 *
+	 * @return 随机 ID 生成器配置
+	 */
+	public Random getRandom() {
+		return random;
+	}
+
+	/**
+	 * 设置随机 ID 生成器配置
+	 *
+	 * @param random
+	 * 		随机 ID 生成器配置
+	 */
+	public void setRandom(Random random) {
+		this.random = random;
+	}
+
+	/**
+	 * 设置随机数 ID 生成器配置
+	 *
+	 * @param randomDigit
+	 * 		随机数 ID 生成器配置
+	 */
+	public void setRandomDigit(RandomDigit randomDigit) {
+		this.randomDigit = randomDigit;
 	}
 
 	/**
@@ -94,7 +144,7 @@ public class IdProperties {
 	 * @author Yong.Teng
 	 * @since 3.0.1
 	 */
-	public final static class NanoID {
+	public final static class Nano {
 
 		/**
 		 * 生成长度
@@ -118,6 +168,122 @@ public class IdProperties {
 		 */
 		public void setLength(Integer length) {
 			this.length = length;
+		}
+
+	}
+
+	/**
+	 * 随机数 ID 生成器配置
+	 *
+	 * @author Yong.Teng
+	 * @since 3.0.1
+	 */
+	public final static class RandomDigit {
+
+		/**
+		 * 最小值
+		 */
+		private long min = Long.MIN_VALUE;
+
+		/**
+		 * 最大值
+		 */
+		private long max = Long.MAX_VALUE;
+
+		/**
+		 * 返回最小值
+		 *
+		 * @return 最小值
+		 */
+		public long getMin() {
+			return min;
+		}
+
+		/**
+		 * 设置最小值
+		 *
+		 * @param min
+		 * 		最小值
+		 */
+		public void setMin(long min) {
+			this.min = min;
+		}
+
+		/**
+		 * 返回最大值
+		 *
+		 * @return 最大值
+		 */
+		public long getMax() {
+			return max;
+		}
+
+		/**
+		 * 设置最大值
+		 *
+		 * @param max
+		 * 		最大值
+		 */
+		public void setMax(long max) {
+			this.max = max;
+		}
+
+	}
+
+	/**
+	 * 随机 ID 生成器配置
+	 *
+	 * @author Yong.Teng
+	 * @since 3.0.1
+	 */
+	public final static class Random {
+
+		/**
+		 * 长度
+		 */
+		private Integer length;
+
+		/**
+		 * 随机字符词典
+		 */
+		private String chars;
+
+		/**
+		 * 返回长度
+		 *
+		 * @return 长度
+		 */
+		public Integer getLength() {
+			return length;
+		}
+
+		/**
+		 * 设置长度
+		 *
+		 * @param length
+		 * 		长度
+		 */
+		public void setLength(Integer length) {
+			this.length = length;
+		}
+
+		/**
+		 * 返回随机字符词典
+		 *
+		 * @return 随机字符词典
+		 */
+		public String getChars() {
+			return chars;
+		}
+
+		/**
+		 * 设置随机字符词典
+		 *
+		 * @param chars
+		 * 		随机字符词典
+		 */
+		public void setChars(String chars) {
+			this.chars = chars;
 		}
 
 	}

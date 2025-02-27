@@ -27,6 +27,8 @@ package com.buession.springboot.boot.id;
 import com.buession.core.id.AtomicSimpleIdGenerator;
 import com.buession.core.id.AtomicUUIDIdGenerator;
 import com.buession.core.id.NanoIDIdGenerator;
+import com.buession.core.id.RandomDigitIdGenerator;
+import com.buession.core.id.RandomIdGenerator;
 import com.buession.core.id.SimpleIdGenerator;
 import com.buession.core.id.SnowflakeIdGenerator;
 import com.buession.core.id.UUIDIdGenerator;
@@ -72,18 +74,56 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "nano-id.enabled", havingValue = "true")
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "nano.enabled", havingValue = "true")
 	@ConditionalOnMissingBean
 	public NanoIDIdGenerator nanoIDIdGenerator() {
-		if(idProperties.getNanoID() != null && idProperties.getNanoID().getLength() != null){
+		if(idProperties.getNano() != null && idProperties.getNano().getLength() != null){
 			if(logger.isDebugEnabled()){
 				logger.debug("IdGenerator use NanoIDIdGenerator with length: {}.",
-						idProperties.getNanoID().getLength());
+						idProperties.getNano().getLength());
 			}
-			return new NanoIDIdGenerator(idProperties.getNanoID().getLength());
+			return new NanoIDIdGenerator(idProperties.getNano().getLength());
 		}else{
 			logger.debug("IdGenerator use NanoIDIdGenerator.");
 			return new NanoIDIdGenerator();
+		}
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled", havingValue = "true",
+			matchIfMissing = true)
+	@ConditionalOnMissingBean
+	public RandomDigitIdGenerator randomDigitIdGenerator() {
+		if(idProperties.getRandomDigit() != null){
+			IdProperties.RandomDigit randomDigit = idProperties.getRandomDigit();
+
+			if(logger.isDebugEnabled()){
+				logger.debug("IdGenerator use RandomDigitIdGenerator with min: {}, max: {}.", randomDigit.getMin(),
+						randomDigit.getMax());
+			}
+
+			return new RandomDigitIdGenerator(randomDigit.getMin(), randomDigit.getMax());
+		}else{
+			return new RandomDigitIdGenerator();
+		}
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random.enabled", havingValue = "true",
+			matchIfMissing = true)
+	@ConditionalOnMissingBean
+	public RandomIdGenerator randomIdGenerator() {
+		if(idProperties.getRandom() != null){
+			IdProperties.Random random = idProperties.getRandom();
+
+			if(logger.isDebugEnabled()){
+				logger.debug("IdGenerator use RandomIdGenerator with length: {}, chars: {}.", random.getLength(),
+						random.getChars());
+			}
+
+			return new RandomIdGenerator(random.getChars().toCharArray(), random.getLength());
+		}else{
+			return new RandomIdGenerator();
 		}
 	}
 
@@ -97,7 +137,7 @@ public class IdGeneratorConfiguration {
 				logger.debug("IdGenerator use SnowflakeIdGenerator with datacenterId: {}, workerId: {}.",
 						idProperties.getSnowflake().getDatacenterId(), idProperties.getSnowflake().getWorkerId());
 			}
-			
+
 			return new SnowflakeIdGenerator(idProperties.getSnowflake().getDatacenterId(),
 					idProperties.getSnowflake().getWorkerId());
 		}else{
