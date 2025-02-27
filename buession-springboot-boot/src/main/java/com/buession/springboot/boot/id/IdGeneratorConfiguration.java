@@ -24,14 +24,7 @@
  */
 package com.buession.springboot.boot.id;
 
-import com.buession.core.id.AtomicSimpleIdGenerator;
-import com.buession.core.id.AtomicUUIDIdGenerator;
-import com.buession.core.id.NanoIDIdGenerator;
-import com.buession.core.id.RandomDigitIdGenerator;
-import com.buession.core.id.RandomIdGenerator;
-import com.buession.core.id.SimpleIdGenerator;
-import com.buession.core.id.SnowflakeIdGenerator;
-import com.buession.core.id.UUIDIdGenerator;
+import com.buession.core.id.*;
 import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +35,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 /**
+ * ID 生成器 {@link IdGenerator} 自动配置类
+ *
  * @author Yong.Teng
- * @since 0.0.1
+ * @since 3.0.1
  */
 @AutoConfiguration
 @EnableConfigurationProperties(IdProperties.class)
@@ -60,117 +55,154 @@ public class IdGeneratorConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "atomic-simple.enabled", havingValue = "true")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public AtomicSimpleIdGenerator atomicSimpleIdGenerator() {
-		logger.debug("IdGenerator use AtomicSimpleIdGenerator.");
+		logger.debug("IdGenerator using AtomicSimpleIdGenerator.");
 		return new AtomicSimpleIdGenerator();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "atomic-uuid.enabled", havingValue = "true")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public AtomicUUIDIdGenerator atomicUUIDIdGenerator() {
-		logger.debug("IdGenerator use AtomicUUIDIdGenerator.");
+		logger.debug("IdGenerator using AtomicUUIDIdGenerator.");
 		return new AtomicUUIDIdGenerator();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "nano.enabled", havingValue = "true")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public NanoIDIdGenerator nanoIDIdGenerator() {
-		if(idProperties.getNano() != null && idProperties.getNano().getLength() != null){
+		if(idProperties.getNano() != null){
 			IdProperties.Nano nano = idProperties.getNano();
 
-			if(Validate.isEmpty(nano.getAlphabet())){
-				if(logger.isDebugEnabled()){
-					logger.debug("IdGenerator use NanoIDIdGenerator with length: {}, alphabet: {}.", nano.getLength(),
-							nano.getAlphabet());
-				}
+			if(Validate.isNotEmpty(nano.getAlphabet())){
+				if(nano.getLength() != null){
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using NanoIDIdGenerator with length: {}, alphabet: {}.",
+								nano.getLength(), nano.getAlphabet());
+					}
 
-				return new NanoIDIdGenerator(nano.getAlphabet().toCharArray(), nano.getLength());
-			}else{
+					return new NanoIDIdGenerator(nano.getAlphabet().toCharArray(), nano.getLength());
+				}else{
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using NanoIDIdGenerator with alphabet: {}.", nano.getAlphabet());
+					}
+
+					return new NanoIDIdGenerator(nano.getAlphabet().toCharArray());
+				}
+			}else if(nano.getLength() != null){
 				if(logger.isDebugEnabled()){
-					logger.debug("IdGenerator use NanoIDIdGenerator with length: {}.", nano.getLength());
+					logger.debug("IdGenerator using NanoIDIdGenerator with length: {}.", nano.getLength());
 				}
 
 				return new NanoIDIdGenerator(nano.getLength());
 			}
-		}else{
-			logger.debug("IdGenerator use NanoIDIdGenerator.");
-			return new NanoIDIdGenerator();
 		}
+
+		logger.debug("IdGenerator using NanoIDIdGenerator.");
+		return new NanoIDIdGenerator();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled", havingValue = "true",
 			matchIfMissing = true)
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomDigitIdGenerator randomDigitIdGenerator() {
 		if(idProperties.getRandomDigit() != null){
 			IdProperties.RandomDigit randomDigit = idProperties.getRandomDigit();
 
-			if(logger.isDebugEnabled()){
-				logger.debug("IdGenerator use RandomDigitIdGenerator with min: {}, max: {}.", randomDigit.getMin(),
-						randomDigit.getMax());
-			}
+			if(randomDigit.getMax() != null){
+				if(randomDigit.getMin() != null){
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using RandomDigitIdGenerator with min: {}, max: {}.",
+								randomDigit.getMin(), randomDigit.getMax());
+					}
 
-			return new RandomDigitIdGenerator(randomDigit.getMin(), randomDigit.getMax());
-		}else{
-			return new RandomDigitIdGenerator();
+					return new RandomDigitIdGenerator(randomDigit.getMin(), randomDigit.getMax());
+				}else{
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using RandomDigitIdGenerator with max: {}.", randomDigit.getMax());
+					}
+
+					return new RandomDigitIdGenerator(randomDigit.getMax());
+				}
+			}
 		}
+
+		logger.debug("IdGenerator using RandomDigitIdGenerator.");
+		return new RandomDigitIdGenerator();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random.enabled", havingValue = "true",
 			matchIfMissing = true)
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomIdGenerator randomIdGenerator() {
 		if(idProperties.getRandom() != null){
 			IdProperties.Random random = idProperties.getRandom();
 
-			if(logger.isDebugEnabled()){
-				logger.debug("IdGenerator use RandomIdGenerator with length: {}, chars: {}.", random.getLength(),
-						random.getChars());
-			}
+			if(Validate.isNotEmpty(random.getChars())){
+				if(random.getLength() != null){
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using RandomIdGenerator with length: {}, chars: {}.",
+								random.getLength(), random.getChars());
+					}
 
-			return new RandomIdGenerator(random.getChars().toCharArray(), random.getLength());
-		}else{
-			return new RandomIdGenerator();
+					return new RandomIdGenerator(random.getChars().toCharArray(), random.getLength());
+				}else{
+					if(logger.isDebugEnabled()){
+						logger.debug("IdGenerator using RandomIdGenerator with chars: {}.", random.getChars());
+					}
+
+					return new RandomIdGenerator(random.getChars().toCharArray());
+				}
+			}else if(random.getLength() != null){
+				if(logger.isDebugEnabled()){
+					logger.debug("IdGenerator using RandomIdGenerator with length: {}.", random.getLength());
+				}
+
+				return new RandomIdGenerator(random.getLength());
+			}
 		}
+
+		logger.debug("IdGenerator using RandomIdGenerator.");
+		return new RandomIdGenerator();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "snowflake.enabled", havingValue = "true", matchIfMissing = true)
-	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "snowflake.enabled", havingValue = "true")
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public SnowflakeIdGenerator snowflakeIdGenerator() {
 		if(idProperties.getSnowflake() != null && idProperties.getSnowflake().getDatacenterId() != null &&
 				idProperties.getSnowflake().getWorkerId() != null){
+			IdProperties.Snowflake snowflake = idProperties.getSnowflake();
+
 			if(logger.isDebugEnabled()){
-				logger.debug("IdGenerator use SnowflakeIdGenerator with datacenterId: {}, workerId: {}.",
-						idProperties.getSnowflake().getDatacenterId(), idProperties.getSnowflake().getWorkerId());
+				logger.debug("IdGenerator using SnowflakeIdGenerator with datacenterId: {}, workerId: {}.",
+						snowflake.getDatacenterId(), snowflake.getWorkerId());
 			}
 
-			return new SnowflakeIdGenerator(idProperties.getSnowflake().getDatacenterId(),
-					idProperties.getSnowflake().getWorkerId());
+			return new SnowflakeIdGenerator(snowflake.getDatacenterId(), snowflake.getWorkerId());
 		}else{
-			logger.debug("IdGenerator use SnowflakeIdGenerator.");
+			logger.debug("IdGenerator using SnowflakeIdGenerator.");
 			return new SnowflakeIdGenerator();
 		}
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "uuid.enabled", havingValue = "true")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public UUIDIdGenerator uuidIdGenerator() {
-		logger.debug("IdGenerator use UUIDIdGenerator.");
+		logger.debug("IdGenerator using UUIDIdGenerator.");
 		return new UUIDIdGenerator();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "simple.enabled")
-	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "simple.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnMissingBean({IdGenerator.class})
 	public SimpleIdGenerator simpleIdGenerator() {
-		logger.debug("IdGenerator use SimpleIdGenerator.");
+		logger.debug("IdGenerator using SimpleIdGenerator.");
 		return new SimpleIdGenerator();
 	}
 

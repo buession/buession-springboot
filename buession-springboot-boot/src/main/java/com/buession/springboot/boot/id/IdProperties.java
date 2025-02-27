@@ -207,19 +207,19 @@ public class IdProperties {
 		/**
 		 * 最小值
 		 */
-		private long min = Long.MIN_VALUE;
+		private Long min = Long.MIN_VALUE;
 
 		/**
 		 * 最大值
 		 */
-		private long max = Long.MAX_VALUE;
+		private Long max = Long.MAX_VALUE;
 
 		/**
 		 * 返回最小值
 		 *
 		 * @return 最小值
 		 */
-		public long getMin() {
+		public Long getMin() {
 			return min;
 		}
 
@@ -229,7 +229,7 @@ public class IdProperties {
 		 * @param min
 		 * 		最小值
 		 */
-		public void setMin(long min) {
+		public void setMin(Long min) {
 			this.min = min;
 		}
 
@@ -238,7 +238,7 @@ public class IdProperties {
 		 *
 		 * @return 最大值
 		 */
-		public long getMax() {
+		public Long getMax() {
 			return max;
 		}
 
@@ -248,7 +248,7 @@ public class IdProperties {
 		 * @param max
 		 * 		最大值
 		 */
-		public void setMax(long max) {
+		public void setMax(Long max) {
 			this.max = max;
 		}
 
