@@ -12,6 +12,7 @@
 ### ⭐ 新特性
 
 - Pac4j Client 支持 com.buession.core.Customizer 定制
+- 增加 IdGenerator 自动配置
 
 
 ### ⏪ 优化

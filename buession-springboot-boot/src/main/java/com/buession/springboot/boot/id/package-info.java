@@ -27,4 +27,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.boot;
+package com.buession.springboot.boot.id;
