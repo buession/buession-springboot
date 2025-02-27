@@ -105,8 +105,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled", havingValue = "true")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomDigitIdGenerator randomDigitIdGenerator() {
 		if(idProperties.getRandomDigit() != null){
@@ -135,8 +134,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random.enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random.enabled", havingValue = "true")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomIdGenerator randomIdGenerator() {
 		if(idProperties.getRandom() != null){
