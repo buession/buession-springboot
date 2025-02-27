@@ -152,6 +152,11 @@ public class IdProperties {
 		private Integer length;
 
 		/**
+		 * 字符
+		 */
+		private String alphabet;
+
+		/**
 		 * 返回生成长度
 		 *
 		 * @return 生成长度
@@ -168,6 +173,25 @@ public class IdProperties {
 		 */
 		public void setLength(Integer length) {
 			this.length = length;
+		}
+
+		/**
+		 * 返回字符
+		 *
+		 * @return 字符
+		 */
+		public String getAlphabet() {
+			return alphabet;
+		}
+
+		/**
+		 * 设置字符
+		 *
+		 * @param alphabet
+		 * 		字符
+		 */
+		public void setAlphabet(String alphabet) {
+			this.alphabet = alphabet;
 		}
 
 	}

@@ -32,6 +32,7 @@ import com.buession.core.id.RandomIdGenerator;
 import com.buession.core.id.SimpleIdGenerator;
 import com.buession.core.id.SnowflakeIdGenerator;
 import com.buession.core.id.UUIDIdGenerator;
+import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -78,11 +79,22 @@ public class IdGeneratorConfiguration {
 	@ConditionalOnMissingBean
 	public NanoIDIdGenerator nanoIDIdGenerator() {
 		if(idProperties.getNano() != null && idProperties.getNano().getLength() != null){
-			if(logger.isDebugEnabled()){
-				logger.debug("IdGenerator use NanoIDIdGenerator with length: {}.",
-						idProperties.getNano().getLength());
+			IdProperties.Nano nano = idProperties.getNano();
+
+			if(Validate.isEmpty(nano.getAlphabet())){
+				if(logger.isDebugEnabled()){
+					logger.debug("IdGenerator use NanoIDIdGenerator with length: {}, alphabet: {}.", nano.getLength(),
+							nano.getAlphabet());
+				}
+
+				return new NanoIDIdGenerator(nano.getAlphabet().toCharArray(), nano.getLength());
+			}else{
+				if(logger.isDebugEnabled()){
+					logger.debug("IdGenerator use NanoIDIdGenerator with length: {}.", nano.getLength());
+				}
+
+				return new NanoIDIdGenerator(nano.getLength());
 			}
-			return new NanoIDIdGenerator(idProperties.getNano().getLength());
 		}else{
 			logger.debug("IdGenerator use NanoIDIdGenerator.");
 			return new NanoIDIdGenerator();
@@ -155,7 +167,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "simple.enabled", havingValue = "true")
+	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "simple.enabled")
 	@ConditionalOnMissingBean
 	public SimpleIdGenerator simpleIdGenerator() {
 		logger.debug("IdGenerator use SimpleIdGenerator.");
