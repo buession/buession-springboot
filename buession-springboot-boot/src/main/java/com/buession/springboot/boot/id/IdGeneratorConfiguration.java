@@ -35,17 +35,17 @@ import com.buession.core.id.UUIDIdGenerator;
 import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties(IdProperties.class)
 @ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "enabled", havingValue = "true")
 public class IdGeneratorConfiguration {
