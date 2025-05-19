@@ -1,0 +1,13 @@
+{
+  "title": "Buession SpringBoot",
+  "keywords": "buession java springboot spring-boot boot",
+  "description": "基于 Spring Boot 2 的扩展",
+  "author": "buession",
+  "theme": "demo",
+  "root": "src",
+  "pluginsConfig": {
+    "import-asset": {
+      "js": ["/js/stat.js"]
+    }
+  }
+}
