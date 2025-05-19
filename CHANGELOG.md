@@ -2,7 +2,7 @@
 ===========================
 
 
-## [3.0.1](https://github.com/buession/buession-springboot/releases/tag/v3.0.1) (2024-xx-xx)
+## [3.0.1](https://github.com/buession/buession-springboot/releases/tag/v3.0.1) (2025-05-20)
 
 ### 🔨依赖升级
 
