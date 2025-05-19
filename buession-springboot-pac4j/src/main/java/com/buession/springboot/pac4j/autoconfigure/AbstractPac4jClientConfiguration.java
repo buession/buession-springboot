@@ -24,11 +24,13 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.Customizer;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.config.BaseConfig;
 import org.pac4j.core.client.BaseClient;
 import org.pac4j.core.credentials.Credentials;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.Optional;
 
@@ -58,6 +60,11 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 				Validate.hasText(clientConfig.getName()) ? clientConfig.getName() : clientConfig.getDefaultName());
 
 		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
+	}
+
+	protected <CLIENT extends BaseClient<? extends Credentials>> void customizer(final CLIENT client,
+																				 final ObjectProvider<Customizer<CLIENT>> customizers) {
+		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
 	}
 
 }

@@ -24,11 +24,13 @@
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
+import com.buession.core.Customizer;
 import com.buession.core.utils.EnumUtils;
 import com.buession.springboot.pac4j.config.OAuth;
 import org.pac4j.oauth.client.*;
 import org.pac4j.oauth.config.OAuth10Configuration;
 import org.pac4j.oauth.config.OAuth20Configuration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -54,8 +56,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "bitbucketClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled", havingValue = "true")
-	public BitbucketClient bitbucketClient() {
-		final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret());
+	public BitbucketClient bitbucketClient(ObjectProvider<Customizer<BitbucketClient>> customizers) {
+		final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth10Client(bitbucketClient, config.getBitbucket());
 
@@ -65,9 +76,18 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "casOAuthWrapperClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "cas.enabled", havingValue = "true")
-	public CasOAuthWrapperClient casOAuthWrapperClient() {
+	public CasOAuthWrapperClient casOAuthWrapperClient(ObjectProvider<Customizer<CasOAuthWrapperClient>> customizers) {
 		final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
-				config.getSecret(), config.getCas().getCasOAuthUrl());
+				config.getSecret(), config.getCas().getCasOAuthUrl()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Cas cas = config.getCas();
 
 		propertyMapper.from(cas::getCasLogoutUrl).to(casOAuthWrapperClient::setCasLogoutUrl);
@@ -83,8 +103,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "dropboxClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled", havingValue = "true")
-	public DropBoxClient dropboxClient() {
-		final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret());
+	public DropBoxClient dropboxClient(ObjectProvider<Customizer<DropBoxClient>> customizers) {
+		final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(dropboxClient, config.getDropBox());
 
@@ -94,8 +123,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "facebookClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "facebook.enabled", havingValue = "true")
-	public FacebookClient facebookClient() {
-		final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret());
+	public FacebookClient facebookClient(ObjectProvider<Customizer<FacebookClient>> customizers) {
+		final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Facebook facebook = config.getFacebook();
 
 		propertyMapper.from(facebook::getFields).to(facebookClient::setFields);
@@ -109,8 +147,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "figShareClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "fig-share.enabled", havingValue = "true")
-	public FigShareClient figShareClient() {
-		final FigShareClient figShareClient = new FigShareClient();
+	public FigShareClient figShareClient(ObjectProvider<Customizer<FigShareClient>> customizers) {
+		final FigShareClient figShareClient = new FigShareClient() {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		figShareClient.setKey(config.getKey());
 		figShareClient.setSecret(config.getSecret());
@@ -123,8 +170,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "foursquareClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled", havingValue = "true")
-	public FoursquareClient foursquareClient() {
-		final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret());
+	public FoursquareClient foursquareClient(ObjectProvider<Customizer<FoursquareClient>> customizers) {
+		final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(foursquareClient, config.getFoursquare());
 
@@ -134,8 +190,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "genericOAuth20Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "generic.enabled", havingValue = "true")
-	public GenericOAuth20Client genericOAuth20Client() {
-		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client();
+	public GenericOAuth20Client genericOAuth20Client(ObjectProvider<Customizer<GenericOAuth20Client>> customizers) {
+		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client() {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Generic generic = config.getGeneric();
 
 		genericOAuth20Client.setKey(config.getKey());
@@ -159,8 +224,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "githubClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "github.enabled", havingValue = "true")
-	public GitHubClient githubClient() {
-		final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret());
+	public GitHubClient githubClient(ObjectProvider<Customizer<GitHubClient>> customizers) {
+		final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(gitHubClient, config.getGitHub());
 
@@ -170,8 +244,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "google2Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "google2.enabled", havingValue = "true")
-	public Google2Client google2Client() {
-		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret());
+	public Google2Client google2Client(ObjectProvider<Customizer<Google2Client>> customizers) {
+		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		propertyMapper.from(config.getGoogle2()::getScope)
 				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(google2Client::setScope);
@@ -184,8 +267,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "hiOrgServerClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "hi-org-server.enabled", havingValue = "true")
-	public HiOrgServerClient hiOrgServerClient() {
-		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret());
+	public HiOrgServerClient hiOrgServerClient(ObjectProvider<Customizer<HiOrgServerClient>> customizers) {
+		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(hiOrgServerClient, config.getHiOrgServer());
 
@@ -195,8 +287,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "linkedin2Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled", havingValue = "true")
-	public LinkedIn2Client linkedin2Client() {
-		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret());
+	public LinkedIn2Client linkedin2Client(ObjectProvider<Customizer<LinkedIn2Client>> customizers) {
+		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(linkedIn2Client, config.getLinkedIn2());
 
@@ -206,7 +307,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "okClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "ok.enabled", havingValue = "true")
-	public OkClient okClient() {
+	public OkClient okClient(ObjectProvider<Customizer<OkClient>> customizers) {
 		final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
 
 		initOAuth20Client(okClient, config.getOk());
@@ -217,8 +318,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "paypalClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "paypal.enabled", havingValue = "true")
-	public PayPalClient paypalClient() {
-		final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret());
+	public PayPalClient paypalClient(ObjectProvider<Customizer<PayPalClient>> customizers) {
+		final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(payPalClient, config.getPayPal());
 
@@ -228,8 +338,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "qqClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "qq.enabled", havingValue = "true")
-	public QQClient qqClient() {
-		final QQClient qqClient = new QQClient(config.getKey(), config.getSecret());
+	public QQClient qqClient(ObjectProvider<Customizer<QQClient>> customizers) {
+		final QQClient qqClient = new QQClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Qq qq = config.getQq();
 
 		propertyMapper.from(qq::getScopes).to(qqClient::setScopes);
@@ -242,8 +361,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "stravaClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "strava.enabled", havingValue = "true")
-	public StravaClient stravaClient() {
-		final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret());
+	public StravaClient stravaClient(ObjectProvider<Customizer<StravaClient>> customizers) {
+		final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Strava strava = config.getStrava();
 
 		propertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
@@ -256,8 +384,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "twitterClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "twitter.enabled", havingValue = "true")
-	public TwitterClient twitterClient() {
-		final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret());
+	public TwitterClient twitterClient(ObjectProvider<Customizer<TwitterClient>> customizers) {
+		final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Twitter twitter = config.getTwitter();
 
 		propertyMapper.from(twitter::getAlwaysConfirmAuthorization).to(twitterClient::setAlwaysConfirmAuthorization);
@@ -271,8 +408,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "vkClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "vk.enabled", havingValue = "true")
-	public VkClient vkClient() {
-		final VkClient vkClient = new VkClient(config.getKey(), config.getSecret());
+	public VkClient vkClient(ObjectProvider<Customizer<VkClient>> customizers) {
+		final VkClient vkClient = new VkClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(vkClient, config.getVk());
 
@@ -282,8 +428,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "wechatClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "wechat.enabled", havingValue = "true")
-	public WechatClient wechatClient() {
-		final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret());
+	public WechatClient wechatClient(ObjectProvider<Customizer<WechatClient>> customizers) {
+		final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Wechat wechat = config.getWechat();
 
 		propertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
@@ -296,8 +451,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "weiboClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "weibo.enabled", havingValue = "true")
-	public WeiboClient weiboClient() {
-		final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret());
+	public WeiboClient weiboClient(ObjectProvider<Customizer<WeiboClient>> customizers) {
+		final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 		final OAuth.Weibo weibo = config.getWeibo();
 
 		propertyMapper.from(weibo::getScope)
@@ -311,8 +475,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "windowsLiveClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled", havingValue = "true")
-	public WindowsLiveClient windowsLiveClient() {
-		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret());
+	public WindowsLiveClient windowsLiveClient(ObjectProvider<Customizer<WindowsLiveClient>> customizers) {
+		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(windowsLiveClient, config.getWindowsLive());
 
@@ -322,8 +495,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "wordpressClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "word-press.enabled", havingValue = "true")
-	public WordPressClient wordPressClient() {
-		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret());
+	public WordPressClient wordPressClient(ObjectProvider<Customizer<WordPressClient>> customizers) {
+		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth20Client(wordPressClient, config.getWordPress());
 
@@ -333,8 +515,17 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@Bean(name = "yahooClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled", havingValue = "true")
-	public YahooClient yahooClient() {
-		final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret());
+	public YahooClient yahooClient(ObjectProvider<Customizer<YahooClient>> customizers) {
+		final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret()) {
+
+
+			@Override
+			protected void clientInit() {
+				super.clientInit();
+				customizer(this, customizers);
+			}
+
+		};
 
 		initOAuth10Client(yahooClient, config.getYahoo());
 
@@ -345,7 +536,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	// *************** end oauth 2.0 *************** //
 	// ********************************************* //
 
-	protected void initOAuth10Client(final OAuth10Client client, final OAuth.BaseOAuth10Config oAuth10Config) {
+	protected <C extends OAuth10Client> void initOAuth10Client(final C client,
+															   final OAuth.BaseOAuth10Config oAuth10Config) {
 		final OAuth10Configuration configuration = client.getConfiguration();
 
 		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
@@ -356,7 +548,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		afterClientInitialized(client, config, oAuth10Config);
 	}
 
-	protected void initOAuth20Client(final OAuth20Client client, final OAuth.BaseOAuth20Config oAuth20Config) {
+	protected <C extends OAuth20Client> void initOAuth20Client(final C client,
+															   final OAuth.BaseOAuth20Config oAuth20Config) {
 		final OAuth20Configuration configuration = client.getConfiguration();
 
 		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
