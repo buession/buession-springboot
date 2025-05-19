@@ -2,6 +2,32 @@
 ===========================
 
 
+## [3.0.1](https://github.com/buession/buession-springboot/releases/tag/v3.0.1) (2025-05-20)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v3.0.1)
+
+
+### ⭐ 新特性
+
+- Pac4j Client 支持 com.buession.core.Customizer 定制
+- 增加 IdGenerator 自动配置
+
+
+### ⏪ 优化
+
+- **buession-springboot-shiro：** SessionDAO bean 初始化优化
+
+
+### 🐞 Bug 修复
+
+- 修复 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration 和 com.buession.springboot.web.reactive.autoconfigure.ReactiveWebFluxConfiguration 循环依赖的 BUG
+
+
+---
+
+
 ## [3.0.0](https://github.com/buession/buession-springboot/releases/tag/v3.0.0) (2024-11-07)
 
 ### 🔨依赖升级

@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>3.0.0</version>
+		<version>3.0.1</version>
 	</parent>
 	<artifactId>buession-springboot-cache</artifactId>
 	<url>https://springboot.buession.com/</url>
@@ -62,12 +62,6 @@
 			<groupId>com.buession</groupId>
 			<artifactId>buession-redis</artifactId>
 			<version>${buession.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.buession</groupId>
-			<artifactId>buession-aop</artifactId>
-			<version>${buession.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
