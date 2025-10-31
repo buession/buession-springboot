@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
@@ -27,8 +27,6 @@ package com.buession.springboot.pac4j.config;
 import org.pac4j.cas.config.CasProtocol;
 import org.pac4j.cas.profile.CasProfileDefinition;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.HttpConstants;
-import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.LinkedHashMap;
@@ -42,7 +40,7 @@ import java.util.Set;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public class Cas extends BaseConfig {
+public class Cas extends IndirectClientConfig {
 
 	public final static String PREFIX = PROPERTIES_PREFIX + ".cas";
 
@@ -67,11 +65,6 @@ public class Cas extends BaseConfig {
 	 * @since 3.0.0
 	 */
 	private String restUrl;
-
-	/**
-	 * CAS 登录成功跳转地址
-	 */
-	private String callbackUrl;
 
 	/**
 	 * 编码
@@ -169,6 +162,13 @@ public class Cas extends BaseConfig {
 	private RestForm restForm = new RestForm();
 
 	/**
+	 * 构造函数
+	 */
+	public Cas() {
+		super("cas");
+	}
+
+	/**
 	 * 返回 CAS 协议
 	 *
 	 * @return CAS 协议
@@ -246,25 +246,6 @@ public class Cas extends BaseConfig {
 	 */
 	public void setRestUrl(String restUrl) {
 		this.restUrl = restUrl;
-	}
-
-	/**
-	 * 返回 CAS 登录成功跳转地址
-	 *
-	 * @return CAS 登录成功跳转地址
-	 */
-	public String getCallbackUrl() {
-		return callbackUrl;
-	}
-
-	/**
-	 * 设置 CAS 登录成功跳转地址
-	 *
-	 * @param callbackUrl
-	 * 		CAS 登录成功跳转地址
-	 */
-	public void setCallbackUrl(String callbackUrl) {
-		this.callbackUrl = callbackUrl;
 	}
 
 	/**
@@ -687,7 +668,7 @@ public class Cas extends BaseConfig {
 	/**
 	 * CAS 常规配置
 	 */
-	public final static class General extends BaseClientConfig {
+	public final static class General extends IndirectClientConfig {
 
 		/**
 		 * 构造函数
@@ -701,15 +682,13 @@ public class Cas extends BaseConfig {
 	/**
 	 * CAS Rest 表单配置
 	 */
-	public final static class RestForm extends BaseFormConfig {
+	public final static class RestForm extends BaseFormConfig.BaseDirectFormConfig {
 
 		/**
 		 * 构造函数
 		 */
 		public RestForm() {
 			super("cas-rest-form");
-			setUsernameParameter(Pac4jConstants.USERNAME);
-			setPasswordParameter(Pac4jConstants.PASSWORD);
 		}
 
 	}
@@ -717,7 +696,7 @@ public class Cas extends BaseConfig {
 	/**
 	 * Direct Client 配置
 	 */
-	public final static class Direct extends BaseClientConfig {
+	public final static class Direct extends DirectClientConfig {
 
 		/**
 		 * 构造函数
@@ -731,13 +710,43 @@ public class Cas extends BaseConfig {
 	/**
 	 * Direct Proxy Client 配置
 	 */
-	public final static class DirectProxy extends BaseClientConfig {
+	public final static class DirectProxy extends DirectClientConfig {
+
+		/**
+		 * Service URL
+		 *
+		 * @since 4.0.0
+		 */
+		private String serviceUrl;
 
 		/**
 		 * 构造函数
 		 */
 		public DirectProxy() {
 			super("direct-cas-proxy");
+		}
+
+		/**
+		 * 返回 Service URL
+		 *
+		 * @return Service URL
+		 *
+		 * @since 4.0.0
+		 */
+		public String getServiceUrl() {
+			return serviceUrl;
+		}
+
+		/**
+		 * 设置 Service URL
+		 *
+		 * @param serviceUrl
+		 * 		Service URL
+		 *
+		 * @since 4.0.0
+		 */
+		public void setServiceUrl(String serviceUrl) {
+			this.serviceUrl = serviceUrl;
 		}
 
 	}
@@ -752,8 +761,6 @@ public class Cas extends BaseConfig {
 		 */
 		public RestBasicAuth() {
 			super("cas-rest-basic-auth");
-			setHeaderName(HttpConstants.AUTHORIZATION_HEADER);
-			setPrefixHeader(HttpConstants.BASIC_HEADER_PREFIX);
 		}
 
 	}

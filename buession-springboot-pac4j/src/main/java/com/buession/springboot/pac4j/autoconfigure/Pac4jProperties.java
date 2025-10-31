@@ -19,19 +19,17 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.security.pac4j.http.JsonAjaxRequestResolver;
-import com.buession.springboot.pac4j.config.BaseConfig;
+import com.buession.springboot.pac4j.config.BaseClientConfig;
 import com.buession.springboot.pac4j.config.Cas;
 import com.buession.springboot.pac4j.config.Http;
 import com.buession.springboot.pac4j.config.Jwt;
 import com.buession.springboot.pac4j.config.OAuth;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -48,7 +46,7 @@ public class Pac4jProperties {
 	public final static String PREFIX = "spring.pac4j";
 
 	/**
-	 * 启用认证的客户端类型名称，需要和各配置 {@link BaseConfig.BaseClientConfig} 类型中的名称保持一致
+	 * 启用认证的客户端类型名称，需要和各配置 {@link BaseClientConfig} 类型中的名称保持一致
 	 */
 	private Set<String> clients;
 
@@ -68,9 +66,9 @@ public class Pac4jProperties {
 	private Class<? extends AjaxRequestResolver> ajaxRequestResolverClass = JsonAjaxRequestResolver.class;
 
 	/**
-	 * The HTTP action adapter for the {@link JEEContext}.
+	 * The HTTP action adapter for the {@link HttpActionAdapter}.
 	 */
-	private Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass;
+	private Class<? extends HttpActionAdapter> httpActionAdapterClass;
 
 	/**
 	 * 是否允许多个 Profile
@@ -88,7 +86,7 @@ public class Pac4jProperties {
 	private Filter filter = new Filter();
 
 	/**
-	 * 返回启用认证的客户端类型名称，需要和各配置 {@link BaseConfig.BaseClientConfig} 类型中的名称保持一致
+	 * 返回启用认证的客户端类型名称，需要和各配置 {@link BaseClientConfig} 类型中的名称保持一致
 	 *
 	 * @return 启用认证的客户端类型名称
 	 */
@@ -97,7 +95,7 @@ public class Pac4jProperties {
 	}
 
 	/**
-	 * 设置启用认证的客户端类型名称，需要和各配置 {@link BaseConfig.BaseClientConfig} 类型中的名称保持一致
+	 * 设置启用认证的客户端类型名称，需要和各配置 {@link BaseClientConfig} 类型中的名称保持一致
 	 *
 	 * @param clients
 	 * 		启用认证的客户端类型名称
@@ -165,22 +163,21 @@ public class Pac4jProperties {
 	}
 
 	/**
-	 * Return the HTTP action adapter for the {@link JEEContext}.
+	 * Return the HTTP action adapter for the {@link HttpActionAdapter}.
 	 *
-	 * @return The HTTP action adapter for the {@link JEEContext}.
+	 * @return The HTTP action adapter for the {@link HttpActionAdapter}.
 	 */
-	public Class<? extends HttpActionAdapter<?, ? extends WebContext>> getHttpActionAdapterClass() {
+	public Class<? extends HttpActionAdapter> getHttpActionAdapterClass() {
 		return httpActionAdapterClass;
 	}
 
 	/**
-	 * Set the HTTP action adapter for the {@link JEEContext}.
+	 * Set the HTTP action adapter for the {@link HttpActionAdapter}.
 	 *
 	 * @param httpActionAdapterClass
-	 * 		The HTTP action adapter for the {@link JEEContext}.
+	 * 		The HTTP action adapter for the {@link HttpActionAdapter}.
 	 */
-	public void setHttpActionAdapterClass(
-			Class<? extends HttpActionAdapter<?, ? extends WebContext>> httpActionAdapterClass) {
+	public void setHttpActionAdapterClass(Class<? extends HttpActionAdapter> httpActionAdapterClass) {
 		this.httpActionAdapterClass = httpActionAdapterClass;
 	}
 
@@ -247,72 +244,72 @@ public class Pac4jProperties {
 	public final static class Filter {
 
 		/**
-		 * {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * 安全拦截器配置
 		 */
 		private Security security = new Security();
 
 		/**
-		 * {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * 登录成功回调配置
 		 */
 		private Callback callback = new Callback();
 
 		/**
-		 * {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * 退出登录配置
 		 */
 		private Logout logout = new Logout();
 
 		/**
-		 * 返回 {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * 返回安全拦截器配置
 		 *
-		 * @return {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * @return 安全拦截器配置
 		 */
 		public Security getSecurity() {
 			return security;
 		}
 
 		/**
-		 * 设置 {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * 设置安全拦截器配置
 		 *
 		 * @param security
-		 *        {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * 		安全拦截器配置
 		 */
 		public void setSecurity(Security security) {
 			this.security = security;
 		}
 
 		/**
-		 * 返回 {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * 返回登录成功回调配置
 		 *
-		 * @return {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * @return 登录成功回调配置
 		 */
 		public Callback getCallback() {
 			return callback;
 		}
 
 		/**
-		 * 设置 {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * 设置登录成功回调配置
 		 *
 		 * @param callback
-		 *        {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * 		登录成功回调配置
 		 */
 		public void setCallback(Callback callback) {
 			this.callback = callback;
 		}
 
 		/**
-		 * 返回 {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * 返回退出登录配置
 		 *
-		 * @return {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * @return 退出登录配置
 		 */
 		public Logout getLogout() {
 			return logout;
 		}
 
 		/**
-		 * 设置 {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * 设置退出登录配置
 		 *
 		 * @param logout
-		 *        {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * 		退出登录配置
 		 */
 		public void setLogout(Logout logout) {
 			this.logout = logout;
@@ -352,7 +349,7 @@ public class Pac4jProperties {
 		}
 
 		/**
-		 * {@link io.buji.pac4j.filter.SecurityFilter} 配置
+		 * 安全拦截器配置
 		 */
 		public final static class Security extends BaseFilter {
 
@@ -411,17 +408,54 @@ public class Pac4jProperties {
 		}
 
 		/**
-		 * {@link io.buji.pac4j.filter.CallbackFilter} 配置
+		 * 登录成功回调配置
 		 */
 		public final static class Callback extends BaseFilter {
+
+			/**
+			 * 退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			private String path;
 
 			/**
 			 * 默认跳转地址
 			 */
 			private String defaultUrl;
 
+			/**
+			 * 是否重新生成 Session
+			 *
+			 * @since 4.0.0
+			 */
+			private Boolean renewSession;
+
 			public Callback() {
 				setName("callbackFilter");
+			}
+
+			/**
+			 * 返回退出登录 URL Path
+			 *
+			 * @return 退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			public String getPath() {
+				return path;
+			}
+
+			/**
+			 * 设置退出登录 URL Path
+			 *
+			 * @param path
+			 * 		退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			public void setPath(String path) {
+				this.path = path;
 			}
 
 			/**
@@ -443,12 +477,42 @@ public class Pac4jProperties {
 				this.defaultUrl = defaultUrl;
 			}
 
+			/**
+			 * 返回是否重新生成 Session
+			 *
+			 * @return 是否重新生成 Session
+			 *
+			 * @since 4.0.0
+			 */
+			public Boolean getRenewSession() {
+				return renewSession;
+			}
+
+			/**
+			 * 设置是否重新生成 Session
+			 *
+			 * @param renewSession
+			 * 		是否重新生成 Session
+			 *
+			 * @since 4.0.0
+			 */
+			public void setRenewSession(Boolean renewSession) {
+				this.renewSession = renewSession;
+			}
+
 		}
 
 		/**
-		 * {@link io.buji.pac4j.filter.LogoutFilter} 配置
+		 * 退出登录配置
 		 */
 		public final static class Logout extends BaseFilter {
+
+			/**
+			 * 退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			private String path;
 
 			/**
 			 * 登出成功默认跳转地址
@@ -470,8 +534,38 @@ public class Pac4jProperties {
 			 */
 			private boolean centralLogout = true;
 
+			/**
+			 * 是否销毁 SESSION
+			 *
+			 * @since 4.0.0
+			 */
+			private boolean destroySession = true;
+
 			public Logout() {
 				setName("logoutFilter");
+			}
+
+			/**
+			 * 返回退出登录 URL Path
+			 *
+			 * @return 退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			public String getPath() {
+				return path;
+			}
+
+			/**
+			 * 设置退出登录 URL Path
+			 *
+			 * @param path
+			 * 		退出登录 URL Path
+			 *
+			 * @since 4.0.0
+			 */
+			public void setPath(String path) {
+				this.path = path;
 			}
 
 			/**
@@ -548,6 +642,29 @@ public class Pac4jProperties {
 			 */
 			public void setCentralLogout(boolean centralLogout) {
 				this.centralLogout = centralLogout;
+			}
+
+			/**
+			 * 返回是否销毁 SESSION
+			 *
+			 * @return 是否销毁 SESSION
+			 *
+			 * @since 4.0.0
+			 */
+			public boolean isDestroySession() {
+				return destroySession;
+			}
+
+			/**
+			 * 设置是否销毁 SESSION
+			 *
+			 * @param destroySession
+			 * 		是否销毁 SESSION
+			 *
+			 * @since 4.0.0
+			 */
+			public void setDestroySession(boolean destroySession) {
+				this.destroySession = destroySession;
 			}
 
 		}

@@ -35,7 +35,7 @@ import org.pac4j.core.util.generator.ValueGenerator;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public class Jwt extends BaseConfig {
+public class Jwt extends BaseClientConfig {
 
 	public final static String PREFIX = PROPERTIES_PREFIX + ".jwt";
 
@@ -73,6 +73,10 @@ public class Jwt extends BaseConfig {
 	 * 是否支持 POST 请求
 	 */
 	private Boolean supportPostRequest;
+
+	public Jwt() {
+		super("jwt");
+	}
 
 	/**
 	 * 返回 Secret 签名算法

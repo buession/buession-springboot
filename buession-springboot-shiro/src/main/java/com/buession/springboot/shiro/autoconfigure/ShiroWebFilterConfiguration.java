@@ -19,19 +19,17 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
-import com.buession.springboot.shiro.core.ShiroFilter;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -68,21 +66,22 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 	@Bean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
-	@ConditionalOnBean({ShiroFilter.class})
-	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean(ShiroFilter shiroFilter)
+	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean()
 			throws Exception {
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
 		ShiroFilterFactoryBean shiroFilterFactoryBean = super.shiroFilterFactoryBean();
 
+		/*
 		if(shiroFilterFactoryBean.getFilters() == null){
 			shiroFilterFactoryBean.setFilters(shiroFilter.getFilters());
 		}else{
 			shiroFilterFactoryBean.getFilters().putAll(shiroFilter.getFilters());
 		}
+		 */
 		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);
-		filterRegistrationBean.setFilter(shiroFilterFactoryBean.getObject());
+		//filterRegistrationBean.setFilter(shiroFilterFactoryBean.getObject());
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;

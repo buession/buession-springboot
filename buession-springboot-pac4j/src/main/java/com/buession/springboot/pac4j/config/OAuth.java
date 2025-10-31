@@ -41,9 +41,9 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public class OAuth extends BaseConfig {
+public class OAuth extends BaseClientConfig {
 
-	public final static String PREFIX = PROPERTIES_PREFIX + ".oauth";
+	public final static String PREFIX = BaseClientConfig.PROPERTIES_PREFIX + ".oauth";
 
 	/**
 	 * Key
@@ -190,6 +190,13 @@ public class OAuth extends BaseConfig {
 	 */
 	@NestedConfigurationProperty
 	private WordPress wordPress = new WordPress();
+
+	/**
+	 * 构造函数
+	 */
+	public OAuth() {
+		super(null);
+	}
 
 	/**
 	 * 返回 Key
@@ -666,7 +673,7 @@ public class OAuth extends BaseConfig {
 		this.wordPress = wordPress;
 	}
 
-	public abstract static class BaseOAuthConfig extends BaseClientConfig {
+	public abstract static class BaseOAuthConfig extends IndirectClientConfig {
 
 		protected Boolean tokenAsHeader;
 
@@ -1007,9 +1014,12 @@ public class OAuth extends BaseConfig {
 
 		private String casLogoutUrl;
 
-		private Boolean springSecurityCompliant;
-
 		private Boolean implicitFlow;
+
+		/**
+		 * @since 4.0.0
+		 */
+		private Verb accessTokenVerb;
 
 		public Cas() {
 			super("cas");
@@ -1031,18 +1041,6 @@ public class OAuth extends BaseConfig {
 			this.casLogoutUrl = casLogoutUrl;
 		}
 
-		public Boolean isSpringSecurityCompliant() {
-			return getSpringSecurityCompliant();
-		}
-
-		public Boolean getSpringSecurityCompliant() {
-			return springSecurityCompliant;
-		}
-
-		public void setSpringSecurityCompliant(Boolean springSecurityCompliant) {
-			this.springSecurityCompliant = springSecurityCompliant;
-		}
-
 		public Boolean isImplicitFlow() {
 			return getImplicitFlow();
 		}
@@ -1053,6 +1051,14 @@ public class OAuth extends BaseConfig {
 
 		public void setImplicitFlow(Boolean implicitFlow) {
 			this.implicitFlow = implicitFlow;
+		}
+
+		public Verb getAccessTokenVerb() {
+			return accessTokenVerb;
+		}
+
+		public void setAccessTokenVerb(Verb accessTokenVerb) {
+			this.accessTokenVerb = accessTokenVerb;
 		}
 
 	}

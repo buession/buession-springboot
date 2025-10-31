@@ -24,7 +24,6 @@
  */
 package com.buession.springboot.pac4j.config;
 
-import org.pac4j.core.util.Pac4jConstants;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -33,7 +32,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public class Http extends BaseConfig {
+public class Http extends BaseClientConfig {
 
 	public final static String PREFIX = PROPERTIES_PREFIX + ".http";
 
@@ -123,6 +122,13 @@ public class Http extends BaseConfig {
 	 */
 	@NestedConfigurationProperty
 	private IndirectBasicAuth indirectBasicAuth = new IndirectBasicAuth();
+
+	/**
+	 * 构造函数
+	 */
+	public Http() {
+		super(null);
+	}
 
 	/**
 	 * 返回登录成功跳转地址
@@ -387,7 +393,7 @@ public class Http extends BaseConfig {
 	/**
 	 * Form 客户端配置
 	 */
-	public final static class Form extends BaseFormConfig {
+	public final static class Form extends BaseFormConfig.BaseIndirectFormConfig {
 
 		/**
 		 * 登录地址
@@ -399,8 +405,6 @@ public class Http extends BaseConfig {
 		 */
 		public Form() {
 			super("form");
-			setUsernameParameter(Pac4jConstants.USERNAME);
-			setPasswordParameter(Pac4jConstants.PASSWORD);
 		}
 
 		/**
@@ -429,15 +433,13 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class DirectForm extends BaseFormConfig {
+	public final static class DirectForm extends BaseFormConfig.BaseDirectFormConfig {
 
 		/**
 		 * 构造函数
 		 */
 		public DirectForm() {
 			super("direct-form");
-			setUsernameParameter(Pac4jConstants.USERNAME);
-			setPasswordParameter(Pac4jConstants.PASSWORD);
 		}
 
 	}
@@ -445,7 +447,7 @@ public class Http extends BaseConfig {
 	/**
 	 * Indirect Basic Auth 客户端配置
 	 */
-	public final static class IndirectBasicAuth extends BaseBasicAuthConfig {
+	public final static class IndirectBasicAuth extends BaseBasicAuthConfig.BaseIndirectBasicAuthConfig {
 
 		/**
 		 * 构造函数
@@ -459,7 +461,7 @@ public class Http extends BaseConfig {
 	/**
 	 * Direct Basic Auth 客户端配置
 	 */
-	public final static class DirectBasicAuth extends BaseBasicAuthConfig {
+	public final static class DirectBasicAuth extends BaseBasicAuthConfig.BaseDirectBasicAuthConfig {
 
 		/**
 		 * 构造函数
@@ -475,7 +477,7 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class DirectBearerAuth extends BaseBasicAuthConfig {
+	public final static class DirectBearerAuth extends BaseBasicAuthConfig.BaseDirectBasicAuthConfig {
 
 		/**
 		 * 构造函数
@@ -491,7 +493,7 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class Cookie extends BaseClientConfig {
+	public final static class Cookie extends DirectClientConfig {
 
 		/**
 		 * Cookie 名称
@@ -531,7 +533,7 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class DirectDigestAuth extends BaseClientConfig {
+	public final static class DirectDigestAuth extends DirectClientConfig {
 
 		private String realm;
 
@@ -573,13 +575,103 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class Parameter extends BaseParameterConfig {
+	public final static class Parameter extends DirectClientConfig {
+
+		/**
+		 * 参数名称
+		 */
+		private String parameterName;
+
+		/**
+		 * 是否支持 GET 请求
+		 */
+		private Boolean supportGetRequest;
+
+		/**
+		 * 是否支持 POST 请求
+		 */
+		private Boolean supportPostRequest;
 
 		/**
 		 * 构造函数
 		 */
 		public Parameter() {
 			super("arameter");
+		}
+
+		/**
+		 * 返回参数名称
+		 *
+		 * @return 参数名称
+		 */
+		public String getParameterName() {
+			return parameterName;
+		}
+
+		/**
+		 * 设置参数名称
+		 *
+		 * @param parameterName
+		 * 		参数名称
+		 */
+		public void setParameterName(String parameterName) {
+			this.parameterName = parameterName;
+		}
+
+		/**
+		 * 返回是否支持 GET 请求
+		 *
+		 * @return 是否支持 GET 请求
+		 */
+		public Boolean isSupportGetRequest() {
+			return getSupportGetRequest();
+		}
+
+		/**
+		 * 返回是否支持 GET 请求
+		 *
+		 * @return 是否支持 GET 请求
+		 */
+		public Boolean getSupportGetRequest() {
+			return supportGetRequest;
+		}
+
+		/**
+		 * 设置是否支持 GET 请求
+		 *
+		 * @param supportGetRequest
+		 * 		是否支持 GET 请求
+		 */
+		public void setSupportGetRequest(Boolean supportGetRequest) {
+			this.supportGetRequest = supportGetRequest;
+		}
+
+		/**
+		 * 返回是否支持 POST 请求
+		 *
+		 * @return 是否支持 POST 请求
+		 */
+		public Boolean isSupportPostRequest() {
+			return getSupportPostRequest();
+		}
+
+		/**
+		 * 返回是否支持 POST 请求
+		 *
+		 * @return 是否支持 POST 请求
+		 */
+		public Boolean getSupportPostRequest() {
+			return supportPostRequest;
+		}
+
+		/**
+		 * 设置是否支持 POST 请求
+		 *
+		 * @param supportPostRequest
+		 * 		是否支持 POST 请求
+		 */
+		public void setSupportPostRequest(Boolean supportPostRequest) {
+			this.supportPostRequest = supportPostRequest;
 		}
 
 	}
@@ -589,7 +681,7 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class Ip extends BaseClientConfig {
+	public final static class Ip extends DirectClientConfig {
 
 		/**
 		 * 构造函数
@@ -605,7 +697,7 @@ public class Http extends BaseConfig {
 	 *
 	 * @since 3.0.0
 	 */
-	public final static class X509 extends BaseClientConfig {
+	public final static class X509 extends DirectClientConfig {
 
 		/**
 		 * 构造函数

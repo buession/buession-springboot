@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -59,10 +59,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public BitbucketClient bitbucketClient(ObjectProvider<Customizer<BitbucketClient>> customizers) {
 		final BitbucketClient bitbucketClient = new BitbucketClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -80,20 +79,18 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(config.getKey(),
 				config.getSecret(), config.getCas().getCasOAuthUrl()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
 		};
 		final OAuth.Cas cas = config.getCas();
 
-		propertyMapper.from(cas::getCasLogoutUrl).to(casOAuthWrapperClient::setCasLogoutUrl);
-		propertyMapper.from(cas::getSpringSecurityCompliant).to(casOAuthWrapperClient::setSpringSecurityCompliant);
 		propertyMapper.from(cas::getImplicitFlow).to(casOAuthWrapperClient::setImplicitFlow);
 		hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
+		propertyMapper.from(cas::getAccessTokenVerb).to(casOAuthWrapperClient::setAccessTokenVerb);
 
 		initOAuth20Client(casOAuthWrapperClient, cas);
 
@@ -106,10 +103,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public DropBoxClient dropboxClient(ObjectProvider<Customizer<DropBoxClient>> customizers) {
 		final DropBoxClient dropboxClient = new DropBoxClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -126,10 +122,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public FacebookClient facebookClient(ObjectProvider<Customizer<FacebookClient>> customizers) {
 		final FacebookClient facebookClient = new FacebookClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -150,10 +145,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public FigShareClient figShareClient(ObjectProvider<Customizer<FigShareClient>> customizers) {
 		final FigShareClient figShareClient = new FigShareClient() {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -173,10 +167,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public FoursquareClient foursquareClient(ObjectProvider<Customizer<FoursquareClient>> customizers) {
 		final FoursquareClient foursquareClient = new FoursquareClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -193,10 +186,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public GenericOAuth20Client genericOAuth20Client(ObjectProvider<Customizer<GenericOAuth20Client>> customizers) {
 		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client() {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -227,10 +219,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public GitHubClient githubClient(ObjectProvider<Customizer<GitHubClient>> customizers) {
 		final GitHubClient gitHubClient = new GitHubClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -247,10 +238,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public Google2Client google2Client(ObjectProvider<Customizer<Google2Client>> customizers) {
 		final Google2Client google2Client = new Google2Client(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -270,10 +260,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public HiOrgServerClient hiOrgServerClient(ObjectProvider<Customizer<HiOrgServerClient>> customizers) {
 		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -290,10 +279,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public LinkedIn2Client linkedin2Client(ObjectProvider<Customizer<LinkedIn2Client>> customizers) {
 		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -321,10 +309,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public PayPalClient paypalClient(ObjectProvider<Customizer<PayPalClient>> customizers) {
 		final PayPalClient payPalClient = new PayPalClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -341,10 +328,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public QQClient qqClient(ObjectProvider<Customizer<QQClient>> customizers) {
 		final QQClient qqClient = new QQClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -364,10 +350,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public StravaClient stravaClient(ObjectProvider<Customizer<StravaClient>> customizers) {
 		final StravaClient stravaClient = new StravaClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -387,10 +372,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public TwitterClient twitterClient(ObjectProvider<Customizer<TwitterClient>> customizers) {
 		final TwitterClient twitterClient = new TwitterClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -411,10 +395,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public VkClient vkClient(ObjectProvider<Customizer<VkClient>> customizers) {
 		final VkClient vkClient = new VkClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -431,10 +414,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public WechatClient wechatClient(ObjectProvider<Customizer<WechatClient>> customizers) {
 		final WechatClient wechatClient = new WechatClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -454,10 +436,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public WeiboClient weiboClient(ObjectProvider<Customizer<WeiboClient>> customizers) {
 		final WeiboClient weiboClient = new WeiboClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -478,10 +459,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public WindowsLiveClient windowsLiveClient(ObjectProvider<Customizer<WindowsLiveClient>> customizers) {
 		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -498,10 +478,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public WordPressClient wordPressClient(ObjectProvider<Customizer<WordPressClient>> customizers) {
 		final WordPressClient wordPressClient = new WordPressClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -518,10 +497,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	public YahooClient yahooClient(ObjectProvider<Customizer<YahooClient>> customizers) {
 		final YahooClient yahooClient = new YahooClient(config.getKey(), config.getSecret()) {
 
-
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
@@ -540,26 +518,24 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 															   final OAuth.BaseOAuth10Config oAuth10Config) {
 		final OAuth10Configuration configuration = client.getConfiguration();
 
-		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
 		propertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
 		propertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
 		propertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 
-		afterClientInitialized(client, config, oAuth10Config);
+		afterIndirectClientInitialized(client, config, oAuth10Config);
 	}
 
 	protected <C extends OAuth20Client> void initOAuth20Client(final C client,
 															   final OAuth.BaseOAuth20Config oAuth20Config) {
 		final OAuth20Configuration configuration = client.getConfiguration();
 
-		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
 		propertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
 		propertyMapper.from(oAuth20Config::getScope).to(configuration::setScope);
 		propertyMapper.from(oAuth20Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 		propertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
 		propertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
 
-		afterClientInitialized(client, config, oAuth20Config);
+		afterIndirectClientInitialized(client, config, oAuth20Config);
 	}
 
 }

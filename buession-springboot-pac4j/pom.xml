@@ -69,6 +69,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>spring-webmvc-pac4j</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.pac4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
 			<version>${cas.client.version}</version>

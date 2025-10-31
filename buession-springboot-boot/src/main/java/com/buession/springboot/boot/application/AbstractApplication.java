@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2024 Buession.com Inc.														|
+ * | Copyright @ 2013-2025 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
@@ -29,6 +29,7 @@ package com.buession.springboot.boot.application;
 import com.buession.springboot.boot.config.RuntimeProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -93,16 +94,11 @@ public abstract class AbstractApplication implements Application {
 	 * @param banner
 	 *        {@link Banner} 类
 	 *
-	 * @throws InstantiationException
-	 * 		反射异常
-	 * @throws IllegalAccessException
-	 * 		没有访问权限的异常
 	 * @since 1.3.1
 	 */
-	protected AbstractApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException {
+	protected AbstractApplication(final Class<? extends Banner> banner) {
 		if(banner != null){
-			this.banner = banner.newInstance();
+			this.banner = BeanUtils.instantiateClass(banner);
 		}
 	}
 

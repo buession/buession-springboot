@@ -70,8 +70,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>3.0.1</buession.version>
-		<buession.security.version>3.0.1</buession.security.version>
+		<buession.version>4.0.0</buession.version>
+		<buession.security.version>4.0.0</buession.security.version>
 	</properties>
 
 	<dependencyManagement>

@@ -22,8 +22,91 @@
  * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-/**
- * @author Yong.Teng
- * @since 2.0.0
- */
 package com.buession.springboot.pac4j.config;
+
+/**
+ * Basic Auth 客户端配置
+ *
+ * @author Yong.Teng
+ * @since 4.0.0
+ */
+public abstract class BaseBasicAuthConfig {
+
+	public static abstract class BaseDirectBasicAuthConfig extends DirectClientConfig {
+
+		/**
+		 * Realm Name
+		 */
+		private String realmName = "authentication required";
+
+		/**
+		 * 构造函数
+		 *
+		 * @param name
+		 * 		Client 名称
+		 */
+		public BaseDirectBasicAuthConfig(String name) {
+			super(name);
+		}
+
+		/**
+		 * 返回 Realm Name
+		 *
+		 * @return Realm Name
+		 */
+		public String getRealmName() {
+			return realmName;
+		}
+
+		/**
+		 * 设置 Realm Name
+		 *
+		 * @param realmName
+		 * 		Realm Name
+		 */
+		public void setRealmName(String realmName) {
+			this.realmName = realmName;
+		}
+
+	}
+
+	public static abstract class BaseIndirectBasicAuthConfig extends IndirectClientConfig {
+
+		/**
+		 * Realm Name
+		 */
+		private String realmName = "authentication required";
+
+		/**
+		 * 构造函数
+		 *
+		 * @param name
+		 * 		Client 名称
+		 */
+		public BaseIndirectBasicAuthConfig(String name) {
+			super(name);
+		}
+
+		/**
+		 * 返回 Realm Name
+		 *
+		 * @return Realm Name
+		 */
+		public String getRealmName() {
+			return realmName;
+		}
+
+		/**
+		 * 设置 Realm Name
+		 *
+		 * @param realmName
+		 * 		Realm Name
+		 */
+		public void setRealmName(String realmName) {
+			this.realmName = realmName;
+		}
+
+	}
+
+
+}

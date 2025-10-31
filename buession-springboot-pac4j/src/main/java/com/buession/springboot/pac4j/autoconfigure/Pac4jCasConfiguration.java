@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -39,7 +39,6 @@ import org.pac4j.cas.credentials.authenticator.CasAuthenticator;
 import org.pac4j.cas.profile.CasProfileDefinition;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.BaseClient;
-import org.pac4j.core.credentials.TokenCredentials;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -127,23 +126,17 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
 	public CasClient casClient(CasConfiguration casConfiguration, CasProfileDefinition casProfileDefinition,
 							   ObjectProvider<Customizer<CasClient>> customizers) {
-		final CasClient casClient = new CasClient() {
-
+		final CasClient casClient = new CasClient(casConfiguration) {
 
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
 			}
 
 		};
 
-		casClient.setConfiguration(casConfiguration);
-		hasTextpropertyMapper.from(config::getCallbackUrl).to(casClient::setCallbackUrl);
-		propertyMapper.from(config::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
-				.to(casClient::setAjaxRequestResolver);
-
-		afterClientInitialized(casClient, config, config.getGeneral());
+		afterIndirectClientInitialized(casClient, config, config.getGeneral());
 
 		return casClient;
 	}
@@ -156,20 +149,17 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	public DirectCasClient directCasClient(CasConfiguration casConfiguration,
 										   CasProfileDefinition casProfileDefinition,
 										   ObjectProvider<Customizer<DirectCasClient>> customizers) {
-		final DirectCasClient directCasClient = new DirectCasClient() {
-
+		final DirectCasClient directCasClient = new DirectCasClient(casConfiguration) {
 
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
 			}
 
 		};
 
-		directCasClient.setConfiguration(casConfiguration);
-
-		afterClientInitialized(directCasClient, config, config.getDirect());
+		afterDirectClientInitialized(directCasClient, config, config.getDirect());
 
 		return directCasClient;
 	}
@@ -180,21 +170,18 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	public DirectCasProxyClient directCasProxyClient(CasConfiguration casConfiguration,
 													 CasProfileDefinition casProfileDefinition,
 													 ObjectProvider<Customizer<DirectCasProxyClient>> customizers) {
-		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient() {
-
+		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(casConfiguration,
+				config.getDirectProxy().getServiceUrl()) {
 
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
 			}
 
 		};
 
-		directCasProxyClient.setConfiguration(casConfiguration);
-		hasTextpropertyMapper.from(config::getCallbackUrl).to(directCasProxyClient::setServiceUrl);
-
-		afterClientInitialized(directCasProxyClient, config, config.getDirectProxy());
+		afterDirectClientInitialized(directCasProxyClient, config, config.getDirectProxy());
 
 		return directCasProxyClient;
 	}
@@ -208,23 +195,21 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
 	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration casConfiguration,
 														 ObjectProvider<Customizer<CasRestBasicAuthClient>> customizers) {
-		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient() {
-
+		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient(casConfiguration, null, null) {
 
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
 		};
 		final Cas.RestBasicAuth restBasicAuth = config.getRestBasicAuth();
 
-		casRestBasicAuthClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(restBasicAuth::getHeaderName).to(casRestBasicAuthClient::setHeaderName);
 		hasTextpropertyMapper.from(restBasicAuth::getPrefixHeader).to(casRestBasicAuthClient::setPrefixHeader);
 
-		afterClientInitialized(casRestBasicAuthClient, config, restBasicAuth);
+		afterDirectClientInitialized(casRestBasicAuthClient, config, restBasicAuth);
 
 		return casRestBasicAuthClient;
 	}
@@ -234,32 +219,30 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
 	public CasRestFormClient casRestFormClient(CasConfiguration casConfiguration,
 											   ObjectProvider<Customizer<CasRestFormClient>> customizers) {
-		final CasRestFormClient casRestFormClient = new CasRestFormClient() {
-
+		final CasRestFormClient casRestFormClient = new CasRestFormClient(casConfiguration, null, null) {
 
 			@Override
-			protected void clientInit() {
-				super.clientInit();
+			protected void internalInit(final boolean forceReinit) {
+				super.internalInit(forceReinit);
 				customizer(this, customizers);
 			}
 
 		};
 		final Cas.RestForm restForm = config.getRestForm();
 
-		casRestFormClient.setConfiguration(casConfiguration);
 		hasTextpropertyMapper.from(restForm::getUsernameParameter).to(casRestFormClient::setUsernameParameter);
 		hasTextpropertyMapper.from(restForm::getPasswordParameter).to(casRestFormClient::setPasswordParameter);
 
-		afterClientInitialized(casRestFormClient, config, restForm);
+		afterDirectClientInitialized(casRestFormClient, config, restForm);
 
 		return casRestFormClient;
 	}
 
 	/* Rest Client 结束 */
 
-	protected <C extends BaseClient<TokenCredentials>> void doClientInit(final C client,
-																		 final CasProfileDefinition casProfileDefinition,
-																		 final ObjectProvider<Customizer<C>> customizers) {
+	protected <C extends BaseClient> void doClientInit(final C client,
+													   final CasProfileDefinition casProfileDefinition,
+													   final ObjectProvider<Customizer<C>> customizers) {
 		((CasAuthenticator) client.getAuthenticator()).setProfileDefinition(casProfileDefinition);
 
 		if(Validate.isNotEmpty(config.getAuthorizationGenerator())){

@@ -19,17 +19,20 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.Customizer;
 import com.buession.core.converter.mapper.PropertyMapper;
-import com.buession.core.validator.Validate;
-import com.buession.springboot.pac4j.config.BaseConfig;
+import com.buession.springboot.pac4j.config.BaseClientConfig;
+import com.buession.springboot.pac4j.config.DirectClientConfig;
+import com.buession.springboot.pac4j.config.IndirectClientConfig;
 import org.pac4j.core.client.BaseClient;
-import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.client.DirectClient;
+import org.pac4j.core.client.IndirectClient;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 
 import java.util.Optional;
@@ -38,7 +41,7 @@ import java.util.Optional;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
+public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfig> {
 
 	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
@@ -53,17 +56,34 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 		this.config = config;
 	}
 
-	protected <CONF extends BaseConfig, CLIENTCONF extends BaseConfig.BaseClientConfig,
-			CLIENT extends BaseClient<? extends Credentials>> void afterClientInitialized(
-			final CLIENT client, final CONF config, final CLIENTCONF clientConfig) {
-		client.setName(
-				Validate.hasText(clientConfig.getName()) ? clientConfig.getName() : clientConfig.getDefaultName());
+	protected void setBaseClientCommonProperties(final BaseClient baseClient, final BaseClientConfig baseClientConfig) {
+		baseClient.setMultiProfile(baseClientConfig.isMultiProfile());
+		baseClient.setSaveProfileInSession(baseClientConfig.getSaveProfileInSession());
+	}
 
+	protected <CF extends BaseClientConfig, BCF extends BaseClientConfig, CLIENT extends BaseClient> void afterClientInitialized(
+			final CLIENT client, final CF config, final BCF clientConfig) {
+		hasTextpropertyMapper.from(clientConfig::getName).to(client::setName);
+		setBaseClientCommonProperties(client, clientConfig);
 		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
 	}
 
-	protected <CLIENT extends BaseClient<? extends Credentials>> void customizer(final CLIENT client,
-																				 final ObjectProvider<Customizer<CLIENT>> customizers) {
+	protected <CF extends BaseClientConfig, ICF extends IndirectClientConfig, CLIENT extends IndirectClient> void afterIndirectClientInitialized(
+			final CLIENT client, final CF config, final ICF clientConfig) {
+		afterClientInitialized(client, config, clientConfig);
+		hasTextpropertyMapper.from(clientConfig::getCallbackUrl).to(client::setCallbackUrl);
+		propertyMapper.from(clientConfig::getCheckAuthenticationAttempt).to(client::setCheckAuthenticationAttempt);
+		propertyMapper.from(clientConfig::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
+				.to(client::setAjaxRequestResolver);
+	}
+
+	protected <CF extends BaseClientConfig, DCF extends DirectClientConfig, CLIENT extends DirectClient> void afterDirectClientInitialized(
+			final CLIENT client, final CF config, final DCF clientConfig) {
+		afterClientInitialized(client, config, clientConfig);
+	}
+
+	protected <CLIENT extends BaseClient> void customizer(final CLIENT client,
+														  final ObjectProvider<Customizer<CLIENT>> customizers) {
 		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
 	}
 

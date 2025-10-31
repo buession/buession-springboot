@@ -19,11 +19,27 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.springboot.pac4j.config;
+
 /**
+ * Direct client 配置
+ *
  * @author Yong.Teng
- * @since 2.1.0
+ * @since 4.0.0
  */
-package com.buession.springboot.pac4j.filter;
+public abstract class DirectClientConfig extends BaseClientConfig {
+
+	/**
+	 * 构造函数
+	 *
+	 * @param name
+	 * 		Client 名称
+	 */
+	public DirectClientConfig(String name) {
+		super(name);
+	}
+
+}

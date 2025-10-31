@@ -22,43 +22,84 @@
  * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.pac4j.config;
 
-import io.buji.pac4j.realm.Pac4jRealm;
-import io.buji.pac4j.subject.Pac4jSubjectFactory;
-import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.mgt.SubjectFactory;
-import org.apache.shiro.realm.Realm;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
+import org.pac4j.core.http.ajax.AjaxRequestResolver;
 
 /**
- * Pac4j for shiro 自动加载类
+ * Indirect client 公共配置
  *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 4.0.0
  */
-@AutoConfiguration(after = {com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
-@ConditionalOnClass({Pac4jRealm.class, SubjectFactory.class})
-public class Pac4jConfiguration {
+public abstract class IndirectClientConfig extends BaseClientConfig {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public Realm pac4jRealm() {
-		return new Pac4jRealm();
+	/**
+	 * 登录成功跳转地址
+	 */
+	private String callbackUrl;
+
+	private Boolean checkAuthenticationAttempt;
+
+	/**
+	 * Ajax 请求解析器
+	 */
+	private Class<? extends AjaxRequestResolver> ajaxRequestResolver;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param name
+	 * 		Client 名称
+	 */
+	public IndirectClientConfig(String name) {
+		super(name);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean({SubjectFactory.class})
-	public SubjectFactory subjectFactory(SecurityManager securityManager) {
-		SubjectFactory subjectFactory = new Pac4jSubjectFactory();
+	/**
+	 * 返回登录成功跳转地址
+	 *
+	 * @return 登录成功跳转地址
+	 */
+	public String getCallbackUrl() {
+		return callbackUrl;
+	}
 
-		((DefaultSecurityManager) securityManager).setSubjectFactory(subjectFactory);
+	/**
+	 * 设置登录成功跳转地址
+	 *
+	 * @param callbackUrl
+	 * 		登录成功跳转地址
+	 */
+	public void setCallbackUrl(String callbackUrl) {
+		this.callbackUrl = callbackUrl;
+	}
 
-		return subjectFactory;
+	public Boolean getCheckAuthenticationAttempt() {
+		return checkAuthenticationAttempt;
+	}
+
+	public void setCheckAuthenticationAttempt(Boolean checkAuthenticationAttempt) {
+		this.checkAuthenticationAttempt = checkAuthenticationAttempt;
+	}
+
+	/**
+	 * 返回 Ajax 请求解析器
+	 *
+	 * @return Ajax 请求解析器
+	 */
+	public Class<? extends AjaxRequestResolver> getAjaxRequestResolver() {
+		return ajaxRequestResolver;
+	}
+
+	/**
+	 * 设置 Ajax 请求解析器
+	 *
+	 * @param ajaxRequestResolver
+	 * 		Ajax 请求解析器
+	 */
+	public void setAjaxRequestResolver(Class<? extends AjaxRequestResolver> ajaxRequestResolver) {
+		this.ajaxRequestResolver = ajaxRequestResolver;
 	}
 
 }
