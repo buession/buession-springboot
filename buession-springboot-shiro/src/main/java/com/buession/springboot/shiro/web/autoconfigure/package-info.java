@@ -25,4 +25,4 @@
 /**
  * @author Yong.Teng
  */
-package com.buession.springboot.shiro.web;
+package com.buession.springboot.shiro.web.autoconfigure;

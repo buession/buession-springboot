@@ -22,13 +22,12 @@
  * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.shiro.web.autoconfigure;
 
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
-import com.buession.springboot.shiro.web.autoconfigure.ShiroWebConfiguration;
+import com.buession.springboot.shiro.autoconfigure.ShiroProperties;
 import jakarta.servlet.DispatcherType;
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -42,8 +41,10 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 
 /**
+ * Shiro Web Filter 自动配置
+ *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 4.0.0
  */
 @AutoConfiguration(after = {ShiroWebConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
@@ -67,22 +68,12 @@ public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfigura
 
 	@Bean(name = "filterShiroFilterRegistrationBean")
 	@ConditionalOnMissingBean(name = "filterShiroFilterRegistrationBean")
-	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean()
-			throws Exception {
+	protected FilterRegistrationBean<AbstractShiroFilter> filterShiroFilterRegistrationBean() throws Exception {
 		FilterRegistrationBean<AbstractShiroFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-		ShiroFilterFactoryBean shiroFilterFactoryBean = super.shiroFilterFactoryBean();
-
-		/*
-		if(shiroFilterFactoryBean.getFilters() == null){
-			shiroFilterFactoryBean.setFilters(shiroFilter.getFilters());
-		}else{
-			shiroFilterFactoryBean.getFilters().putAll(shiroFilter.getFilters());
-		}
-		 */
-		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.ERROR);
-		//filterRegistrationBean.setFilter(shiroFilterFactoryBean.getObject());
+		filterRegistrationBean.setFilter((AbstractShiroFilter) shiroFilterFactoryBean().getObject());
+		filterRegistrationBean.setName("shiroFilter");
 		filterRegistrationBean.setOrder(1);
 
 		return filterRegistrationBean;

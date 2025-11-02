@@ -22,8 +22,9 @@
  * | Copyright @ 2013-2024 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.shiro.web.autoconfigure;
 
+import com.buession.springboot.shiro.autoconfigure.ShiroProperties;
 import org.apache.shiro.spring.web.config.ShiroRequestMappingConfig;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +34,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
+ * Shiro WebMVC 自动配置
+ *
  * @author Yong.Teng
  * @since 2.0.0
  */

@@ -43,7 +43,6 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.config.AbstractShiroConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
@@ -85,68 +84,6 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
-	protected SessionsSecurityManager securityManager(List<Realm> realms) {
-		return super.securityManager(realms);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionManager sessionManager() {
-		return super.sessionManager();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SubjectDAO subjectDAO() {
-		return super.subjectDAO();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionStorageEvaluator sessionStorageEvaluator() {
-		return super.sessionStorageEvaluator();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({SubjectFactory.class})
-	@Override
-	protected SubjectFactory subjectFactory() {
-		return super.subjectFactory();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected SessionFactory sessionFactory() {
-		return super.sessionFactory();
-	}
-
-	@Bean(name = "sessionDAO")
-	@ConditionalOnMissingBean({SessionDAO.class})
-	@Override
-	protected SessionDAO sessionDAO() {
-		if(redisManager == null){
-			return super.sessionDAO();
-		}else{
-			ShiroProperties.Session session = properties.getSession();
-			return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
-					session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
-		}
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected Authorizer authorizer() {
-		return super.authorizer();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
 	protected AuthenticationStrategy authenticationStrategy() {
 		return super.authenticationStrategy();
 	}
@@ -161,8 +98,70 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
+	protected Authorizer authorizer() {
+		return super.authorizer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
 	protected RememberMeManager rememberMeManager() {
 		return super.rememberMeManager();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SubjectDAO subjectDAO() {
+		return super.subjectDAO();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SubjectFactory subjectFactory() {
+		return super.subjectFactory();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionStorageEvaluator sessionStorageEvaluator() {
+		return super.sessionStorageEvaluator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionFactory sessionFactory() {
+		return super.sessionFactory();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionDAO sessionDAO() {
+		if(redisManager == null){
+			return super.sessionDAO();
+		}else{
+			ShiroProperties.Session session = properties.getSession();
+			return new RedisSessionDAO(redisManager, session.getPrefix(), session.getExpire(),
+					session.isSessionInMemoryEnabled(), session.getSessionInMemoryTimeout());
+		}
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionManager sessionManager() {
+		return super.sessionManager();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SessionsSecurityManager securityManager(List<Realm> realms) {
+		return super.securityManager(realms);
 	}
 
 	@Bean

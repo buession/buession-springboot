@@ -21,10 +21,10 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2024 Buession.com Inc.														|
+ * | Copyright @ 2013-2025 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.shiro.autoconfigure;
+package com.buession.springboot.shiro.web.autoconfigure;
 
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.SystemPropertyUtils;
@@ -33,6 +33,8 @@ import com.buession.security.shiro.Cookie;
 import com.buession.security.shiro.RedisManager;
 import com.buession.security.shiro.converter.SameSiteConverter;
 import com.buession.security.shiro.session.RedisSessionDAO;
+import com.buession.springboot.shiro.autoconfigure.ShiroConfiguration;
+import com.buession.springboot.shiro.autoconfigure.ShiroProperties;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AuthenticationStrategy;
 import org.apache.shiro.authz.Authorizer;
@@ -46,12 +48,12 @@ import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionFactory;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.spring.web.ShiroUrlPathHelper;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
@@ -62,7 +64,10 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 
 /**
+ * Shiro Web 自动配置
+ *
  * @author Yong.Teng
+ * @since 4.0.0
  */
 @AutoConfiguration(before = {ShiroConfiguration.class}, after = {ShiroWebMvcConfiguration.class})
 @EnableConfigurationProperties(ShiroProperties.class)
@@ -163,8 +168,36 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
+	protected AuthenticationStrategy authenticationStrategy() {
+		return super.authenticationStrategy();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected Authenticator authenticator() {
+		return super.authenticator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected Authorizer authorizer() {
+		return super.authorizer();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
 	protected SubjectDAO subjectDAO() {
 		return super.subjectDAO();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected SubjectFactory subjectFactory() {
+		return super.subjectFactory();
 	}
 
 	@Bean
@@ -194,68 +227,6 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		}
 	}
 
-	@Bean(name = "sessionCookieTemplate")
-	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate() {
-		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
-
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-		propertyMapper.from(properties.getSession().getCookie().getSecure()).to(cookie::setSecure);
-		propertyMapper.from(properties.getSession().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
-
-		return cookie;
-	}
-
-	@Bean(name = "rememberMeCookieTemplate")
-	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
-	@Override
-	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate() {
-		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
-
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-		propertyMapper.from(properties.getRememberMe().getCookie().getSecure()).to(cookie::setSecure);
-		propertyMapper.from(properties.getRememberMe().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
-
-		return cookie;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected RememberMeManager rememberMeManager() {
-		return super.rememberMeManager();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({SubjectFactory.class})
-	@Override
-	protected SubjectFactory subjectFactory() {
-		return super.subjectFactory();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected Authorizer authorizer() {
-		return super.authorizer();
-	}
-
-	@Bean
-	@Override
-	protected AuthenticationStrategy authenticationStrategy() {
-		return super.authenticationStrategy();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@Override
-	protected Authenticator authenticator() {
-		return super.authenticator();
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	@Override
@@ -268,6 +239,39 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Override
 	protected SessionsSecurityManager securityManager(List<Realm> realms) {
 		return super.securityManager(realms);
+	}
+
+	@Bean(name = "sessionCookieTemplate")
+	@ConditionalOnMissingBean(name = "sessionCookieTemplate")
+	@Override
+	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate() {
+		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
+
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
+		propertyMapper.from(properties.getSession().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
+
+		return cookie;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected RememberMeManager rememberMeManager() {
+		return super.rememberMeManager();
+	}
+
+	@Bean(name = "rememberMeCookieTemplate")
+	@ConditionalOnMissingBean(name = "rememberMeCookieTemplate")
+	@Override
+	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate() {
+		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
+
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
+		propertyMapper.from(properties.getRememberMe().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
+
+		return cookie;
 	}
 
 	@Bean
@@ -296,6 +300,13 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	@Override
 	protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
 		return super.shiroFilterChainDefinition();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Override
+	protected ShiroUrlPathHelper shiroUrlPathHelper() {
+		return super.shiroUrlPathHelper();
 	}
 
 }
