@@ -11,6 +11,7 @@
 ### ⏪ 优化
 
 - **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter
+- 删除模块 buession-springboot-velocity
 
 
 ---

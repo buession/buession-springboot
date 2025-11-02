@@ -18,7 +18,7 @@
 
 ## Requirements
 
-- JDK 1.8+
+- JDK 17+
 
 ## Introduction
 

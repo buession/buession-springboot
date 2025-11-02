@@ -316,11 +316,11 @@ public class Pac4jProperties {
 		}
 
 		/**
-		 * 过滤器配置基类
+		 * WEB 配置基类
 		 *
-		 * @since 2.1.0
+		 * @since 4.0.0
 		 */
-		private static abstract class BaseFilter {
+		private static abstract class BaseWebConfig {
 
 			/**
 			 * 过滤器名称
@@ -351,7 +351,7 @@ public class Pac4jProperties {
 		/**
 		 * 安全拦截器配置
 		 */
-		public final static class Security extends BaseFilter {
+		public final static class Security extends BaseWebConfig {
 
 			/**
 			 * 认证器名称列表
@@ -410,7 +410,7 @@ public class Pac4jProperties {
 		/**
 		 * 登录成功回调配置
 		 */
-		public final static class Callback extends BaseFilter {
+		public final static class Callback extends BaseWebConfig {
 
 			/**
 			 * 退出登录 URL Path
@@ -505,7 +505,7 @@ public class Pac4jProperties {
 		/**
 		 * 退出登录配置
 		 */
-		public final static class Logout extends BaseFilter {
+		public final static class Logout extends BaseWebConfig {
 
 			/**
 			 * 退出登录 URL Path
