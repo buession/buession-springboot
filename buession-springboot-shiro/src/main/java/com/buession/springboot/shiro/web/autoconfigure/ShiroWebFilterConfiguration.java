@@ -26,6 +26,8 @@ package com.buession.springboot.shiro.autoconfigure;
 
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
+import com.buession.springboot.shiro.web.autoconfigure.ShiroWebConfiguration;
+import jakarta.servlet.DispatcherType;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
@@ -37,7 +39,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
-import javax.servlet.DispatcherType;
 import java.util.List;
 
 /**
