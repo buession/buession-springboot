@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.autoconfigure;
@@ -97,11 +97,11 @@ public class ThreadPoolConfiguration {
 				new com.buession.core.concurrent.ThreadPoolConfiguration();
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-		propertyMapper.from(threadPoolProperties.getNamePrefix()).to(threadPoolConfiguration::setNamePrefix);
-		propertyMapper.from(threadPoolProperties.getAllowCoreThreadTimeOut())
+		propertyMapper.from(threadPoolProperties::getNamePrefix).to(threadPoolConfiguration::setNamePrefix);
+		propertyMapper.from(threadPoolProperties::getAllowCoreThreadTimeOut)
 				.to(threadPoolConfiguration::setAllowCoreThreadTimeOut);
-		propertyMapper.from(threadPoolProperties.getDaemon()).to(threadPoolConfiguration::setDaemon);
-		propertyMapper.from(threadPoolProperties.getPriority()).to(threadPoolConfiguration::setPriority);
+		propertyMapper.from(threadPoolProperties::getDaemon).to(threadPoolConfiguration::setDaemon);
+		propertyMapper.from(threadPoolProperties::getPriority).to(threadPoolConfiguration::setPriority);
 
 		threadPoolConfiguration.setCorePoolSize(Optional.ofNullable(threadPoolProperties.getCorePoolSize()).orElse(-1));
 		threadPoolConfiguration.setMaximumPoolSize(
