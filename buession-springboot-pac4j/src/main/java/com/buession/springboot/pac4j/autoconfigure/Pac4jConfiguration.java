@@ -94,9 +94,8 @@ public class Pac4jConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Config config(Clients clients) {
-		final Config config = Config.INSTANCE;
+		final Config config = new Config(clients);
 
-		config.setClients(clients);
 		propertyMapper.from(properties::getHttpActionAdapterClass).as(BeanUtils::instantiateClass)
 				.to(config::setHttpActionAdapter);
 

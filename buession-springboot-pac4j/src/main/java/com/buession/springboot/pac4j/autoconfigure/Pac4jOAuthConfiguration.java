@@ -201,7 +201,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		hasTextpropertyMapper.from(generic.getAuthUrl()).to(genericOAuth20Client::setAuthUrl);
 		hasTextpropertyMapper.from(generic.getTokenUrl()).to(genericOAuth20Client::setTokenUrl);
 		hasTextpropertyMapper.from(generic.getProfileUrl()).to(genericOAuth20Client::setProfileUrl);
-		hasTextpropertyMapper.from(generic.getProfilePath()).to(genericOAuth20Client::setProfileNodePath);
+		hasTextpropertyMapper.from(generic.getProfilePath()).to(genericOAuth20Client::setProfilePath);
 		hasTextpropertyMapper.from(generic.getProfileId()).to(genericOAuth20Client::setProfileId);
 		hasTextpropertyMapper.from(generic.getClientAuthenticationMethod())
 				.to(genericOAuth20Client::setClientAuthenticationMethod);

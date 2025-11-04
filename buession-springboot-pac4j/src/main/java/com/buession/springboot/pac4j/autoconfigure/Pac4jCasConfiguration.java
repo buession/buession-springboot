@@ -29,7 +29,7 @@ import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.validator.Validate;
 import com.buession.springboot.pac4j.CasConfigurationCustomizer;
 import com.buession.springboot.pac4j.config.Cas;
-import org.jasig.cas.client.validation.ProxyList;
+import org.apereo.cas.client.validation.ProxyList;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.client.CasProxyReceptor;
 import org.pac4j.cas.client.direct.*;
