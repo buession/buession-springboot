@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -31,11 +31,12 @@ import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.client.connection.datasource.SentinelDataSource;
 import com.buession.redis.client.connection.datasource.StandaloneDataSource;
 import com.buession.redis.core.RedisNode;
-import com.buession.redis.core.RedisURI;
+import com.buession.springboot.cache.redis.RedisURI;
 import com.buession.springboot.cache.redis.utils.RedisNodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.context.annotation.Bean;
 
 import java.text.ParseException;
 import java.util.List;
@@ -54,16 +55,17 @@ public abstract class AbstractDataSourceConfiguration {
 		this.properties = properties;
 	}
 
+	@Bean(name = "redisDataSource")
 	public DataSource dataSource() {
 		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		DataSource dataSource;
 
 		if(properties.getCluster() != null && Validate.isNotEmpty(properties.getCluster().getNodes())){
-			dataSource = createClusterDataSource();
+			dataSource = applyClusterDataSource(createClusterDataSource(), propertyMapper);
 		}else if(properties.getSentinel() != null && Validate.isNotEmpty(properties.getSentinel().getNodes())){
-			dataSource = createSentinelDataSource();
+			dataSource = applySentinelDataSource(createSentinelDataSource(), propertyMapper);
 		}else{
-			dataSource = createStandaloneDataSource();
+			dataSource = applyStandaloneDataSource(createStandaloneDataSource(), propertyMapper);
 		}
 
 		// 处理全局通用属性赋值
@@ -83,7 +85,14 @@ public abstract class AbstractDataSourceConfiguration {
 		return dataSource;
 	}
 
-	protected StandaloneDataSource createStandaloneDataSource(final StandaloneDataSource dataSource) {
+	protected abstract StandaloneDataSource createStandaloneDataSource();
+
+	protected abstract SentinelDataSource createSentinelDataSource();
+
+	protected abstract ClusterDataSource createClusterDataSource();
+
+	private StandaloneDataSource applyStandaloneDataSource(final StandaloneDataSource dataSource,
+	                                                       final PropertyMapper propertyMapper) {
 		if(Validate.hasText(properties.getHost())){
 			dataSource.setHost(properties.getHost());
 			dataSource.setPort(properties.getPort());
@@ -92,7 +101,7 @@ public abstract class AbstractDataSourceConfiguration {
 			dataSource.setDatabase(properties.getDatabase());
 		}else{
 			if(Validate.hasText(properties.getUri())){
-				RedisURI redisURI = RedisURI.create(properties.getUri());
+				final RedisURI redisURI = RedisURI.create(properties.getUri());
 
 				dataSource.setHost(redisURI.getHost());
 				dataSource.setPort(redisURI.getPort());
@@ -108,8 +117,8 @@ public abstract class AbstractDataSourceConfiguration {
 		return dataSource;
 	}
 
-	protected SentinelDataSource createSentinelDataSource(final SentinelDataSource dataSource) {
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+	private SentinelDataSource applySentinelDataSource(final SentinelDataSource dataSource,
+	                                                   final PropertyMapper propertyMapper) {
 		RedisProperties.Sentinel sentinel = properties.getSentinel();
 
 		List<RedisNode> sentinelNodes;
@@ -132,8 +141,8 @@ public abstract class AbstractDataSourceConfiguration {
 		return dataSource;
 	}
 
-	protected ClusterDataSource createClusterDataSource(final ClusterDataSource dataSource) {
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+	private ClusterDataSource applyClusterDataSource(final ClusterDataSource dataSource,
+	                                                 final PropertyMapper propertyMapper) {
 		RedisProperties.Cluster cluster = properties.getCluster();
 
 		List<RedisNode> nodes;
@@ -146,18 +155,11 @@ public abstract class AbstractDataSourceConfiguration {
 		propertyMapper.from(properties::getUsername).to(dataSource::setUsername);
 		propertyMapper.from(properties::getPassword).to(dataSource::setPassword);
 		propertyMapper.from(cluster::getMaxRedirects).to(dataSource::setMaxRedirects);
-		propertyMapper.from(cluster::getMaxTotalRetriesDuration).as((duration)->(int) duration.toMillis())
-				.to(dataSource::setMaxTotalRetriesDuration);
+		propertyMapper.from(cluster::getMaxTotalRetriesDuration).to(dataSource::setMaxTotalRetriesDuration);
 
 		dataSource.setNodes(nodes);
 
 		return dataSource;
 	}
-
-	protected abstract StandaloneDataSource createStandaloneDataSource();
-
-	protected abstract SentinelDataSource createSentinelDataSource();
-
-	protected abstract ClusterDataSource createClusterDataSource();
 
 }

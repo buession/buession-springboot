@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.autoconfigure;
@@ -36,22 +36,20 @@ import java.util.Map;
  */
 public abstract class AbstractServerConfiguration {
 
-	protected final static String HEADER_VARIABLE_IDENTIFIER = "$";
-
-	protected final static char HEADER_VARIABLE_IDENTIFIER_CHAR = '$';
+	protected final static char HEADER_VARIABLE_IDENTIFIER = '$';
 
 	protected ServerProperties properties;
 
-	public AbstractServerConfiguration(ServerProperties properties){
+	public AbstractServerConfiguration(ServerProperties properties) {
 		this.properties = properties;
 	}
 
-	protected static Map<String, String> buildHeaders(final Map<String, String> headers){
+	protected static Map<String, String> buildHeaders(final Map<String, String> headers) {
 		final Map<String, String> result = new HashMap<>(headers.size());
 
 		headers.forEach((name, value)->{
 			if(value != null){
-				if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER_CHAR)){
+				if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER)){
 					String propertyName = value.substring(1);
 					String propertyValue = SystemPropertyUtils.getProperty(propertyName);
 

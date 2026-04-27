@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.web.autoconfigure;
 
+import com.buession.security.web.config.Xss;
 import com.buession.springboot.web.security.WebSecurityProperties;
 
 /**
@@ -34,8 +35,17 @@ public abstract class AbstractWebSecurityConfiguration {
 
 	protected WebSecurityProperties properties;
 
-	public AbstractWebSecurityConfiguration(WebSecurityProperties properties){
+	public AbstractWebSecurityConfiguration(WebSecurityProperties properties) {
 		this.properties = properties;
+	}
+
+	protected static Xss createXss(final WebSecurityProperties.Xss config) {
+		final Xss xss = new Xss();
+
+		xss.setEnabled(config.isEnabled());
+		xss.setPolicy(config.getProtection());
+
+		return xss;
 	}
 
 }

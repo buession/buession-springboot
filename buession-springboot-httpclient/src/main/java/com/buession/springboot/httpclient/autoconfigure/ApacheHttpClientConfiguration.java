@@ -154,6 +154,7 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 		}
 
 		@Bean(name = ASYNC_HTTP_CLIENT_BEAN_NAME)
+		@ConditionalOnClass(name = {"org.apache.http.nio.client.HttpAsyncClient"})
 		@ConditionalOnBean(name = {NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME})
 		public ApacheHttpAsyncClient httpAsyncClient(
 				@Qualifier(NIO_CLIENT_CONNECTION_MANAGER_BEAN_NAME) ApacheNioClientConnectionManager clientConnectionManager) {

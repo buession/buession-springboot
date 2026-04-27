@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -62,25 +62,19 @@ public class LettuceDataSourceConfiguration extends AbstractDataSourceConfigurat
 		super(properties);
 	}
 
-	@Bean(name = "redisDataSource")
-	@Override
-	public DataSource dataSource() {
-		return super.dataSource();
-	}
-
 	@Override
 	protected StandaloneDataSource createStandaloneDataSource() {
-		return createStandaloneDataSource(new LettuceDataSource());
+		return new LettuceDataSource();
 	}
 
 	@Override
 	protected SentinelDataSource createSentinelDataSource() {
-		return createSentinelDataSource(new LettuceSentinelDataSource());
+		return new LettuceSentinelDataSource();
 	}
 
 	@Override
 	protected ClusterDataSource createClusterDataSource() {
-		return createClusterDataSource(new LettuceClusterDataSource());
+		return new LettuceClusterDataSource();
 	}
 
 }

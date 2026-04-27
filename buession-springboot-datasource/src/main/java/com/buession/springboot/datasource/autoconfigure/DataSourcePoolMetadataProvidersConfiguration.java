@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -57,11 +57,7 @@ public class DataSourcePoolMetadataProvidersConfiguration
 			return (dataSource)->{
 				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSourceMXBean.class,
 						BasicDataSource.class);
-				if(dbcpDataSource != null){
-					return new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
-				}
-
-				return null;
+				return dbcpDataSource == null ? null : new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
 			};
 		}
 
@@ -74,13 +70,9 @@ public class DataSourcePoolMetadataProvidersConfiguration
 		@Bean
 		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
-				DruidDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, DruidDataSourceMBean.class,
+				DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(dataSource, DruidDataSourceMBean.class,
 						DruidDataSource.class);
-				if(dbcpDataSource != null){
-					return new DruidDataSourcePoolMetadata(dbcpDataSource);
-				}
-
-				return null;
+				return druidDataSource == null ? null : new DruidDataSourcePoolMetadata(druidDataSource);
 			};
 		}
 
@@ -95,11 +87,7 @@ public class DataSourcePoolMetadataProvidersConfiguration
 			return (dataSource)->{
 				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource,
 						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
-				if(hikariDataSource != null){
-					return new HikariDataSourcePoolMetadata(hikariDataSource);
-				}
-
-				return null;
+				return hikariDataSource == null ? null : new HikariDataSourcePoolMetadata(hikariDataSource);
 			};
 		}
 
@@ -116,11 +104,7 @@ public class DataSourcePoolMetadataProvidersConfiguration
 		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
 			return (dataSource)->{
 				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);
-				if(ucpDataSource != null){
-					return new OracleUcpDataSourcePoolMetadata(ucpDataSource);
-				}
-
-				return null;
+				return ucpDataSource == null ? null : new OracleUcpDataSourcePoolMetadata(ucpDataSource);
 			};
 		}
 
@@ -135,11 +119,7 @@ public class DataSourcePoolMetadataProvidersConfiguration
 			return (dataSource)->{
 				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
 						ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
-				if(tomcatDataSource != null){
-					return new TomcatDataSourcePoolMetadata(tomcatDataSource);
-				}
-
-				return null;
+				return tomcatDataSource == null ? null : new TomcatDataSourcePoolMetadata(tomcatDataSource);
 			};
 		}
 

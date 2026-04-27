@@ -21,14 +21,14 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2024 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.security.web.config.Configurer;
 import com.buession.security.web.config.Xss;
-import com.buession.security.web.servlet.config.ServletWebSecurityConfigurerAdapterConfiguration;
+import com.buession.security.web.servlet.config.ServletHttpSecurityConfiguration;
 import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.servlet.WebMvcXssConfigurer;
 import com.buession.security.web.xss.servlet.XssFilter;
@@ -40,7 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 
 /**
  * Spring Security Configuration
@@ -50,7 +50,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  */
 @AutoConfiguration
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnClass({WebSecurityConfigurerAdapter.class})
+@ConditionalOnClass({WebSecurityConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
@@ -62,7 +62,7 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	@Bean
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	public XssFilter xssFilter() {
-		final Xss xss = properties.getXss();
+		final WebSecurityProperties.Xss xss = properties.getXss();
 		final Options.Builder optionsBuilder = Options.Builder.getInstance();
 
 		optionsBuilder.policy(xss.getPolicy());
@@ -82,22 +82,19 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 
 	@AutoConfiguration
 	@EnableConfigurationProperties(WebSecurityProperties.class)
-	@ConditionalOnClass({WebSecurityConfigurerAdapter.class})
-	static class DefaultWebSecurityConfigurerAdapterConfiguration
-			extends ServletWebSecurityConfigurerAdapterConfiguration {
+	@ConditionalOnClass({WebSecurityConfiguration.class})
+	static class DefaultWebSecurityConfigurerAdapterConfiguration extends ServletHttpSecurityConfiguration {
 
 		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties) {
 			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
-					properties.getFrameOptions(), properties.getHsts(), properties.getHpkp(),
-					properties.getContentSecurityPolicy(), properties.getReferrerPolicy(), properties.getXss(),
-					properties.getFormLogin()), properties.isDisableDefaults());
+					properties.getFrameOptions(), properties.getHsts(), properties.getContentSecurityPolicy(),
+					properties.getReferrerPolicy(), createXss(properties.getXss()), properties.getFormLogin()));
 		}
 
 	}
 
 	@AutoConfiguration
-	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue =
-			"true")
+	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	static class WebMvcXssConfigurerConfiguration extends WebMvcXssConfigurer {
 
 	}

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2025 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -35,17 +35,15 @@ import org.pac4j.core.client.IndirectClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 
-import java.util.Optional;
-
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
 public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfig> {
 
-	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+	protected final static PropertyMapper nonNullpropertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-	protected final static PropertyMapper hasTextpropertyMapper = propertyMapper.alwaysApplyingWhenHasText();
+	protected final static PropertyMapper hasTextpropertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
 	protected final Pac4jProperties properties;
 
@@ -64,16 +62,17 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 	protected <CF extends BaseClientConfig, BCF extends BaseClientConfig, CLIENT extends BaseClient> void afterClientInitialized(
 			final CLIENT client, final CF config, final BCF clientConfig) {
 		hasTextpropertyMapper.from(clientConfig::getName).to(client::setName);
+		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
 		setBaseClientCommonProperties(client, clientConfig);
-		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
 	}
 
 	protected <CF extends BaseClientConfig, ICF extends IndirectClientConfig, CLIENT extends IndirectClient> void afterIndirectClientInitialized(
 			final CLIENT client, final CF config, final ICF clientConfig) {
 		afterClientInitialized(client, config, clientConfig);
 		hasTextpropertyMapper.from(clientConfig::getCallbackUrl).to(client::setCallbackUrl);
-		propertyMapper.from(clientConfig::getCheckAuthenticationAttempt).to(client::setCheckAuthenticationAttempt);
-		propertyMapper.from(clientConfig::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
+		nonNullpropertyMapper.from(clientConfig::getCheckAuthenticationAttempt)
+				.to(client::setCheckAuthenticationAttempt);
+		nonNullpropertyMapper.from(clientConfig::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
 				.to(client::setAjaxRequestResolver);
 	}
 
@@ -83,7 +82,7 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 	}
 
 	protected <CLIENT extends BaseClient> void customizer(final CLIENT client,
-														  final ObjectProvider<Customizer<CLIENT>> customizers) {
+	                                                      final ObjectProvider<Customizer<CLIENT>> customizers) {
 		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
 	}
 

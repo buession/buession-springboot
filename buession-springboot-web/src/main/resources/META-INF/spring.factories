@@ -6,5 +6,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.buession.springboot.web.reactive.autoconfigure.HttpMessageConvertersConfiguration,\
   com.buession.springboot.web.reactive.autoconfigure.ReactiveServerConfiguration,\
   com.buession.springboot.web.reactive.autoconfigure.ReactiveWebFluxConfiguration,\
-  com.buession.springboot.web.reactive.autoconfigure.ReactiveWebSecurityConfiguration,\
-  com.buession.springboot.web.reactive.autoconfigure.ErrorWebFluxAutoConfiguration
+  com.buession.springboot.web.reactive.autoconfigure.ReactiveWebSecurityConfiguration

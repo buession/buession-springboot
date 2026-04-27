@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.security;
@@ -31,11 +31,11 @@ import com.buession.security.web.config.Cors;
 import com.buession.security.web.config.Csrf;
 import com.buession.security.web.config.FormLogin;
 import com.buession.security.web.config.FrameOptions;
-import com.buession.security.web.config.Hpkp;
 import com.buession.security.web.config.Hsts;
 import com.buession.security.web.config.HttpBasic;
 import com.buession.security.web.config.ReferrerPolicy;
-import com.buession.security.web.config.Xss;
+import com.buession.security.web.xss.Options;
+import com.buession.web.http.XssProtection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -80,12 +80,6 @@ public class WebSecurityProperties {
 	private Hsts hsts = new Hsts();
 
 	/**
-	 * Hpkp 配置
-	 */
-	@NestedConfigurationProperty
-	private Hpkp hpkp = new Hpkp();
-
-	/**
 	 * Content Security Policy 配置
 	 */
 	@NestedConfigurationProperty
@@ -122,7 +116,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return 是否禁用默认配置
 	 */
-	public boolean isDisableDefaults(){
+	public boolean isDisableDefaults() {
 		return disableDefaults;
 	}
 
@@ -132,7 +126,7 @@ public class WebSecurityProperties {
 	 * @param disableDefaults
 	 * 		是否禁用默认配置
 	 */
-	public void setDisableDefaults(boolean disableDefaults){
+	public void setDisableDefaults(boolean disableDefaults) {
 		this.disableDefaults = disableDefaults;
 	}
 
@@ -141,7 +135,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Http Basic 配置
 	 */
-	public HttpBasic getHttpBasic(){
+	public HttpBasic getHttpBasic() {
 		return httpBasic;
 	}
 
@@ -151,7 +145,7 @@ public class WebSecurityProperties {
 	 * @param httpBasic
 	 * 		Http Basic 配置
 	 */
-	public void setHttpBasic(HttpBasic httpBasic){
+	public void setHttpBasic(HttpBasic httpBasic) {
 		this.httpBasic = httpBasic;
 	}
 
@@ -160,7 +154,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Csrf 配置
 	 */
-	public Csrf getCsrf(){
+	public Csrf getCsrf() {
 		return csrf;
 	}
 
@@ -170,7 +164,7 @@ public class WebSecurityProperties {
 	 * @param csrf
 	 * 		Csrf 配置
 	 */
-	public void setCsrf(Csrf csrf){
+	public void setCsrf(Csrf csrf) {
 		this.csrf = csrf;
 	}
 
@@ -179,7 +173,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Frame Options 配置
 	 */
-	public FrameOptions getFrameOptions(){
+	public FrameOptions getFrameOptions() {
 		return frameOptions;
 	}
 
@@ -189,7 +183,7 @@ public class WebSecurityProperties {
 	 * @param frameOptions
 	 * 		Frame Options 配置
 	 */
-	public void setFrameOptions(FrameOptions frameOptions){
+	public void setFrameOptions(FrameOptions frameOptions) {
 		this.frameOptions = frameOptions;
 	}
 
@@ -198,7 +192,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Hsts 配置
 	 */
-	public Hsts getHsts(){
+	public Hsts getHsts() {
 		return hsts;
 	}
 
@@ -208,27 +202,8 @@ public class WebSecurityProperties {
 	 * @param hsts
 	 * 		Hsts 配置
 	 */
-	public void setHsts(Hsts hsts){
+	public void setHsts(Hsts hsts) {
 		this.hsts = hsts;
-	}
-
-	/**
-	 * 返回 Hpkp 配置
-	 *
-	 * @return Hpkp 配置
-	 */
-	public Hpkp getHpkp(){
-		return hpkp;
-	}
-
-	/**
-	 * 设置 Hpkp 配置
-	 *
-	 * @param hpkp
-	 * 		Hpkp 配置
-	 */
-	public void setHpkp(Hpkp hpkp){
-		this.hpkp = hpkp;
 	}
 
 	/**
@@ -236,7 +211,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Content Security Policy 配置
 	 */
-	public ContentSecurityPolicy getContentSecurityPolicy(){
+	public ContentSecurityPolicy getContentSecurityPolicy() {
 		return contentSecurityPolicy;
 	}
 
@@ -246,7 +221,7 @@ public class WebSecurityProperties {
 	 * @param contentSecurityPolicy
 	 * 		Content Security Policy 配置
 	 */
-	public void setContentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy){
+	public void setContentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy) {
 		this.contentSecurityPolicy = contentSecurityPolicy;
 	}
 
@@ -255,7 +230,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return Referrer Policy 配置
 	 */
-	public ReferrerPolicy getReferrerPolicy(){
+	public ReferrerPolicy getReferrerPolicy() {
 		return referrerPolicy;
 	}
 
@@ -265,7 +240,7 @@ public class WebSecurityProperties {
 	 * @param referrerPolicy
 	 * 		Referrer Policy 配置
 	 */
-	public void setReferrerPolicy(ReferrerPolicy referrerPolicy){
+	public void setReferrerPolicy(ReferrerPolicy referrerPolicy) {
 		this.referrerPolicy = referrerPolicy;
 	}
 
@@ -274,7 +249,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return XSS 配置
 	 */
-	public Xss getXss(){
+	public Xss getXss() {
 		return xss;
 	}
 
@@ -284,7 +259,7 @@ public class WebSecurityProperties {
 	 * @param xss
 	 * 		XSS 配置
 	 */
-	public void setXss(Xss xss){
+	public void setXss(Xss xss) {
 		this.xss = xss;
 	}
 
@@ -293,7 +268,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return CORS 配置
 	 */
-	public Cors getCors(){
+	public Cors getCors() {
 		return cors;
 	}
 
@@ -303,7 +278,7 @@ public class WebSecurityProperties {
 	 * @param cors
 	 * 		CORS 配置
 	 */
-	public void setCors(Cors cors){
+	public void setCors(Cors cors) {
 		this.cors = cors;
 	}
 
@@ -312,7 +287,7 @@ public class WebSecurityProperties {
 	 *
 	 * @return 登录表单配置
 	 */
-	public FormLogin getFormLogin(){
+	public FormLogin getFormLogin() {
 		return formLogin;
 	}
 
@@ -322,8 +297,117 @@ public class WebSecurityProperties {
 	 * @param formLogin
 	 * 		登录表单配置
 	 */
-	public void setFormLogin(FormLogin formLogin){
+	public void setFormLogin(FormLogin formLogin) {
 		this.formLogin = formLogin;
+	}
+
+	public final static class Xss {
+
+		/**
+		 * 是否启用 Xss 配置
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * 策略模式
+		 */
+		private XssProtection protection;
+
+		/**
+		 * 策略
+		 */
+		private Options.Policy policy = Options.Policy.ESCAPE;
+
+		/**
+		 * 策略配置文件
+		 */
+		private String policyConfigLocation;
+
+		/**
+		 * 返回是否启用 Xss 配置
+		 *
+		 * @return 是否启用 Xss 配置
+		 */
+		public boolean isEnabled() {
+			return getEnabled();
+		}
+
+		/**
+		 * 返回是否启用 Xss 配置
+		 *
+		 * @return 是否启用 Xss 配置
+		 */
+		public boolean getEnabled() {
+			return enabled;
+		}
+
+		/**
+		 * 配置是否启用 Xss 配置
+		 *
+		 * @param enabled
+		 * 		是否启用 Xss 配置
+		 */
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		/**
+		 * 返回策略模式
+		 *
+		 * @return 策略模式
+		 */
+		public XssProtection getProtection() {
+			return protection;
+		}
+
+		/**
+		 * 设置策略模式
+		 *
+		 * @param protection
+		 * 		策略模式
+		 */
+		public void setProtection(XssProtection protection) {
+			this.protection = protection;
+		}
+
+		/**
+		 * 策略
+		 *
+		 * @return 策略
+		 */
+		public Options.Policy getPolicy() {
+			return policy;
+		}
+
+		/**
+		 * 设置策略
+		 *
+		 * @param policy
+		 * 		策略
+		 */
+		public void setPolicy(Options.Policy policy) {
+			this.policy = policy;
+		}
+
+		/**
+		 * 返回策略配置文件
+		 *
+		 * @return 策略配置文件
+		 */
+		public String getPolicyConfigLocation() {
+			return policyConfigLocation;
+		}
+
+		/**
+		 * 设置策略配置文件
+		 *
+		 * @param policyConfigLocation
+		 * 		策略配置文件
+		 */
+		public void setPolicyConfigLocation(String policyConfigLocation) {
+			this.policyConfigLocation = policyConfigLocation;
+		}
+
 	}
 
 }

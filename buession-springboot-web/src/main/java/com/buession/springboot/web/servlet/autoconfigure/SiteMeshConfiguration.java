@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.servlet.autoconfigure;
@@ -41,15 +41,16 @@ import org.springframework.context.annotation.Bean;
 public class SiteMeshConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.sitemesh.multipass", name = "enabled", havingValue = "true")
-	public MultipassFilter multipassFilter() {
-		return new MultipassFilter();
-	}
-
-	@Bean
+	@ConditionalOnProperty(prefix = "spring.sitemesh", name = "enabled", havingValue = "true")
 	@ConditionalOnMissingBean(SiteMeshFilter.class)
 	public SiteMeshFilter siteMeshFilter() {
 		return new SiteMeshFilter();
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.sitemesh.multipass", name = "enabled", havingValue = "true")
+	public MultipassFilter multipassFilter() {
+		return new MultipassFilter();
 	}
 
 }

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -122,7 +122,8 @@ public class DataSourceJmxConfiguration {
 				try{
 					return dataSourceProxy.createPool().getJmxPool();
 				}catch(SQLException ex){
-					logger.warn("Cannot expose DataSource to JMX (could not connect)");
+					logger.warn("Cannot expose DataSource to JMX ({}, code: {}, state: {})", ex.getMessage(),
+							ex.getErrorCode(), ex.getSQLState());
 				}
 			}
 			return null;

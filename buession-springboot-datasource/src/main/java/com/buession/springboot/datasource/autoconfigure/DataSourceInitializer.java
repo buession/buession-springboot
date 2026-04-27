@@ -19,12 +19,13 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.Configurer;
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.jdbc.config.BaseConfig;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.pool.PoolConfiguration;
@@ -64,8 +65,8 @@ class DataSourceInitializer<C extends BaseConfig, P extends PoolConfiguration, O
 	private final Callback<ODS, DataSourceProperties> callback;
 
 	DataSourceInitializer(final Class<DS> type, final DataSourceProperties properties, final C dataSourceConfig,
-						  final P poolConfiguration, final Configurer<DS, C> configurer, final Callback<ODS,
-			DataSourceProperties> callback) {
+	                      final P poolConfiguration, final Configurer<DS, C> configurer, final Callback<ODS,
+					DataSourceProperties> callback) {
 		this.type = type;
 		this.properties = properties;
 		this.dataSourceConfig = dataSourceConfig;
@@ -78,57 +79,59 @@ class DataSourceInitializer<C extends BaseConfig, P extends PoolConfiguration, O
 		try{
 			final Constructor<DS> constructor = type.getConstructor(String.class, String.class, String.class,
 					String.class);
+			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			final DS instance = BeanUtils.instantiateClass(constructor, properties.determineDriverClassName(),
 					properties.determineUrl(), properties.determineUsername(), properties.determinePassword());
 
 			/*                     数据源基本配置开始                     */
-			instance.setDefaultCatalog(properties.getDefaultCatalog());
-			instance.setDefaultSchema(properties.getDefaultSchema());
+			propertyMapper.from(properties.getConnectionProperties()).to(instance::setConnectionProperties);
+			propertyMapper.from(properties.getDefaultCatalog()).to(instance::setDefaultCatalog);
+			propertyMapper.from(properties.getDefaultSchema()).to(instance::setDefaultSchema);
+			propertyMapper.from(properties.getInitSQL()).to(instance::setInitSQL);
+			propertyMapper.from(properties.getLoginTimeout()).to(instance::setLoginTimeout);
 
-			instance.setLoginTimeout(properties.getLoginTimeout());
-
-			instance.setInitSQL(properties.getInitSQL());
-
-			instance.setQueryTimeout(dataSourceConfig.getQueryTimeout());
-			instance.setDefaultTransactionIsolation(dataSourceConfig.getDefaultTransactionIsolation());
-			instance.setDefaultAutoCommit(dataSourceConfig.getDefaultAutoCommit());
-
-			instance.setDefaultReadOnly(dataSourceConfig.getDefaultReadOnly());
-
-			instance.setAccessToUnderlyingConnectionAllowed(dataSourceConfig.getAccessToUnderlyingConnectionAllowed());
-
-			instance.setConnectionProperties(properties.getConnectionProperties());
+			propertyMapper.from(dataSourceConfig.getQueryTimeout()).to(instance::setQueryTimeout);
+			propertyMapper.from(dataSourceConfig.getDefaultTransactionIsolation())
+					.to(instance::setDefaultTransactionIsolation);
+			propertyMapper.from(dataSourceConfig.getDefaultAutoCommit()).to(instance::setDefaultAutoCommit);
+			propertyMapper.from(dataSourceConfig.getDefaultReadOnly()).to(instance::setDefaultReadOnly);
+			propertyMapper.from(dataSourceConfig.getAccessToUnderlyingConnectionAllowed())
+					.to(instance::setAccessToUnderlyingConnectionAllowed);
 			/*                     数据源基本配置结束                     */
 
 
 			/*                       连接池配置开始                      */
 			if(poolConfiguration != null){
-				poolConfiguration.setPoolName(dataSourceConfig.getPoolName());
+				propertyMapper.from(dataSourceConfig.getPoolName()).to(poolConfiguration::setPoolName);
 
-				poolConfiguration.setInitialSize(dataSourceConfig.getInitialSize());
-				poolConfiguration.setMinIdle(dataSourceConfig.getMinIdle());
-				poolConfiguration.setMaxIdle(dataSourceConfig.getMaxIdle());
-				poolConfiguration.setMaxTotal(dataSourceConfig.getMaxTotal());
-				poolConfiguration.setMaxWait(dataSourceConfig.getMaxWait());
+				propertyMapper.from(dataSourceConfig.getInitialSize()).to(poolConfiguration::setInitialSize);
+				propertyMapper.from(dataSourceConfig.getMinIdle()).to(poolConfiguration::setMinIdle);
+				propertyMapper.from(dataSourceConfig.getMaxIdle()).to(poolConfiguration::setMaxIdle);
+				propertyMapper.from(dataSourceConfig.getMaxTotal()).to(poolConfiguration::setMaxTotal);
+				propertyMapper.from(dataSourceConfig.getMaxWait()).to(poolConfiguration::setMaxWait);
 
-				poolConfiguration.setTestOnCreate(dataSourceConfig.getTestOnCreate());
-				poolConfiguration.setTestOnBorrow(dataSourceConfig.getTestOnBorrow());
-				poolConfiguration.setTestOnReturn(dataSourceConfig.getTestOnReturn());
-				poolConfiguration.setTestWhileIdle(dataSourceConfig.getTestWhileIdle());
+				propertyMapper.from(dataSourceConfig.getTestOnCreate()).to(poolConfiguration::setTestOnCreate);
+				propertyMapper.from(dataSourceConfig.getTestOnBorrow()).to(poolConfiguration::setTestOnBorrow);
+				propertyMapper.from(dataSourceConfig.getTestOnReturn()).to(poolConfiguration::setTestOnReturn);
+				propertyMapper.from(dataSourceConfig.getTestWhileIdle()).to(poolConfiguration::setTestWhileIdle);
 
-				poolConfiguration.setValidationQuery(dataSourceConfig.getValidationQuery());
-				poolConfiguration.setValidationQueryTimeout(dataSourceConfig.getValidationQueryTimeout());
+				propertyMapper.from(dataSourceConfig.getValidationQuery()).to(poolConfiguration::setValidationQuery);
+				propertyMapper.from(dataSourceConfig.getValidationQueryTimeout())
+						.to(poolConfiguration::setValidationQueryTimeout);
 
-				poolConfiguration.setMinEvictableIdle(dataSourceConfig.getMinEvictableIdle());
-				poolConfiguration.setMaxEvictableIdle(dataSourceConfig.getMaxEvictableIdle());
+				propertyMapper.from(dataSourceConfig.getMinEvictableIdle()).to(poolConfiguration::setMinEvictableIdle);
+				propertyMapper.from(dataSourceConfig.getMaxEvictableIdle()).to(poolConfiguration::setMaxEvictableIdle);
 
-				poolConfiguration.setNumTestsPerEvictionRun(dataSourceConfig.getNumTestsPerEvictionRun());
-				poolConfiguration.setTimeBetweenEvictionRuns(dataSourceConfig.getTimeBetweenEvictionRuns());
+				propertyMapper.from(dataSourceConfig.getNumTestsPerEvictionRun())
+						.to(poolConfiguration::setNumTestsPerEvictionRun);
+				propertyMapper.from(dataSourceConfig.getTimeBetweenEvictionRuns())
+						.to(poolConfiguration::setTimeBetweenEvictionRuns);
 
-				poolConfiguration.setRemoveAbandonedTimeout(dataSourceConfig.getRemoveAbandonedTimeout());
-				poolConfiguration.setLogAbandoned(dataSourceConfig.getLogAbandoned());
+				propertyMapper.from(dataSourceConfig.getRemoveAbandonedTimeout())
+						.to(poolConfiguration::setRemoveAbandonedTimeout);
+				propertyMapper.from(dataSourceConfig.getLogAbandoned()).to(poolConfiguration::setLogAbandoned);
 
-				poolConfiguration.setJmx(dataSourceConfig.getJmx());
+				propertyMapper.from(dataSourceConfig.getJmx()).to(poolConfiguration::setJmx);
 			}
 			instance.setPoolConfiguration(poolConfiguration);
 			/*                       连接池配置结束                      */

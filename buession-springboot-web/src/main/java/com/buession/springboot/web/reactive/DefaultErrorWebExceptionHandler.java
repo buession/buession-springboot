@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive;
@@ -45,7 +45,6 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.MediaTypeNotSupportedStatusException;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ResponseStatusException;
@@ -96,7 +95,7 @@ public class DefaultErrorWebExceptionHandler
 	 * @since 3.0.0
 	 */
 	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties.Resources resources,
-										   ErrorProperties errorProperties, ApplicationContext applicationContext) {
+	                                       ErrorProperties errorProperties, ApplicationContext applicationContext) {
 		super(errorAttributes, resources, errorProperties, applicationContext);
 		this.errorProperties = errorProperties;
 	}
@@ -170,9 +169,6 @@ public class DefaultErrorWebExceptionHandler
 				handleMethodNotAllowedException(request, response, error, (MethodNotAllowedException) throwable);
 			}else if(throwable instanceof NotAcceptableStatusException){
 				handleNotAcceptableException(request, response, error, (NotAcceptableStatusException) throwable);
-			}else if(throwable instanceof MediaTypeNotSupportedStatusException){
-				handleMediaTypeNotSupportedException(request, response, error,
-						(MediaTypeNotSupportedStatusException) throwable);
 			}else if(throwable instanceof UnsupportedMediaTypeStatusException){
 				handleUnsupportedMediaTypeException(request, response, error,
 						(UnsupportedMediaTypeStatusException) throwable);
@@ -216,9 +212,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final MethodArgumentNotValidException ex) {
+	                                                                    final ServerResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final MethodArgumentNotValidException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -237,8 +233,8 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
-													  final Map<String, Object> errorAttributes,
-													  final BindException ex) {
+	                                                  final Map<String, Object> errorAttributes,
+	                                                  final BindException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -257,9 +253,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request,
-																 final ServerResponse response,
-																 final Map<String, Object> errorAttributes,
-																 final WebExchangeBindException ex) {
+	                                                             final ServerResponse response,
+	                                                             final Map<String, Object> errorAttributes,
+	                                                             final WebExchangeBindException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -278,9 +274,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleServerWebInputException(final ServerRequest request,
-																final ServerResponse response,
-																final Map<String, Object> errorAttributes,
-																final ServerWebInputException ex) {
+	                                                            final ServerResponse response,
+	                                                            final Map<String, Object> errorAttributes,
+	                                                            final ServerWebInputException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -308,9 +304,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request,
-															  final ServerResponse response,
-															  final Map<String, Object> errorAttributes,
-															  final TypeMismatchException ex) {
+	                                                          final ServerResponse response,
+	                                                          final Map<String, Object> errorAttributes,
+	                                                          final TypeMismatchException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -329,9 +325,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final HttpMessageNotReadableException ex) {
+	                                                                    final ServerResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final HttpMessageNotReadableException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -350,9 +346,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request,
-																  final ServerResponse response,
-																  final Map<String, Object> errorAttributes,
-																  final MethodNotAllowedException ex) {
+	                                                              final ServerResponse response,
+	                                                              final Map<String, Object> errorAttributes,
+	                                                              final MethodNotAllowedException ex) {
 		Set<HttpMethod> supportedMethods = ex.getSupportedMethods();
 		if(supportedMethods != null && response.headers() != null){
 			response.headers().setAllow(supportedMethods);
@@ -376,35 +372,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request,
-															   final ServerResponse response,
-															   final Map<String, Object> errorAttributes,
-															   final NotAcceptableStatusException ex) {
-		return doResolve(request, errorAttributes, ex);
-	}
-
-	/**
-	 * Status code: 415
-	 *
-	 * @param request
-	 *        {@link ServerRequest}
-	 * @param response
-	 *        {@link ServerResponse}
-	 * @param errorAttributes
-	 * 		错误属性
-	 * @param ex
-	 *        {@link MediaTypeNotSupportedStatusException}
-	 *
-	 * @return 返回数据
-	 */
-	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request,
-																	   final ServerResponse response,
-																	   final Map<String, Object> errorAttributes,
-																	   final MediaTypeNotSupportedStatusException ex) {
-		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(mediaTypes != null && response.headers() != null){
-			response.headers().setAccept(mediaTypes);
-		}
-
+	                                                           final ServerResponse response,
+	                                                           final Map<String, Object> errorAttributes,
+	                                                           final NotAcceptableStatusException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -423,9 +393,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request,
-																	  final ServerResponse response,
-																	  final Map<String, Object> errorAttributes,
-																	  final UnsupportedMediaTypeStatusException ex) {
+	                                                                  final ServerResponse response,
+	                                                                  final Map<String, Object> errorAttributes,
+	                                                                  final UnsupportedMediaTypeStatusException ex) {
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
 		if(mediaTypes != null && response.headers() != null){
 			response.headers().setAccept(mediaTypes);
@@ -469,9 +439,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final ConversionNotSupportedException ex) {
+	                                                                    final ServerResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final ConversionNotSupportedException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -490,9 +460,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final HttpMessageNotWritableException ex) {
+	                                                                    final ServerResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final HttpMessageNotWritableException ex) {
 		return doResolve(request, errorAttributes, ex);
 	}
 
@@ -511,10 +481,10 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleResponseStatusException(final ServerRequest request,
-																final ServerResponse response,
-																final Map<String, Object> errorAttributes,
-																final ResponseStatusException ex) {
-		if(ex.getStatus() == HttpStatus.NOT_FOUND){
+	                                                            final ServerResponse response,
+	                                                            final Map<String, Object> errorAttributes,
+	                                                            final ResponseStatusException ex) {
+		if(ex.getStatusCode() == HttpStatus.NOT_FOUND){
 			pageNotFoundLogger.warn(ex.getMessage());
 		}
 		return doResolve(request, errorAttributes, ex);
@@ -535,9 +505,9 @@ public class DefaultErrorWebExceptionHandler
 	 * @return 返回数据
 	 */
 	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request,
-																	 final ServerResponse response,
-																	 final Map<String, Object> errorAttributes,
-																	 final AsyncRequestTimeoutException ex) {
+	                                                                 final ServerResponse response,
+	                                                                 final Map<String, Object> errorAttributes,
+	                                                                 final AsyncRequestTimeoutException ex) {
 		if(request.exchange().getResponse().isCommitted() == false){
 			//response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
 		}else{
@@ -548,7 +518,7 @@ public class DefaultErrorWebExceptionHandler
 	}
 
 	protected Map<String, Object> doResolve(final ServerRequest request, final Map<String, Object> errorAttributes,
-											final Throwable throwable) {
+	                                        final Throwable throwable) {
 		//HttpStatus httpStatus = getHttpStatus(request);
 
 		errorAttributes.put("state", false);

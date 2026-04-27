@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 
 /**
  * Redis 数据源 {@link DataSource} 自动配置类
@@ -62,25 +61,19 @@ public class JedisDataSourceConfiguration extends AbstractDataSourceConfiguratio
 		super(properties);
 	}
 
-	@Bean(name = "redisDataSource")
-	@Override
-	public DataSource dataSource() {
-		return super.dataSource();
-	}
-
 	@Override
 	protected StandaloneDataSource createStandaloneDataSource() {
-		return createStandaloneDataSource(new JedisDataSource());
+		return new JedisDataSource();
 	}
 
 	@Override
 	protected SentinelDataSource createSentinelDataSource() {
-		return createSentinelDataSource(new JedisSentinelDataSource());
+		return new JedisSentinelDataSource();
 	}
 
 	@Override
 	protected ClusterDataSource createClusterDataSource() {
-		return createClusterDataSource(new JedisClusterDataSource());
+		return new JedisClusterDataSource();
 	}
 
 }

@@ -88,9 +88,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Cas cas = config.getCas();
 
-		propertyMapper.from(cas::getImplicitFlow).to(casOAuthWrapperClient::setImplicitFlow);
+		nonNullpropertyMapper.from(cas::getImplicitFlow).to(casOAuthWrapperClient::setImplicitFlow);
 		hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
-		propertyMapper.from(cas::getAccessTokenVerb).to(casOAuthWrapperClient::setAccessTokenVerb);
+		nonNullpropertyMapper.from(cas::getAccessTokenVerb).to(casOAuthWrapperClient::setAccessTokenVerb);
 
 		initOAuth20Client(casOAuthWrapperClient, cas);
 
@@ -131,8 +131,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Facebook facebook = config.getFacebook();
 
-		propertyMapper.from(facebook::getFields).to(facebookClient::setFields);
-		propertyMapper.from(facebook::getLimit).to(facebookClient::setLimit);
+		nonNullpropertyMapper.from(facebook::getFields).to(facebookClient::setFields);
+		nonNullpropertyMapper.from(facebook::getLimit).to(facebookClient::setLimit);
 
 		initOAuth20Client(facebookClient, facebook);
 
@@ -246,7 +246,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 		};
 
-		propertyMapper.from(config.getGoogle2()::getScope)
+		nonNullpropertyMapper.from(config.getGoogle2()::getScope)
 				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(google2Client::setScope);
 
 		initOAuth20Client(google2Client, config.getGoogle2());
@@ -337,7 +337,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Qq qq = config.getQq();
 
-		propertyMapper.from(qq::getScopes).to(qqClient::setScopes);
+		nonNullpropertyMapper.from(qq::getScopes).to(qqClient::setScopes);
 
 		initOAuth20Client(qqClient, qq);
 
@@ -359,7 +359,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Strava strava = config.getStrava();
 
-		propertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
+		nonNullpropertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
 
 		initOAuth20Client(stravaClient, strava);
 
@@ -381,8 +381,9 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Twitter twitter = config.getTwitter();
 
-		propertyMapper.from(twitter::getAlwaysConfirmAuthorization).to(twitterClient::setAlwaysConfirmAuthorization);
-		propertyMapper.from(twitter::getIncludeEmail).to(twitterClient::setIncludeEmail);
+		nonNullpropertyMapper.from(twitter::getAlwaysConfirmAuthorization)
+				.to(twitterClient::setAlwaysConfirmAuthorization);
+		nonNullpropertyMapper.from(twitter::getIncludeEmail).to(twitterClient::setIncludeEmail);
 
 		initOAuth10Client(twitterClient, twitter);
 
@@ -423,7 +424,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Wechat wechat = config.getWechat();
 
-		propertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
+		nonNullpropertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
 
 		initOAuth20Client(wechatClient, wechat);
 
@@ -445,7 +446,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		};
 		final OAuth.Weibo weibo = config.getWeibo();
 
-		propertyMapper.from(weibo::getScope)
+		nonNullpropertyMapper.from(weibo::getScope)
 				.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
 
 		initOAuth20Client(weiboClient, weibo);
@@ -515,25 +516,25 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	// ********************************************* //
 
 	protected <C extends OAuth10Client> void initOAuth10Client(final C client,
-															   final OAuth.BaseOAuth10Config oAuth10Config) {
+	                                                           final OAuth.BaseOAuth10Config oAuth10Config) {
 		final OAuth10Configuration configuration = client.getConfiguration();
 
-		propertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
-		propertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
-		propertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
+		nonNullpropertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
+		nonNullpropertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
+		nonNullpropertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 
 		afterIndirectClientInitialized(client, config, oAuth10Config);
 	}
 
 	protected <C extends OAuth20Client> void initOAuth20Client(final C client,
-															   final OAuth.BaseOAuth20Config oAuth20Config) {
+	                                                           final OAuth.BaseOAuth20Config oAuth20Config) {
 		final OAuth20Configuration configuration = client.getConfiguration();
 
-		propertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
-		propertyMapper.from(oAuth20Config::getScope).to(configuration::setScope);
-		propertyMapper.from(oAuth20Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
-		propertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
-		propertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
+		nonNullpropertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
+		nonNullpropertyMapper.from(oAuth20Config::getScope).to(configuration::setScope);
+		nonNullpropertyMapper.from(oAuth20Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
+		nonNullpropertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
+		nonNullpropertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
 
 		afterIndirectClientInitialized(client, config, oAuth20Config);
 	}
