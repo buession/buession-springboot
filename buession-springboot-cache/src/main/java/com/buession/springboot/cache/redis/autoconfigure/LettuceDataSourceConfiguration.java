@@ -24,6 +24,7 @@
  */
 package com.buession.springboot.cache.redis.autoconfigure;
 
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.redis.client.connection.datasource.ClusterDataSource;
 import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.client.connection.datasource.SentinelDataSource;
@@ -36,7 +37,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 
 /**
  * Redis 数据源 {@link DataSource} 自动配置类
@@ -64,17 +64,57 @@ public class LettuceDataSourceConfiguration extends AbstractDataSourceConfigurat
 
 	@Override
 	protected StandaloneDataSource createStandaloneDataSource() {
-		return new LettuceDataSource();
+		final LettuceDataSource dataSource = new LettuceDataSource();
+
+		applyCommonProperties(dataSource);
+
+		return dataSource;
 	}
 
 	@Override
 	protected SentinelDataSource createSentinelDataSource() {
-		return new LettuceSentinelDataSource();
+		final LettuceSentinelDataSource dataSource = new LettuceSentinelDataSource();
+
+		applyCommonProperties(dataSource);
+
+		return dataSource;
 	}
 
 	@Override
 	protected ClusterDataSource createClusterDataSource() {
-		return new LettuceClusterDataSource();
+		final LettuceClusterDataSource dataSource = new LettuceClusterDataSource();
+		final RedisProperties.Lettuce lettuce = properties.getLettuce();
+
+		if(lettuce != null){
+			applyCommonProperties(dataSource);
+
+			if(lettuce.getCluster() != null){
+				final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
+				propertyMapper.from(lettuce.getCluster().getAdaptiveRefreshTimeout())
+						.as((v)->(int) v.toMillis()).to(dataSource::setAdaptiveRefreshTimeout);
+				propertyMapper.from(lettuce.getCluster().isAdaptive()).to(dataSource::setAdaptive);
+				propertyMapper.from(lettuce.getCluster().isDynamicRefreshSources())
+						.to(dataSource::setDynamicRefreshSources);
+			}
+		}
+
+		return dataSource;
+	}
+
+	private void applyCommonProperties(final LettuceRedisDataSource dataSource) {
+		final RedisProperties.Lettuce lettuce = properties.getLettuce();
+
+		if(lettuce == null){
+			return;
+		}
+
+		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
+		propertyMapper.from(lettuce.getComputationThreadPoolSize()).to(dataSource::setComputationThreadPoolSize);
+		propertyMapper.from(lettuce.getIoThreadPoolSize()).to(dataSource::setIoThreadPoolSize);
+		propertyMapper.from(lettuce.getRequestQueueSize()).to(dataSource::setRequestQueueSize);
+		propertyMapper.from(lettuce.getShutdownTimeout()).to(dataSource::setShutdownTimeout);
 	}
 
 }

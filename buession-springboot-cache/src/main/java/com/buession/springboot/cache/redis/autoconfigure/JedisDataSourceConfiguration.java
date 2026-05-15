@@ -73,7 +73,16 @@ public class JedisDataSourceConfiguration extends AbstractDataSourceConfiguratio
 
 	@Override
 	protected ClusterDataSource createClusterDataSource() {
-		return new JedisClusterDataSource();
+		final JedisClusterDataSource dataSource = new JedisClusterDataSource();
+		final RedisProperties.Jedis jedis = properties.getJedis();
+
+		if(jedis != null){
+			if(jedis.getCluster() != null && jedis.getCluster().getMaxTotalRetries() != null){
+				dataSource.setMaxTotalRetries(jedis.getCluster().getMaxTotalRetries());
+			}
+		}
+
+		return dataSource;
 	}
 
 }
