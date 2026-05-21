@@ -8,6 +8,11 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v4.0.0)
 
 
+### ⭐ 新特性
+
+- Application 支持设置父级上下文
+
+
 ### ⏪ 优化
 
 - **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter

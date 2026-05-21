@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2025 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
@@ -45,6 +45,13 @@ import java.util.Date;
  * @author Yong.Teng
  */
 public abstract class AbstractApplication implements Application {
+
+	/**
+	 * 父 {@link ConfigurableApplicationContext}
+	 *
+	 * @since 4.0.0
+	 */
+	private ConfigurableApplicationContext parent;
 
 	/**
 	 * {@link Banner}
@@ -112,6 +119,14 @@ public abstract class AbstractApplication implements Application {
 	 */
 	protected AbstractApplication(final Banner banner) {
 		this.banner = banner;
+	}
+
+	public ConfigurableApplicationContext getParent() {
+		return parent;
+	}
+
+	public void setParent(ConfigurableApplicationContext parent) {
+		this.parent = parent;
 	}
 
 	@Override
@@ -187,6 +202,7 @@ public abstract class AbstractApplication implements Application {
 		propertyMapper.from(getHeadless()).to(springApplicationBuilder::headless);
 		propertyMapper.from(getAddConversionService()).to(springApplicationBuilder::setAddConversionService);
 		propertyMapper.from(getLazyInitialization()).to(springApplicationBuilder::lazyInitialization);
+		propertyMapper.from(getParent()).to(springApplicationBuilder::parent);
 
 		springApplicationBuilder.properties(createRuntimeProperties()).logStartupInfo(true);
 
