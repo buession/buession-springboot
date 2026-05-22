@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.cache.redis.autoconfigure.JedisDataSourceConfiguration, \
-  com.buession.springboot.cache.redis.autoconfigure.LettuceDataSourceConfiguration, \
-  com.buession.springboot.cache.redis.autoconfigure.RedisConfiguration

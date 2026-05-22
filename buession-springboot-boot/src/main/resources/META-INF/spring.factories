@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.buession.springboot.boot.autoconfigure.MessagePropertyConfiguration, \
-  com.buession.springboot.boot.autoconfigure.ThreadPoolConfiguration, \
-  com.buession.springboot.boot.id.IdGeneratorConfiguration

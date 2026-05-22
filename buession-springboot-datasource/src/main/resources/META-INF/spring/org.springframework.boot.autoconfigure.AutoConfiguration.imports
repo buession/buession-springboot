@@ -1,0 +1,4 @@
+com.buession.springboot.datasource.autoconfigure.DataSourceConfiguration
+com.buession.springboot.datasource.autoconfigure.DataSourceAutoConfiguration
+com.buession.springboot.datasource.autoconfigure.DataSourceJmxConfiguration
+com.buession.springboot.datasource.autoconfigure.DataSourcePoolMetadataProvidersConfiguration
