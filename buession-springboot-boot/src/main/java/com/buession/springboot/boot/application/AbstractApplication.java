@@ -211,17 +211,18 @@ public abstract class AbstractApplication implements Application {
 
 	protected void doStartup(final Class<? extends Application> clazz, final String[] args) {
 		final SpringApplicationBuilder builder = springApplicationBuilder(clazz);
-		customize(builder);
+		customize(builder, args);
 
 		final ConfigurableApplicationContext applicationContext = builder.run(args);
-		applicationStartedHook(applicationContext);
+		applicationStartedHook(applicationContext, args);
 	}
 
-	protected void customize(final SpringApplicationBuilder springApplicationBuilder) {
+	protected void customize(final SpringApplicationBuilder springApplicationBuilder, final String[] args) {
 
 	}
 
-	protected void applicationStartedHook(final ConfigurableApplicationContext applicationContext) {
+	protected void applicationStartedHook(final ConfigurableApplicationContext applicationContext,
+	                                      final String[] args) {
 
 	}
 

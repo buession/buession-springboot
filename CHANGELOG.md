@@ -11,6 +11,7 @@
 ### ⭐ 新特性
 
 - Application 支持设置父级上下文
+- Application 方法 customize、applicationStartedHook 支持接收命令行参数
 
 
 ### ⏪ 优化
