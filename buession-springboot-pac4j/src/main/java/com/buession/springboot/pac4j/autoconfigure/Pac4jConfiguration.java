@@ -21,25 +21,23 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2025 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
-import com.buession.security.pac4j.spring.servlet.Pac4jWebMvcConfigurerAdapter;
+import com.buession.security.pac4j.spring.servlet.Pac4jServletConfigurerAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ReactiveAdapterRegistry;
 
@@ -102,40 +100,18 @@ public class Pac4jConfiguration {
 		return config;
 	}
 
-	/**
-	 * @since 2.1.0
-	 */
 	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class ServletPac4jConfigurerAdapterConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public Pac4jWebMvcConfigurerAdapter pac4jWebMvcConfigurerAdapter() {
-			return new Pac4jWebMvcConfigurerAdapter();
-		}
+	static class Pac4jServletConfigurerAdapterConfiguration extends Pac4jServletConfigurerAdapter {
 
 	}
 
-	/**
-	 * @since 2.1.0
-	 */
 	@AutoConfiguration
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-	static class WebFluxPac4jConfigurerAdapterConfiguration {
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	static class Pac4jWebFluxConfigurerAdapterConfiguration extends Pac4jWebFluxConfigurerAdapter {
 
-		private final ConfigurableApplicationContext context;
-
-		public WebFluxPac4jConfigurerAdapterConfiguration(ConfigurableApplicationContext context) {
-			this.context = context;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public Pac4jWebFluxConfigurerAdapter pac4jWebFluxConfigurerAdapter(
-				@Qualifier("webFluxAdapterRegistry") ObjectProvider<ReactiveAdapterRegistry> reactiveAdapterRegistry) {
-			return new Pac4jWebFluxConfigurerAdapter(context.getBeanFactory(),
-					reactiveAdapterRegistry.getIfAvailable());
+		public Pac4jWebFluxConfigurerAdapterConfiguration(ConfigurableBeanFactory beanFactory) {
+			super(beanFactory, new ReactiveAdapterRegistry());
 		}
 
 	}

@@ -47,6 +47,9 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 
 	protected final Pac4jProperties properties;
 
+	/**
+	 * Client 配置信息
+	 */
 	protected final C config;
 
 	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config) {

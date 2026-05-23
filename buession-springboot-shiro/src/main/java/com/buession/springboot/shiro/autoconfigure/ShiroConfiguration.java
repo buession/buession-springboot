@@ -75,7 +75,7 @@ public class ShiroConfiguration extends AbstractShiroConfiguration {
 		// Session info
 		ShiroProperties.Session session = properties.getSession();
 
-		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.deleteInvalidSessions",
 				session.isSessionManagerDeleteInvalidSessions());
 
 		this.redisManager = redisManager.getIfAvailable();

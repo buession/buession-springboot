@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2025 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.web.autoconfigure;
@@ -90,76 +90,45 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 		// Session info
 		ShiroProperties.Session session = properties.getSession();
 
-		SystemPropertyUtils.setProperty("shiro.sessionManager.deleteInvalidSessions",
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.deleteInvalidSessions",
 				session.isSessionManagerDeleteInvalidSessions());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdCookieEnabled",
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.sessionIdCookieEnabled",
 				session.isSessionIdCookieEnabled());
-		SystemPropertyUtils.setProperty("shiro.sessionManager.sessionIdUrlRewritingEnabled",
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.sessionIdUrlRewritingEnabled",
 				session.isSessionIdUrlRewritingEnabled());
-		SystemPropertyUtils.setProperty("shiro.userNativeSessionManager", session.isUseNativeSessionManager());
-		SystemPropertyUtils.setProperty("shiro.useNativeSessionManager", session.isUseNativeSessionManager());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.userNativeSessionManager", session.isUseNativeSessionManager());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.useNativeSessionManager", session.isUseNativeSessionManager());
 
 		// Session Cookie info
 		Cookie cookie = session.getCookie();
-		if(Validate.hasText(cookie.getName())){
-			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.name", cookie.getName());
-		}
 
-		if(cookie.getMaxAge() != null){
-			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.maxAge", cookie.getMaxAge());
-		}
-
-		if(Validate.hasText(cookie.getDomain())){
-			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.domain", cookie.getDomain());
-		}
-
-		if(Validate.hasText(cookie.getPath())){
-			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.path", cookie.getPath());
-		}
-
-		if(cookie.getSecure() != null){
-			SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.secure", cookie.getSecure());
-		}
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.name", cookie.getName());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.maxAge", cookie.getMaxAge());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.domain", cookie.getDomain());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.path", cookie.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.secure", cookie.getSecure());
 
 		if(cookie.getSameSite() != null){
 			org.apache.shiro.web.servlet.Cookie.SameSiteOptions sameSiteOptions =
 					sameSiteConverter.convert(cookie.getSameSite());
 
-			if(sameSiteOptions != null){
-				SystemPropertyUtils.setProperty("shiro.sessionManager.cookie.sameSite", sameSiteOptions.name());
-			}
+			SystemPropertyUtils.setPropertyIfPresent("shiro.sessionManager.cookie.sameSite", sameSiteOptions.name());
 		}
 
 		// RememberMe Cookie info
 		Cookie rememberMeCookie = properties.getRememberMe().getCookie();
 
-		if(Validate.hasText(rememberMeCookie.getName())){
-			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.name", rememberMeCookie.getName());
-		}
-
-		if(rememberMeCookie.getMaxAge() != null){
-			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.maxAge", rememberMeCookie.getMaxAge());
-		}
-
-		if(Validate.hasText(rememberMeCookie.getDomain())){
-			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.domain", rememberMeCookie.getDomain());
-		}
-
-		if(Validate.hasText(rememberMeCookie.getPath())){
-			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.path", rememberMeCookie.getPath());
-		}
-
-		if(rememberMeCookie.getSecure() != null){
-			SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.secure", rememberMeCookie.getSecure());
-		}
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.name", rememberMeCookie.getName());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.maxAge", rememberMeCookie.getMaxAge());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.domain", rememberMeCookie.getDomain());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.path", rememberMeCookie.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.secure", rememberMeCookie.getSecure());
 
 		if(rememberMeCookie.getSameSite() != null){
 			org.apache.shiro.web.servlet.Cookie.SameSiteOptions sameSiteOptions =
 					sameSiteConverter.convert(rememberMeCookie.getSameSite());
 
-			if(sameSiteOptions != null){
-				SystemPropertyUtils.setProperty("shiro.rememberMeManager.cookie.sameSite", sameSiteOptions.name());
-			}
+			SystemPropertyUtils.setPropertyIfPresent("shiro.rememberMeManager.cookie.sameSite", sameSiteOptions.name());
 		}
 
 		this.redisManager = redisManager.getIfAvailable();

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2025 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -29,6 +29,7 @@ import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.Pac4jConstants;
+import org.pac4j.springframework.web.SecurityFilter;
 import org.pac4j.springframework.web.SecurityInterceptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,33 +46,18 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(Pac4jProperties.class)
 @ConditionalOnProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Import({Pac4jConfiguration.class})
 public class Pac4jWebFilterConfiguration {
 
 	private final Pac4jProperties properties;
 
-	private final Config config;
-
-	public Pac4jWebFilterConfiguration(Pac4jProperties properties, Config config) {
+	public Pac4jWebFilterConfiguration(Pac4jProperties properties) {
 		this.properties = properties;
-		this.config = config;
 
 		callbackConfig(properties.getFilter().getCallback());
 		logoutConfig(properties.getFilter().getLogout());
 	}
 
-	@Bean
-	public SecurityInterceptor securityInterceptor() {
-		Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
-		String clients = properties.getClients() != null ?
-				StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-		String authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
-				StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-		String matchers = Validate.isNotEmpty(security.getMatchers()) ?
-				StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-		return new SecurityInterceptor(config, clients, authorizers, matchers);
-	}
 
 	/**
 	 * 登录成功回调配置
@@ -80,10 +66,10 @@ public class Pac4jWebFilterConfiguration {
 	 * 		登录成功回调配置
 	 */
 	private void callbackConfig(final Pac4jProperties.Filter.Callback callbackConfig) {
-		SystemPropertyUtils.setProperty("pac4j.logout.path", callbackConfig.getPath());
-		SystemPropertyUtils.setProperty("pac4j.callback.defaultUrl", callbackConfig.getDefaultUrl());
-		SystemPropertyUtils.setProperty("pac4j.callback.renewSession", callbackConfig.getRenewSession());
-		SystemPropertyUtils.setProperty("pac4j.callback.defaultClient", properties.getDefaultClient());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.path", callbackConfig.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.defaultUrl", callbackConfig.getDefaultUrl());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.renewSession", callbackConfig.getRenewSession());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.defaultClient", properties.getDefaultClient());
 	}
 
 	/**
@@ -93,12 +79,67 @@ public class Pac4jWebFilterConfiguration {
 	 * 		退出登录配置
 	 */
 	private void logoutConfig(final Pac4jProperties.Filter.Logout logoutConfig) {
-		SystemPropertyUtils.setProperty("pac4j.logout.path", logoutConfig.getPath());
-		SystemPropertyUtils.setProperty("pac4j.logout.defaultUrl", logoutConfig.getDefaultUrl());
-		SystemPropertyUtils.setProperty("pac4j.logout.logoutUrlPattern", logoutConfig.getLogoutUrlPattern());
-		SystemPropertyUtils.setProperty("pac4j.logout.localLogout", logoutConfig.isLocalLogout());
-		SystemPropertyUtils.setProperty("pac4j.logout.centralLogout", logoutConfig.isCentralLogout());
-		SystemPropertyUtils.setProperty("pac4j.logout.destroySession", logoutConfig.isDestroySession());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.path", logoutConfig.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.defaultUrl", logoutConfig.getDefaultUrl());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.logoutUrlPattern", logoutConfig.getLogoutUrlPattern());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.localLogout", logoutConfig.isLocalLogout());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.centralLogout", logoutConfig.isCentralLogout());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.destroySession", logoutConfig.isDestroySession());
+	}
+
+	static class Base {
+
+		protected final Pac4jProperties properties;
+
+		protected final Config config;
+
+		public Base(Pac4jProperties properties, Config config) {
+			this.properties = properties;
+			this.config = config;
+		}
+
+	}
+
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	static class Servlet extends Base {
+
+		public Servlet(Pac4jProperties properties, Config config) {
+			super(properties, config);
+		}
+
+		@Bean
+		public SecurityInterceptor securityInterceptor() {
+			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
+			String clients = properties.getClients() != null ?
+					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			String authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
+					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			String matchers = Validate.isNotEmpty(security.getMatchers()) ?
+					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			return new SecurityInterceptor(config, clients, authorizers, matchers);
+		}
+
+	}
+
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	static class WebFlux extends Base {
+
+		public WebFlux(Pac4jProperties properties, Config config) {
+			super(properties, config);
+		}
+
+		@Bean
+		public SecurityFilter securityFilter() {
+			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
+			String clients = properties.getClients() != null ?
+					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			String authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
+					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			String matchers = Validate.isNotEmpty(security.getMatchers()) ?
+					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			return new SecurityFilter(config, clients, authorizers, matchers);
+		}
+
 	}
 
 }

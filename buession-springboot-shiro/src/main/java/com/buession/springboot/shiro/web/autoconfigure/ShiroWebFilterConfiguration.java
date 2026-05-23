@@ -19,13 +19,12 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2025 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.web.autoconfigure;
 
 import com.buession.core.utils.SystemPropertyUtils;
-import com.buession.core.validator.Validate;
 import com.buession.springboot.shiro.autoconfigure.ShiroProperties;
 import jakarta.servlet.DispatcherType;
 import org.apache.shiro.spring.web.config.AbstractShiroWebFilterConfiguration;
@@ -53,17 +52,9 @@ import java.util.List;
 public class ShiroWebFilterConfiguration extends AbstractShiroWebFilterConfiguration {
 
 	public ShiroWebFilterConfiguration(ShiroProperties properties) {
-		if(Validate.hasText(properties.getLoginUrl())){
-			SystemPropertyUtils.setProperty("shiro.loginUrl", properties.getLoginUrl());
-		}
-
-		if(Validate.hasText(properties.getSuccessUrl())){
-			SystemPropertyUtils.setProperty("shiro.successUrl", properties.getSuccessUrl());
-		}
-
-		if(Validate.hasText(properties.getUnauthorizedUrl())){
-			SystemPropertyUtils.setProperty("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
-		}
+		SystemPropertyUtils.setPropertyIfPresent("shiro.loginUrl", properties.getLoginUrl());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.successUrl", properties.getSuccessUrl());
+		SystemPropertyUtils.setPropertyIfPresent("shiro.unauthorizedUrl", properties.getUnauthorizedUrl());
 	}
 
 	@Bean(name = "filterShiroFilterRegistrationBean")

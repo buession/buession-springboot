@@ -1,0 +1,7 @@
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+    com.buession.springboot.shiro.env.ShiroEnvironmentPostProcessor
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+    com.buession.springboot.shiro.ShiroNoRealmConfiguredFailureAnalyzer
