@@ -32,7 +32,7 @@ import org.pac4j.core.http.ajax.AjaxRequestResolver;
  * @author Yong.Teng
  * @since 4.0.0
  */
-abstract class IndirectClientConfig extends BaseClientConfig {
+public abstract class IndirectClientConfig extends BaseClientConfig {
 
 	/**
 	 * 登录成功跳转地址

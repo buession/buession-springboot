@@ -30,7 +30,7 @@ package com.buession.springboot.pac4j.config;
  * @author Yong.Teng
  * @since 4.0.0
  */
-abstract class DirectClientConfig extends BaseClientConfig {
+public abstract class DirectClientConfig extends BaseClientConfig {
 
 	/**
 	 * 构造函数

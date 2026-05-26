@@ -19,14 +19,16 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
 
+import com.buession.lang.Constants;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.util.generator.ValueGenerator;
 
 /**
@@ -65,14 +67,18 @@ public class Jwt extends BaseClientConfig {
 	private Class<ValueGenerator> identifierGenerator;
 
 	/**
-	 * 是否支持 GET 请求
+	 * 请求头配置
+	 *
+	 * @since 4.0.0
 	 */
-	private Boolean supportGetRequest;
+	private Header header = new Header();
 
 	/**
-	 * 是否支持 POST 请求
+	 * 请求参数配置
+	 *
+	 * @since 4.0.0
 	 */
-	private Boolean supportPostRequest;
+	private Parameter parameter = new Parameter();
 
 	public Jwt() {
 		super("jwt");
@@ -174,59 +180,205 @@ public class Jwt extends BaseClientConfig {
 	}
 
 	/**
-	 * 返回是否支持 GET 请求
+	 * 返回请求头配置
 	 *
-	 * @return 是否支持 GET 请求
+	 * @return 请求头配置
+	 *
+	 * @since 4.0.0
 	 */
-	public Boolean isSupportGetRequest() {
-		return getSupportGetRequest();
+	public Header getHeader() {
+		return header;
 	}
 
 	/**
-	 * 返回是否支持 GET 请求
+	 * 设置请求头配置
 	 *
-	 * @return 是否支持 GET 请求
+	 * @param header
+	 * 		请求头配置
+	 *
+	 * @since 4.0.0
 	 */
-	public Boolean getSupportGetRequest() {
-		return supportGetRequest;
+	public void setHeader(Header header) {
+		this.header = header;
 	}
 
 	/**
-	 * 设置是否支持 GET 请求
+	 * 返回请求参数配置
 	 *
-	 * @param supportGetRequest
-	 * 		是否支持 GET 请求
+	 * @return 请求参数配置
+	 *
+	 * @since 4.0.0
 	 */
-	public void setSupportGetRequest(Boolean supportGetRequest) {
-		this.supportGetRequest = supportGetRequest;
+	public Parameter getParameter() {
+		return parameter;
 	}
 
 	/**
-	 * 返回是否支持 POST 请求
+	 * 设置请求参数配置
 	 *
-	 * @return 是否支持 POST 请求
+	 * @param parameter
+	 * 		请求参数配置
+	 *
+	 * @since 4.0.0
 	 */
-	public Boolean isSupportPostRequest() {
-		return getSupportPostRequest();
+	public void setParameter(Parameter parameter) {
+		this.parameter = parameter;
 	}
 
 	/**
-	 * 返回是否支持 POST 请求
+	 * 请求头配置
 	 *
-	 * @return 是否支持 POST 请求
+	 * @since 4.0.0
 	 */
-	public Boolean getSupportPostRequest() {
-		return supportPostRequest;
+	public class Header {
+
+		/**
+		 * 请求头名称
+		 */
+		private String headerName = HttpConstants.AUTHORIZATION_HEADER;
+
+		/**
+		 * 请求头前缀
+		 */
+		private String prefixHeader = Constants.EMPTY_STRING;
+
+		/**
+		 * 返回请求头名称
+		 *
+		 * @return 请求头名称
+		 */
+		public String getHeaderName() {
+			return headerName;
+		}
+
+		/**
+		 * 设置请求头名称
+		 *
+		 * @param headerName
+		 * 		请求头名称
+		 */
+		public void setHeaderName(String headerName) {
+			this.headerName = headerName;
+		}
+
+		/**
+		 * 返回请求头前缀
+		 *
+		 * @return 请求头前缀
+		 */
+		public String getPrefixHeader() {
+			return prefixHeader;
+		}
+
+		/**
+		 * 设置请求头前缀
+		 *
+		 * @param prefixHeader
+		 * 		请求头前缀
+		 */
+		public void setPrefixHeader(String prefixHeader) {
+			this.prefixHeader = prefixHeader;
+		}
+
 	}
 
 	/**
-	 * 设置是否支持 POST 请求
+	 * 请求参数配置
 	 *
-	 * @param supportPostRequest
-	 * 		是否支持 POST 请求
+	 * @since 4.0.0
 	 */
-	public void setSupportPostRequest(Boolean supportPostRequest) {
-		this.supportPostRequest = supportPostRequest;
+	public final static class Parameter {
+
+		/**
+		 * 参数名称
+		 */
+		private String parameterName;
+
+		/**
+		 * 是否支持 GET 请求
+		 */
+		private Boolean supportGetRequest;
+
+		/**
+		 * 是否支持 POST 请求
+		 */
+		private Boolean supportPostRequest;
+
+		/**
+		 * 返回参数名称
+		 *
+		 * @return 参数名称
+		 */
+		public String getParameterName() {
+			return parameterName;
+		}
+
+		/**
+		 * 设置参数名称
+		 *
+		 * @param parameterName
+		 * 		参数名称
+		 */
+		public void setParameterName(String parameterName) {
+			this.parameterName = parameterName;
+		}
+
+		/**
+		 * 返回是否支持 GET 请求
+		 *
+		 * @return 是否支持 GET 请求
+		 */
+		public Boolean isSupportGetRequest() {
+			return getSupportGetRequest();
+		}
+
+		/**
+		 * 返回是否支持 GET 请求
+		 *
+		 * @return 是否支持 GET 请求
+		 */
+		public Boolean getSupportGetRequest() {
+			return supportGetRequest;
+		}
+
+		/**
+		 * 设置是否支持 GET 请求
+		 *
+		 * @param supportGetRequest
+		 * 		是否支持 GET 请求
+		 */
+		public void setSupportGetRequest(Boolean supportGetRequest) {
+			this.supportGetRequest = supportGetRequest;
+		}
+
+		/**
+		 * 返回是否支持 POST 请求
+		 *
+		 * @return 是否支持 POST 请求
+		 */
+		public Boolean isSupportPostRequest() {
+			return getSupportPostRequest();
+		}
+
+		/**
+		 * 返回是否支持 POST 请求
+		 *
+		 * @return 是否支持 POST 请求
+		 */
+		public Boolean getSupportPostRequest() {
+			return supportPostRequest;
+		}
+
+		/**
+		 * 设置是否支持 POST 请求
+		 *
+		 * @param supportPostRequest
+		 * 		是否支持 POST 请求
+		 */
+		public void setSupportPostRequest(Boolean supportPostRequest) {
+			this.supportPostRequest = supportPostRequest;
+		}
+
 	}
 
 }
