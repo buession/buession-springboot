@@ -106,22 +106,21 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
 	public HeaderClient jwtHeaderClient(ObjectProvider<Authenticator> authenticator,
 	                                    ObjectProvider<Customizer<HeaderClient>> customizers) {
-		final Jwt.Header header = config.getHeader();
-		final HeaderClient headerClient = new HeaderClient() {
+		return new HeaderClient() {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
+				final Jwt.Header header = config.getHeader();
+
 				super.internalInit(forceReinit);
 				customizer(this, customizers);
+
+				clientApplyCommonProperties(this, authenticator);
+				hasTextpropertyMapper.from(header::getHeaderName).to(this::setHeaderName);
+				hasTextpropertyMapper.from(header::getPrefixHeader).to(this::setPrefixHeader);
 			}
 
 		};
-
-		clientApplyCommonProperties(headerClient, authenticator);
-		hasTextpropertyMapper.from(header::getHeaderName).to(headerClient::setHeaderName);
-		hasTextpropertyMapper.from(header::getPrefixHeader).to(headerClient::setPrefixHeader);
-
-		return headerClient;
 	}
 
 	@Bean(name = "jwtParameterClient")
@@ -129,23 +128,22 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
 	public ParameterClient jwtParameterClient(ObjectProvider<Authenticator> authenticator,
 	                                          ObjectProvider<Customizer<ParameterClient>> customizers) {
-		final Jwt.Parameter parameter = config.getParameter();
-		final ParameterClient parameterClient = new ParameterClient() {
+		return new ParameterClient() {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
+				final Jwt.Parameter parameter = config.getParameter();
+
 				super.internalInit(forceReinit);
 				customizer(this, customizers);
+
+				clientApplyCommonProperties(this, authenticator);
+				hasTextpropertyMapper.from(parameter::getParameterName).to(this::setParameterName);
+				hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(this::setSupportGetRequest);
+				hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(this::setSupportPostRequest);
 			}
 
 		};
-
-		clientApplyCommonProperties(parameterClient, authenticator);
-		hasTextpropertyMapper.from(parameter::getParameterName).to(parameterClient::setParameterName);
-		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
-		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
-
-		return parameterClient;
 	}
 
 	private void clientApplyCommonProperties(final DirectClient client,

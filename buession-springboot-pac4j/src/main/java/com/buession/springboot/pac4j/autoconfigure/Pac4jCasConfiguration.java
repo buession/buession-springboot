@@ -126,19 +126,16 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
 	public CasClient casClient(CasConfiguration casConfiguration, CasProfileDefinition casProfileDefinition,
 	                           ObjectProvider<Customizer<CasClient>> customizers) {
-		final CasClient casClient = new CasClient(casConfiguration) {
+		return new CasClient(casConfiguration) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
+				afterIndirectClientInitialized(this, config, config.getGeneral());
 			}
 
 		};
-
-		afterIndirectClientInitialized(casClient, config, config.getGeneral());
-
-		return casClient;
 	}
 
 	/* Direct Client 开始 */
@@ -149,19 +146,16 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	public DirectCasClient directCasClient(CasConfiguration casConfiguration,
 	                                       CasProfileDefinition casProfileDefinition,
 	                                       ObjectProvider<Customizer<DirectCasClient>> customizers) {
-		final DirectCasClient directCasClient = new DirectCasClient(casConfiguration) {
+		return new DirectCasClient(casConfiguration) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
+				afterDirectClientInitialized(this, config, config.getDirect());
 			}
 
 		};
-
-		afterDirectClientInitialized(directCasClient, config, config.getDirect());
-
-		return directCasClient;
 	}
 
 	@Bean(name = "directCasProxyClient")
@@ -170,20 +164,16 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	public DirectCasProxyClient directCasProxyClient(CasConfiguration casConfiguration,
 	                                                 CasProfileDefinition casProfileDefinition,
 	                                                 ObjectProvider<Customizer<DirectCasProxyClient>> customizers) {
-		final DirectCasProxyClient directCasProxyClient = new DirectCasProxyClient(casConfiguration,
-				config.getDirectProxy().getServiceUrl()) {
+		return new DirectCasProxyClient(casConfiguration, config.getDirectProxy().getServiceUrl()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
 				doClientInit(this, casProfileDefinition, customizers);
+				afterDirectClientInitialized(this, config, config.getDirectProxy());
 			}
 
 		};
-
-		afterDirectClientInitialized(directCasProxyClient, config, config.getDirectProxy());
-
-		return directCasProxyClient;
 	}
 
 	/* Direct Client 结束 */
@@ -195,23 +185,18 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
 	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration casConfiguration,
 	                                                     ObjectProvider<Customizer<CasRestBasicAuthClient>> customizers) {
-		final CasRestBasicAuthClient casRestBasicAuthClient = new CasRestBasicAuthClient(casConfiguration, null, null) {
+		return new CasRestBasicAuthClient(casConfiguration, config.getRestBasicAuth().getHeaderName(),
+				config.getRestBasicAuth().getPrefixHeader()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
 				customizer(this, customizers);
+
+				afterDirectClientInitialized(this, config, config.getRestBasicAuth());
 			}
 
 		};
-		final Cas.RestBasicAuth restBasicAuth = config.getRestBasicAuth();
-
-		hasTextpropertyMapper.from(restBasicAuth::getHeaderName).to(casRestBasicAuthClient::setHeaderName);
-		hasTextpropertyMapper.from(restBasicAuth::getPrefixHeader).to(casRestBasicAuthClient::setPrefixHeader);
-
-		afterDirectClientInitialized(casRestBasicAuthClient, config, restBasicAuth);
-
-		return casRestBasicAuthClient;
 	}
 
 	@Bean(name = "casRestFormClient")
@@ -219,23 +204,17 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
 	public CasRestFormClient casRestFormClient(CasConfiguration casConfiguration,
 	                                           ObjectProvider<Customizer<CasRestFormClient>> customizers) {
-		final CasRestFormClient casRestFormClient = new CasRestFormClient(casConfiguration, null, null) {
+		return new CasRestFormClient(casConfiguration, config.getRestForm().getUsernameParameter(),
+				config.getRestForm().getPasswordParameter()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
 				customizer(this, customizers);
+				afterDirectClientInitialized(this, config, config.getRestForm());
 			}
 
 		};
-		final Cas.RestForm restForm = config.getRestForm();
-
-		hasTextpropertyMapper.from(restForm::getUsernameParameter).to(casRestFormClient::setUsernameParameter);
-		hasTextpropertyMapper.from(restForm::getPasswordParameter).to(casRestFormClient::setPasswordParameter);
-
-		afterDirectClientInitialized(casRestFormClient, config, restForm);
-
-		return casRestFormClient;
 	}
 
 	/* Rest Client 结束 */
