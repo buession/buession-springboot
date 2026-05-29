@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
 
-import com.buession.security.web.config.Configurer;
 import com.buession.security.web.reactive.config.ReactiveHttpSecurityConfiguration;
 import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.reactive.XssFilter;
@@ -38,7 +37,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
  * @author Yong.Teng
@@ -58,36 +59,41 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 	@Bean
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	public XssFilter xssFilter() {
-		final WebSecurityProperties.Xss xss = properties.getXss();
+		final com.buession.security.web.config.Xss xss = properties.getXss();
 		final Options.Builder optionsBuilder = Options.Builder.getInstance();
 
-		optionsBuilder.policy(xss.getPolicy());
+		if(xss instanceof WebSecurityProperties.Xss xssProperties){
+			optionsBuilder.policy(xssProperties.getMode());
 
-		if(xss.getPolicy() == Options.Policy.ESCAPE){
-			optionsBuilder.escape(new Options.Escape());
-		}else{
-			final Options.Clean clean = new Options.Clean();
+			if(xssProperties.getMode() == Options.Policy.ESCAPE){
+				optionsBuilder.escape(new Options.Escape());
+			}else{
+				final Options.Clean clean = new Options.Clean();
 
-			clean.setPolicyConfigLocation(xss.getPolicyConfigLocation());
+				clean.setPolicyConfigLocation(xssProperties.getPolicyConfigLocation());
 
-			optionsBuilder.clean(clean);
+				optionsBuilder.clean(clean);
+			}
 		}
 
 		return new XssFilter(optionsBuilder.build());
 	}
 
-	@AutoConfiguration
-	@EnableConfigurationProperties(WebSecurityProperties.class)
+	@Bean
 	@ConditionalOnBean({ServerHttpSecurity.class})
-	static class DefaultWebSecurityConfigurerAdapterConfiguration extends ReactiveHttpSecurityConfiguration {
+	@Scope("prototype")
+	public SecurityWebFilterChain securityWebFilterChain(ObjectProvider<ServerHttpSecurity> httpSecurity,
+	                                                     ObjectProvider<ServerHttpSecurityCustomizer> httpSecurityCustomizer) {
+		httpSecurityCustomizer.orderedStream()
+				.forEach((customizer)->customizer.customize(httpSecurity.getIfAvailable()));
+		ReactiveHttpSecurityConfiguration httpSecurityConfiguration =
+				new ReactiveHttpSecurityConfiguration(properties, httpSecurity.getIfAvailable());
+		return httpSecurityConfiguration.createSecurityWebFilterChain();
+	}
 
-		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties,
-		                                                        ObjectProvider<ServerHttpSecurity> serverHttpSecurity) {
-			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
-							properties.getFrameOptions(), properties.getHsts(), properties.getContentSecurityPolicy(),
-							properties.getReferrerPolicy(), createXss(properties.getXss()), properties.getFormLogin()),
-					serverHttpSecurity.getIfAvailable());
-		}
+	public interface ServerHttpSecurityCustomizer {
+
+		void customize(ServerHttpSecurity httpSecurity);
 
 	}
 

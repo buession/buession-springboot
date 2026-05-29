@@ -26,21 +26,23 @@
  */
 package com.buession.springboot.web.servlet.autoconfigure;
 
-import com.buession.security.web.config.Configurer;
-import com.buession.security.web.config.Xss;
 import com.buession.security.web.servlet.config.ServletHttpSecurityConfiguration;
 import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.servlet.WebMvcXssConfigurer;
 import com.buession.security.web.xss.servlet.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Spring Security Configuration
@@ -62,40 +64,48 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	@Bean
 	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
 	public XssFilter xssFilter() {
-		final WebSecurityProperties.Xss xss = properties.getXss();
+		final com.buession.security.web.config.Xss xss = properties.getXss();
 		final Options.Builder optionsBuilder = Options.Builder.getInstance();
 
-		optionsBuilder.policy(xss.getPolicy());
+		if(xss instanceof WebSecurityProperties.Xss xssProperties){
+			optionsBuilder.policy(xssProperties.getMode());
 
-		if(xss.getPolicy() == Options.Policy.ESCAPE){
-			optionsBuilder.escape(new Options.Escape());
-		}else{
-			final Options.Clean clean = new Options.Clean();
+			if(xssProperties.getMode() == Options.Policy.ESCAPE){
+				optionsBuilder.escape(new Options.Escape());
+			}else{
+				final Options.Clean clean = new Options.Clean();
 
-			clean.setPolicyConfigLocation(xss.getPolicyConfigLocation());
+				clean.setPolicyConfigLocation(xssProperties.getPolicyConfigLocation());
 
-			optionsBuilder.clean(clean);
+				optionsBuilder.clean(clean);
+			}
 		}
 
 		return new XssFilter(optionsBuilder.build());
 	}
 
-	@AutoConfiguration
-	@EnableConfigurationProperties(WebSecurityProperties.class)
-	@ConditionalOnClass({WebSecurityConfiguration.class})
-	static class DefaultWebSecurityConfigurerAdapterConfiguration extends ServletHttpSecurityConfiguration {
-
-		public DefaultWebSecurityConfigurerAdapterConfiguration(WebSecurityProperties properties) {
-			super(new Configurer(properties.getHttpBasic(), properties.getCsrf(), properties.getCors(),
-					properties.getFrameOptions(), properties.getHsts(), properties.getContentSecurityPolicy(),
-					properties.getReferrerPolicy(), createXss(properties.getXss()), properties.getFormLogin()));
-		}
-
+	@Bean
+	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
+	public WebMvcXssConfigurer webMvcXssConfigurer() {
+		return new WebMvcXssConfigurer();
 	}
 
-	@AutoConfiguration
-	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
-	static class WebMvcXssConfigurerConfiguration extends WebMvcXssConfigurer {
+	@Bean
+	@ConditionalOnClass({HttpSecurity.class})
+	@Scope("prototype")
+	public SecurityFilterChain createSecurityFilterChain(ObjectProvider<HttpSecurity> httpSecurity,
+	                                                     ObjectProvider<ServletHttpSecurityCustomizer> httpSecurityCustomizer)
+			throws Exception {
+		httpSecurityCustomizer.orderedStream()
+				.forEach((customizer)->customizer.customize(httpSecurity.getIfAvailable()));
+		ServletHttpSecurityConfiguration servletHttpSecurityConfiguration = new ServletHttpSecurityConfiguration(
+				properties, httpSecurity.getIfAvailable());
+		return servletHttpSecurityConfiguration.createSecurityFilterChain();
+	}
+
+	public interface ServletHttpSecurityCustomizer {
+
+		void customize(HttpSecurity httpSecurity);
 
 	}
 

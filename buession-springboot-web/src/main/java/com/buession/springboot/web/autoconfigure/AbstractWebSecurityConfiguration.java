@@ -19,12 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.autoconfigure;
 
-import com.buession.security.web.config.Xss;
 import com.buession.springboot.web.security.WebSecurityProperties;
 
 /**
@@ -37,15 +36,6 @@ public abstract class AbstractWebSecurityConfiguration {
 
 	public AbstractWebSecurityConfiguration(WebSecurityProperties properties) {
 		this.properties = properties;
-	}
-
-	protected static Xss createXss(final WebSecurityProperties.Xss config) {
-		final Xss xss = new Xss();
-
-		xss.setEnabled(config.isEnabled());
-		xss.setPolicy(config.getProtection());
-
-		return xss;
 	}
 
 }

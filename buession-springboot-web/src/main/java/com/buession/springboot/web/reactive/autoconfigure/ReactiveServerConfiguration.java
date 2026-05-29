@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2024 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive.autoconfigure;
@@ -88,6 +88,7 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 	}
 
 	@AutoConfiguration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	static class AnnotationProcessorConfiguration
 			extends com.buession.web.reactive.config.WebFluxAnnotationProcessorConfiguration {
 

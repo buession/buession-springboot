@@ -14,10 +14,20 @@
 - Application 方法 customize、applicationStartedHook 支持接收命令行参数
 
 
+### 🔔 变化
+
+- Pac4j JWT 认证不再依赖 HTTP Client 配置，使用独立的 HeaderClient 或 ParameterClient
+
+
 ### ⏪ 优化
 
 - **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter
 - 删除模块 buession-springboot-velocity
+
+
+### 🐞 Bug 修复
+
+- Pac4j JWT 中不恰当的配置
 
 
 ---
