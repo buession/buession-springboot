@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -58,7 +58,7 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass(okhttp3.OkHttpClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.enabled", matchIfMissing = true)
 	static class HttpClient extends OkHttpHttpClientConfiguration {
 
 		public HttpClient(HttpClientProperties properties) {
@@ -87,7 +87,7 @@ public class OkHttpHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnClass(okhttp3.OkHttpClient.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpAsyncClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.async.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = HttpClientProperties.PREFIX, name = "okhttp.async.enabled", matchIfMissing = true)
 	static class AsyncHttpClient extends OkHttpHttpClientConfiguration {
 
 		public AsyncHttpClient(HttpClientProperties properties) {

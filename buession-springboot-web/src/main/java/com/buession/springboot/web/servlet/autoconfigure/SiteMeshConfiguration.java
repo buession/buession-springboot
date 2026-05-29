@@ -29,7 +29,7 @@ import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -41,14 +41,14 @@ import org.springframework.context.annotation.Bean;
 public class SiteMeshConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.sitemesh", name = "enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = "spring.sitemesh", name = "enabled")
 	@ConditionalOnMissingBean(SiteMeshFilter.class)
 	public SiteMeshFilter siteMeshFilter() {
 		return new SiteMeshFilter();
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.sitemesh.multipass", name = "enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = "spring.sitemesh.multipass", name = "enabled")
 	public MultipassFilter multipassFilter() {
 		return new MultipassFilter();
 	}

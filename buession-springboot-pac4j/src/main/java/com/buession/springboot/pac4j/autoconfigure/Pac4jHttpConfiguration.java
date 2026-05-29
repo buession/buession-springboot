@@ -34,7 +34,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -57,7 +57,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "cookieClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "cookie.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "cookie.enabled")
 	public CookieClient cookieClient(ObjectProvider<Authenticator> authenticator,
 	                                 ObjectProvider<Customizer<CookieClient>> customizers) {
 		return new CookieClient() {
@@ -80,7 +80,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "directBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled")
 	public DirectBasicAuthClient directBasicAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                   ObjectProvider<Customizer<DirectBasicAuthClient>> customizers) {
 		return new DirectBasicAuthClient() {
@@ -103,7 +103,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "directBearerAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-bearer-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-bearer-auth.enabled")
 	public DirectBearerAuthClient directBearerAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                     ObjectProvider<Customizer<DirectBearerAuthClient>> customizers) {
 		return new DirectBearerAuthClient() {
@@ -126,7 +126,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "directDigestAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-digest-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-digest-auth.enabled")
 	public DirectDigestAuthClient directDigestAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                     ObjectProvider<Customizer<DirectDigestAuthClient>> customizers) {
 		return new DirectDigestAuthClient() {
@@ -149,7 +149,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "directFormClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-form.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-form.enabled")
 	public DirectFormClient directFormClient(ObjectProvider<Authenticator> authenticator,
 	                                         ObjectProvider<Customizer<DirectFormClient>> customizers) {
 		return new DirectFormClient() {
@@ -173,7 +173,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "headerClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "header.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "header.enabled")
 	public HeaderClient headerClient(ObjectProvider<Authenticator> authenticator,
 	                                 ObjectProvider<Customizer<HeaderClient>> customizers) {
 		return new HeaderClient() {
@@ -197,7 +197,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "ipClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "ip.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "ip.enabled")
 	public IpClient ipClient(ObjectProvider<Authenticator> authenticator,
 	                         ObjectProvider<Customizer<IpClient>> customizers) {
 		return new IpClient() {
@@ -215,7 +215,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "parameterClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "parameter.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "parameter.enabled")
 	public ParameterClient parameterClient(ObjectProvider<Authenticator> authenticator,
 	                                       ObjectProvider<Customizer<ParameterClient>> customizers) {
 		return new ParameterClient() {
@@ -240,7 +240,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "x509Client")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "x509.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "x509.enabled")
 	public X509Client x509Client(ObjectProvider<Customizer<X509Client>> customizers) {
 		return new X509Client() {
 
@@ -260,7 +260,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "formClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "form.enabled")
 	public FormClient formClient(ObjectProvider<Customizer<FormClient>> customizers) {
 		return new FormClient(config.getForm().getLoginUrl(), new SimpleTestUsernamePasswordAuthenticator()) {
 
@@ -282,7 +282,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "indirectBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled")
 	public IndirectBasicAuthClient indirectBasicAuthClient(
 			ObjectProvider<Customizer<IndirectBasicAuthClient>> customizers) {
 		return new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),

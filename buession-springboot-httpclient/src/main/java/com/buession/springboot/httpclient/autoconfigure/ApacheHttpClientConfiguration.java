@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -56,7 +56,7 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.enabled", matchIfMissing = true)
 	static class ApacheHttpClient extends ApacheHttpClientConfiguration {
 
 		public ApacheHttpClient(HttpClientProperties properties) {
@@ -99,8 +99,7 @@ public class ApacheHttpClientConfiguration extends AbstractHttpClientConfigurati
 	@AutoConfiguration
 	@EnableConfigurationProperties(HttpClientProperties.class)
 	@ConditionalOnMissingBean(name = HTTP_CLIENT_BEAN_NAME, value = com.buession.httpclient.HttpAsyncClient.class)
-	@ConditionalOnProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.async.enabled", havingValue =
-			"true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = HttpClientProperties.PREFIX, name = "apache-client.async.enabled", matchIfMissing = true)
 	static class AsyncApacheHttpClient extends ApacheHttpClientConfiguration {
 
 		public AsyncApacheHttpClient(HttpClientProperties properties) {

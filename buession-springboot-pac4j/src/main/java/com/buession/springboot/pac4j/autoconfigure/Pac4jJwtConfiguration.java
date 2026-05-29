@@ -43,7 +43,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -55,7 +55,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "enabled", havingValue = "true")
+@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "enabled")
 @ConditionalOnClass({JwtAuthenticator.class, HeaderClient.class})
 @AutoConfigureBefore({Pac4jConfiguration.class})
 public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt> {
@@ -103,7 +103,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 
 	@Bean(name = "jwtHeaderClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "header.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "header.enabled")
 	public HeaderClient jwtHeaderClient(ObjectProvider<Authenticator> authenticator,
 	                                    ObjectProvider<Customizer<HeaderClient>> customizers) {
 		return new HeaderClient() {
@@ -125,7 +125,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 
 	@Bean(name = "jwtParameterClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Jwt.PREFIX, name = "parameter.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "parameter.enabled")
 	public ParameterClient jwtParameterClient(ObjectProvider<Authenticator> authenticator,
 	                                          ObjectProvider<Customizer<ParameterClient>> customizers) {
 		return new ParameterClient() {

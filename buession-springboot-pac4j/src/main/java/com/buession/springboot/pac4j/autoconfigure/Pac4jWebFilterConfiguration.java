@@ -32,7 +32,7 @@ import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.springframework.web.SecurityFilter;
 import org.pac4j.springframework.web.SecurityInterceptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled", havingValue = "true",
+@ConditionalOnBooleanProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled",
 		matchIfMissing = true)
 @Import({Pac4jConfiguration.class})
 public class Pac4jWebFilterConfiguration {

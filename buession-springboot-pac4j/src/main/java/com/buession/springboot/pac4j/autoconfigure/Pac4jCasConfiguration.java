@@ -44,7 +44,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -68,7 +68,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled")
 	public CasProxyReceptor casProxyReceptor() {
 		final CasProxyReceptor proxyReceptor = new CasProxyReceptor();
 
@@ -123,7 +123,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean(name = "casClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "general.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "general.enabled")
 	public CasClient casClient(CasConfiguration casConfiguration, CasProfileDefinition casProfileDefinition,
 	                           ObjectProvider<Customizer<CasClient>> customizers) {
 		return new CasClient(casConfiguration) {
@@ -142,7 +142,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean(name = "directCasClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "direct.enabled")
 	public DirectCasClient directCasClient(CasConfiguration casConfiguration,
 	                                       CasProfileDefinition casProfileDefinition,
 	                                       ObjectProvider<Customizer<DirectCasClient>> customizers) {
@@ -160,7 +160,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean(name = "directCasProxyClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "direct-proxy.enabled")
 	public DirectCasProxyClient directCasProxyClient(CasConfiguration casConfiguration,
 	                                                 CasProfileDefinition casProfileDefinition,
 	                                                 ObjectProvider<Customizer<DirectCasProxyClient>> customizers) {
@@ -182,7 +182,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean(name = "casRestBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "rest-basic-auth.enabled")
 	public CasRestBasicAuthClient casRestBasicAuthClient(CasConfiguration casConfiguration,
 	                                                     ObjectProvider<Customizer<CasRestBasicAuthClient>> customizers) {
 		return new CasRestBasicAuthClient(casConfiguration, config.getRestBasicAuth().getHeaderName(),
@@ -201,7 +201,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 
 	@Bean(name = "casRestFormClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Cas.PREFIX, name = "rest-form.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "rest-form.enabled")
 	public CasRestFormClient casRestFormClient(CasConfiguration casConfiguration,
 	                                           ObjectProvider<Customizer<CasRestFormClient>> customizers) {
 		return new CasRestFormClient(casConfiguration, config.getRestForm().getUsernameParameter(),

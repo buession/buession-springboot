@@ -35,7 +35,7 @@ import com.buession.web.reactive.filter.PrintUrlFilter;
 import com.buession.web.reactive.filter.ResponseHeadersFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -66,14 +66,14 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "poweredby.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = ServerProperties.PREFIX, name = "poweredby.enabled", matchIfMissing = true)
 	public PoweredByFilter poweredByFilter() {
 		return new PoweredByFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "server-info.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = ServerProperties.PREFIX, name = "server-info.enabled", matchIfMissing = true)
 	public ServerInfoFilter serverInfoFilter() {
 		return new ServerInfoFilter(properties.getServerInfoName(), properties.getServerInfoPrefix(),
 				properties.getServerInfoSuffix(), properties.getStripServerInfoPrefix(),
@@ -82,7 +82,7 @@ public class ReactiveServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = ServerProperties.PREFIX, name = "print-url.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = ServerProperties.PREFIX, name = "print-url.enabled")
 	public PrintUrlFilter printUrlFilter() {
 		return new PrintUrlFilter();
 	}

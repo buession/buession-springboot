@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2025 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.id;
@@ -29,8 +29,8 @@ import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(IdProperties.class)
-@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "enabled", havingValue = "true")
+@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "enabled")
 public class IdGeneratorConfiguration {
 
 	private final IdProperties idProperties;
@@ -54,7 +54,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "atomic-simple.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "atomic-simple.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public AtomicSimpleIdGenerator atomicSimpleIdGenerator() {
 		logger.debug("IdGenerator using AtomicSimpleIdGenerator.");
@@ -62,7 +62,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "atomic-uuid.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "atomic-uuid.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public AtomicUUIDIdGenerator atomicUUIDIdGenerator() {
 		logger.debug("IdGenerator using AtomicUUIDIdGenerator.");
@@ -70,7 +70,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "nano.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "nano.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public NanoIDIdGenerator nanoIDIdGenerator() {
 		if(idProperties.getNano() != null){
@@ -105,7 +105,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "random-digit.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomDigitIdGenerator randomDigitIdGenerator() {
 		if(idProperties.getRandomDigit() != null){
@@ -134,7 +134,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "random.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "random.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public RandomIdGenerator randomIdGenerator() {
 		if(idProperties.getRandom() != null){
@@ -169,7 +169,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "snowflake.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "snowflake.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public SnowflakeIdGenerator snowflakeIdGenerator() {
 		if(idProperties.getSnowflake() != null && idProperties.getSnowflake().getDatacenterId() != null &&
@@ -189,7 +189,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "uuid.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "uuid.enabled")
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public UUIDIdGenerator uuidIdGenerator() {
 		logger.debug("IdGenerator using UUIDIdGenerator.");
@@ -197,7 +197,7 @@ public class IdGeneratorConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = IdProperties.PREFIX, name = "simple.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(prefix = IdProperties.PREFIX, name = "simple.enabled", matchIfMissing = true)
 	@ConditionalOnMissingBean({IdGenerator.class})
 	public SimpleIdGenerator simpleIdGenerator() {
 		logger.debug("IdGenerator using SimpleIdGenerator.");

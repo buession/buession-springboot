@@ -35,7 +35,7 @@ import com.buession.springboot.web.security.WebSecurityProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +54,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableConfigurationProperties(WebSecurityProperties.class)
 @ConditionalOnClass({WebSecurityConfiguration.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", matchIfMissing = true)
 public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
 
 	public ServletWebSecurityConfiguration(WebSecurityProperties properties) {
@@ -62,7 +62,7 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled")
 	public XssFilter xssFilter() {
 		final com.buession.security.web.config.Xss xss = properties.getXss();
 		final Options.Builder optionsBuilder = Options.Builder.getInstance();
@@ -85,7 +85,7 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled")
 	public WebMvcXssConfigurer webMvcXssConfigurer() {
 		return new WebMvcXssConfigurer();
 	}
