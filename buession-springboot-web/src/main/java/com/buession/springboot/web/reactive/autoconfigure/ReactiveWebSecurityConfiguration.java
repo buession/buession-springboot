@@ -25,19 +25,16 @@
 package com.buession.springboot.web.reactive.autoconfigure;
 
 import com.buession.security.web.reactive.config.ReactiveHttpSecurityConfiguration;
-import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.reactive.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -59,42 +56,16 @@ public class ReactiveWebSecurityConfiguration extends AbstractWebSecurityConfigu
 	@Bean
 	@ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled")
 	public XssFilter xssFilter() {
-		final com.buession.security.web.config.Xss xss = properties.getXss();
-		final Options.Builder optionsBuilder = Options.Builder.getInstance();
-
-		if(xss instanceof WebSecurityProperties.Xss xssProperties){
-			optionsBuilder.policy(xssProperties.getMode());
-
-			if(xssProperties.getMode() == Options.Policy.ESCAPE){
-				optionsBuilder.escape(new Options.Escape());
-			}else{
-				final Options.Clean clean = new Options.Clean();
-
-				clean.setPolicyConfigLocation(xssProperties.getPolicyConfigLocation());
-
-				optionsBuilder.clean(clean);
-			}
-		}
-
-		return new XssFilter(optionsBuilder.build());
+		return new XssFilter(xssOptions());
 	}
 
 	@Bean
-	@ConditionalOnBean({ServerHttpSecurity.class})
-	@Scope("prototype")
-	public SecurityWebFilterChain securityWebFilterChain(ObjectProvider<ServerHttpSecurity> httpSecurity,
-	                                                     ObjectProvider<ServerHttpSecurityCustomizer> httpSecurityCustomizer) {
-		httpSecurityCustomizer.orderedStream()
-				.forEach((customizer)->customizer.customize(httpSecurity.getIfAvailable()));
+	public SecurityWebFilterChain securityWebFilterChain(ApplicationContext context) {
+		ServerHttpSecurity httpSecurity = context.getBean(ServerHttpSecurity.class);
 		ReactiveHttpSecurityConfiguration httpSecurityConfiguration =
-				new ReactiveHttpSecurityConfiguration(properties, httpSecurity.getIfAvailable());
+				new ReactiveHttpSecurityConfiguration(properties, httpSecurity);
+
 		return httpSecurityConfiguration.createSecurityWebFilterChain();
-	}
-
-	public interface ServerHttpSecurityCustomizer {
-
-		void customize(ServerHttpSecurity httpSecurity);
-
 	}
 
 }

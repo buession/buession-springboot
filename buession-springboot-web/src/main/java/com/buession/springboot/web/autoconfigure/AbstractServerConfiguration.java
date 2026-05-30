@@ -25,9 +25,10 @@
 package com.buession.springboot.web.autoconfigure;
 
 import com.buession.core.utils.StringUtils;
-import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
+import org.springframework.context.ApplicationContext;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,25 +45,30 @@ public abstract class AbstractServerConfiguration {
 		this.properties = properties;
 	}
 
-	protected static Map<String, String> buildHeaders(final Map<String, String> headers) {
-		final Map<String, String> result = new HashMap<>(headers.size());
+	protected static Map<String, String> buildHeaders(final ApplicationContext context,
+	                                                  final Map<String, String> headers) {
+		if(headers == null){
+			return Collections.emptyMap();
+		}else{
+			final Map<String, String> result = new HashMap<>(headers.size());
 
-		headers.forEach((name, value)->{
-			if(value != null){
-				if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER)){
-					String propertyName = value.substring(1);
-					String propertyValue = SystemPropertyUtils.getProperty(propertyName);
+			headers.forEach((name, value)->{
+				if(value != null){
+					if(value.length() > 1 && StringUtils.startsWith(value, HEADER_VARIABLE_IDENTIFIER)){
+						String propertyName = value.substring(1);
+						String propertyValue = context.getEnvironment().getProperty(propertyName);
 
-					if(Validate.hasText(propertyValue)){
-						result.put(name, propertyValue);
+						if(Validate.hasText(propertyValue)){
+							result.put(name, propertyValue);
+						}
+					}else{
+						result.put(name, value);
 					}
-				}else{
-					result.put(name, value);
 				}
-			}
-		});
+			});
 
-		return result;
+			return result;
+		}
 	}
 
 }

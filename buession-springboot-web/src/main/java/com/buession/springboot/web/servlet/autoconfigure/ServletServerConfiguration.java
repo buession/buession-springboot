@@ -26,7 +26,6 @@
  */
 package com.buession.springboot.web.servlet.autoconfigure;
 
-import com.buession.core.validator.Validate;
 import com.buession.springboot.web.autoconfigure.AbstractServerConfiguration;
 import com.buession.springboot.web.autoconfigure.ServerProperties;
 import com.buession.springboot.web.servlet.filter.ServerInfoFilter;
@@ -38,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -54,14 +54,8 @@ public class ServletServerConfiguration extends AbstractServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ResponseHeadersFilter responseHeadersFilter() {
-		final ResponseHeadersFilter responseHeadersFilter = new ResponseHeadersFilter();
-
-		if(Validate.isNotEmpty(properties.getResponseHeaders())){
-			responseHeadersFilter.setHeaders(buildHeaders(properties.getResponseHeaders()));
-		}
-
-		return responseHeadersFilter;
+	public ResponseHeadersFilter responseHeadersFilter(ApplicationContext context) {
+		return new ResponseHeadersFilter(buildHeaders(context, properties.getResponseHeaders()));
 	}
 
 	@Bean

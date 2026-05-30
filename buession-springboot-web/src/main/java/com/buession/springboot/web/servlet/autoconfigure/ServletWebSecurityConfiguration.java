@@ -27,21 +27,18 @@
 package com.buession.springboot.web.servlet.autoconfigure;
 
 import com.buession.security.web.servlet.config.ServletHttpSecurityConfiguration;
-import com.buession.security.web.xss.Options;
 import com.buession.security.web.xss.servlet.WebMvcXssConfigurer;
 import com.buession.security.web.xss.servlet.XssFilter;
 import com.buession.springboot.web.autoconfigure.AbstractWebSecurityConfiguration;
 import com.buession.springboot.web.security.WebSecurityProperties;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -52,7 +49,7 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(WebSecurityProperties.class)
-@ConditionalOnClass({WebSecurityConfiguration.class})
+@ConditionalOnClass({HttpSecurity.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "enabled", matchIfMissing = true)
 public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfiguration {
@@ -64,24 +61,7 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	@Bean
 	@ConditionalOnBooleanProperty(prefix = WebSecurityProperties.PREFIX, name = "xss.enabled")
 	public XssFilter xssFilter() {
-		final com.buession.security.web.config.Xss xss = properties.getXss();
-		final Options.Builder optionsBuilder = Options.Builder.getInstance();
-
-		if(xss instanceof WebSecurityProperties.Xss xssProperties){
-			optionsBuilder.policy(xssProperties.getMode());
-
-			if(xssProperties.getMode() == Options.Policy.ESCAPE){
-				optionsBuilder.escape(new Options.Escape());
-			}else{
-				final Options.Clean clean = new Options.Clean();
-
-				clean.setPolicyConfigLocation(xssProperties.getPolicyConfigLocation());
-
-				optionsBuilder.clean(clean);
-			}
-		}
-
-		return new XssFilter(optionsBuilder.build());
+		return new XssFilter(xssOptions());
 	}
 
 	@Bean
@@ -91,22 +71,12 @@ public class ServletWebSecurityConfiguration extends AbstractWebSecurityConfigur
 	}
 
 	@Bean
-	@ConditionalOnClass({HttpSecurity.class})
-	@Scope("prototype")
-	public SecurityFilterChain createSecurityFilterChain(ObjectProvider<HttpSecurity> httpSecurity,
-	                                                     ObjectProvider<ServletHttpSecurityCustomizer> httpSecurityCustomizer)
-			throws Exception {
-		httpSecurityCustomizer.orderedStream()
-				.forEach((customizer)->customizer.customize(httpSecurity.getIfAvailable()));
+	public SecurityFilterChain createSecurityFilterChain(ApplicationContext context) throws Exception {
+		HttpSecurity httpSecurity = context.getBean(HttpSecurity.class);
 		ServletHttpSecurityConfiguration servletHttpSecurityConfiguration = new ServletHttpSecurityConfiguration(
-				properties, httpSecurity.getIfAvailable());
+				properties, httpSecurity);
+
 		return servletHttpSecurityConfiguration.createSecurityFilterChain();
-	}
-
-	public interface ServletHttpSecurityCustomizer {
-
-		void customize(HttpSecurity httpSecurity);
-
 	}
 
 }
