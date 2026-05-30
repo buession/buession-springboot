@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
@@ -29,7 +29,10 @@ import com.buession.springboot.pac4j.config.BaseClientConfig;
 import com.buession.springboot.pac4j.config.Cas;
 import com.buession.springboot.pac4j.config.Http;
 import com.buession.springboot.pac4j.config.Jwt;
+import com.buession.springboot.pac4j.config.Kerberos;
 import com.buession.springboot.pac4j.config.OAuth;
+import com.buession.springboot.pac4j.config.Oidc;
+import com.buession.springboot.pac4j.config.Saml;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -694,9 +697,26 @@ public class Pac4jProperties {
 		private Jwt jwt;
 
 		/**
+		 * Kerberos 配置
+		 *
+		 * @since 4.0.0
+		 */
+		private Kerberos kerberos;
+
+		/**
 		 * OAuth 配置
 		 */
 		private OAuth oAuth;
+
+		/**
+		 * OIDC 配置
+		 */
+		private Oidc oidc;
+
+		/**
+		 * SAML 配置
+		 */
+		private Saml saml;
 
 		/**
 		 * 返回 CAS 配置
@@ -756,6 +776,29 @@ public class Pac4jProperties {
 		}
 
 		/**
+		 * 返回 Kerberos 配置
+		 *
+		 * @return Kerberos 配置
+		 *
+		 * @since 4.0.0
+		 */
+		public Kerberos getKerberos() {
+			return kerberos;
+		}
+
+		/**
+		 * 设置 Kerberos 配置
+		 *
+		 * @param kerberos
+		 * 		Kerberos 配置
+		 *
+		 * @since 4.0.0
+		 */
+		public void setKerberos(Kerberos kerberos) {
+			this.kerberos = kerberos;
+		}
+
+		/**
 		 * 返回 OAuth 配置
 		 *
 		 * @return OAuth 配置
@@ -774,6 +817,44 @@ public class Pac4jProperties {
 			this.oAuth = oAuth;
 		}
 
+		/**
+		 * 返回 OIDC 配置
+		 *
+		 * @return OIDC 配置
+		 */
+		public Oidc getOidc() {
+			return oidc;
+		}
+
+		/**
+		 * 设置 OIDC 配置
+		 *
+		 * @param oidc
+		 * 		OIDC 配置
+		 */
+		public void setOidc(Oidc oidc) {
+			this.oidc = oidc;
+		}
+
+		/**
+		 * 返回 SAML 配置
+		 *
+		 * @return SAML 配置
+		 */
+		public Saml getSaml() {
+			return saml;
+		}
+
+		/**
+		 * 设置 SAML 配置
+		 *
+		 * @param saml
+		 * 		SAML 配置
+		 */
+		public void setSaml(Saml saml) {
+			this.saml = saml;
+		}
+		
 	}
 
 }

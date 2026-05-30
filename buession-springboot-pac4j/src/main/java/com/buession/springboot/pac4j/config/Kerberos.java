@@ -24,86 +24,62 @@
  */
 package com.buession.springboot.pac4j.config;
 
-import org.pac4j.core.http.ajax.AjaxRequestResolver;
-
 /**
- * Indirect client 公共配置
+ * Kerberos 配置
  *
  * @author Yong.Teng
  * @since 4.0.0
  */
-public abstract class IndirectClientConfig extends BaseClientConfig {
+public class Kerberos extends BaseClientConfig {
 
-	/**
-	 * 登录成功跳转地址
-	 */
-	private String callbackUrl;
+	public final static String PREFIX = PROPERTIES_PREFIX + ".kerberos";
 
-	private Boolean checkAuthenticationAttempt;
+	private Direct direct = new Direct();
 
-	/**
-	 * Ajax 请求解析器
-	 */
-	private Class<? extends AjaxRequestResolver> ajaxRequestResolver;
+	private Indirect indirect = new Indirect();
+
+	public Direct getDirect() {
+		return direct;
+	}
+
+	public void setDirect(Direct direct) {
+		this.direct = direct;
+	}
+
+	public Indirect getIndirect() {
+		return indirect;
+	}
+
+	public void setIndirect(Indirect indirect) {
+		this.indirect = indirect;
+	}
 
 	/**
 	 * 构造函数
-	 *
-	 * @param name
-	 * 		Client 名称
 	 */
-	public IndirectClientConfig(String name) {
-		super(name);
+	public Kerberos() {
+		super(null);
 	}
 
-	/**
-	 * 返回登录成功跳转地址
-	 *
-	 * @return 登录成功跳转地址
-	 */
-	public String getCallbackUrl() {
-		return callbackUrl;
+	public final static class Direct extends DirectClientConfig {
+
+		/**
+		 * 构造函数
+		 */
+		public Direct() {
+			super("direct-kerberos");
+		}
+
 	}
 
-	/**
-	 * 设置登录成功跳转地址
-	 *
-	 * @param callbackUrl
-	 * 		登录成功跳转地址
-	 */
-	public void setCallbackUrl(String callbackUrl) {
-		this.callbackUrl = callbackUrl;
-	}
+	public final static class Indirect extends IndirectClientConfig {
 
-	public Boolean isCheckAuthenticationAttempt() {
-		return getCheckAuthenticationAttempt();
-	}
+		/**
+		 * 构造函数
+		 */
+		public Indirect() {
+			super("indirect-kerberos");
+		}
 
-	public Boolean getCheckAuthenticationAttempt() {
-		return checkAuthenticationAttempt;
 	}
-
-	public void setCheckAuthenticationAttempt(Boolean checkAuthenticationAttempt) {
-		this.checkAuthenticationAttempt = checkAuthenticationAttempt;
-	}
-
-	/**
-	 * 返回 Ajax 请求解析器
-	 *
-	 * @return Ajax 请求解析器
-	 */
-	public Class<? extends AjaxRequestResolver> getAjaxRequestResolver() {
-		return ajaxRequestResolver;
-	}
-
-	/**
-	 * 设置 Ajax 请求解析器
-	 *
-	 * @param ajaxRequestResolver
-	 * 		Ajax 请求解析器
-	 */
-	public void setAjaxRequestResolver(Class<? extends AjaxRequestResolver> ajaxRequestResolver) {
-		this.ajaxRequestResolver = ajaxRequestResolver;
-	}
-
 }

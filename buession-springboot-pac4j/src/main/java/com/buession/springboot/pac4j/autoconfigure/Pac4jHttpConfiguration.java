@@ -69,7 +69,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 				super.internalInit(forceReinit);
 				customizer(this, customizers);
 
-				hasTextpropertyMapper.from(cookie::getCookieName).to(cookie::setCookieName);
+				hasTextpropertyMapper.from(cookie::getCookieName).to(this::setCookieName);
 				authenticator.ifAvailable(this::setAuthenticator);
 
 				afterDirectClientInitialized(this, config, cookie);

@@ -110,6 +110,15 @@ public abstract class BaseClientConfig {
 	 *
 	 * @return 是否将 Profile 保存到 Session 中
 	 */
+	public Boolean isSaveProfileInSession() {
+		return getSaveProfileInSession();
+	}
+
+	/**
+	 * 返回是否将 Profile 保存到 Session 中
+	 *
+	 * @return 是否将 Profile 保存到 Session 中
+	 */
 	public Boolean getSaveProfileInSession() {
 		return saveProfileInSession;
 	}
