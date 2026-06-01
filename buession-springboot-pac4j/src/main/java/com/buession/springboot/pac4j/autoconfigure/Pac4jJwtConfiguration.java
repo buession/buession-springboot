@@ -106,18 +106,14 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "header.enabled")
 	public HeaderClient jwtHeaderClient(ObjectProvider<Authenticator> authenticator,
 	                                    ObjectProvider<Customizer<HeaderClient>> customizers) {
-		return new HeaderClient() {
+		return new HeaderClient(config.getHeader().getHeaderName(), config.getHeader().getPrefixHeader(),
+				authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
-				final Jwt.Header header = config.getHeader();
-
 				super.internalInit(forceReinit);
+				clientApplyCommonProperties(this);
 				customizer(this, customizers);
-
-				clientApplyCommonProperties(this, authenticator);
-				hasTextpropertyMapper.from(header::getHeaderName).to(this::setHeaderName);
-				hasTextpropertyMapper.from(header::getPrefixHeader).to(this::setPrefixHeader);
 			}
 
 		};
@@ -128,29 +124,26 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "parameter.enabled")
 	public ParameterClient jwtParameterClient(ObjectProvider<Authenticator> authenticator,
 	                                          ObjectProvider<Customizer<ParameterClient>> customizers) {
-		return new ParameterClient() {
+		return new ParameterClient(config.getParameter().getParameterName(), authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Jwt.Parameter parameter = config.getParameter();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
-				clientApplyCommonProperties(this, authenticator);
-				hasTextpropertyMapper.from(parameter::getParameterName).to(this::setParameterName);
 				hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(this::setSupportGetRequest);
 				hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(this::setSupportPostRequest);
+
+				super.internalInit(forceReinit);
+				clientApplyCommonProperties(this);
+				customizer(this, customizers);
 			}
 
 		};
 	}
 
-	private void clientApplyCommonProperties(final DirectClient client,
-	                                         final ObjectProvider<Authenticator> authenticator) {
+	private void clientApplyCommonProperties(final DirectClient client) {
 		hasTextpropertyMapper.from(config::getName).to(client::setName);
 		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
-		authenticator.ifAvailable(client::setAuthenticator);
 	}
 
 }

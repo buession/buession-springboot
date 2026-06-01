@@ -143,8 +143,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 	@Bean(name = "directCasClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Cas.PREFIX, name = "direct.enabled")
-	public DirectCasClient directCasClient(CasConfiguration casConfiguration,
-	                                       CasProfileDefinition casProfileDefinition,
+	public DirectCasClient directCasClient(CasConfiguration casConfiguration, CasProfileDefinition casProfileDefinition,
 	                                       ObjectProvider<Customizer<DirectCasClient>> customizers) {
 		return new DirectCasClient(casConfiguration) {
 
@@ -191,9 +190,8 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				afterDirectClientInitialized(this, config, config.getRestBasicAuth());
+				customizer(this, customizers);
 			}
 
 		};
@@ -210,8 +208,8 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterDirectClientInitialized(this, config, config.getRestForm());
+				customizer(this, customizers);
 			}
 
 		};

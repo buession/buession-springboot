@@ -45,6 +45,9 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 
 	protected final static PropertyMapper hasTextpropertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
+	/**
+	 * Pac4j 配置
+	 */
 	protected final Pac4jProperties properties;
 
 	/**
@@ -57,16 +60,12 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 		this.config = config;
 	}
 
-	protected void setBaseClientCommonProperties(final BaseClient baseClient, final BaseClientConfig baseClientConfig) {
-		baseClient.setMultiProfile(baseClientConfig.isMultiProfile());
-		baseClient.setSaveProfileInSession(baseClientConfig.getSaveProfileInSession());
-	}
-
 	protected <CF extends BaseClientConfig, BCF extends BaseClientConfig, CLIENT extends BaseClient> void afterClientInitialized(
 			final CLIENT client, final CF config, final BCF clientConfig) {
+		client.setMultiProfile(clientConfig.isMultiProfile());
+		client.setSaveProfileInSession(clientConfig.getSaveProfileInSession());
 		hasTextpropertyMapper.from(clientConfig::getName).to(client::setName);
 		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
-		setBaseClientCommonProperties(client, clientConfig);
 	}
 
 	protected <CF extends BaseClientConfig, ICF extends IndirectClientConfig, CLIENT extends IndirectClient> void afterIndirectClientInitialized(

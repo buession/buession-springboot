@@ -29,7 +29,6 @@ import com.buession.springboot.pac4j.config.Http;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.http.client.direct.*;
 import org.pac4j.http.client.indirect.*;
-import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -60,19 +59,13 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "cookie.enabled")
 	public CookieClient cookieClient(ObjectProvider<Authenticator> authenticator,
 	                                 ObjectProvider<Customizer<CookieClient>> customizers) {
-		return new CookieClient() {
+		return new CookieClient(config.getCookie().getCookieName(), authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
-				final Http.Cookie cookie = config.getCookie();
-
 				super.internalInit(forceReinit);
+				afterDirectClientInitialized(this, config, config.getCookie());
 				customizer(this, customizers);
-
-				hasTextpropertyMapper.from(cookie::getCookieName).to(this::setCookieName);
-				authenticator.ifAvailable(this::setAuthenticator);
-
-				afterDirectClientInitialized(this, config, cookie);
 			}
 
 		};
@@ -83,19 +76,17 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled")
 	public DirectBasicAuthClient directBasicAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                   ObjectProvider<Customizer<DirectBasicAuthClient>> customizers) {
-		return new DirectBasicAuthClient() {
+		return new DirectBasicAuthClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.DirectBasicAuth directBasicAuth = config.getDirectBasicAuth();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				hasTextpropertyMapper.from(directBasicAuth::getRealmName).to(this::setRealmName);
-				authenticator.ifAvailable(this::setAuthenticator);
 
+				super.internalInit(forceReinit);
 				afterDirectClientInitialized(this, config, directBasicAuth);
+				customizer(this, customizers);
 			}
 
 		};
@@ -106,19 +97,17 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-bearer-auth.enabled")
 	public DirectBearerAuthClient directBearerAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                     ObjectProvider<Customizer<DirectBearerAuthClient>> customizers) {
-		return new DirectBearerAuthClient() {
+		return new DirectBearerAuthClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.DirectBearerAuth directBearerAuth = config.getDirectBearerAuth();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				hasTextpropertyMapper.from(directBearerAuth::getRealmName).to(this::setRealmName);
-				authenticator.ifAvailable(this::setAuthenticator);
 
+				super.internalInit(forceReinit);
 				afterDirectClientInitialized(this, config, directBearerAuth);
+				customizer(this, customizers);
 			}
 
 		};
@@ -129,19 +118,17 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-digest-auth.enabled")
 	public DirectDigestAuthClient directDigestAuthClient(ObjectProvider<Authenticator> authenticator,
 	                                                     ObjectProvider<Customizer<DirectDigestAuthClient>> customizers) {
-		return new DirectDigestAuthClient() {
+		return new DirectDigestAuthClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.DirectDigestAuth directDigestAuth = config.getDirectDigestAuth();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				hasTextpropertyMapper.from(directDigestAuth::getRealm).to(this::setRealm);
-				authenticator.ifAvailable(this::setAuthenticator);
 
+				super.internalInit(forceReinit);
 				afterDirectClientInitialized(this, config, directDigestAuth);
+				customizer(this, customizers);
 			}
 
 		};
@@ -152,20 +139,18 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-form.enabled")
 	public DirectFormClient directFormClient(ObjectProvider<Authenticator> authenticator,
 	                                         ObjectProvider<Customizer<DirectFormClient>> customizers) {
-		return new DirectFormClient() {
+		return new DirectFormClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.DirectForm form = config.getDirectForm();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				hasTextpropertyMapper.from(form::getUsernameParameter).to(this::setUsernameParameter);
 				hasTextpropertyMapper.from(form::getPasswordParameter).to(this::setPasswordParameter);
-				authenticator.ifAvailable(this::setAuthenticator);
 
+				super.internalInit(forceReinit);
 				afterDirectClientInitialized(this, config, form);
+				customizer(this, customizers);
 			}
 
 		};
@@ -176,20 +161,14 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "header.enabled")
 	public HeaderClient headerClient(ObjectProvider<Authenticator> authenticator,
 	                                 ObjectProvider<Customizer<HeaderClient>> customizers) {
-		return new HeaderClient() {
+		return new HeaderClient(config.getHeader().getHeaderName(), config.getHeader().getPrefixHeader(),
+				authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
-				final Http.Header header = config.getHeader();
-
 				super.internalInit(forceReinit);
+				afterDirectClientInitialized(this, config, config.getHeader());
 				customizer(this, customizers);
-
-				hasTextpropertyMapper.from(header::getHeaderName).to(this::setHeaderName);
-				hasTextpropertyMapper.from(header::getPrefixHeader).to(this::setPrefixHeader);
-				authenticator.ifAvailable(this::setAuthenticator);
-
-				afterDirectClientInitialized(this, config, header);
 			}
 
 		};
@@ -200,14 +179,13 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "ip.enabled")
 	public IpClient ipClient(ObjectProvider<Authenticator> authenticator,
 	                         ObjectProvider<Customizer<IpClient>> customizers) {
-		return new IpClient() {
+		return new IpClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
-				authenticator.ifAvailable(this::setAuthenticator);
 				afterDirectClientInitialized(this, config, config.getIp());
+				customizer(this, customizers);
 			}
 
 		};
@@ -218,21 +196,18 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "parameter.enabled")
 	public ParameterClient parameterClient(ObjectProvider<Authenticator> authenticator,
 	                                       ObjectProvider<Customizer<ParameterClient>> customizers) {
-		return new ParameterClient() {
+		return new ParameterClient(config.getParameter().getParameterName(), authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.Parameter parameter = config.getParameter();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
-				hasTextpropertyMapper.from(parameter::getParameterName).to(this::setParameterName);
 				hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(this::setSupportGetRequest);
 				hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(this::setSupportPostRequest);
-				authenticator.ifAvailable(this::setAuthenticator);
 
+				super.internalInit(forceReinit);
 				afterDirectClientInitialized(this, config, parameter);
+				customizer(this, customizers);
 			}
 
 		};
@@ -247,8 +222,8 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterDirectClientInitialized(this, config, config.getX509());
+				customizer(this, customizers);
 			}
 
 		};
@@ -261,20 +236,20 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@Bean(name = "formClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "form.enabled")
-	public FormClient formClient(ObjectProvider<Customizer<FormClient>> customizers) {
-		return new FormClient(config.getForm().getLoginUrl(), new SimpleTestUsernamePasswordAuthenticator()) {
+	public FormClient formClient(ObjectProvider<Authenticator> authenticator,
+	                             ObjectProvider<Customizer<FormClient>> customizers) {
+		return new FormClient(config.getForm().getLoginUrl(), authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				final Http.Form form = config.getForm();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				hasTextpropertyMapper.from(form::getUsernameParameter).to(this::setUsernameParameter);
 				hasTextpropertyMapper.from(form::getPasswordParameter).to(this::setPasswordParameter);
 
+				super.internalInit(forceReinit);
 				afterIndirectClientInitialized(this, config, form);
+				customizer(this, customizers);
 			}
 
 		};
@@ -283,16 +258,16 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@Bean(name = "indirectBasicAuthClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled")
-	public IndirectBasicAuthClient indirectBasicAuthClient(
-			ObjectProvider<Customizer<IndirectBasicAuthClient>> customizers) {
+	public IndirectBasicAuthClient indirectBasicAuthClient(ObjectProvider<Authenticator> authenticator,
+	                                                       ObjectProvider<Customizer<IndirectBasicAuthClient>> customizers) {
 		return new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),
-				new SimpleTestUsernamePasswordAuthenticator()) {
+				authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getIndirectBasicAuth());
+				customizer(this, customizers);
 			}
 
 		};

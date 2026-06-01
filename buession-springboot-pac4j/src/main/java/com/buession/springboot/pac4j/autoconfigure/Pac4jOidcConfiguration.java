@@ -83,8 +83,8 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getApple());
+				customizer(this, customizers);
 			}
 
 		};
@@ -108,8 +108,8 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getAzureAd2());
+				customizer(this, customizers);
 			}
 
 		};
@@ -130,8 +130,8 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getGoogle());
+				customizer(this, customizers);
 			}
 
 		};
@@ -156,8 +156,8 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getKeycloak());
+				customizer(this, customizers);
 			}
 
 		};

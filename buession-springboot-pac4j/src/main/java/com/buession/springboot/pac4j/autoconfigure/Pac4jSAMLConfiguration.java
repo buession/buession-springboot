@@ -157,10 +157,6 @@ public class Pac4jSAMLConfiguration extends AbstractPac4jClientConfiguration<Sam
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-				afterClientInitialized(this, config, config);
-
 				nonNullpropertyMapper.from(config::getSignatureTrustEngineProvider).as(BeanUtils::instantiateClass)
 						.to(this::setSignatureTrustEngineProvider);
 				nonNullpropertyMapper.from(config::getLogoutValidator).as(BeanUtils::instantiateClass)
@@ -180,6 +176,10 @@ public class Pac4jSAMLConfiguration extends AbstractPac4jClientConfiguration<Sam
 						.to(this::setSoapPipelineProvider);
 				nonNullpropertyMapper.from(config::getLogoutRequestMessageSender).as(BeanUtils::instantiateClass)
 						.to(this::setLogoutRequestMessageSender);
+
+				super.internalInit(forceReinit);
+				afterClientInitialized(this, config, config);
+				customizer(this, customizers);
 			}
 
 		};

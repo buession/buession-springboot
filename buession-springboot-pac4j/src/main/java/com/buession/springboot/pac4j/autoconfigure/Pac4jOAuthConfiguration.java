@@ -62,8 +62,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth10Client(this, config.getBitbucket());
+				customizer(this, customizers);
 			}
 
 		};
@@ -79,14 +79,13 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Cas cas = config.getCas();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(cas::getImplicitFlow).to(this::setImplicitFlow);
 				hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(this::setCasLogoutUrl);
 				nonNullpropertyMapper.from(cas::getAccessTokenVerb).to(this::setAccessTokenVerb);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, cas);
+				customizer(this, customizers);
 			}
 
 		};
@@ -101,8 +100,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getDropBox());
+				customizer(this, customizers);
 			}
 
 		};
@@ -118,13 +117,12 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Facebook facebook = config.getFacebook();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(facebook::getFields).to(this::setFields);
 				nonNullpropertyMapper.from(facebook::getLimit).to(this::setLimit);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, facebook);
+				customizer(this, customizers);
 			}
 
 		};
@@ -138,13 +136,13 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				this.setKey(config.getKey());
 				this.setSecret(config.getSecret());
 
+				super.internalInit(forceReinit);
+
 				initOAuth20Client(this, config.getFigShare());
+				customizer(this, customizers);
 			}
 
 		};
@@ -159,8 +157,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getFoursquare());
+				customizer(this, customizers);
 			}
 
 		};
@@ -176,12 +174,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Generic generic = config.getGeneric();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				this.setKey(config.getKey());
 				this.setSecret(config.getSecret());
-
 				hasTextpropertyMapper.from(generic.getAuthUrl()).to(this::setAuthUrl);
 				hasTextpropertyMapper.from(generic.getTokenUrl()).to(this::setTokenUrl);
 				hasTextpropertyMapper.from(generic.getProfileUrl()).to(this::setProfileUrl);
@@ -192,7 +186,10 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 				hasTextpropertyMapper.from(generic.getProfileVerb()).to(this::setProfileVerb);
 				hasTextpropertyMapper.from(generic.getProfileAttrs()).to(this::setProfileAttrs);
 
+				super.internalInit(forceReinit);
+
 				initOAuth20Client(this, generic);
+				customizer(this, customizers);
 			}
 
 		};
@@ -207,8 +204,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getGitHub());
+				customizer(this, customizers);
 			}
 
 		};
@@ -224,13 +221,12 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				OAuth.Google2 google2 = config.getGoogle2();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(google2::getScope)
 						.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(this::setScope);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, google2);
+				customizer(this, customizers);
 			}
 
 		};
@@ -245,8 +241,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getHiOrgServer());
+				customizer(this, customizers);
 			}
 
 		};
@@ -261,8 +257,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getLinkedIn2());
+				customizer(this, customizers);
 			}
 
 		};
@@ -275,6 +271,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
 
 		initOAuth20Client(okClient, config.getOk());
+		customizer(okClient, customizers);
 
 		return okClient;
 	}
@@ -288,8 +285,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getPayPal());
+				customizer(this, customizers);
 			}
 
 		};
@@ -305,12 +302,11 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Qq qq = config.getQq();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(qq::getScopes).to(this::setScopes);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, qq);
+				customizer(this, customizers);
 			}
 
 		};
@@ -326,12 +322,11 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Strava strava = config.getStrava();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(strava::getApprovalPrompt).to(this::setApprovalPrompt);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, strava);
+				customizer(this, customizers);
 			}
 
 		};
@@ -347,14 +342,13 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Twitter twitter = config.getTwitter();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(twitter::getAlwaysConfirmAuthorization)
 						.to(this::setAlwaysConfirmAuthorization);
 				nonNullpropertyMapper.from(twitter::getIncludeEmail).to(this::setIncludeEmail);
 
+				super.internalInit(forceReinit);
 				initOAuth10Client(this, twitter);
+				customizer(this, customizers);
 			}
 
 		};
@@ -369,8 +363,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getVk());
+				customizer(this, customizers);
 			}
 
 		};
@@ -386,12 +380,11 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Wechat wechat = config.getWechat();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(wechat::getScopes).to(this::setScopes);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, wechat);
+				customizer(this, customizers);
 			}
 
 		};
@@ -407,13 +400,12 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			protected void internalInit(final boolean forceReinit) {
 				final OAuth.Weibo weibo = config.getWeibo();
 
-				super.internalInit(forceReinit);
-				customizer(this, customizers);
-
 				nonNullpropertyMapper.from(weibo::getScope)
 						.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(this::setScope);
 
+				super.internalInit(forceReinit);
 				initOAuth20Client(this, weibo);
+				customizer(this, customizers);
 			}
 
 		};
@@ -428,8 +420,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getWindowsLive());
+				customizer(this, customizers);
 			}
 
 		};
@@ -444,8 +436,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth20Client(this, config.getWordPress());
+				customizer(this, customizers);
 			}
 
 		};
@@ -460,8 +452,8 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				initOAuth10Client(this, config.getYahoo());
+				customizer(this, customizers);
 			}
 
 		};

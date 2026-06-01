@@ -26,6 +26,7 @@ package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.Customizer;
 import com.buession.springboot.pac4j.config.Kerberos;
+import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.kerberos.client.direct.DirectKerberosClient;
 import org.pac4j.kerberos.client.indirect.IndirectKerberosClient;
 import org.springframework.beans.factory.ObjectProvider;
@@ -56,14 +57,15 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	@Bean(name = "directKerberosClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Kerberos.PREFIX, name = "direct.enabled")
-	public DirectKerberosClient directKerberosClient(ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
-		return new DirectKerberosClient() {
+	public DirectKerberosClient directKerberosClient(ObjectProvider<Authenticator> authenticator,
+	                                                 ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
+		return new DirectKerberosClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterDirectClientInitialized(this, config, config.getDirect());
+				customizer(this, customizers);
 			}
 
 		};
@@ -76,15 +78,15 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	@Bean(name = "indirectKerberosClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Kerberos.PREFIX, name = "indirect.enabled")
-	public IndirectKerberosClient indirectKerberosClient(
-			ObjectProvider<Customizer<IndirectKerberosClient>> customizers) {
-		return new IndirectKerberosClient() {
+	public IndirectKerberosClient indirectKerberosClient(ObjectProvider<Authenticator> authenticator,
+	                                                     ObjectProvider<Customizer<IndirectKerberosClient>> customizers) {
+		return new IndirectKerberosClient(authenticator.getIfAvailable()) {
 
 			@Override
 			protected void internalInit(final boolean forceReinit) {
 				super.internalInit(forceReinit);
-				customizer(this, customizers);
 				afterIndirectClientInitialized(this, config, config.getIndirect());
+				customizer(this, customizers);
 			}
 
 		};

@@ -33,6 +33,7 @@ import org.pac4j.springframework.web.SecurityFilter;
 import org.pac4j.springframework.web.SecurityInterceptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -100,7 +101,9 @@ public class Pac4jWebFilterConfiguration {
 
 	}
 
+	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	@ConditionalOnClass({SecurityInterceptor.class})
 	static class Servlet extends Base {
 
 		public Servlet(Pac4jProperties properties, Config config) {
@@ -121,7 +124,9 @@ public class Pac4jWebFilterConfiguration {
 
 	}
 
+	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnClass({SecurityFilter.class})
 	static class WebFlux extends Base {
 
 		public WebFlux(Pac4jProperties properties, Config config) {

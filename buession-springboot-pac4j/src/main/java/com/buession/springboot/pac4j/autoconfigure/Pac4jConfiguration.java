@@ -102,15 +102,15 @@ public class Pac4jConfiguration {
 
 	@AutoConfiguration
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class Pac4jServletConfigurerAdapterConfiguration extends Pac4jServletConfigurerAdapter {
+	static class Servlet extends Pac4jServletConfigurerAdapter {
 
 	}
 
 	@AutoConfiguration
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	static class Pac4jWebFluxConfigurerAdapterConfiguration extends Pac4jWebFluxConfigurerAdapter {
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	static class WebFlux extends Pac4jWebFluxConfigurerAdapter {
 
-		public Pac4jWebFluxConfigurerAdapterConfiguration(ConfigurableBeanFactory beanFactory) {
+		public WebFlux(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, new ReactiveAdapterRegistry());
 		}
 

@@ -26,11 +26,13 @@
 
 - **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter
 - 删除模块 buession-springboot-velocity
+- Pac4j 中 Customizer&lt;Client&gt; 优先级提至最高
 
 
 ### 🐞 Bug 修复
 
 - Pac4j JWT 中不恰当的配置
+- Pac4j Client internalInit 中有对配置属性进行赋值的，放到 super.internalInit() 后，导致赋值未起作用的 BUG
 
 
 ---
