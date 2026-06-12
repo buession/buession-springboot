@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.httpclient.autoconfigure;
@@ -45,20 +45,34 @@ public class HttpClientProperties extends Configuration {
 	@NestedConfigurationProperty
 	private OkHttp okHttp = new OkHttp();
 
-	public ApacheClient getApacheClient(){
+	/**
+	 * @since 4.0.0
+	 */
+	@NestedConfigurationProperty
+	private Jdk jdk = new Jdk();
+
+	public ApacheClient getApacheClient() {
 		return apacheClient;
 	}
 
-	public void setApacheClient(ApacheClient apacheClient){
+	public void setApacheClient(ApacheClient apacheClient) {
 		this.apacheClient = apacheClient;
 	}
 
-	public OkHttp getOkHttp(){
+	public OkHttp getOkHttp() {
 		return okHttp;
 	}
 
-	public void setOkHttp(OkHttp okHttp){
+	public void setOkHttp(OkHttp okHttp) {
 		this.okHttp = okHttp;
+	}
+
+	public Jdk getJdk() {
+		return jdk;
+	}
+
+	public void setJdk(Jdk jdk) {
+		this.jdk = jdk;
 	}
 
 	public final static class ApacheClient {
@@ -67,25 +81,29 @@ public class HttpClientProperties extends Configuration {
 
 		private Class<? extends ThreadFactory> threadFactory;
 
-		public IOReactorConfig getIoReactor(){
+		public IOReactorConfig getIoReactor() {
 			return ioReactor;
 		}
 
-		public void setIoReactor(IOReactorConfig ioReactor){
+		public void setIoReactor(IOReactorConfig ioReactor) {
 			this.ioReactor = ioReactor;
 		}
 
-		public Class<? extends ThreadFactory> getThreadFactory(){
+		public Class<? extends ThreadFactory> getThreadFactory() {
 			return threadFactory;
 		}
 
-		public void setThreadFactory(Class<? extends ThreadFactory> threadFactory){
+		public void setThreadFactory(Class<? extends ThreadFactory> threadFactory) {
 			this.threadFactory = threadFactory;
 		}
 
 	}
 
 	public final static class OkHttp {
+
+	}
+
+	public final static class Jdk {
 
 	}
 
