@@ -39,6 +39,7 @@ import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -90,7 +91,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(name = "jwtAuthenticator")
 	public JwtAuthenticator jwtAuthenticator(SecretSignatureConfiguration signatureConfiguration,
 	                                         SecretEncryptionConfiguration secretEncryptionConfiguration) {
 		JwtAuthenticator jwtAuthenticator = new JwtAuthenticator(signatureConfiguration, secretEncryptionConfiguration);
@@ -104,7 +105,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@Bean(name = "jwtHeaderClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "header.enabled")
-	public HeaderClient jwtHeaderClient(ObjectProvider<Authenticator> authenticator,
+	public HeaderClient jwtHeaderClient(@Qualifier("jwtAuthenticator") ObjectProvider<Authenticator> authenticator,
 	                                    ObjectProvider<Customizer<HeaderClient>> customizers) {
 		return new HeaderClient(config.getHeader().getHeaderName(), config.getHeader().getPrefixHeader(),
 				authenticator.getIfAvailable()) {
@@ -122,8 +123,9 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@Bean(name = "jwtParameterClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "parameter.enabled")
-	public ParameterClient jwtParameterClient(ObjectProvider<Authenticator> authenticator,
-	                                          ObjectProvider<Customizer<ParameterClient>> customizers) {
+	public ParameterClient jwtParameterClient(
+			@Qualifier("jwtAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<ParameterClient>> customizers) {
 		return new ParameterClient(config.getParameter().getParameterName(), authenticator.getIfAvailable()) {
 
 			@Override

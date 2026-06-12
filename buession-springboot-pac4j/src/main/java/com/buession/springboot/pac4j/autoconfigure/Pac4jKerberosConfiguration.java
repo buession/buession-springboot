@@ -30,6 +30,7 @@ import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.kerberos.client.direct.DirectKerberosClient;
 import org.pac4j.kerberos.client.indirect.IndirectKerberosClient;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -57,8 +58,9 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	@Bean(name = "directKerberosClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Kerberos.PREFIX, name = "direct.enabled")
-	public DirectKerberosClient directKerberosClient(ObjectProvider<Authenticator> authenticator,
-	                                                 ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
+	public DirectKerberosClient directKerberosClient(
+			@Qualifier("directKerberosClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
 		return new DirectKerberosClient(authenticator.getIfAvailable()) {
 
 			@Override
@@ -78,8 +80,9 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	@Bean(name = "indirectKerberosClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Kerberos.PREFIX, name = "indirect.enabled")
-	public IndirectKerberosClient indirectKerberosClient(ObjectProvider<Authenticator> authenticator,
-	                                                     ObjectProvider<Customizer<IndirectKerberosClient>> customizers) {
+	public IndirectKerberosClient indirectKerberosClient(
+			@Qualifier("indirectKerberosClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<IndirectKerberosClient>> customizers) {
 		return new IndirectKerberosClient(authenticator.getIfAvailable()) {
 
 			@Override
