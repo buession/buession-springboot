@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
@@ -28,6 +28,7 @@ import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.config.*;
 import com.buession.lang.Constants;
+import com.buession.springboot.datasource.core.DynamicUrlBuilder;
 import com.buession.springboot.datasource.exception.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -256,11 +257,14 @@ public class DataSourceProperties {
 	/**
 	 * Determine the url to use based on this configuration and the environment.
 	 *
+	 * @param builder
+	 * 		DynamicUrlBuilder
+	 *
 	 * @return The url to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determineUrl() {
+	public String determineUrl(DynamicUrlBuilder builder) {
 		if(Validate.hasText(determineUrl)){
 			return determineUrl;
 		}
@@ -268,6 +272,13 @@ public class DataSourceProperties {
 		if(Validate.hasText(url)){
 			determineUrl = url;
 			return determineUrl;
+		}
+
+		if(builder != null){
+			determineUrl = builder.build();
+			if(Validate.hasText(determineUrl)){
+				return determineUrl;
+			}
 		}
 
 		String databaseName = getName();
@@ -278,13 +289,13 @@ public class DataSourceProperties {
 			}
 		}
 
-		String url = databaseName != null ? embeddedDatabaseConnection.getUrl(databaseName) : null;
-		if(Validate.isBlank(url)){
+		determineUrl = databaseName != null ? embeddedDatabaseConnection.getUrl(databaseName) : null;
+		if(Validate.isBlank(determineUrl)){
 			throw new DataSourceBeanCreationException(this, embeddedDatabaseConnection, "Failed to determine suitable" +
 					" jdbc url");
 		}
 
-		return url;
+		return determineUrl;
 	}
 
 	/**
@@ -336,11 +347,14 @@ public class DataSourceProperties {
 	/**
 	 * Determine the username to use based on this configuration and the environment.
 	 *
+	 * @param builder
+	 * 		DynamicUrlBuilder
+	 *
 	 * @return The username to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determineUsername() {
+	public String determineUsername(DynamicUrlBuilder builder) {
 		if(Validate.hasText(determineUsername)){
 			return determineUsername;
 		}
@@ -349,7 +363,7 @@ public class DataSourceProperties {
 			determineUsername = username;
 		}else{
 			determineUsername = EmbeddedDatabaseConnection.isEmbedded(
-					determineDriverClassName(), determineUrl()) ? DEFAULT_USERNAME : null;
+					determineDriverClassName(), determineUrl(builder)) ? DEFAULT_USERNAME : null;
 		}
 
 		return determineUsername;
@@ -381,11 +395,14 @@ public class DataSourceProperties {
 	/**
 	 * Determine the password to use based on this configuration and the environment.
 	 *
+	 * @param builder
+	 * 		DynamicUrlBuilder
+	 *
 	 * @return The password to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determinePassword() {
+	public String determinePassword(DynamicUrlBuilder builder) {
 		if(Validate.hasText(determinePassword)){
 			return determinePassword;
 		}
@@ -393,7 +410,8 @@ public class DataSourceProperties {
 		if(Validate.hasText(password)){
 			determinePassword = password;
 		}else{
-			determinePassword = EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl()) ?
+			determinePassword = EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(),
+					determineUrl(builder)) ?
 					Constants.EMPTY_STRING : null;
 		}
 

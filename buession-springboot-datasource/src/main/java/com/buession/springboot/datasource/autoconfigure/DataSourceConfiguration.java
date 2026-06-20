@@ -31,8 +31,10 @@ import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.*;
 import com.buession.jdbc.datasource.pool.*;
 import com.buession.springboot.datasource.core.DataSourceType;
+import com.buession.springboot.datasource.core.DynamicUrlBuilder;
 import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -59,14 +61,13 @@ public class DataSourceConfiguration {
 		this.properties = properties;
 	}
 
-	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration,
-			DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
+	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration, DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
 			final Class<DS> type, final DataSourceProperties dataSourceProperties, final C dataSourceConfig,
-			final P poolConfiguration, final Configurer<DS, C> customizer,
+			final P poolConfiguration, final DynamicUrlBuilder dynamicUrlBuilder, final Configurer<DS, C> customizer,
 			final Callback<ODS, DataSourceProperties> callback) {
 		final DataSourceInitializer<C, P, ODS, DS> dataSourceInitializer = new DataSourceInitializer<>(type,
 				dataSourceProperties, dataSourceConfig, poolConfiguration, customizer, callback);
-		return dataSourceInitializer.createDataSource();
+		return dataSourceInitializer.createDataSource(dynamicUrlBuilder);
 	}
 
 	/**
@@ -78,8 +79,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DHCP2,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DHCP2, matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
 
 		public Dbcp2(DataSourceProperties properties) {
@@ -88,9 +88,9 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".dbcp2")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(Dbcp2DataSource.class, properties, properties.getDbcp2(),
-					new Dbcp2PoolConfiguration(), (dataSource, config)->{
+					new Dbcp2PoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 						propertyMapper.from(config::getConnectionFactoryClassName)
 								.to(dataSource::setConnectionFactoryClassName);
 
@@ -145,8 +145,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(DruidDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DRUID,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DRUID, matchIfMissing = true)
 	static class Druid extends DataSourceConfiguration {
 
 		public Druid(DataSourceProperties properties) {
@@ -155,9 +154,9 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".druid")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(DruidDataSource.class, properties, properties.getDruid(),
-					new DruidPoolConfiguration(), (dataSource, config)->{
+					new DruidPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 						propertyMapper.from(config::getUserCallbackClassName).to(dataSource::setUserCallbackClassName);
 						propertyMapper.from(config::getPasswordCallbackClassName)
 								.to(dataSource::setPasswordCallbackClassName);
@@ -272,8 +271,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.HIKARI,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.HIKARI, matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
 
 		public Hikari(DataSourceProperties properties) {
@@ -282,9 +280,9 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".hikari")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(HikariDataSource.class, properties, properties.getHikari(),
-					new HikariPoolConfiguration(), (dataSource, config)->{
+					new HikariPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 						propertyMapper.from(config::getJndiName).to(dataSource::setJndiName);
 
 						propertyMapper.from(config::getConnectionTimeout).to(dataSource::setConnectionTimeout);
@@ -336,8 +334,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(PoolDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.ORACLE,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.ORACLE, matchIfMissing = true)
 	static class Oracle extends DataSourceConfiguration {
 
 		public Oracle(DataSourceProperties properties) {
@@ -346,9 +343,9 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".oracle")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(OracleDataSource.class, properties, properties.getOracle(),
-					new OraclePoolConfiguration(), (dataSource, config)->{
+					new OraclePoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 						propertyMapper.from(config::getNetworkProtocol).to(dataSource::setNetworkProtocol);
 						propertyMapper.from(config::getServerName).to(dataSource::setServerName);
 						propertyMapper.from(config::getPortNumber).to(dataSource::setPortNumber);
@@ -427,8 +424,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.TOMCAT,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.TOMCAT, matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
 
 		public Tomcat(DataSourceProperties properties) {
@@ -437,9 +433,9 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".tomcat")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(TomcatDataSource.class, properties, properties.getTomcat(),
-					new TomcatPoolConfiguration(), (dataSource, config)->{
+					new TomcatPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 						propertyMapper.from(config::getJndiName).to(dataSource::setJndiName);
 
 						propertyMapper.from(config::getAlternateUsernameAllowed)
@@ -454,8 +450,7 @@ public class DataSourceConfiguration {
 						propertyMapper.from(config::getJdbcInterceptors).to(dataSource::setJdbcInterceptors);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					},
-					(dataSource, properties)->{
+					}, (dataSource, properties)->{
 						DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(dataSource.getUrl());
 						String validationQuery = databaseDriver.getValidationQuery();
 
@@ -514,9 +509,9 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(GenericDataSource.class, properties, properties.getGeneric(), null,
-					(dataSource, config)->{
+					dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 
 					}, (dataSource, config)->dataSource);
 		}

@@ -12,6 +12,7 @@
 
 - Application 支持设置父级上下文
 - Application 方法 customize、applicationStartedHook 支持接收命令行参数
+- 支持动态构建 JDBC URL
 - Pac4j Configuration 支持 Kerberos
 - Pac4j Configuration 支持 OIDC
 - Pac4j Configuration 支持 SAML
