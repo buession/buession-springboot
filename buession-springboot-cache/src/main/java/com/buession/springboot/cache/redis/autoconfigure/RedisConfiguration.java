@@ -60,11 +60,10 @@ public class RedisConfiguration {
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
 	public RedisTemplate redisTemplate(DataSource dataSource) {
-		final Serializer serializer = BeanUtils.instantiateClass(properties.getSerializer());
-		final Options.Builder builder = Options.Builder.getInstance()
-				.prefix(properties.getKeyPrefix())
-				.serializer(serializer)
-				.enableTransactionSupport(properties.isEnableTransactionSupport());
+		final Serializer serializer =
+				properties.getSerializer() == null ? null : BeanUtils.instantiateClass(properties.getSerializer());
+		final Options.Builder builder = Options.Builder.getInstance().prefix(properties.getKeyPrefix())
+				.serializer(serializer).enableTransactionSupport(properties.isEnableTransactionSupport());
 
 		if(logger.isTraceEnabled()){
 			logger.trace("RedisTemplate bean initialized success.");
