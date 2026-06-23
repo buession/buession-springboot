@@ -34,6 +34,7 @@
 
 - Pac4j JWT 中不恰当的配置
 - Pac4j Client internalInit 中有对配置属性进行赋值的，放到 super.internalInit() 后，导致赋值未起作用的 BUG
+- 修复 RedisTemplate 序列化/反序列化配置错误的问题
 
 
 ---

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -122,7 +122,7 @@ public class RedisProperties {
 	/**
 	 * 序列化方式
 	 */
-	private Serializer serializer;
+	private Class<? extends Serializer> serializer;
 
 	/**
 	 * 是否开启事务
@@ -436,7 +436,7 @@ public class RedisProperties {
 	 *
 	 * @return 序列化方式
 	 */
-	public Serializer getSerializer() {
+	public Class<? extends Serializer> getSerializer() {
 		return serializer;
 	}
 
@@ -446,7 +446,7 @@ public class RedisProperties {
 	 * @param serializer
 	 * 		序列化方式
 	 */
-	public void setSerializer(Serializer serializer) {
+	public void setSerializer(Class<? extends Serializer> serializer) {
 		this.serializer = serializer;
 	}
 
