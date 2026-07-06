@@ -62,29 +62,28 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfi
 
 	protected <CF extends BaseClientConfig, BCF extends BaseClientConfig, CLIENT extends BaseClient> void afterClientInitialized(
 			final CLIENT client, final CF config, final BCF clientConfig) {
+		client.setName(clientConfig.getName());
 		client.setMultiProfile(clientConfig.isMultiProfile());
 		client.setSaveProfileInSession(clientConfig.getSaveProfileInSession());
-		hasTextpropertyMapper.from(clientConfig::getName).to(client::setName);
 		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
 	}
 
 	protected <CF extends BaseClientConfig, ICF extends IndirectClientConfig, CLIENT extends IndirectClient> void afterIndirectClientInitialized(
-			final CLIENT client, final CF config, final ICF clientConfig) {
+			final CLIENT client, final CF config, final ICF clientConfig,
+			final ObjectProvider<Customizer<CLIENT>> customizers) {
 		afterClientInitialized(client, config, clientConfig);
 		hasTextpropertyMapper.from(clientConfig::getCallbackUrl).to(client::setCallbackUrl);
 		nonNullpropertyMapper.from(clientConfig::getCheckAuthenticationAttempt)
 				.to(client::setCheckAuthenticationAttempt);
 		nonNullpropertyMapper.from(clientConfig::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
 				.to(client::setAjaxRequestResolver);
+		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
 	}
 
 	protected <CF extends BaseClientConfig, DCF extends DirectClientConfig, CLIENT extends DirectClient> void afterDirectClientInitialized(
-			final CLIENT client, final CF config, final DCF clientConfig) {
+			final CLIENT client, final CF config, final DCF clientConfig,
+			final ObjectProvider<Customizer<CLIENT>> customizers) {
 		afterClientInitialized(client, config, clientConfig);
-	}
-
-	protected <CLIENT extends BaseClient> void customizer(final CLIENT client,
-	                                                      final ObjectProvider<Customizer<CLIENT>> customizers) {
 		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
 	}
 

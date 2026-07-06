@@ -230,7 +230,7 @@ public class Jwt extends BaseClientConfig {
 	 *
 	 * @since 4.0.0
 	 */
-	public class Header {
+	public class Header extends BaseHeaderConfig {
 
 		/**
 		 * 请求头名称
@@ -241,6 +241,13 @@ public class Jwt extends BaseClientConfig {
 		 * 请求头前缀
 		 */
 		private String prefixHeader = Constants.EMPTY_STRING;
+
+		/**
+		 * 构造函数
+		 */
+		public Header() {
+			super("jwt-header");
+		}
 
 		/**
 		 * 返回请求头名称
@@ -287,7 +294,7 @@ public class Jwt extends BaseClientConfig {
 	 *
 	 * @since 4.0.0
 	 */
-	public final static class Parameter {
+	public final static class Parameter extends DirectClientConfig {
 
 		/**
 		 * 参数名称
@@ -303,6 +310,13 @@ public class Jwt extends BaseClientConfig {
 		 * 是否支持 POST 请求
 		 */
 		private Boolean supportPostRequest;
+
+		/**
+		 * 构造函数
+		 */
+		public Parameter() {
+			super("jwt-parameter");
+		}
 
 		/**
 		 * 返回参数名称

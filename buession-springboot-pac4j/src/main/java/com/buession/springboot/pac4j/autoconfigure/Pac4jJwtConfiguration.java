@@ -29,7 +29,6 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.Customizer;
 import com.buession.core.utils.StringUtils;
 import com.buession.springboot.pac4j.config.Jwt;
-import org.pac4j.core.client.DirectClient;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.http.client.direct.HeaderClient;
 import org.pac4j.http.client.direct.ParameterClient;
@@ -107,17 +106,13 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	@ConditionalOnBooleanProperty(prefix = Jwt.PREFIX, name = "header.enabled")
 	public HeaderClient jwtHeaderClient(@Qualifier("jwtAuthenticator") ObjectProvider<Authenticator> authenticator,
 	                                    ObjectProvider<Customizer<HeaderClient>> customizers) {
-		return new HeaderClient(config.getHeader().getHeaderName(), config.getHeader().getPrefixHeader(),
-				authenticator.getIfAvailable()) {
+		final Jwt.Header header = config.getHeader();
+		final HeaderClient headerClient = new HeaderClient(header.getHeaderName(),
+				header.getPrefixHeader(), authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				clientApplyCommonProperties(this);
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(headerClient, config, header, customizers);
 
-		};
+		return headerClient;
 	}
 
 	@Bean(name = "jwtParameterClient")
@@ -126,26 +121,16 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	public ParameterClient jwtParameterClient(
 			@Qualifier("jwtAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<ParameterClient>> customizers) {
-		return new ParameterClient(config.getParameter().getParameterName(), authenticator.getIfAvailable()) {
+		final Jwt.Parameter parameter = config.getParameter();
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Jwt.Parameter parameter = config.getParameter();
+		final ParameterClient parameterClient = new ParameterClient(parameter.getParameterName(),
+				authenticator.getIfAvailable());
 
-				hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(this::setSupportGetRequest);
-				hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(this::setSupportPostRequest);
+		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
+		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
+		afterDirectClientInitialized(parameterClient, config, parameter, customizers);
 
-				super.internalInit(forceReinit);
-				clientApplyCommonProperties(this);
-				customizer(this, customizers);
-			}
-
-		};
-	}
-
-	private void clientApplyCommonProperties(final DirectClient client) {
-		hasTextpropertyMapper.from(config::getName).to(client::setName);
-		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
+		return parameterClient;
 	}
 
 }

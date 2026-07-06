@@ -596,7 +596,7 @@ public class Http extends BaseClientConfig {
 		 * 构造函数
 		 */
 		public Parameter() {
-			super("arameter");
+			super("parameter");
 		}
 
 		/**

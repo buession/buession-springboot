@@ -65,102 +65,72 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Oidc.PREFIX, name = "apple.enabled")
 	public AppleClient appleOidcClient(ObjectProvider<Customizer<AppleClient>> customizers) {
+		final Oidc.Apple apple = config.getApple();
 		final AppleOidcConfiguration appleOidcConfiguration = new AppleOidcConfiguration();
 
-		if(config.getApple() != null){
-			Oidc.Apple apple = config.getApple();
+		applyCommonConfiguration(apple, appleOidcConfiguration);
+		nonNullpropertyMapper.from(apple::getDiscoveryURI).to(appleOidcConfiguration::setDiscoveryURI);
+		nonNullpropertyMapper.from(apple::getPrivateKeyID).to(appleOidcConfiguration::setPrivateKeyID);
+		nonNullpropertyMapper.from(apple::getTeamId).to(appleOidcConfiguration::setTeamID);
+		nonNullpropertyMapper.from(apple::getStore).to(appleOidcConfiguration::setStore);
+		nonNullpropertyMapper.from(apple::getTimeout).to(appleOidcConfiguration::setTimeout);
 
-			applyCommonConfiguration(apple, appleOidcConfiguration);
-			nonNullpropertyMapper.from(apple::getDiscoveryURI).to(appleOidcConfiguration::setDiscoveryURI);
-			nonNullpropertyMapper.from(apple::getPrivateKeyID).to(appleOidcConfiguration::setPrivateKeyID);
-			nonNullpropertyMapper.from(apple::getTeamId).to(appleOidcConfiguration::setTeamID);
-			nonNullpropertyMapper.from(apple::getStore).to(appleOidcConfiguration::setStore);
-			nonNullpropertyMapper.from(apple::getTimeout).to(appleOidcConfiguration::setTimeout);
-		}
+		final AppleClient appleClient = new AppleClient(appleOidcConfiguration);
 
-		return new AppleClient(appleOidcConfiguration) {
+		afterIndirectClientInitialized(appleClient, config, apple, customizers);
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getApple());
-				customizer(this, customizers);
-			}
-
-		};
+		return appleClient;
 	}
 
 	@Bean(name = "azureAd2OidcClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Oidc.PREFIX, name = "azuread2.enabled")
 	public AzureAd2Client azureAd2OidcClient(ObjectProvider<Customizer<AzureAd2Client>> customizers) {
+		final Oidc.AzureAd2 keycloak = config.getAzureAd2();
 		final AzureAd2OidcConfiguration azureAd2OidcConfiguration = new AzureAd2OidcConfiguration();
 
-		if(config.getAzureAd2() != null){
-			Oidc.AzureAd2 keycloak = config.getAzureAd2();
+		applyCommonConfiguration(keycloak, azureAd2OidcConfiguration);
+		nonNullpropertyMapper.from(keycloak::getTenant).to(azureAd2OidcConfiguration::setTenant);
 
-			applyCommonConfiguration(keycloak, azureAd2OidcConfiguration);
-			nonNullpropertyMapper.from(keycloak::getTenant).to(azureAd2OidcConfiguration::setTenant);
-		}
+		final AzureAd2Client azureAd2Client = new AzureAd2Client(azureAd2OidcConfiguration);
 
-		return new AzureAd2Client(azureAd2OidcConfiguration) {
+		afterIndirectClientInitialized(azureAd2Client, config, keycloak, customizers);
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getAzureAd2());
-				customizer(this, customizers);
-			}
-
-		};
+		return azureAd2Client;
 	}
 
 	@Bean(name = "googleOidcClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Oidc.PREFIX, name = "google.enabled")
 	public GoogleOidcClient googleOidcClient(ObjectProvider<Customizer<GoogleOidcClient>> customizers) {
+		final Oidc.Google google = config.getGoogle();
 		final OidcConfiguration oidcConfiguration = new OidcConfiguration();
 
-		if(config.getGoogle() != null){
-			applyCommonConfiguration(config.getGoogle(), oidcConfiguration);
-		}
+		applyCommonConfiguration(google, oidcConfiguration);
 
-		return new GoogleOidcClient(oidcConfiguration) {
+		final GoogleOidcClient googleOidcClient = new GoogleOidcClient(oidcConfiguration);
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getGoogle());
-				customizer(this, customizers);
-			}
+		afterIndirectClientInitialized(googleOidcClient, config, google, customizers);
 
-		};
+		return googleOidcClient;
 	}
 
 	@Bean(name = "keycloakOidcClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = Oidc.PREFIX, name = "keycloak.enabled")
 	public KeycloakOidcClient keycloakOidcClient(ObjectProvider<Customizer<KeycloakOidcClient>> customizers) {
+		final Oidc.Keycloak keycloak = config.getKeycloak();
 		final KeycloakOidcConfiguration keycloakOidcConfiguration = new KeycloakOidcConfiguration();
 
-		if(config.getKeycloak() != null){
-			Oidc.Keycloak keycloak = config.getKeycloak();
+		applyCommonConfiguration(keycloak, keycloakOidcConfiguration);
+		nonNullpropertyMapper.from(keycloak::getRealm).to(keycloakOidcConfiguration::setRealm);
+		nonNullpropertyMapper.from(keycloak::getBaseUri).to(keycloakOidcConfiguration::setBaseUri);
 
-			applyCommonConfiguration(keycloak, keycloakOidcConfiguration);
-			nonNullpropertyMapper.from(keycloak::getRealm).to(keycloakOidcConfiguration::setRealm);
-			nonNullpropertyMapper.from(keycloak::getBaseUri).to(keycloakOidcConfiguration::setBaseUri);
-		}
+		final KeycloakOidcClient keycloakOidcClient = new KeycloakOidcClient(keycloakOidcConfiguration);
 
-		return new KeycloakOidcClient(keycloakOidcConfiguration) {
+		afterIndirectClientInitialized(keycloakOidcClient, config, keycloak, customizers);
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getKeycloak());
-				customizer(this, customizers);
-			}
-
-		};
+		return keycloakOidcClient;
 	}
 
 	private void applyCommonConfiguration(final Oidc.BaseOidcClientConfig config,

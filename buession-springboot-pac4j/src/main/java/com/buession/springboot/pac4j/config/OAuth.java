@@ -46,16 +46,6 @@ public class OAuth extends BaseClientConfig {
 	public final static String PREFIX = BaseClientConfig.PROPERTIES_PREFIX + ".oauth";
 
 	/**
-	 * Key
-	 */
-	private String key;
-
-	/**
-	 * Secret
-	 */
-	private String secret;
-
-	/**
 	 * 登录成功跳转地址
 	 */
 	private String callbackUrl;
@@ -196,44 +186,6 @@ public class OAuth extends BaseClientConfig {
 	 */
 	public OAuth() {
 		super(null);
-	}
-
-	/**
-	 * 返回 Key
-	 *
-	 * @return Key
-	 */
-	public String getKey() {
-		return key;
-	}
-
-	/**
-	 * 设置 Key
-	 *
-	 * @param key
-	 * 		Key
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
-	 * 返回 Secret
-	 *
-	 * @return Secret
-	 */
-	public String getSecret() {
-		return secret;
-	}
-
-	/**
-	 * 设置 Secret
-	 *
-	 * @param secret
-	 * 		Secret
-	 */
-	public void setSecret(String secret) {
-		this.secret = secret;
 	}
 
 	/**
@@ -676,6 +628,16 @@ public class OAuth extends BaseClientConfig {
 	public abstract static class BaseOAuthConfig extends IndirectClientConfig {
 
 		/**
+		 * Key
+		 */
+		private String key;
+
+		/**
+		 * Secret
+		 */
+		private String secret;
+
+		/**
 		 * Token 是否作为请求头
 		 */
 		protected Boolean tokenAsHeader;
@@ -698,6 +660,44 @@ public class OAuth extends BaseClientConfig {
 		 */
 		public BaseOAuthConfig(String name) {
 			super(name);
+		}
+
+		/**
+		 * 返回 Key
+		 *
+		 * @return Key
+		 */
+		public String getKey() {
+			return key;
+		}
+
+		/**
+		 * 设置 Key
+		 *
+		 * @param key
+		 * 		Key
+		 */
+		public void setKey(String key) {
+			this.key = key;
+		}
+
+		/**
+		 * 返回 Secret
+		 *
+		 * @return Secret
+		 */
+		public String getSecret() {
+			return secret;
+		}
+
+		/**
+		 * 设置 Secret
+		 *
+		 * @param secret
+		 * 		Secret
+		 */
+		public void setSecret(String secret) {
+			this.secret = secret;
 		}
 
 		/**

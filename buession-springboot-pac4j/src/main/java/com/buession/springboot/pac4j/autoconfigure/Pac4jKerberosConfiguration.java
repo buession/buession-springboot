@@ -61,16 +61,11 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	public DirectKerberosClient directKerberosClient(
 			@Qualifier("directKerberosClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
-		return new DirectKerberosClient(authenticator.getIfAvailable()) {
+		final DirectKerberosClient directKerberosClient = new DirectKerberosClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, config.getDirect());
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(directKerberosClient, config, config.getDirect(), customizers);
 
-		};
+		return directKerberosClient;
 	}
 
 	/* Direct Client 结束 */
@@ -83,16 +78,12 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 	public IndirectKerberosClient indirectKerberosClient(
 			@Qualifier("indirectKerberosClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<IndirectKerberosClient>> customizers) {
-		return new IndirectKerberosClient(authenticator.getIfAvailable()) {
+		final IndirectKerberosClient indirectKerberosClient =
+				new IndirectKerberosClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getIndirect());
-				customizer(this, customizers);
-			}
+		afterIndirectClientInitialized(indirectKerberosClient, config, config.getIndirect(), customizers);
 
-		};
+		return indirectKerberosClient;
 	}
 
 	/* Indirect Client 结束 */

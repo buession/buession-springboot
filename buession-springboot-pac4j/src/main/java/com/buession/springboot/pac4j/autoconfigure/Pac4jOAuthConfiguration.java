@@ -57,221 +57,167 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "bitbucket.enabled")
 	public BitbucketClient bitbucketClient(ObjectProvider<Customizer<BitbucketClient>> customizers) {
-		return new BitbucketClient(config.getKey(), config.getSecret()) {
+		final OAuth.Bitbucket bitbucket = config.getBitbucket();
+		final BitbucketClient bitbucketClient = new BitbucketClient(bitbucket.getKey(), bitbucket.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth10Client(this, config.getBitbucket());
-				customizer(this, customizers);
-			}
+		initOAuth10Client(bitbucketClient, bitbucket, customizers);
 
-		};
+		return bitbucketClient;
 	}
 
 	@Bean(name = "casOAuthWrapperClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "cas.enabled")
 	public CasOAuthWrapperClient casOAuthWrapperClient(ObjectProvider<Customizer<CasOAuthWrapperClient>> customizers) {
-		return new CasOAuthWrapperClient(config.getKey(), config.getSecret(), config.getCas().getCasOAuthUrl()) {
+		final OAuth.Cas cas = config.getCas();
+		final CasOAuthWrapperClient casOAuthWrapperClient = new CasOAuthWrapperClient(cas.getKey(), cas.getSecret(),
+				cas.getCasOAuthUrl());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Cas cas = config.getCas();
+		casOAuthWrapperClient.setName(cas.getCasOAuthUrl());
 
-				nonNullpropertyMapper.from(cas::getImplicitFlow).to(this::setImplicitFlow);
-				hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(this::setCasLogoutUrl);
-				nonNullpropertyMapper.from(cas::getAccessTokenVerb).to(this::setAccessTokenVerb);
+		nonNullpropertyMapper.from(cas::getImplicitFlow).to(casOAuthWrapperClient::setImplicitFlow);
+		hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
+		nonNullpropertyMapper.from(cas::getAccessTokenVerb).to(casOAuthWrapperClient::setAccessTokenVerb);
 
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, cas);
-				customizer(this, customizers);
-			}
+		initOAuth20Client(casOAuthWrapperClient, cas, customizers);
 
-		};
+		return casOAuthWrapperClient;
 	}
 
 	@Bean(name = "dropboxClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "dropbox.enabled")
 	public DropBoxClient dropboxClient(ObjectProvider<Customizer<DropBoxClient>> customizers) {
-		return new DropBoxClient(config.getKey(), config.getSecret()) {
+		final OAuth.DropBox dropBox = config.getDropBox();
+		final DropBoxClient dropBoxClient = new DropBoxClient(dropBox.getKey(), dropBox.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getDropBox());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(dropBoxClient, dropBox, customizers);
 
-		};
+		return dropBoxClient;
 	}
 
 	@Bean(name = "facebookClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "facebook.enabled")
 	public FacebookClient facebookClient(ObjectProvider<Customizer<FacebookClient>> customizers) {
-		return new FacebookClient(config.getKey(), config.getSecret()) {
+		final OAuth.Facebook facebook = config.getFacebook();
+		final FacebookClient facebookClient = new FacebookClient(facebook.getKey(), facebook.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Facebook facebook = config.getFacebook();
+		nonNullpropertyMapper.from(facebook::getFields).to(facebookClient::setFields);
+		nonNullpropertyMapper.from(facebook::getLimit).to(facebookClient::setLimit);
+		initOAuth20Client(facebookClient, facebook, customizers);
 
-				nonNullpropertyMapper.from(facebook::getFields).to(this::setFields);
-				nonNullpropertyMapper.from(facebook::getLimit).to(this::setLimit);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, facebook);
-				customizer(this, customizers);
-			}
-
-		};
+		return facebookClient;
 	}
 
 	@Bean(name = "figShareClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "fig-share.enabled")
 	public FigShareClient figShareClient(ObjectProvider<Customizer<FigShareClient>> customizers) {
-		return new FigShareClient() {
+		final OAuth.FigShare figShare = config.getFigShare();
+		final FigShareClient figShareClient = new FigShareClient();
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				this.setKey(config.getKey());
-				this.setSecret(config.getSecret());
+		figShareClient.setKey(figShare.getKey());
+		figShareClient.setSecret(figShare.getSecret());
+		initOAuth20Client(figShareClient, figShare, customizers);
 
-				super.internalInit(forceReinit);
-
-				initOAuth20Client(this, config.getFigShare());
-				customizer(this, customizers);
-			}
-
-		};
+		return figShareClient;
 	}
 
 	@Bean(name = "foursquareClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "foursquare.enabled")
 	public FoursquareClient foursquareClient(ObjectProvider<Customizer<FoursquareClient>> customizers) {
-		return new FoursquareClient(config.getKey(), config.getSecret()) {
+		final OAuth.Foursquare foursquare = config.getFoursquare();
+		final FoursquareClient foursquareClient = new FoursquareClient(foursquare.getKey(), foursquare.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getFoursquare());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(foursquareClient, foursquare, customizers);
 
-		};
+		return foursquareClient;
 	}
 
 	@Bean(name = "genericOAuth20Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "generic.enabled")
 	public GenericOAuth20Client genericOAuth20Client(ObjectProvider<Customizer<GenericOAuth20Client>> customizers) {
-		return new GenericOAuth20Client() {
+		final OAuth.Generic generic = config.getGeneric();
+		final GenericOAuth20Client genericOAuth20Client = new GenericOAuth20Client();
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Generic generic = config.getGeneric();
+		genericOAuth20Client.setKey(generic.getKey());
+		genericOAuth20Client.setSecret(generic.getSecret());
+		hasTextpropertyMapper.from(generic.getAuthUrl()).to(genericOAuth20Client::setAuthUrl);
+		hasTextpropertyMapper.from(generic.getTokenUrl()).to(genericOAuth20Client::setTokenUrl);
+		hasTextpropertyMapper.from(generic.getProfileUrl()).to(genericOAuth20Client::setProfileUrl);
+		hasTextpropertyMapper.from(generic.getProfilePath()).to(genericOAuth20Client::setProfilePath);
+		hasTextpropertyMapper.from(generic.getProfileId()).to(genericOAuth20Client::setProfileId);
+		hasTextpropertyMapper.from(generic.getClientAuthenticationMethod())
+				.to(genericOAuth20Client::setClientAuthenticationMethod);
+		hasTextpropertyMapper.from(generic.getProfileVerb()).to(genericOAuth20Client::setProfileVerb);
+		hasTextpropertyMapper.from(generic.getProfileAttrs()).to(genericOAuth20Client::setProfileAttrs);
+		initOAuth20Client(genericOAuth20Client, generic, customizers);
 
-				this.setKey(config.getKey());
-				this.setSecret(config.getSecret());
-				hasTextpropertyMapper.from(generic.getAuthUrl()).to(this::setAuthUrl);
-				hasTextpropertyMapper.from(generic.getTokenUrl()).to(this::setTokenUrl);
-				hasTextpropertyMapper.from(generic.getProfileUrl()).to(this::setProfileUrl);
-				hasTextpropertyMapper.from(generic.getProfilePath()).to(this::setProfilePath);
-				hasTextpropertyMapper.from(generic.getProfileId()).to(this::setProfileId);
-				hasTextpropertyMapper.from(generic.getClientAuthenticationMethod())
-						.to(this::setClientAuthenticationMethod);
-				hasTextpropertyMapper.from(generic.getProfileVerb()).to(this::setProfileVerb);
-				hasTextpropertyMapper.from(generic.getProfileAttrs()).to(this::setProfileAttrs);
-
-				super.internalInit(forceReinit);
-
-				initOAuth20Client(this, generic);
-				customizer(this, customizers);
-			}
-
-		};
+		return genericOAuth20Client;
 	}
 
 	@Bean(name = "githubClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "github.enabled")
 	public GitHubClient githubClient(ObjectProvider<Customizer<GitHubClient>> customizers) {
-		return new GitHubClient(config.getKey(), config.getSecret()) {
+		final OAuth.GitHub github = config.getGitHub();
+		final GitHubClient gitHubClient = new GitHubClient(github.getKey(), github.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getGitHub());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(gitHubClient, github, customizers);
 
-		};
+		return gitHubClient;
 	}
 
 	@Bean(name = "google2Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "google2.enabled")
 	public Google2Client google2Client(ObjectProvider<Customizer<Google2Client>> customizers) {
-		return new Google2Client(config.getKey(), config.getSecret()) {
+		final OAuth.Google2 google2 = config.getGoogle2();
+		final Google2Client google2Client = new Google2Client(google2.getKey(), google2.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				OAuth.Google2 google2 = config.getGoogle2();
+		nonNullpropertyMapper.from(google2::getScope)
+				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(google2Client::setScope);
+		initOAuth20Client(google2Client, google2, customizers);
 
-				nonNullpropertyMapper.from(google2::getScope)
-						.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(this::setScope);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, google2);
-				customizer(this, customizers);
-			}
-
-		};
+		return google2Client;
 	}
 
 	@Bean(name = "hiOrgServerClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "hi-org-server.enabled")
 	public HiOrgServerClient hiOrgServerClient(ObjectProvider<Customizer<HiOrgServerClient>> customizers) {
-		return new HiOrgServerClient(config.getKey(), config.getSecret()) {
+		final OAuth.HiOrgServer hiOrgServer = config.getHiOrgServer();
+		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(hiOrgServer.getKey(),
+				hiOrgServer.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getHiOrgServer());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(hiOrgServerClient, hiOrgServer, customizers);
 
-		};
+		return hiOrgServerClient;
 	}
 
 	@Bean(name = "linkedin2Client")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "linkedin2.enabled")
 	public LinkedIn2Client linkedin2Client(ObjectProvider<Customizer<LinkedIn2Client>> customizers) {
-		return new LinkedIn2Client(config.getKey(), config.getSecret()) {
+		final OAuth.LinkedIn2 linkedIn2 = config.getLinkedIn2();
+		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(linkedIn2.getKey(), linkedIn2.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getLinkedIn2());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(linkedIn2Client, linkedIn2, customizers);
 
-		};
+		return linkedIn2Client;
 	}
 
 	@Bean(name = "okClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "ok.enabled")
 	public OkClient okClient(ObjectProvider<Customizer<OkClient>> customizers) {
-		final OkClient okClient = new OkClient(config.getKey(), config.getSecret(), config.getOk().getPublicKey());
+		final OAuth.Ok ok = config.getOk();
+		final OkClient okClient = new OkClient(ok.getKey(), ok.getSecret(), ok.getPublicKey());
 
-		initOAuth20Client(okClient, config.getOk());
-		customizer(okClient, customizers);
+		initOAuth20Client(okClient, ok, customizers);
 
 		return okClient;
 	}
@@ -280,183 +226,129 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "paypal.enabled")
 	public PayPalClient paypalClient(ObjectProvider<Customizer<PayPalClient>> customizers) {
-		return new PayPalClient(config.getKey(), config.getSecret()) {
+		final OAuth.PayPal payPal = config.getPayPal();
+		final PayPalClient payPalClient = new PayPalClient(payPal.getKey(), payPal.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getPayPal());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(payPalClient, payPal, customizers);
 
-		};
+		return payPalClient;
 	}
 
 	@Bean(name = "qqClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "qq.enabled")
 	public QQClient qqClient(ObjectProvider<Customizer<QQClient>> customizers) {
-		return new QQClient(config.getKey(), config.getSecret()) {
+		final OAuth.Qq qq = config.getQq();
+		final QQClient qqClient = new QQClient(qq.getKey(), qq.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Qq qq = config.getQq();
+		nonNullpropertyMapper.from(qq::getScopes).to(qqClient::setScopes);
+		initOAuth20Client(qqClient, qq, customizers);
 
-				nonNullpropertyMapper.from(qq::getScopes).to(this::setScopes);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, qq);
-				customizer(this, customizers);
-			}
-
-		};
+		return qqClient;
 	}
 
 	@Bean(name = "stravaClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "strava.enabled")
 	public StravaClient stravaClient(ObjectProvider<Customizer<StravaClient>> customizers) {
-		return new StravaClient(config.getKey(), config.getSecret()) {
+		final OAuth.Strava strava = config.getStrava();
+		final StravaClient stravaClient = new StravaClient(strava.getKey(), strava.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Strava strava = config.getStrava();
+		nonNullpropertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
+		initOAuth20Client(stravaClient, strava, customizers);
 
-				nonNullpropertyMapper.from(strava::getApprovalPrompt).to(this::setApprovalPrompt);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, strava);
-				customizer(this, customizers);
-			}
-
-		};
+		return stravaClient;
 	}
 
 	@Bean(name = "twitterClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "twitter.enabled")
 	public TwitterClient twitterClient(ObjectProvider<Customizer<TwitterClient>> customizers) {
-		return new TwitterClient(config.getKey(), config.getSecret()) {
+		final OAuth.Twitter twitter = config.getTwitter();
+		final TwitterClient twitterClient = new TwitterClient(twitter.getKey(), twitter.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Twitter twitter = config.getTwitter();
+		nonNullpropertyMapper.from(twitter::getAlwaysConfirmAuthorization)
+				.to(twitterClient::setAlwaysConfirmAuthorization);
+		nonNullpropertyMapper.from(twitter::getIncludeEmail).to(twitterClient::setIncludeEmail);
+		initOAuth10Client(twitterClient, twitter, customizers);
 
-				nonNullpropertyMapper.from(twitter::getAlwaysConfirmAuthorization)
-						.to(this::setAlwaysConfirmAuthorization);
-				nonNullpropertyMapper.from(twitter::getIncludeEmail).to(this::setIncludeEmail);
-
-				super.internalInit(forceReinit);
-				initOAuth10Client(this, twitter);
-				customizer(this, customizers);
-			}
-
-		};
+		return twitterClient;
 	}
 
 	@Bean(name = "vkClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "vk.enabled")
 	public VkClient vkClient(ObjectProvider<Customizer<VkClient>> customizers) {
-		return new VkClient(config.getKey(), config.getSecret()) {
+		final OAuth.Vk vk = config.getVk();
+		final VkClient vkClient = new VkClient(vk.getKey(), vk.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getVk());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(vkClient, vk, customizers);
 
-		};
+		return vkClient;
 	}
 
 	@Bean(name = "wechatClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "wechat.enabled")
 	public WechatClient wechatClient(ObjectProvider<Customizer<WechatClient>> customizers) {
-		return new WechatClient(config.getKey(), config.getSecret()) {
+		final OAuth.Wechat wechat = config.getWechat();
+		final WechatClient wechatClient = new WechatClient(wechat.getKey(), wechat.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Wechat wechat = config.getWechat();
+		nonNullpropertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
+		initOAuth20Client(wechatClient, wechat, customizers);
 
-				nonNullpropertyMapper.from(wechat::getScopes).to(this::setScopes);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, wechat);
-				customizer(this, customizers);
-			}
-
-		};
+		return wechatClient;
 	}
 
 	@Bean(name = "weiboClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "weibo.enabled")
 	public WeiboClient weiboClient(ObjectProvider<Customizer<WeiboClient>> customizers) {
-		return new WeiboClient(config.getKey(), config.getSecret()) {
+		final OAuth.Weibo weibo = config.getWeibo();
+		final WeiboClient weiboClient = new WeiboClient(weibo.getKey(), weibo.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final OAuth.Weibo weibo = config.getWeibo();
+		nonNullpropertyMapper.from(weibo::getScope)
+				.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
+		initOAuth20Client(weiboClient, weibo, customizers);
 
-				nonNullpropertyMapper.from(weibo::getScope)
-						.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(this::setScope);
-
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, weibo);
-				customizer(this, customizers);
-			}
-
-		};
+		return weiboClient;
 	}
 
 	@Bean(name = "windowsLiveClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "windows-live.enabled")
 	public WindowsLiveClient windowsLiveClient(ObjectProvider<Customizer<WindowsLiveClient>> customizers) {
-		return new WindowsLiveClient(config.getKey(), config.getSecret()) {
+		final OAuth.WindowsLive windowsLive = config.getWindowsLive();
+		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(windowsLive.getKey(),
+				windowsLive.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getWindowsLive());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(windowsLiveClient, windowsLive, customizers);
 
-		};
+		return windowsLiveClient;
 	}
 
 	@Bean(name = "wordpressClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "word-press.enabled")
 	public WordPressClient wordPressClient(ObjectProvider<Customizer<WordPressClient>> customizers) {
-		return new WordPressClient(config.getKey(), config.getSecret()) {
+		final OAuth.WordPress wordPress = config.getWordPress();
+		final WordPressClient wordPressClient = new WordPressClient(wordPress.getKey(), wordPress.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth20Client(this, config.getWordPress());
-				customizer(this, customizers);
-			}
+		initOAuth20Client(wordPressClient, wordPress, customizers);
 
-		};
+		return wordPressClient;
 	}
 
 	@Bean(name = "yahooClient")
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(prefix = OAuth.PREFIX, name = "yahoo.enabled")
 	public YahooClient yahooClient(ObjectProvider<Customizer<YahooClient>> customizers) {
-		return new YahooClient(config.getKey(), config.getSecret()) {
+		final OAuth.Yahoo yahoo = config.getYahoo();
+		final YahooClient yahooClient = new YahooClient(yahoo.getKey(), yahoo.getSecret());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				initOAuth10Client(this, config.getYahoo());
-				customizer(this, customizers);
-			}
+		initOAuth10Client(yahooClient, yahoo, customizers);
 
-		};
+		return yahooClient;
 	}
 
 	// ********************************************* //
@@ -464,18 +356,20 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 	// ********************************************* //
 
 	protected <C extends OAuth10Client> void initOAuth10Client(final C client,
-	                                                           final OAuth.BaseOAuth10Config oAuth10Config) {
+	                                                           final OAuth.BaseOAuth10Config oAuth10Config,
+	                                                           final ObjectProvider<Customizer<C>> customizers) {
 		final OAuth10Configuration configuration = client.getConfiguration();
 
 		nonNullpropertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
 		nonNullpropertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
 		nonNullpropertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 
-		afterIndirectClientInitialized(client, config, oAuth10Config);
+		afterIndirectClientInitialized(client, config, oAuth10Config, customizers);
 	}
 
 	protected <C extends OAuth20Client> void initOAuth20Client(final C client,
-	                                                           final OAuth.BaseOAuth20Config oAuth20Config) {
+	                                                           final OAuth.BaseOAuth20Config oAuth20Config,
+	                                                           final ObjectProvider<Customizer<C>> customizers) {
 		final OAuth20Configuration configuration = client.getConfiguration();
 
 		nonNullpropertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
@@ -484,7 +378,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		nonNullpropertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
 		nonNullpropertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
 
-		afterIndirectClientInitialized(client, config, oAuth20Config);
+		afterIndirectClientInitialized(client, config, oAuth20Config, customizers);
 	}
 
 }

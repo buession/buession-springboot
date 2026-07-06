@@ -21,6 +21,7 @@
 ### 🔔 变化
 
 - Pac4j JWT 认证不再依赖 HTTP Client 配置，使用独立的 HeaderClient 或 ParameterClient
+- Pac4j OAuth 独立指定 key 和 secret
 
 
 ### ⏪ 优化
@@ -28,6 +29,7 @@
 - **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter
 - 删除模块 buession-springboot-velocity
 - Pac4j 中 Customizer&lt;Client&gt; 优先级提至最高
+- Pac4j Client AutoConfiguration 优化
 
 
 ### 🐞 Bug 修复

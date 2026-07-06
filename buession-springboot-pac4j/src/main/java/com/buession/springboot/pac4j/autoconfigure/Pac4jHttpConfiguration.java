@@ -61,16 +61,12 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public CookieClient cookieClient(
 			@Qualifier("cookieClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<CookieClient>> customizers) {
-		return new CookieClient(config.getCookie().getCookieName(), authenticator.getIfAvailable()) {
+		final Http.Cookie cookie = config.getCookie();
+		final CookieClient cookieClient = new CookieClient(cookie.getCookieName(), authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, config.getCookie());
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(cookieClient, config, cookie, customizers);
 
-		};
+		return cookieClient;
 	}
 
 	@Bean(name = "directBasicAuthClient")
@@ -79,20 +75,13 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public DirectBasicAuthClient directBasicAuthClient(
 			@Qualifier("directBasicAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectBasicAuthClient>> customizers) {
-		return new DirectBasicAuthClient(authenticator.getIfAvailable()) {
+		final Http.DirectBasicAuth directBasicAuth = config.getDirectBasicAuth();
+		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.DirectBasicAuth directBasicAuth = config.getDirectBasicAuth();
+		hasTextpropertyMapper.from(directBasicAuth::getRealmName).to(directBasicAuthClient::setRealmName);
+		afterDirectClientInitialized(directBasicAuthClient, config, directBasicAuth, customizers);
 
-				hasTextpropertyMapper.from(directBasicAuth::getRealmName).to(this::setRealmName);
-
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, directBasicAuth);
-				customizer(this, customizers);
-			}
-
-		};
+		return directBasicAuthClient;
 	}
 
 	@Bean(name = "directBearerAuthClient")
@@ -101,20 +90,14 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public DirectBearerAuthClient directBearerAuthClient(
 			@Qualifier("directBearerAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectBearerAuthClient>> customizers) {
-		return new DirectBearerAuthClient(authenticator.getIfAvailable()) {
+		final Http.DirectBearerAuth directBearerAuth = config.getDirectBearerAuth();
+		final DirectBearerAuthClient directBearerAuthClient =
+				new DirectBearerAuthClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.DirectBearerAuth directBearerAuth = config.getDirectBearerAuth();
+		hasTextpropertyMapper.from(directBearerAuth::getRealmName).to(directBearerAuthClient::setRealmName);
+		afterDirectClientInitialized(directBearerAuthClient, config, directBearerAuth, customizers);
 
-				hasTextpropertyMapper.from(directBearerAuth::getRealmName).to(this::setRealmName);
-
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, directBearerAuth);
-				customizer(this, customizers);
-			}
-
-		};
+		return directBearerAuthClient;
 	}
 
 	@Bean(name = "directDigestAuthClient")
@@ -123,20 +106,14 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public DirectDigestAuthClient directDigestAuthClient(
 			@Qualifier("directDigestAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectDigestAuthClient>> customizers) {
-		return new DirectDigestAuthClient(authenticator.getIfAvailable()) {
+		final Http.DirectDigestAuth directDigestAuth = config.getDirectDigestAuth();
+		final DirectDigestAuthClient directDigestAuthClient =
+				new DirectDigestAuthClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.DirectDigestAuth directDigestAuth = config.getDirectDigestAuth();
+		hasTextpropertyMapper.from(directDigestAuth::getRealm).to(directDigestAuthClient::setRealm);
+		afterDirectClientInitialized(directDigestAuthClient, config, directDigestAuth, customizers);
 
-				hasTextpropertyMapper.from(directDigestAuth::getRealm).to(this::setRealm);
-
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, directDigestAuth);
-				customizer(this, customizers);
-			}
-
-		};
+		return directDigestAuthClient;
 	}
 
 	@Bean(name = "directFormClient")
@@ -145,21 +122,14 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public DirectFormClient directFormClient(
 			@Qualifier("directFormClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectFormClient>> customizers) {
-		return new DirectFormClient(authenticator.getIfAvailable()) {
+		final Http.DirectForm directForm = config.getDirectForm();
+		final DirectFormClient directFormClient = new DirectFormClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.DirectForm form = config.getDirectForm();
+		hasTextpropertyMapper.from(directForm::getUsernameParameter).to(directFormClient::setUsernameParameter);
+		hasTextpropertyMapper.from(directForm::getPasswordParameter).to(directFormClient::setPasswordParameter);
+		afterDirectClientInitialized(directFormClient, config, directForm, customizers);
 
-				hasTextpropertyMapper.from(form::getUsernameParameter).to(this::setUsernameParameter);
-				hasTextpropertyMapper.from(form::getPasswordParameter).to(this::setPasswordParameter);
-
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, form);
-				customizer(this, customizers);
-			}
-
-		};
+		return directFormClient;
 	}
 
 	@Bean(name = "headerClient")
@@ -168,17 +138,13 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public HeaderClient headerClient(
 			@Qualifier("headerClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<HeaderClient>> customizers) {
-		return new HeaderClient(config.getHeader().getHeaderName(), config.getHeader().getPrefixHeader(),
-				authenticator.getIfAvailable()) {
+		final Http.Header header = config.getHeader();
+		final HeaderClient headerClient = new HeaderClient(header.getHeaderName(), header.getPrefixHeader(),
+				authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, config.getHeader());
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(headerClient, config, header, customizers);
 
-		};
+		return headerClient;
 	}
 
 	@Bean(name = "ipClient")
@@ -186,16 +152,11 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "ip.enabled")
 	public IpClient ipClient(@Qualifier("ipClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 	                         ObjectProvider<Customizer<IpClient>> customizers) {
-		return new IpClient(authenticator.getIfAvailable()) {
+		final IpClient ipClient = new IpClient(authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, config.getIp());
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(ipClient, config, config.getIp(), customizers);
 
-		};
+		return ipClient;
 	}
 
 	@Bean(name = "parameterClient")
@@ -204,21 +165,15 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public ParameterClient parameterClient(
 			@Qualifier("parameterClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<ParameterClient>> customizers) {
-		return new ParameterClient(config.getParameter().getParameterName(), authenticator.getIfAvailable()) {
+		final Http.Parameter parameter = config.getParameter();
+		final ParameterClient parameterClient = new ParameterClient(parameter.getParameterName(),
+				authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.Parameter parameter = config.getParameter();
+		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
+		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
+		afterDirectClientInitialized(parameterClient, config, parameter, customizers);
 
-				hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(this::setSupportGetRequest);
-				hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(this::setSupportPostRequest);
-
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, parameter);
-				customizer(this, customizers);
-			}
-
-		};
+		return parameterClient;
 	}
 
 	@Bean(name = "x509Client")
@@ -226,16 +181,11 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "x509.enabled")
 	public X509Client x509Client(
 			@Qualifier("x509ClientAuthenticator") ObjectProvider<Customizer<X509Client>> customizers) {
-		return new X509Client() {
+		final X509Client x509Client = new X509Client();
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterDirectClientInitialized(this, config, config.getX509());
-				customizer(this, customizers);
-			}
+		afterDirectClientInitialized(x509Client, config, config.getX509(), customizers);
 
-		};
+		return x509Client;
 	}
 
 	/* Direct Client 结束 */
@@ -247,21 +197,14 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "form.enabled")
 	public FormClient formClient(@Qualifier("formClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 	                             ObjectProvider<Customizer<FormClient>> customizers) {
-		return new FormClient(config.getForm().getLoginUrl(), authenticator.getIfAvailable()) {
+		final Http.Form form = config.getForm();
+		final FormClient formClient = new FormClient(form.getLoginUrl(), authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				final Http.Form form = config.getForm();
+		hasTextpropertyMapper.from(form::getUsernameParameter).to(formClient::setUsernameParameter);
+		hasTextpropertyMapper.from(form::getPasswordParameter).to(formClient::setPasswordParameter);
+		afterIndirectClientInitialized(formClient, config, form, customizers);
 
-				hasTextpropertyMapper.from(form::getUsernameParameter).to(this::setUsernameParameter);
-				hasTextpropertyMapper.from(form::getPasswordParameter).to(this::setPasswordParameter);
-
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, form);
-				customizer(this, customizers);
-			}
-
-		};
+		return formClient;
 	}
 
 	@Bean(name = "indirectBasicAuthClient")
@@ -270,17 +213,13 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public IndirectBasicAuthClient indirectBasicAuthClient(
 			@Qualifier("indirectBasicAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<IndirectBasicAuthClient>> customizers) {
-		return new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),
-				authenticator.getIfAvailable()) {
+		final IndirectBasicAuthClient indirectBasicAuthClient =
+				new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),
+						authenticator.getIfAvailable());
 
-			@Override
-			protected void internalInit(final boolean forceReinit) {
-				super.internalInit(forceReinit);
-				afterIndirectClientInitialized(this, config, config.getIndirectBasicAuth());
-				customizer(this, customizers);
-			}
+		afterIndirectClientInitialized(indirectBasicAuthClient, config, config.getIndirectBasicAuth(), customizers);
 
-		};
+		return indirectBasicAuthClient;
 	}
 
 	/* Indirect Client 结束 */

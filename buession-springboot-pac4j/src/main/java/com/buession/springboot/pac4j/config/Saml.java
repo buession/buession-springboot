@@ -26,6 +26,7 @@ package com.buession.springboot.pac4j.config;
 
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.encryption.Decrypter;
+import org.pac4j.core.http.ajax.AjaxRequestResolver;
 import org.pac4j.core.profile.converter.AttributeConverter;
 import org.pac4j.core.util.generator.ValueGenerator;
 import org.pac4j.saml.crypto.CredentialProvider;
@@ -74,11 +75,18 @@ public class Saml extends BaseClientConfig {
 
 	private Map<String, String> mappedAttributes;
 
+	/**
+	 * 登录成功跳转地址
+	 */
+	private String callbackUrl;
+
 	private String singleSignOutServiceUrl;
 
 	private String requestInitiatorUrl;
 
 	private String assertionConsumerServiceUrl;
+
+	private Boolean checkAuthenticationAttempt;
 
 	private String identityProviderEntityId;
 
@@ -179,6 +187,11 @@ public class Saml extends BaseClientConfig {
 	private Class<? extends SOAPPipelineProvider> soapPipelineProvider;
 
 	private Class<? extends SAML2LogoutRequestMessageSender> logoutRequestMessageSender;
+
+	/**
+	 * Ajax 请求解析器
+	 */
+	private Class<? extends AjaxRequestResolver> ajaxRequestResolver;
 
 	public Saml() {
 		super("saml");
@@ -376,6 +389,25 @@ public class Saml extends BaseClientConfig {
 	}
 
 	/**
+	 * 返回登录成功跳转地址
+	 *
+	 * @return 登录成功跳转地址
+	 */
+	public String getCallbackUrl() {
+		return callbackUrl;
+	}
+
+	/**
+	 * 设置登录成功跳转地址
+	 *
+	 * @param callbackUrl
+	 * 		登录成功跳转地址
+	 */
+	public void setCallbackUrl(String callbackUrl) {
+		this.callbackUrl = callbackUrl;
+	}
+
+	/**
 	 * 返回 Single Sign Out 服务地址
 	 *
 	 * @return Single Sign Out 服务地址
@@ -430,6 +462,18 @@ public class Saml extends BaseClientConfig {
 	 */
 	public void setAssertionConsumerServiceUrl(String assertionConsumerServiceUrl) {
 		this.assertionConsumerServiceUrl = assertionConsumerServiceUrl;
+	}
+
+	public Boolean isCheckAuthenticationAttempt() {
+		return getCheckAuthenticationAttempt();
+	}
+
+	public Boolean getCheckAuthenticationAttempt() {
+		return checkAuthenticationAttempt;
+	}
+
+	public void setCheckAuthenticationAttempt(Boolean checkAuthenticationAttempt) {
+		this.checkAuthenticationAttempt = checkAuthenticationAttempt;
 	}
 
 	/**
@@ -1503,6 +1547,25 @@ public class Saml extends BaseClientConfig {
 	public void setLogoutRequestMessageSender(
 			Class<? extends SAML2LogoutRequestMessageSender> logoutRequestMessageSender) {
 		this.logoutRequestMessageSender = logoutRequestMessageSender;
+	}
+
+	/**
+	 * 返回 Ajax 请求解析器
+	 *
+	 * @return Ajax 请求解析器
+	 */
+	public Class<? extends AjaxRequestResolver> getAjaxRequestResolver() {
+		return ajaxRequestResolver;
+	}
+
+	/**
+	 * 设置 Ajax 请求解析器
+	 *
+	 * @param ajaxRequestResolver
+	 * 		Ajax 请求解析器
+	 */
+	public void setAjaxRequestResolver(Class<? extends AjaxRequestResolver> ajaxRequestResolver) {
+		this.ajaxRequestResolver = ajaxRequestResolver;
 	}
 
 }
