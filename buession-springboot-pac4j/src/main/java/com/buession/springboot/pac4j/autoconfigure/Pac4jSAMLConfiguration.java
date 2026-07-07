@@ -172,7 +172,7 @@ public class Pac4jSAMLConfiguration extends AbstractPac4jClientConfiguration<Sam
 		nonNullpropertyMapper.from(config::getLogoutRequestMessageSender).as(BeanUtils::instantiateClass)
 				.to(saml2Client::setLogoutRequestMessageSender);
 
-		afterClientInitialized(saml2Client, config, config);
+		initialized(saml2Client, config, config);
 		hasTextpropertyMapper.from(config::getCallbackUrl).to(saml2Client::setCallbackUrl);
 		nonNullpropertyMapper.from(config::getCheckAuthenticationAttempt)
 				.to(saml2Client::setCheckAuthenticationAttempt);

@@ -60,9 +60,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.Bitbucket bitbucket = config.getBitbucket();
 		final BitbucketClient bitbucketClient = new BitbucketClient(bitbucket.getKey(), bitbucket.getSecret());
 
-		initOAuth10Client(bitbucketClient, bitbucket, customizers);
-
-		return bitbucketClient;
+		return initOAuth10Client(bitbucketClient, bitbucket, customizers);
 	}
 
 	@Bean(name = "casOAuthWrapperClient")
@@ -79,9 +77,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		hasTextpropertyMapper.from(cas.getCasLogoutUrl()).to(casOAuthWrapperClient::setCasLogoutUrl);
 		nonNullpropertyMapper.from(cas::getAccessTokenVerb).to(casOAuthWrapperClient::setAccessTokenVerb);
 
-		initOAuth20Client(casOAuthWrapperClient, cas, customizers);
-
-		return casOAuthWrapperClient;
+		return initOAuth20Client(casOAuthWrapperClient, cas, customizers);
 	}
 
 	@Bean(name = "dropboxClient")
@@ -91,9 +87,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.DropBox dropBox = config.getDropBox();
 		final DropBoxClient dropBoxClient = new DropBoxClient(dropBox.getKey(), dropBox.getSecret());
 
-		initOAuth20Client(dropBoxClient, dropBox, customizers);
-
-		return dropBoxClient;
+		return initOAuth20Client(dropBoxClient, dropBox, customizers);
 	}
 
 	@Bean(name = "facebookClient")
@@ -105,9 +99,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 		nonNullpropertyMapper.from(facebook::getFields).to(facebookClient::setFields);
 		nonNullpropertyMapper.from(facebook::getLimit).to(facebookClient::setLimit);
-		initOAuth20Client(facebookClient, facebook, customizers);
-
-		return facebookClient;
+		return initOAuth20Client(facebookClient, facebook, customizers);
 	}
 
 	@Bean(name = "figShareClient")
@@ -119,9 +111,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 		figShareClient.setKey(figShare.getKey());
 		figShareClient.setSecret(figShare.getSecret());
-		initOAuth20Client(figShareClient, figShare, customizers);
-
-		return figShareClient;
+		return initOAuth20Client(figShareClient, figShare, customizers);
 	}
 
 	@Bean(name = "foursquareClient")
@@ -131,9 +121,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.Foursquare foursquare = config.getFoursquare();
 		final FoursquareClient foursquareClient = new FoursquareClient(foursquare.getKey(), foursquare.getSecret());
 
-		initOAuth20Client(foursquareClient, foursquare, customizers);
-
-		return foursquareClient;
+		return initOAuth20Client(foursquareClient, foursquare, customizers);
 	}
 
 	@Bean(name = "genericOAuth20Client")
@@ -154,9 +142,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 				.to(genericOAuth20Client::setClientAuthenticationMethod);
 		hasTextpropertyMapper.from(generic.getProfileVerb()).to(genericOAuth20Client::setProfileVerb);
 		hasTextpropertyMapper.from(generic.getProfileAttrs()).to(genericOAuth20Client::setProfileAttrs);
-		initOAuth20Client(genericOAuth20Client, generic, customizers);
-
-		return genericOAuth20Client;
+		return initOAuth20Client(genericOAuth20Client, generic, customizers);
 	}
 
 	@Bean(name = "githubClient")
@@ -166,9 +152,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.GitHub github = config.getGitHub();
 		final GitHubClient gitHubClient = new GitHubClient(github.getKey(), github.getSecret());
 
-		initOAuth20Client(gitHubClient, github, customizers);
-
-		return gitHubClient;
+		return initOAuth20Client(gitHubClient, github, customizers);
 	}
 
 	@Bean(name = "google2Client")
@@ -180,9 +164,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 		nonNullpropertyMapper.from(google2::getScope)
 				.as((v)->EnumUtils.getEnumIgnoreCase(Google2Client.Google2Scope.class, v)).to(google2Client::setScope);
-		initOAuth20Client(google2Client, google2, customizers);
-
-		return google2Client;
+		return initOAuth20Client(google2Client, google2, customizers);
 	}
 
 	@Bean(name = "hiOrgServerClient")
@@ -193,9 +175,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final HiOrgServerClient hiOrgServerClient = new HiOrgServerClient(hiOrgServer.getKey(),
 				hiOrgServer.getSecret());
 
-		initOAuth20Client(hiOrgServerClient, hiOrgServer, customizers);
-
-		return hiOrgServerClient;
+		return initOAuth20Client(hiOrgServerClient, hiOrgServer, customizers);
 	}
 
 	@Bean(name = "linkedin2Client")
@@ -205,9 +185,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.LinkedIn2 linkedIn2 = config.getLinkedIn2();
 		final LinkedIn2Client linkedIn2Client = new LinkedIn2Client(linkedIn2.getKey(), linkedIn2.getSecret());
 
-		initOAuth20Client(linkedIn2Client, linkedIn2, customizers);
-
-		return linkedIn2Client;
+		return initOAuth20Client(linkedIn2Client, linkedIn2, customizers);
 	}
 
 	@Bean(name = "okClient")
@@ -217,9 +195,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.Ok ok = config.getOk();
 		final OkClient okClient = new OkClient(ok.getKey(), ok.getSecret(), ok.getPublicKey());
 
-		initOAuth20Client(okClient, ok, customizers);
-
-		return okClient;
+		return initOAuth20Client(okClient, ok, customizers);
 	}
 
 	@Bean(name = "paypalClient")
@@ -229,9 +205,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.PayPal payPal = config.getPayPal();
 		final PayPalClient payPalClient = new PayPalClient(payPal.getKey(), payPal.getSecret());
 
-		initOAuth20Client(payPalClient, payPal, customizers);
-
-		return payPalClient;
+		return initOAuth20Client(payPalClient, payPal, customizers);
 	}
 
 	@Bean(name = "qqClient")
@@ -242,9 +216,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final QQClient qqClient = new QQClient(qq.getKey(), qq.getSecret());
 
 		nonNullpropertyMapper.from(qq::getScopes).to(qqClient::setScopes);
-		initOAuth20Client(qqClient, qq, customizers);
-
-		return qqClient;
+		return initOAuth20Client(qqClient, qq, customizers);
 	}
 
 	@Bean(name = "stravaClient")
@@ -255,9 +227,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final StravaClient stravaClient = new StravaClient(strava.getKey(), strava.getSecret());
 
 		nonNullpropertyMapper.from(strava::getApprovalPrompt).to(stravaClient::setApprovalPrompt);
-		initOAuth20Client(stravaClient, strava, customizers);
-
-		return stravaClient;
+		return initOAuth20Client(stravaClient, strava, customizers);
 	}
 
 	@Bean(name = "twitterClient")
@@ -270,9 +240,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		nonNullpropertyMapper.from(twitter::getAlwaysConfirmAuthorization)
 				.to(twitterClient::setAlwaysConfirmAuthorization);
 		nonNullpropertyMapper.from(twitter::getIncludeEmail).to(twitterClient::setIncludeEmail);
-		initOAuth10Client(twitterClient, twitter, customizers);
-
-		return twitterClient;
+		return initOAuth10Client(twitterClient, twitter, customizers);
 	}
 
 	@Bean(name = "vkClient")
@@ -282,9 +250,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.Vk vk = config.getVk();
 		final VkClient vkClient = new VkClient(vk.getKey(), vk.getSecret());
 
-		initOAuth20Client(vkClient, vk, customizers);
-
-		return vkClient;
+		return initOAuth20Client(vkClient, vk, customizers);
 	}
 
 	@Bean(name = "wechatClient")
@@ -295,9 +261,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final WechatClient wechatClient = new WechatClient(wechat.getKey(), wechat.getSecret());
 
 		nonNullpropertyMapper.from(wechat::getScopes).to(wechatClient::setScopes);
-		initOAuth20Client(wechatClient, wechat, customizers);
-
-		return wechatClient;
+		return initOAuth20Client(wechatClient, wechat, customizers);
 	}
 
 	@Bean(name = "weiboClient")
@@ -309,9 +273,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 
 		nonNullpropertyMapper.from(weibo::getScope)
 				.as((v)->EnumUtils.getEnumIgnoreCase(WeiboClient.WeiboScope.class, v)).to(weiboClient::setScope);
-		initOAuth20Client(weiboClient, weibo, customizers);
-
-		return weiboClient;
+		return initOAuth20Client(weiboClient, weibo, customizers);
 	}
 
 	@Bean(name = "windowsLiveClient")
@@ -322,9 +284,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final WindowsLiveClient windowsLiveClient = new WindowsLiveClient(windowsLive.getKey(),
 				windowsLive.getSecret());
 
-		initOAuth20Client(windowsLiveClient, windowsLive, customizers);
-
-		return windowsLiveClient;
+		return initOAuth20Client(windowsLiveClient, windowsLive, customizers);
 	}
 
 	@Bean(name = "wordpressClient")
@@ -334,9 +294,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.WordPress wordPress = config.getWordPress();
 		final WordPressClient wordPressClient = new WordPressClient(wordPress.getKey(), wordPress.getSecret());
 
-		initOAuth20Client(wordPressClient, wordPress, customizers);
-
-		return wordPressClient;
+		return initOAuth20Client(wordPressClient, wordPress, customizers);
 	}
 
 	@Bean(name = "yahooClient")
@@ -346,30 +304,28 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		final OAuth.Yahoo yahoo = config.getYahoo();
 		final YahooClient yahooClient = new YahooClient(yahoo.getKey(), yahoo.getSecret());
 
-		initOAuth10Client(yahooClient, yahoo, customizers);
-
-		return yahooClient;
+		return initOAuth10Client(yahooClient, yahoo, customizers);
 	}
 
 	// ********************************************* //
 	// *************** end oauth 2.0 *************** //
 	// ********************************************* //
 
-	protected <C extends OAuth10Client> void initOAuth10Client(final C client,
-	                                                           final OAuth.BaseOAuth10Config oAuth10Config,
-	                                                           final ObjectProvider<Customizer<C>> customizers) {
+	protected <CLIENT extends OAuth10Client> CLIENT initOAuth10Client(final CLIENT client,
+	                                                                  final OAuth.BaseOAuth10Config oAuth10Config,
+	                                                                  final ObjectProvider<Customizer<CLIENT>> customizers) {
 		final OAuth10Configuration configuration = client.getConfiguration();
 
 		nonNullpropertyMapper.from(oAuth10Config::getResponseType).to(configuration::setResponseType);
 		nonNullpropertyMapper.from(oAuth10Config::getScope).to(configuration::setScope);
 		nonNullpropertyMapper.from(oAuth10Config::getTokenAsHeader).to(configuration::setTokenAsHeader);
 
-		afterIndirectClientInitialized(client, config, oAuth10Config, customizers);
+		return indirectClientInitialized(client, config, oAuth10Config, customizers);
 	}
 
-	protected <C extends OAuth20Client> void initOAuth20Client(final C client,
-	                                                           final OAuth.BaseOAuth20Config oAuth20Config,
-	                                                           final ObjectProvider<Customizer<C>> customizers) {
+	protected <CLIENT extends OAuth20Client> CLIENT initOAuth20Client(final CLIENT client,
+	                                                                  final OAuth.BaseOAuth20Config oAuth20Config,
+	                                                                  final ObjectProvider<Customizer<CLIENT>> customizers) {
 		final OAuth20Configuration configuration = client.getConfiguration();
 
 		nonNullpropertyMapper.from(oAuth20Config::getResponseType).to(configuration::setResponseType);
@@ -378,7 +334,7 @@ public class Pac4jOAuthConfiguration extends AbstractPac4jClientConfiguration<OA
 		nonNullpropertyMapper.from(oAuth20Config::getCustomParameters).to(configuration::setCustomParams);
 		nonNullpropertyMapper.from(oAuth20Config::getWithState).to(configuration::setWithState);
 
-		afterIndirectClientInitialized(client, config, oAuth20Config, customizers);
+		return indirectClientInitialized(client, config, oAuth20Config, customizers);
 	}
 
 }

@@ -64,9 +64,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 		final Http.Cookie cookie = config.getCookie();
 		final CookieClient cookieClient = new CookieClient(cookie.getCookieName(), authenticator.getIfAvailable());
 
-		afterDirectClientInitialized(cookieClient, config, cookie, customizers);
-
-		return cookieClient;
+		return directClientInitialized(cookieClient, config, cookie, customizers);
 	}
 
 	@Bean(name = "directBasicAuthClient")
@@ -79,9 +77,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directBasicAuth::getRealmName).to(directBasicAuthClient::setRealmName);
-		afterDirectClientInitialized(directBasicAuthClient, config, directBasicAuth, customizers);
-
-		return directBasicAuthClient;
+		return directClientInitialized(directBasicAuthClient, config, directBasicAuth, customizers);
 	}
 
 	@Bean(name = "directBearerAuthClient")
@@ -95,9 +91,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 				new DirectBearerAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directBearerAuth::getRealmName).to(directBearerAuthClient::setRealmName);
-		afterDirectClientInitialized(directBearerAuthClient, config, directBearerAuth, customizers);
-
-		return directBearerAuthClient;
+		return directClientInitialized(directBearerAuthClient, config, directBearerAuth, customizers);
 	}
 
 	@Bean(name = "directDigestAuthClient")
@@ -111,9 +105,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 				new DirectDigestAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directDigestAuth::getRealm).to(directDigestAuthClient::setRealm);
-		afterDirectClientInitialized(directDigestAuthClient, config, directDigestAuth, customizers);
-
-		return directDigestAuthClient;
+		return directClientInitialized(directDigestAuthClient, config, directDigestAuth, customizers);
 	}
 
 	@Bean(name = "directFormClient")
@@ -127,9 +119,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 		hasTextpropertyMapper.from(directForm::getUsernameParameter).to(directFormClient::setUsernameParameter);
 		hasTextpropertyMapper.from(directForm::getPasswordParameter).to(directFormClient::setPasswordParameter);
-		afterDirectClientInitialized(directFormClient, config, directForm, customizers);
-
-		return directFormClient;
+		return directClientInitialized(directFormClient, config, directForm, customizers);
 	}
 
 	@Bean(name = "headerClient")
@@ -142,9 +132,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 		final HeaderClient headerClient = new HeaderClient(header.getHeaderName(), header.getPrefixHeader(),
 				authenticator.getIfAvailable());
 
-		afterDirectClientInitialized(headerClient, config, header, customizers);
-
-		return headerClient;
+		return directClientInitialized(headerClient, config, header, customizers);
 	}
 
 	@Bean(name = "ipClient")
@@ -153,10 +141,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public IpClient ipClient(@Qualifier("ipClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 	                         ObjectProvider<Customizer<IpClient>> customizers) {
 		final IpClient ipClient = new IpClient(authenticator.getIfAvailable());
-
-		afterDirectClientInitialized(ipClient, config, config.getIp(), customizers);
-
-		return ipClient;
+		return directClientInitialized(ipClient, config, config.getIp(), customizers);
 	}
 
 	@Bean(name = "parameterClient")
@@ -171,9 +156,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
 		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
-		afterDirectClientInitialized(parameterClient, config, parameter, customizers);
-
-		return parameterClient;
+		return directClientInitialized(parameterClient, config, parameter, customizers);
 	}
 
 	@Bean(name = "x509Client")
@@ -182,10 +165,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 	public X509Client x509Client(
 			@Qualifier("x509ClientAuthenticator") ObjectProvider<Customizer<X509Client>> customizers) {
 		final X509Client x509Client = new X509Client();
-
-		afterDirectClientInitialized(x509Client, config, config.getX509(), customizers);
-
-		return x509Client;
+		return directClientInitialized(x509Client, config, config.getX509(), customizers);
 	}
 
 	/* Direct Client 结束 */
@@ -202,9 +182,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 		hasTextpropertyMapper.from(form::getUsernameParameter).to(formClient::setUsernameParameter);
 		hasTextpropertyMapper.from(form::getPasswordParameter).to(formClient::setPasswordParameter);
-		afterIndirectClientInitialized(formClient, config, form, customizers);
-
-		return formClient;
+		return indirectClientInitialized(formClient, config, form, customizers);
 	}
 
 	@Bean(name = "indirectBasicAuthClient")
@@ -217,9 +195,7 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 				new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),
 						authenticator.getIfAvailable());
 
-		afterIndirectClientInitialized(indirectBasicAuthClient, config, config.getIndirectBasicAuth(), customizers);
-
-		return indirectBasicAuthClient;
+		return indirectClientInitialized(indirectBasicAuthClient, config, config.getIndirectBasicAuth(), customizers);
 	}
 
 	/* Indirect Client 结束 */

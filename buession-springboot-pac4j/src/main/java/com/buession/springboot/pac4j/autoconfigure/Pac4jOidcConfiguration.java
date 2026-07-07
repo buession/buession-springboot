@@ -77,9 +77,7 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 
 		final AppleClient appleClient = new AppleClient(appleOidcConfiguration);
 
-		afterIndirectClientInitialized(appleClient, config, apple, customizers);
-
-		return appleClient;
+		return indirectClientInitialized(appleClient, config, apple, customizers);
 	}
 
 	@Bean(name = "azureAd2OidcClient")
@@ -94,9 +92,7 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 
 		final AzureAd2Client azureAd2Client = new AzureAd2Client(azureAd2OidcConfiguration);
 
-		afterIndirectClientInitialized(azureAd2Client, config, keycloak, customizers);
-
-		return azureAd2Client;
+		return indirectClientInitialized(azureAd2Client, config, keycloak, customizers);
 	}
 
 	@Bean(name = "googleOidcClient")
@@ -110,9 +106,7 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 
 		final GoogleOidcClient googleOidcClient = new GoogleOidcClient(oidcConfiguration);
 
-		afterIndirectClientInitialized(googleOidcClient, config, google, customizers);
-
-		return googleOidcClient;
+		return indirectClientInitialized(googleOidcClient, config, google, customizers);
 	}
 
 	@Bean(name = "keycloakOidcClient")
@@ -128,9 +122,7 @@ public class Pac4jOidcConfiguration extends AbstractPac4jClientConfiguration<Oid
 
 		final KeycloakOidcClient keycloakOidcClient = new KeycloakOidcClient(keycloakOidcConfiguration);
 
-		afterIndirectClientInitialized(keycloakOidcClient, config, keycloak, customizers);
-
-		return keycloakOidcClient;
+		return indirectClientInitialized(keycloakOidcClient, config, keycloak, customizers);
 	}
 
 	private void applyCommonConfiguration(final Oidc.BaseOidcClientConfig config,

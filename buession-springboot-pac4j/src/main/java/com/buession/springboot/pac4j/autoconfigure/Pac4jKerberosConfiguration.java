@@ -62,10 +62,7 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 			@Qualifier("directKerberosClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectKerberosClient>> customizers) {
 		final DirectKerberosClient directKerberosClient = new DirectKerberosClient(authenticator.getIfAvailable());
-
-		afterDirectClientInitialized(directKerberosClient, config, config.getDirect(), customizers);
-
-		return directKerberosClient;
+		return directClientInitialized(directKerberosClient, config, config.getDirect(), customizers);
 	}
 
 	/* Direct Client 结束 */
@@ -81,9 +78,7 @@ public class Pac4jKerberosConfiguration extends AbstractPac4jClientConfiguration
 		final IndirectKerberosClient indirectKerberosClient =
 				new IndirectKerberosClient(authenticator.getIfAvailable());
 
-		afterIndirectClientInitialized(indirectKerberosClient, config, config.getIndirect(), customizers);
-
-		return indirectKerberosClient;
+		return indirectClientInitialized(indirectKerberosClient, config, config.getIndirect(), customizers);
 	}
 
 	/* Indirect Client 结束 */

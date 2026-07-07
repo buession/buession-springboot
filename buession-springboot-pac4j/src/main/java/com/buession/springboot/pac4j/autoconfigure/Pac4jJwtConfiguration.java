@@ -110,9 +110,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 		final HeaderClient headerClient = new HeaderClient(header.getHeaderName(),
 				header.getPrefixHeader(), authenticator.getIfAvailable());
 
-		afterDirectClientInitialized(headerClient, config, header, customizers);
-
-		return headerClient;
+		return directClientInitialized(headerClient, config, header, customizers);
 	}
 
 	@Bean(name = "jwtParameterClient")
@@ -128,9 +126,7 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 
 		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
 		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
-		afterDirectClientInitialized(parameterClient, config, parameter, customizers);
-
-		return parameterClient;
+		return directClientInitialized(parameterClient, config, parameter, customizers);
 	}
 
 }

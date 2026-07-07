@@ -129,9 +129,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 		final CasClient casClient = new CasClient(casConfiguration);
 
 		doClientInit(casClient, casProfileDefinition);
-		afterIndirectClientInitialized(casClient, config, config.getGeneral(), customizers);
-
-		return casClient;
+		return indirectClientInitialized(casClient, config, config.getGeneral(), customizers);
 	}
 
 	/* Direct Client 开始 */
@@ -144,9 +142,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 		final DirectCasClient directCasClient = new DirectCasClient(casConfiguration);
 
 		doClientInit(directCasClient, casProfileDefinition);
-		afterDirectClientInitialized(directCasClient, config, config.getDirect(), customizers);
-
-		return directCasClient;
+		return directClientInitialized(directCasClient, config, config.getDirect(), customizers);
 	}
 
 	@Bean(name = "directCasProxyClient")
@@ -160,9 +156,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 				directProxy.getServiceUrl());
 
 		doClientInit(directCasProxyClient, casProfileDefinition);
-		afterDirectClientInitialized(directCasProxyClient, config, directProxy, customizers);
-
-		return directCasProxyClient;
+		return directClientInitialized(directCasProxyClient, config, directProxy, customizers);
 	}
 
 	/* Direct Client 结束 */
@@ -180,9 +174,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 				restBasicAuth.getHeaderName(), restBasicAuth.getPrefixHeader());
 
 		doClientInit(casRestBasicAuthClient, casProfileDefinition);
-		afterDirectClientInitialized(casRestBasicAuthClient, config, restBasicAuth, customizers);
-
-		return casRestBasicAuthClient;
+		return directClientInitialized(casRestBasicAuthClient, config, restBasicAuth, customizers);
 	}
 
 	@Bean(name = "casRestFormClient")
@@ -196,9 +188,7 @@ public class Pac4jCasConfiguration extends AbstractPac4jClientConfiguration<Cas>
 				restForm.getUsernameParameter(), restForm.getPasswordParameter());
 
 		doClientInit(casRestFormClient, casProfileDefinition);
-		afterDirectClientInitialized(casRestFormClient, config, restForm, customizers);
-
-		return casRestFormClient;
+		return directClientInitialized(casRestFormClient, config, restForm, customizers);
 	}
 
 	/* Rest Client 结束 */
