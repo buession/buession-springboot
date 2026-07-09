@@ -90,13 +90,24 @@ public class Pac4jWebFilterConfiguration {
 
 	static class Base {
 
-		protected final Pac4jProperties properties;
-
 		protected final Config config;
 
+		protected final String clients;
+
+		protected final String authorizers;
+
+		protected final String matchers;
+
 		public Base(Pac4jProperties properties, Config config) {
-			this.properties = properties;
 			this.config = config;
+
+			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
+			clients = properties.getClients() != null ?
+					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
+					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			matchers = Validate.isNotEmpty(security.getMatchers()) ?
+					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
 		}
 
 	}
@@ -112,13 +123,6 @@ public class Pac4jWebFilterConfiguration {
 
 		@Bean
 		public SecurityInterceptor securityInterceptor() {
-			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
-			String clients = properties.getClients() != null ?
-					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-			String authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
-					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-			String matchers = Validate.isNotEmpty(security.getMatchers()) ?
-					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
 			return new SecurityInterceptor(config, clients, authorizers, matchers);
 		}
 
@@ -135,13 +139,6 @@ public class Pac4jWebFilterConfiguration {
 
 		@Bean
 		public SecurityFilter securityFilter() {
-			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
-			String clients = properties.getClients() != null ?
-					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-			String authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
-					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
-			String matchers = Validate.isNotEmpty(security.getMatchers()) ?
-					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
 			return new SecurityFilter(config, clients, authorizers, matchers);
 		}
 
