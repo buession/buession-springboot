@@ -26,6 +26,7 @@ package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.Customizer;
 import com.buession.springboot.pac4j.config.Http;
+import com.buession.security.pac4j.client.http.indirect.FormClient;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.http.client.direct.*;
 import org.pac4j.http.client.indirect.*;
