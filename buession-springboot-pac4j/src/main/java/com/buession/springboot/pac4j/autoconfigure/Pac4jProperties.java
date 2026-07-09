@@ -85,6 +85,8 @@ public class Pac4jProperties {
 	 */
 	private boolean saveInSession = true;
 
+	private boolean alwaysUse401ForUnauthenticated = false;
+
 	/**
 	 * 过滤器配置
 	 */
@@ -222,6 +224,14 @@ public class Pac4jProperties {
 	 */
 	public void setSaveInSession(boolean saveInSession) {
 		this.saveInSession = saveInSession;
+	}
+
+	public boolean isAlwaysUse401ForUnauthenticated() {
+		return alwaysUse401ForUnauthenticated;
+	}
+
+	public void setAlwaysUse401ForUnauthenticated(boolean alwaysUse401ForUnauthenticated) {
+		this.alwaysUse401ForUnauthenticated = alwaysUse401ForUnauthenticated;
 	}
 
 	/**
@@ -418,7 +428,7 @@ public class Pac4jProperties {
 		public final static class Callback extends BaseWebConfig {
 
 			/**
-			 * 退出登录 URL Path
+			 * 登录成功回调 URL Path
 			 *
 			 * @since 4.0.0
 			 */
@@ -441,9 +451,9 @@ public class Pac4jProperties {
 			}
 
 			/**
-			 * 返回退出登录 URL Path
+			 * 返回登录成功回调 URL Path
 			 *
-			 * @return 退出登录 URL Path
+			 * @return 登录成功回调 URL Path
 			 *
 			 * @since 4.0.0
 			 */
@@ -452,10 +462,10 @@ public class Pac4jProperties {
 			}
 
 			/**
-			 * 设置退出登录 URL Path
+			 * 设置登录成功回调 URL Path
 			 *
 			 * @param path
-			 * 		退出登录 URL Path
+			 * 		登录成功回调 URL Path
 			 *
 			 * @since 4.0.0
 			 */
@@ -854,7 +864,7 @@ public class Pac4jProperties {
 		public void setSaml(Saml saml) {
 			this.saml = saml;
 		}
-		
+
 	}
 
 }

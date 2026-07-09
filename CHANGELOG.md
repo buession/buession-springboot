@@ -16,6 +16,7 @@
 - Pac4j Configuration 支持 Kerberos
 - Pac4j Configuration 支持 OIDC
 - Pac4j Configuration 支持 SAML
+- Pac4j 支持配置 isAlwaysUse401ForUnauthenticated
 
 
 ### 🔔 变化

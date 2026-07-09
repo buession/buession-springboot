@@ -32,6 +32,7 @@ import com.buession.security.pac4j.spring.servlet.Pac4jServletConfigurerAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.util.HttpActionHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -58,6 +59,7 @@ public class Pac4jConfiguration {
 
 	public Pac4jConfiguration(Pac4jProperties properties) {
 		this.properties = properties;
+		HttpActionHelper.setAlwaysUse401ForUnauthenticated(properties.isAlwaysUse401ForUnauthenticated());
 	}
 
 	/**
