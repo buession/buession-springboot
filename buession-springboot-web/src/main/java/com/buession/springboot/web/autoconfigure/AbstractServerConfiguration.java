@@ -33,14 +33,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Server Auto Configuration 基类
+ *
  * @author Yong.Teng
  */
 public abstract class AbstractServerConfiguration {
 
 	protected final static char HEADER_VARIABLE_IDENTIFIER = '$';
 
+	/**
+	 * {@link ServerProperties}
+	 */
 	protected ServerProperties properties;
 
+	/**
+	 * 构造函数
+	 *
+	 * @param properties
+	 *        {@link ServerProperties}
+	 */
 	public AbstractServerConfiguration(ServerProperties properties) {
 		this.properties = properties;
 	}
