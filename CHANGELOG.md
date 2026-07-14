@@ -17,12 +17,14 @@
 - Pac4j Configuration 支持 OIDC
 - Pac4j Configuration 支持 SAML
 - Pac4j 支持配置 isAlwaysUse401ForUnauthenticated
+- Pac4j Config bean 增加定制器
 
 
 ### 🔔 变化
 
 - Pac4j JWT 认证不再依赖 HTTP Client 配置，使用独立的 HeaderClient 或 ParameterClient
 - Pac4j OAuth 独立指定 key 和 secret
+- 不再生成 pac4j JwtGenerator bean
 
 
 ### ⏪ 优化

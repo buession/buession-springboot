@@ -29,11 +29,13 @@ package com.buession.springboot.pac4j.autoconfigure;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.security.pac4j.spring.reactive.Pac4jWebFluxConfigurerAdapter;
 import com.buession.security.pac4j.spring.servlet.Pac4jServletConfigurerAdapter;
+import com.buession.springboot.pac4j.ConfigCustomizer;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.HttpActionHelper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -88,16 +90,19 @@ public class Pac4jConfiguration {
 	 *
 	 * @param clients
 	 *        {@link Clients} 实例
+	 * @param configCustomizers
+	 *        {@link Config} 定制器
 	 *
 	 * @return Pac4j {@link Config} Bean
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public Config config(Clients clients) {
+	public Config config(Clients clients, ObjectProvider<ConfigCustomizer> configCustomizers) {
 		final Config config = new Config(clients);
 
 		propertyMapper.from(properties::getHttpActionAdapterClass).as(BeanUtils::instantiateClass)
 				.to(config::setHttpActionAdapter);
+		configCustomizers.ifAvailable((customizer)->customizer.customize(config));
 
 		return config;
 	}
