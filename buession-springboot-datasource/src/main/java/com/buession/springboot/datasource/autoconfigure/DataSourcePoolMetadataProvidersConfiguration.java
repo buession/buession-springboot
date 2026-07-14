@@ -26,12 +26,6 @@ package com.buession.springboot.datasource.autoconfigure;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceMBean;
-import com.zaxxer.hikari.HikariConfigMXBean;
-import com.zaxxer.hikari.HikariDataSource;
-import oracle.ucp.jdbc.PoolDataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.BasicDataSourceMXBean;
-import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
@@ -39,7 +33,8 @@ import org.springframework.boot.jdbc.metadata.*;
 import org.springframework.context.annotation.Bean;
 
 /**
- * DataSource Pool Metadata Providers {@link DataSourcePoolMetadataProvider} Auto Configuration
+ * DataSource Pool Metadata Providers {@link org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider}
+ * Auto Configuration
  *
  * @author Yong.Teng
  * @since 1.3.2
@@ -47,21 +42,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public class DataSourcePoolMetadataProvidersConfiguration
 		extends org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration {
-
-	@AutoConfiguration
-	@ConditionalOnBean(BasicDataSource.class)
-	static class Dbcp2PoolDataSourceMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
-			return (dataSource)->{
-				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSourceMXBean.class,
-						BasicDataSource.class);
-				return dbcpDataSource == null ? null : new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
-			};
-		}
-
-	}
 
 	@AutoConfiguration
 	@ConditionalOnBean(DruidDataSource.class)
@@ -73,53 +53,6 @@ public class DataSourcePoolMetadataProvidersConfiguration
 				DruidDataSource druidDataSource = DataSourceUnwrapper.unwrap(dataSource, DruidDataSourceMBean.class,
 						DruidDataSource.class);
 				return druidDataSource == null ? null : new DruidDataSourcePoolMetadata(druidDataSource);
-			};
-		}
-
-	}
-
-	@AutoConfiguration
-	@ConditionalOnBean(HikariDataSource.class)
-	static class HikariPoolDataSourceMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
-			return (dataSource)->{
-				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource,
-						HikariConfigMXBean.class, com.zaxxer.hikari.HikariDataSource.class);
-				return hikariDataSource == null ? null : new HikariDataSourcePoolMetadata(hikariDataSource);
-			};
-		}
-
-	}
-
-	/**
-	 * @since 3.0.0
-	 */
-	@AutoConfiguration
-	@ConditionalOnBean(PoolDataSource.class)
-	static class OraclePoolDataSourceMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
-			return (dataSource)->{
-				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);
-				return ucpDataSource == null ? null : new OracleUcpDataSourcePoolMetadata(ucpDataSource);
-			};
-		}
-
-	}
-
-	@AutoConfiguration
-	@ConditionalOnBean(org.apache.tomcat.jdbc.pool.DataSource.class)
-	static class TomcatDataSourcePoolMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider poolDataSourceMetadataProvider() {
-			return (dataSource)->{
-				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
-						ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
-				return tomcatDataSource == null ? null : new TomcatDataSourcePoolMetadata(tomcatDataSource);
 			};
 		}
 
