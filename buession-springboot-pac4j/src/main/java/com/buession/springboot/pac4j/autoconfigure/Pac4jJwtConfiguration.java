@@ -35,7 +35,6 @@ import org.pac4j.http.client.direct.ParameterClient;
 import org.pac4j.jwt.config.encryption.SecretEncryptionConfiguration;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator;
-import org.pac4j.jwt.profile.JwtGenerator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,13 +79,6 @@ public class Pac4jJwtConfiguration extends AbstractPac4jClientConfiguration<Jwt>
 	public SecretEncryptionConfiguration secretEncryptionConfiguration() {
 		return new SecretEncryptionConfiguration(secret, config.getSecretEncryptionAlgorithm(),
 				config.getEncryptionMethod());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public JwtGenerator jwtGenerator(SecretSignatureConfiguration signatureConfiguration,
-	                                 SecretEncryptionConfiguration secretEncryptionConfiguration) {
-		return new JwtGenerator(signatureConfiguration, secretEncryptionConfiguration);
 	}
 
 	@Bean
