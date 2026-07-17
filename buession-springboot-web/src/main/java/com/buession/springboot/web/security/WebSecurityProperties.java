@@ -66,10 +66,19 @@ public class WebSecurityProperties extends Configurer {
 		this.disableDefaults = disableDefaults;
 	}
 
+	/**
+	 * 设置 XSS 配置
+	 *
+	 * @param xss
+	 * 		XSS 配置
+	 */
 	public void setXss(Xss xss) {
 		super.setXss(xss);
 	}
 
+	/**
+	 * XSS 配置
+	 */
 	public final static class Xss extends com.buession.security.web.config.Xss {
 
 		/**

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.utils;
@@ -27,6 +27,8 @@ package com.buession.springboot.cache.redis.utils;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
 import com.buession.redis.client.connection.RedisNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.Collection;
@@ -38,6 +40,8 @@ import java.util.Set;
  * @since 2.0.0
  */
 public class RedisNodeUtils {
+
+	private final static Logger logger = LoggerFactory.getLogger(RedisNodeUtils.class);
 
 	public static RedisNode parse(final String str, final int defaultPort) throws ParseException {
 		String[] hostAndPort = StringUtils.split(str, ':');
@@ -52,7 +56,7 @@ public class RedisNodeUtils {
 					return new RedisNode(hostAndPort[0], port);
 				}
 			}catch(Exception e){
-				//
+				logger.warn(e.getMessage());
 			}
 		}
 
