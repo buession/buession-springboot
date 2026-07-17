@@ -19,30 +19,23 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.Customizer;
-import com.buession.springboot.pac4j.config.BaseConfig;
 import com.buession.springboot.pac4j.config.Http;
-import org.pac4j.core.client.DirectClient;
-import org.pac4j.core.client.IndirectClient;
-import org.pac4j.core.credentials.Credentials;
-import org.pac4j.core.credentials.TokenCredentials;
-import org.pac4j.core.credentials.UsernamePasswordCredentials;
+import com.buession.security.pac4j.client.http.indirect.FormClient;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.http.client.direct.*;
 import org.pac4j.http.client.indirect.*;
-import org.pac4j.http.credentials.DigestCredentials;
-import org.pac4j.http.credentials.authenticator.test.SimpleTestUsernamePasswordAuthenticator;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -65,229 +58,115 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "cookieClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "cookie.enabled", havingValue = "true")
-	public CookieClient cookieClient(ObjectProvider<Authenticator<TokenCredentials>> authenticator,
-									 ObjectProvider<Customizer<CookieClient>> customizers) {
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "cookie.enabled")
+	public CookieClient cookieClient(
+			@Qualifier("cookieClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<CookieClient>> customizers) {
 		final Http.Cookie cookie = config.getCookie();
-		final CookieClient cookieClient = new CookieClient() {
+		final CookieClient cookieClient = new CookieClient(cookie.getCookieName(), authenticator.getIfAvailable());
 
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		hasTextpropertyMapper.from(cookie::getCookieName).to(cookie::setCookieName);
-		authenticator.ifAvailable(cookieClient::setAuthenticator);
-
-		initHttpDirectClient(cookieClient, cookie);
-
-		return cookieClient;
+		return directClientInitialized(cookieClient, config, cookie, customizers);
 	}
 
 	@Bean(name = "directBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-basic-auth.enabled")
 	public DirectBasicAuthClient directBasicAuthClient(
-			ObjectProvider<Authenticator<UsernamePasswordCredentials>> authenticator,
+			@Qualifier("directBasicAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectBasicAuthClient>> customizers) {
 		final Http.DirectBasicAuth directBasicAuth = config.getDirectBasicAuth();
-		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient() {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
+		final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directBasicAuth::getRealmName).to(directBasicAuthClient::setRealmName);
-		authenticator.ifAvailable(directBasicAuthClient::setAuthenticator);
-
-		initHttpDirectClient(directBasicAuthClient, directBasicAuth);
-
-		return directBasicAuthClient;
+		return directClientInitialized(directBasicAuthClient, config, directBasicAuth, customizers);
 	}
 
 	@Bean(name = "directBearerAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-bearer-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-bearer-auth.enabled")
 	public DirectBearerAuthClient directBearerAuthClient(
-			ObjectProvider<Authenticator<TokenCredentials>> authenticator,
+			@Qualifier("directBearerAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectBearerAuthClient>> customizers) {
 		final Http.DirectBearerAuth directBearerAuth = config.getDirectBearerAuth();
-		final DirectBearerAuthClient directBearerAuthClient = new DirectBearerAuthClient() {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
+		final DirectBearerAuthClient directBearerAuthClient =
+				new DirectBearerAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directBearerAuth::getRealmName).to(directBearerAuthClient::setRealmName);
-		authenticator.ifAvailable(directBearerAuthClient::setAuthenticator);
-
-		initHttpDirectClient(directBearerAuthClient, directBearerAuth);
-
-		return directBearerAuthClient;
+		return directClientInitialized(directBearerAuthClient, config, directBearerAuth, customizers);
 	}
 
 	@Bean(name = "directDigestAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-digest-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-digest-auth.enabled")
 	public DirectDigestAuthClient directDigestAuthClient(
-			ObjectProvider<Authenticator<DigestCredentials>> authenticator,
+			@Qualifier("directDigestAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<DirectDigestAuthClient>> customizers) {
 		final Http.DirectDigestAuth directDigestAuth = config.getDirectDigestAuth();
-		final DirectDigestAuthClient directDigestAuthClient = new DirectDigestAuthClient() {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
+		final DirectDigestAuthClient directDigestAuthClient =
+				new DirectDigestAuthClient(authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(directDigestAuth::getRealm).to(directDigestAuthClient::setRealm);
-		authenticator.ifAvailable(directDigestAuthClient::setAuthenticator);
-
-		initHttpDirectClient(directDigestAuthClient, directDigestAuth);
-
-		return directDigestAuthClient;
+		return directClientInitialized(directDigestAuthClient, config, directDigestAuth, customizers);
 	}
 
 	@Bean(name = "directFormClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "direct-form.enabled", havingValue = "true")
-	public DirectFormClient directFormClient(ObjectProvider<Authenticator<UsernamePasswordCredentials>> authenticator,
-											 ObjectProvider<Customizer<DirectFormClient>> customizers) {
-		final Http.DirectForm form = config.getDirectForm();
-		final DirectFormClient directFormClient = new DirectFormClient() {
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "direct-form.enabled")
+	public DirectFormClient directFormClient(
+			@Qualifier("directFormClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<DirectFormClient>> customizers) {
+		final Http.DirectForm directForm = config.getDirectForm();
+		final DirectFormClient directFormClient = new DirectFormClient(authenticator.getIfAvailable());
 
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		hasTextpropertyMapper.from(form::getUsernameParameter).to(directFormClient::setUsernameParameter);
-		hasTextpropertyMapper.from(form::getPasswordParameter).to(directFormClient::setPasswordParameter);
-		authenticator.ifAvailable(directFormClient::setAuthenticator);
-
-		initHttpDirectClient(directFormClient, form);
-
-		return directFormClient;
+		hasTextpropertyMapper.from(directForm::getUsernameParameter).to(directFormClient::setUsernameParameter);
+		hasTextpropertyMapper.from(directForm::getPasswordParameter).to(directFormClient::setPasswordParameter);
+		return directClientInitialized(directFormClient, config, directForm, customizers);
 	}
 
 	@Bean(name = "headerClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "header.enabled", havingValue = "true")
-	public HeaderClient headerClient(ObjectProvider<Authenticator<TokenCredentials>> authenticator,
-									 ObjectProvider<Customizer<HeaderClient>> customizers) {
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "header.enabled")
+	public HeaderClient headerClient(
+			@Qualifier("headerClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<HeaderClient>> customizers) {
 		final Http.Header header = config.getHeader();
-		final HeaderClient headerClient = new HeaderClient() {
+		final HeaderClient headerClient = new HeaderClient(header.getHeaderName(), header.getPrefixHeader(),
+				authenticator.getIfAvailable());
 
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		hasTextpropertyMapper.from(header::getHeaderName).to(headerClient::setHeaderName);
-		hasTextpropertyMapper.from(header::getPrefixHeader).to(headerClient::setPrefixHeader);
-		authenticator.ifAvailable(headerClient::setAuthenticator);
-
-		initHttpDirectClient(headerClient, header);
-
-		return headerClient;
+		return directClientInitialized(headerClient, config, header, customizers);
 	}
 
 	@Bean(name = "ipClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "ip.enabled", havingValue = "true")
-	public IpClient ipClient(ObjectProvider<Authenticator<TokenCredentials>> authenticator,
-							 ObjectProvider<Customizer<IpClient>> customizers) {
-		final Http.Ip ip = config.getIp();
-		final IpClient ipClient = new IpClient() {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		authenticator.ifAvailable(ipClient::setAuthenticator);
-
-		initHttpDirectClient(ipClient, ip);
-
-		return ipClient;
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "ip.enabled")
+	public IpClient ipClient(@Qualifier("ipClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+	                         ObjectProvider<Customizer<IpClient>> customizers) {
+		final IpClient ipClient = new IpClient(authenticator.getIfAvailable());
+		return directClientInitialized(ipClient, config, config.getIp(), customizers);
 	}
 
 	@Bean(name = "parameterClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "parameter.enabled", havingValue = "true")
-	public ParameterClient parameterClient(ObjectProvider<Authenticator<TokenCredentials>> authenticator,
-										   ObjectProvider<Customizer<ParameterClient>> customizers) {
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "parameter.enabled")
+	public ParameterClient parameterClient(
+			@Qualifier("parameterClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+			ObjectProvider<Customizer<ParameterClient>> customizers) {
 		final Http.Parameter parameter = config.getParameter();
-		final ParameterClient parameterClient = new ParameterClient() {
+		final ParameterClient parameterClient = new ParameterClient(parameter.getParameterName(),
+				authenticator.getIfAvailable());
 
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		hasTextpropertyMapper.from(parameter::getParameterName).to(parameterClient::setParameterName);
 		hasTextpropertyMapper.from(parameter::getSupportGetRequest).to(parameterClient::setSupportGetRequest);
 		hasTextpropertyMapper.from(parameter::getSupportPostRequest).to(parameterClient::setSupportPostRequest);
-		authenticator.ifAvailable(parameterClient::setAuthenticator);
-
-		initHttpDirectClient(parameterClient, parameter);
-
-		return parameterClient;
+		return directClientInitialized(parameterClient, config, parameter, customizers);
 	}
 
 	@Bean(name = "x509Client")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "x509.enabled", havingValue = "true")
-	public X509Client x509Client(ObjectProvider<Customizer<X509Client>> customizers) {
-		final Http.X509 x509 = config.getX509();
-		final X509Client x509Client = new X509Client() {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		initHttpDirectClient(x509Client, x509);
-
-		return x509Client;
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "x509.enabled")
+	public X509Client x509Client(
+			@Qualifier("x509ClientAuthenticator") ObjectProvider<Customizer<X509Client>> customizers) {
+		final X509Client x509Client = new X509Client();
+		return directClientInitialized(x509Client, config, config.getX509(), customizers);
 	}
 
 	/* Direct Client 结束 */
@@ -296,69 +175,30 @@ public class Pac4jHttpConfiguration extends AbstractPac4jClientConfiguration<Htt
 
 	@Bean(name = "formClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "form.enabled", havingValue = "true")
-	public FormClient formClient(ObjectProvider<Customizer<FormClient>> customizers) {
-		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "form.enabled")
+	public FormClient formClient(@Qualifier("formClientAuthenticator") ObjectProvider<Authenticator> authenticator,
+	                             ObjectProvider<Customizer<FormClient>> customizers) {
 		final Http.Form form = config.getForm();
-		final FormClient formClient = new FormClient(form.getLoginUrl(), usernamePasswordAuthenticator) {
-
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
+		final FormClient formClient = new FormClient(form.getLoginUrl(), authenticator.getIfAvailable());
 
 		hasTextpropertyMapper.from(form::getUsernameParameter).to(formClient::setUsernameParameter);
 		hasTextpropertyMapper.from(form::getPasswordParameter).to(formClient::setPasswordParameter);
-		propertyMapper.from(config::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
-				.to(formClient::setAjaxRequestResolver);
-
-		initHttpIndirectClient(formClient, form);
-
-		return formClient;
+		return indirectClientInitialized(formClient, config, form, customizers);
 	}
 
 	@Bean(name = "indirectBasicAuthClient")
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = Http.PREFIX, name = "indirect-basic-auth.enabled")
 	public IndirectBasicAuthClient indirectBasicAuthClient(
+			@Qualifier("indirectBasicAuthClientAuthenticator") ObjectProvider<Authenticator> authenticator,
 			ObjectProvider<Customizer<IndirectBasicAuthClient>> customizers) {
-		final SimpleTestUsernamePasswordAuthenticator usernamePasswordAuthenticator = new SimpleTestUsernamePasswordAuthenticator();
-		final Http.IndirectBasicAuth indirectBasicAuth = config.getIndirectBasicAuth();
-		final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(
-				indirectBasicAuth.getRealmName(), usernamePasswordAuthenticator) {
+		final IndirectBasicAuthClient indirectBasicAuthClient =
+				new IndirectBasicAuthClient(config.getIndirectBasicAuth().getRealmName(),
+						authenticator.getIfAvailable());
 
-
-			@Override
-			protected void clientInit() {
-				super.clientInit();
-				customizer(this, customizers);
-			}
-
-		};
-
-		propertyMapper.from(config::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
-				.to(indirectBasicAuthClient::setAjaxRequestResolver);
-
-		initHttpIndirectClient(indirectBasicAuthClient, indirectBasicAuth);
-
-		return indirectBasicAuthClient;
+		return indirectClientInitialized(indirectBasicAuthClient, config, config.getIndirectBasicAuth(), customizers);
 	}
 
 	/* Indirect Client 结束 */
-
-	protected <C extends DirectClient<? extends Credentials>> void initHttpDirectClient(final C client,
-																						final BaseConfig.BaseClientConfig clientConfig) {
-		afterClientInitialized(client, config, clientConfig);
-	}
-
-	protected <C extends IndirectClient<? extends Credentials>> void initHttpIndirectClient(final C client,
-																							final BaseConfig.BaseClientConfig clientConfig) {
-		propertyMapper.from(config::getCallbackUrl).to(client::setCallbackUrl);
-		afterClientInitialized(client, config, clientConfig);
-	}
 
 }

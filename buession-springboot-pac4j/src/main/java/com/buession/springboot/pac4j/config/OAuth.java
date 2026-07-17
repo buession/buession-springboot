@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2022 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.config;
@@ -41,19 +41,9 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 2.0.0
  */
-public class OAuth extends BaseConfig {
+public class OAuth extends BaseClientConfig {
 
-	public final static String PREFIX = PROPERTIES_PREFIX + ".oauth";
-
-	/**
-	 * Key
-	 */
-	private String key;
-
-	/**
-	 * Secret
-	 */
-	private String secret;
+	public final static String PREFIX = BaseClientConfig.PROPERTIES_PREFIX + ".oauth";
 
 	/**
 	 * 登录成功跳转地址
@@ -192,41 +182,10 @@ public class OAuth extends BaseConfig {
 	private WordPress wordPress = new WordPress();
 
 	/**
-	 * 返回 Key
-	 *
-	 * @return Key
+	 * 构造函数
 	 */
-	public String getKey() {
-		return key;
-	}
-
-	/**
-	 * 设置 Key
-	 *
-	 * @param key
-	 * 		Key
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
-	 * 返回 Secret
-	 *
-	 * @return Secret
-	 */
-	public String getSecret() {
-		return secret;
-	}
-
-	/**
-	 * 设置 Secret
-	 *
-	 * @param secret
-	 * 		Secret
-	 */
-	public void setSecret(String secret) {
-		this.secret = secret;
+	public OAuth() {
+		super(null);
 	}
 
 	/**
@@ -666,8 +625,21 @@ public class OAuth extends BaseConfig {
 		this.wordPress = wordPress;
 	}
 
-	public abstract static class BaseOAuthConfig extends BaseClientConfig {
+	public abstract static class BaseOAuthConfig extends IndirectClientConfig {
 
+		/**
+		 * Key
+		 */
+		private String key;
+
+		/**
+		 * Secret
+		 */
+		private String secret;
+
+		/**
+		 * Token 是否作为请求头
+		 */
 		protected Boolean tokenAsHeader;
 
 		/**
@@ -690,14 +662,68 @@ public class OAuth extends BaseConfig {
 			super(name);
 		}
 
+		/**
+		 * 返回 Key
+		 *
+		 * @return Key
+		 */
+		public String getKey() {
+			return key;
+		}
+
+		/**
+		 * 设置 Key
+		 *
+		 * @param key
+		 * 		Key
+		 */
+		public void setKey(String key) {
+			this.key = key;
+		}
+
+		/**
+		 * 返回 Secret
+		 *
+		 * @return Secret
+		 */
+		public String getSecret() {
+			return secret;
+		}
+
+		/**
+		 * 设置 Secret
+		 *
+		 * @param secret
+		 * 		Secret
+		 */
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		/**
+		 * 返回 Token 是否作为请求头
+		 *
+		 * @return true / false
+		 */
 		public Boolean isTokenAsHeader() {
 			return getTokenAsHeader();
 		}
 
+		/**
+		 * 返回 Token 是否作为请求头
+		 *
+		 * @return true / false
+		 */
 		public Boolean getTokenAsHeader() {
 			return tokenAsHeader;
 		}
 
+		/**
+		 * 设置 Token 是否作为请求头
+		 *
+		 * @param tokenAsHeader
+		 * 		true / false
+		 */
 		public void setTokenAsHeader(Boolean tokenAsHeader) {
 			this.tokenAsHeader = tokenAsHeader;
 		}
@@ -758,6 +784,9 @@ public class OAuth extends BaseConfig {
 
 	public abstract static class BaseOAuth20Config extends BaseOAuthConfig {
 
+		/**
+		 * 是否使用 State
+		 */
 		private Boolean withState;
 
 		/**
@@ -775,14 +804,30 @@ public class OAuth extends BaseConfig {
 			super(name);
 		}
 
+		/**
+		 * 返回是否使用 State
+		 *
+		 * @return true / false
+		 */
 		public Boolean isWithState() {
 			return getWithState();
 		}
 
+		/**
+		 * 返回是否使用 State
+		 *
+		 * @return true / false
+		 */
 		public Boolean getWithState() {
 			return withState;
 		}
 
+		/**
+		 * 设置是否使用 State
+		 *
+		 * @param withState
+		 * 		true / false
+		 */
 		public void setWithState(Boolean withState) {
 			this.withState = withState;
 		}
@@ -912,86 +957,198 @@ public class OAuth extends BaseConfig {
 	 */
 	public final static class Generic extends BaseOAuth20Config {
 
+		/**
+		 * 授权 URL
+		 */
 		private String authUrl;
 
+		/**
+		 * Token URL
+		 */
 		private String tokenUrl;
 
+		/**
+		 * 用户信息 URL
+		 */
 		private String profileUrl;
 
+		/**
+		 * 用户信息路径
+		 */
 		private String profilePath;
 
+		/**
+		 * 用户信息 ID
+		 */
 		private String profileId;
 
+		/**
+		 * 客户端认证方式
+		 */
 		private String clientAuthenticationMethod;
 
+		/**
+		 * 用户信息请求方式
+		 */
 		private Verb profileVerb;
 
+		/**
+		 * 用户信息属性映射
+		 */
 		private Map<String, String> profileAttrs;
 
 		public Generic() {
 			super("oauth2");
 		}
 
+		/**
+		 * 返回授权 URL
+		 *
+		 * @return 授权 URL
+		 */
 		public String getAuthUrl() {
 			return authUrl;
 		}
 
+		/**
+		 * 设置授权 URL
+		 *
+		 * @param authUrl
+		 * 		授权 URL
+		 */
 		public void setAuthUrl(String authUrl) {
 			this.authUrl = authUrl;
 		}
 
+		/**
+		 * 返回获取 Token URL
+		 *
+		 * @return 获取 Token URL
+		 */
 		public String getTokenUrl() {
 			return tokenUrl;
 		}
 
+		/**
+		 * 设置获取 Token URL
+		 *
+		 * @param tokenUrl
+		 * 		获取 Token URL
+		 */
 		public void setTokenUrl(String tokenUrl) {
 			this.tokenUrl = tokenUrl;
 		}
 
+		/**
+		 * 返回获取用户信息 URL
+		 *
+		 * @return 获取用户信息 URL
+		 */
 		public String getProfileUrl() {
 			return profileUrl;
 		}
 
+		/**
+		 * 设置获取用户信息 URL
+		 *
+		 * @param profileUrl
+		 * 		获取用户信息 URL
+		 */
 		public void setProfileUrl(String profileUrl) {
 			this.profileUrl = profileUrl;
 		}
 
+		/**
+		 * 返回用户信息路径
+		 *
+		 * @return 用户信息路径
+		 */
 		public String getProfilePath() {
 			return profilePath;
 		}
 
+		/**
+		 * 设置用户信息路径
+		 *
+		 * @param profilePath
+		 * 		用户信息路径
+		 */
 		public void setProfilePath(String profilePath) {
 			this.profilePath = profilePath;
 		}
 
+		/**
+		 * 返回用户信息 ID
+		 *
+		 * @return 用户信息 ID
+		 */
 		public String getProfileId() {
 			return profileId;
 		}
 
+		/**
+		 * 设置用户信息 ID
+		 *
+		 * @param profileId
+		 * 		用户信息 ID
+		 */
 		public void setProfileId(String profileId) {
 			this.profileId = profileId;
 		}
 
+		/**
+		 * 返回客户端认证方式
+		 *
+		 * @return 客户端认证方式
+		 */
 		public String getClientAuthenticationMethod() {
 			return clientAuthenticationMethod;
 		}
 
+		/**
+		 * 设置客户端认证方式
+		 *
+		 * @param clientAuthenticationMethod
+		 * 		客户端认证方式
+		 */
 		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
+		/**
+		 * 返回用户信息请求方式
+		 *
+		 * @return 用户信息请求方式
+		 */
 		public Verb getProfileVerb() {
 			return profileVerb;
 		}
 
+		/**
+		 * 设置用户信息请求方式
+		 *
+		 * @param profileVerb
+		 * 		用户信息请求方式
+		 */
 		public void setProfileVerb(Verb profileVerb) {
 			this.profileVerb = profileVerb;
 		}
 
+		/**
+		 * 返回用户信息属性映射
+		 *
+		 * @return 用户信息属性映射
+		 */
 		public Map<String, String> getProfileAttrs() {
 			return profileAttrs;
 		}
 
+		/**
+		 * 设置用户信息属性映射
+		 *
+		 * @param profileAttrs
+		 * 		用户信息属性映射
+		 */
 		public void setProfileAttrs(Map<String, String> profileAttrs) {
 			this.profileAttrs = profileAttrs;
 		}
@@ -1007,9 +1164,12 @@ public class OAuth extends BaseConfig {
 
 		private String casLogoutUrl;
 
-		private Boolean springSecurityCompliant;
-
 		private Boolean implicitFlow;
+
+		/**
+		 * @since 4.0.0
+		 */
+		private Verb accessTokenVerb;
 
 		public Cas() {
 			super("cas");
@@ -1031,18 +1191,6 @@ public class OAuth extends BaseConfig {
 			this.casLogoutUrl = casLogoutUrl;
 		}
 
-		public Boolean isSpringSecurityCompliant() {
-			return getSpringSecurityCompliant();
-		}
-
-		public Boolean getSpringSecurityCompliant() {
-			return springSecurityCompliant;
-		}
-
-		public void setSpringSecurityCompliant(Boolean springSecurityCompliant) {
-			this.springSecurityCompliant = springSecurityCompliant;
-		}
-
 		public Boolean isImplicitFlow() {
 			return getImplicitFlow();
 		}
@@ -1053,6 +1201,14 @@ public class OAuth extends BaseConfig {
 
 		public void setImplicitFlow(Boolean implicitFlow) {
 			this.implicitFlow = implicitFlow;
+		}
+
+		public Verb getAccessTokenVerb() {
+			return accessTokenVerb;
+		}
+
+		public void setAccessTokenVerb(Verb accessTokenVerb) {
+			this.accessTokenVerb = accessTokenVerb;
 		}
 
 	}

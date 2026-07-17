@@ -1,0 +1,9 @@
+com.buession.springboot.pac4j.autoconfigure.Pac4jCasConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jHttpConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jJwtConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jKerberosConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jOAuthConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jOidcConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jSAMLConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration
+com.buession.springboot.pac4j.autoconfigure.Pac4jWebFilterConfiguration

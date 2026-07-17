@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.reactive;
@@ -39,14 +39,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.MediaTypeNotSupportedStatusException;
 import org.springframework.web.server.MethodNotAllowedException;
+import org.springframework.web.server.MissingRequestValueException;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
@@ -58,6 +60,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -96,7 +99,7 @@ public class DefaultErrorWebExceptionHandler
 	 * @since 3.0.0
 	 */
 	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties.Resources resources,
-										   ErrorProperties errorProperties, ApplicationContext applicationContext) {
+	                                       ErrorProperties errorProperties, ApplicationContext applicationContext) {
 		super(errorAttributes, resources, errorProperties, applicationContext);
 		this.errorProperties = errorProperties;
 	}
@@ -138,56 +141,56 @@ public class DefaultErrorWebExceptionHandler
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
 
 		return Flux.just(getViews(errorStatus, throwable).toArray(new String[]{}))
-				.flatMap((viewName)->renderErrorView(viewName, responseBody, error))
-				.switchIfEmpty(errorProperties.getWhitelabel().isEnabled()
-						? renderDefaultErrorView(responseBody, error) : Mono.error(throwable))
-				.next();
+				.flatMap((viewName)->renderErrorView(viewName, responseBody, error)).switchIfEmpty(
+						errorProperties.getWhitelabel().isEnabled() ? renderDefaultErrorView(responseBody,
+								error) : Mono.error(throwable)).next();
 	}
 
 	@Override
 	protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		ServerHttpRequest httpRequest = request.exchange().getRequest();
+		ServerHttpResponse httpResponse = request.exchange().getResponse();
 		Map<String, Object> error = super.getErrorAttributes(request, ErrorAttributeOptions.defaults());
 		Throwable throwable = getError(request);
 
 		try{
-			final ServerResponse response = null;
-
 			if(throwable instanceof MethodArgumentNotValidException){
-				handleMethodArgumentNotValidException(request, response, error,
+				handleMethodArgumentNotValidException(httpRequest, httpResponse, error,
 						(MethodArgumentNotValidException) throwable);
 			}else if(throwable instanceof BindException){
-				handleBindException(request, response, error, (BindException) throwable);
+				handleBindException(httpRequest, httpResponse, error, (BindException) throwable);
 			}else if(throwable instanceof WebExchangeBindException){
-				handleWebExchangeBindException(request, response, error, (WebExchangeBindException) throwable);
+				handleWebExchangeBindException(httpRequest, httpResponse, error, (WebExchangeBindException) throwable);
 			}else if(throwable instanceof ServerWebInputException){
-				handleServerWebInputException(request, response, error, (ServerWebInputException) throwable);
+				handleServerWebInputException(httpRequest, httpResponse, error, (ServerWebInputException) throwable);
 			}else if(throwable instanceof TypeMismatchException){
-				handleTypeMismatchException(request, response, error, (TypeMismatchException) throwable);
+				handleTypeMismatchException(httpRequest, httpResponse, error, (TypeMismatchException) throwable);
 			}else if(throwable instanceof HttpMessageNotReadableException){
-				handleHttpMessageNotReadableException(request, response, error,
+				handleHttpMessageNotReadableException(httpRequest, httpResponse, error,
 						(HttpMessageNotReadableException) throwable);
 			}else if(throwable instanceof MethodNotAllowedException){
-				handleMethodNotAllowedException(request, response, error, (MethodNotAllowedException) throwable);
+				handleMethodNotAllowedException(httpRequest, httpResponse, error,
+						(MethodNotAllowedException) throwable);
 			}else if(throwable instanceof NotAcceptableStatusException){
-				handleNotAcceptableException(request, response, error, (NotAcceptableStatusException) throwable);
-			}else if(throwable instanceof MediaTypeNotSupportedStatusException){
-				handleMediaTypeNotSupportedException(request, response, error,
-						(MediaTypeNotSupportedStatusException) throwable);
+				handleNotAcceptableException(httpRequest, httpResponse, error,
+						(NotAcceptableStatusException) throwable);
 			}else if(throwable instanceof UnsupportedMediaTypeStatusException){
-				handleUnsupportedMediaTypeException(request, response, error,
+				handleUnsupportedMediaTypeException(httpRequest, httpResponse, error,
 						(UnsupportedMediaTypeStatusException) throwable);
-				//}else if(throwable instanceof MissingPathVariableException){
-				//handleMissingPathVariable(request, response, error, (MissingPathVariableException) throwable);
+			}else if(throwable instanceof MissingRequestValueException){
+				handleMissingRequestValueException(httpRequest, httpResponse, error,
+						(MissingRequestValueException) throwable);
 			}else if(throwable instanceof ConversionNotSupportedException){
-				handleConversionNotSupportedException(request, response, error,
+				handleConversionNotSupportedException(httpRequest, httpResponse, error,
 						(ConversionNotSupportedException) throwable);
 			}else if(throwable instanceof HttpMessageNotWritableException){
-				handleHttpMessageNotWritableException(request, response, error,
+				handleHttpMessageNotWritableException(httpRequest, httpResponse, error,
 						(HttpMessageNotWritableException) throwable);
 			}else if(throwable instanceof ResponseStatusException){
-				handleResponseStatusException(request, response, error, (ResponseStatusException) throwable);
+				handleResponseStatusException(httpRequest, httpResponse, error, (ResponseStatusException) throwable);
 			}else if(throwable instanceof AsyncRequestTimeoutException){
-				handleAsyncRequestTimeoutException(request, response, error, (AsyncRequestTimeoutException) throwable);
+				handleAsyncRequestTimeoutException(httpRequest, httpResponse, error,
+						(AsyncRequestTimeoutException) throwable);
 			}
 		}catch(Exception handlerEx){
 			if(logger.isWarnEnabled()){
@@ -198,16 +201,16 @@ public class DefaultErrorWebExceptionHandler
 
 		error.put("code", getHttpStatus(error));
 
-		return error;
+		return Optional.ofNullable(handleErrorAttributes(httpRequest, httpResponse, error, throwable)).orElse(error);
 	}
 
 	/**
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -215,20 +218,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final MethodArgumentNotValidException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleMethodArgumentNotValidException(final ServerHttpRequest request,
+	                                                                    final ServerHttpResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final MethodArgumentNotValidException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -236,19 +239,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleBindException(final ServerRequest request, final ServerResponse response,
-													  final Map<String, Object> errorAttributes,
-													  final BindException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleBindException(final ServerHttpRequest request,
+	                                                  final ServerHttpResponse response,
+	                                                  final Map<String, Object> errorAttributes,
+	                                                  final BindException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -256,20 +260,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleWebExchangeBindException(final ServerRequest request,
-																 final ServerResponse response,
-																 final Map<String, Object> errorAttributes,
-																 final WebExchangeBindException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleWebExchangeBindException(final ServerHttpRequest request,
+	                                                             final ServerHttpResponse response,
+	                                                             final Map<String, Object> errorAttributes,
+	                                                             final WebExchangeBindException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -277,18 +281,18 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleServerWebInputException(final ServerRequest request,
-																final ServerResponse response,
-																final Map<String, Object> errorAttributes,
-																final ServerWebInputException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleServerWebInputException(final ServerHttpRequest request,
+	                                                            final ServerHttpResponse response,
+	                                                            final Map<String, Object> errorAttributes,
+	                                                            final ServerWebInputException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 400
 	 */
-	/*protected Map<String, Object> handleServletRequestBindingException(final ServerRequest request, final
-	ServerResponse response, final ServletRequestBindingException ex){
+	/*protected Map<String, Object> handleServletRequestBindingException(final ServerHttpRequest request, final
+	ServerHttpResponse response, final ServletRequestBindingException ex){
 		// response.setStatusCode(HttpStatus.BAD_REQUEST);
 		return doResolve(request, ex);
 	}*/
@@ -297,9 +301,9 @@ public class DefaultErrorWebExceptionHandler
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -307,20 +311,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleTypeMismatchException(final ServerRequest request,
-															  final ServerResponse response,
-															  final Map<String, Object> errorAttributes,
-															  final TypeMismatchException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleTypeMismatchException(final ServerHttpRequest request,
+	                                                          final ServerHttpResponse response,
+	                                                          final Map<String, Object> errorAttributes,
+	                                                          final TypeMismatchException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 400
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -328,20 +332,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final HttpMessageNotReadableException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleHttpMessageNotReadableException(final ServerHttpRequest request,
+	                                                                    final ServerHttpResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final HttpMessageNotReadableException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 405
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -349,25 +353,25 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleMethodNotAllowedException(final ServerRequest request,
-																  final ServerResponse response,
-																  final Map<String, Object> errorAttributes,
-																  final MethodNotAllowedException ex) {
+	protected Map<String, Object> handleMethodNotAllowedException(final ServerHttpRequest request,
+	                                                              final ServerHttpResponse response,
+	                                                              final Map<String, Object> errorAttributes,
+	                                                              final MethodNotAllowedException ex) {
 		Set<HttpMethod> supportedMethods = ex.getSupportedMethods();
-		if(supportedMethods != null && response.headers() != null){
-			response.headers().setAllow(supportedMethods);
+		if(response.getHeaders() != null){
+			response.getHeaders().setAllow(supportedMethods);
 		}
 
-		return doResolve(request, errorAttributes, ex);
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 406
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -375,46 +379,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleNotAcceptableException(final ServerRequest request,
-															   final ServerResponse response,
-															   final Map<String, Object> errorAttributes,
-															   final NotAcceptableStatusException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleNotAcceptableException(final ServerHttpRequest request,
+	                                                           final ServerHttpResponse response,
+	                                                           final Map<String, Object> errorAttributes,
+	                                                           final NotAcceptableStatusException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 415
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
-	 * @param errorAttributes
-	 * 		错误属性
-	 * @param ex
-	 *        {@link MediaTypeNotSupportedStatusException}
-	 *
-	 * @return 返回数据
-	 */
-	protected Map<String, Object> handleMediaTypeNotSupportedException(final ServerRequest request,
-																	   final ServerResponse response,
-																	   final Map<String, Object> errorAttributes,
-																	   final MediaTypeNotSupportedStatusException ex) {
-		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(mediaTypes != null && response.headers() != null){
-			response.headers().setAccept(mediaTypes);
-		}
-
-		return doResolve(request, errorAttributes, ex);
-	}
-
-	/**
-	 * Status code: 415
-	 *
-	 * @param request
-	 *        {@link ServerRequest}
-	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -422,45 +400,46 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerRequest request,
-																	  final ServerResponse response,
-																	  final Map<String, Object> errorAttributes,
-																	  final UnsupportedMediaTypeStatusException ex) {
+	protected Map<String, Object> handleUnsupportedMediaTypeException(final ServerHttpRequest request,
+	                                                                  final ServerHttpResponse response,
+	                                                                  final Map<String, Object> errorAttributes,
+	                                                                  final UnsupportedMediaTypeStatusException ex) {
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
-		if(mediaTypes != null && response.headers() != null){
-			response.headers().setAccept(mediaTypes);
+		if(response.getHeaders() != null){
+			response.getHeaders().setAccept(mediaTypes);
 		}
 
-		return doResolve(request, errorAttributes, ex);
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 500
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
-	 *        {@link MissingPathVariableException}
+	 *        {@link MissingRequestValueException}
 	 *
 	 * @return 返回数据
 	 */
-	//protected Map<String, Object> handleMissingPathVariable(final ServerRequest request, final ServerResponse
-	// response
-	//	, final MissingPathVariableException ex){
-	//	return doResolve(request, ex);
-	//}
+	protected Map<String, Object> handleMissingRequestValueException(final ServerHttpRequest request,
+	                                                                 final ServerHttpResponse response,
+	                                                                 final Map<String, Object> errorAttributes,
+	                                                                 final MissingRequestValueException ex) {
+		return doResolve(request, response, errorAttributes, ex);
+	}
 
 	/**
 	 * Status code: 500
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -468,20 +447,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleConversionNotSupportedException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final ConversionNotSupportedException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleConversionNotSupportedException(final ServerHttpRequest request,
+	                                                                    final ServerHttpResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final ConversionNotSupportedException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 500
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -489,20 +468,20 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerRequest request,
-																		final ServerResponse response,
-																		final Map<String, Object> errorAttributes,
-																		final HttpMessageNotWritableException ex) {
-		return doResolve(request, errorAttributes, ex);
+	protected Map<String, Object> handleHttpMessageNotWritableException(final ServerHttpRequest request,
+	                                                                    final ServerHttpResponse response,
+	                                                                    final Map<String, Object> errorAttributes,
+	                                                                    final HttpMessageNotWritableException ex) {
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 错误码
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -510,23 +489,23 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleResponseStatusException(final ServerRequest request,
-																final ServerResponse response,
-																final Map<String, Object> errorAttributes,
-																final ResponseStatusException ex) {
-		if(ex.getStatus() == HttpStatus.NOT_FOUND){
+	protected Map<String, Object> handleResponseStatusException(final ServerHttpRequest request,
+	                                                            final ServerHttpResponse response,
+	                                                            final Map<String, Object> errorAttributes,
+	                                                            final ResponseStatusException ex) {
+		if(ex.getStatusCode() == HttpStatus.NOT_FOUND){
 			pageNotFoundLogger.warn(ex.getMessage());
 		}
-		return doResolve(request, errorAttributes, ex);
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
 	/**
 	 * Status code: 503
 	 *
 	 * @param request
-	 *        {@link ServerRequest}
+	 *        {@link ServerHttpRequest}
 	 * @param response
-	 *        {@link ServerResponse}
+	 *        {@link ServerHttpResponse}
 	 * @param errorAttributes
 	 * 		错误属性
 	 * @param ex
@@ -534,21 +513,28 @@ public class DefaultErrorWebExceptionHandler
 	 *
 	 * @return 返回数据
 	 */
-	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerRequest request,
-																	 final ServerResponse response,
-																	 final Map<String, Object> errorAttributes,
-																	 final AsyncRequestTimeoutException ex) {
-		if(request.exchange().getResponse().isCommitted() == false){
-			//response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
+	protected Map<String, Object> handleAsyncRequestTimeoutException(final ServerHttpRequest request,
+	                                                                 final ServerHttpResponse response,
+	                                                                 final Map<String, Object> errorAttributes,
+	                                                                 final AsyncRequestTimeoutException ex) {
+		if(response.isCommitted() == false){
+			response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
 		}else{
 			logger.warn("Async request timed out");
 		}
 
-		return doResolve(request, errorAttributes, ex);
+		return doResolve(request, response, errorAttributes, ex);
 	}
 
-	protected Map<String, Object> doResolve(final ServerRequest request, final Map<String, Object> errorAttributes,
-											final Throwable throwable) {
+	protected Map<String, Object> handleErrorAttributes(final ServerHttpRequest request,
+	                                                    final ServerHttpResponse response,
+	                                                    final Map<String, Object> errorAttributes,
+	                                                    final Throwable throwable) {
+		return null;
+	}
+
+	protected Map<String, Object> doResolve(final ServerHttpRequest request, final ServerHttpResponse response,
+	                                        final Map<String, Object> errorAttributes, final Throwable throwable) {
 		//HttpStatus httpStatus = getHttpStatus(request);
 
 		errorAttributes.put("state", false);
@@ -559,7 +545,7 @@ public class DefaultErrorWebExceptionHandler
 		errorAttributes.put(exceptionAttribute, throwable);
 
 		if(getCacheControl() != null){
-			request.exchange().getResponse().getHeaders().setCacheControl(getCacheControl());
+			response.getHeaders().setCacheControl(getCacheControl());
 		}
 
 		return errorAttributes;

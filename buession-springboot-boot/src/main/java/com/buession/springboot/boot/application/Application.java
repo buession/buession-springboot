@@ -21,13 +21,14 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2024 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.boot.application;
 
 import org.springframework.boot.Banner;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
@@ -36,6 +37,25 @@ import org.springframework.core.env.Environment;
  * @author Yong.Teng
  */
 public interface Application extends Launcher, Daemon {
+
+	/**
+	 * 获取父级 {@link ConfigurableApplicationContext}
+	 *
+	 * @return 父级 {@link ConfigurableApplicationContext}
+	 *
+	 * @since 4.0.0
+	 */
+	ConfigurableApplicationContext getParent();
+
+	/**
+	 * 设置父级 {@link ConfigurableApplicationContext}
+	 *
+	 * @param parent
+	 * 		父级 {@link ConfigurableApplicationContext}
+	 *
+	 * @since 4.0.0
+	 */
+	void setParent(ConfigurableApplicationContext parent);
 
 	/**
 	 * 获取 {@link Banner}

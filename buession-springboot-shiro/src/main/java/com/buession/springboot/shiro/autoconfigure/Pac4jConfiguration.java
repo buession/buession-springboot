@@ -19,13 +19,11 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.shiro.autoconfigure;
 
-import com.buession.springboot.pac4j.filter.Pac4jFilter;
-import com.buession.springboot.shiro.core.ShiroFilter;
 import io.buji.pac4j.realm.Pac4jRealm;
 import io.buji.pac4j.subject.Pac4jSubjectFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -33,7 +31,6 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -47,13 +44,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = {com.buession.springboot.pac4j.autoconfigure.Pac4jConfiguration.class})
 @ConditionalOnClass({Pac4jRealm.class, SubjectFactory.class})
 public class Pac4jConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean({Pac4jFilter.class})
-	public ShiroFilter shiroFilter(Pac4jFilter pac4jFilter) {
-		return new ShiroFilter(pac4jFilter);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

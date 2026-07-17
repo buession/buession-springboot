@@ -19,19 +19,22 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.datasource.autoconfigure;
 
 import com.buession.core.Configurer;
+import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.jdbc.config.*;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.*;
 import com.buession.jdbc.datasource.pool.*;
 import com.buession.springboot.datasource.core.DataSourceType;
+import com.buession.springboot.datasource.core.DynamicUrlBuilder;
 import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,32 +51,23 @@ import javax.sql.DataSource;
  *
  * @author Yong.Teng
  */
-@AutoConfiguration
-@ConditionalOnProperty(name = DataSourceProperties.PREFIX)
 public class DataSourceConfiguration {
 
 	protected final DataSourceProperties properties;
+
+	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
 	public DataSourceConfiguration(DataSourceProperties properties) {
 		this.properties = properties;
 	}
 
-	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration,
-			DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
+	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration, DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
 			final Class<DS> type, final DataSourceProperties dataSourceProperties, final C dataSourceConfig,
-			final P poolConfiguration, final Configurer<DS, C> customizer) {
-		return createDataSource(type, dataSourceProperties, dataSourceConfig, poolConfiguration, customizer,
-				(dataSource, properties)->dataSource);
-	}
-
-	protected static <ODS extends javax.sql.DataSource, C extends BaseConfig, P extends PoolConfiguration,
-			DS extends com.buession.jdbc.datasource.DataSource<ODS, P>> DataSource createDataSource(
-			final Class<DS> type, final DataSourceProperties dataSourceProperties, final C dataSourceConfig,
-			final P poolConfiguration, final Configurer<DS, C> customizer,
+			final P poolConfiguration, final DynamicUrlBuilder dynamicUrlBuilder, final Configurer<DS, C> customizer,
 			final Callback<ODS, DataSourceProperties> callback) {
 		final DataSourceInitializer<C, P, ODS, DS> dataSourceInitializer = new DataSourceInitializer<>(type,
 				dataSourceProperties, dataSourceConfig, poolConfiguration, customizer, callback);
-		return dataSourceInitializer.createDataSource();
+		return dataSourceInitializer.createDataSource(dynamicUrlBuilder);
 	}
 
 	/**
@@ -85,8 +79,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DHCP2,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DHCP2, matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
 
 		public Dbcp2(DataSourceProperties properties) {
@@ -95,42 +88,50 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".dbcp2")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(Dbcp2DataSource.class, properties, properties.getDbcp2(),
-					new Dbcp2PoolConfiguration(), (dataSource, config)->{
-						dataSource.setConnectionFactoryClassName(config.getConnectionFactoryClassName());
+					new Dbcp2PoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
+						propertyMapper.from(config::getConnectionFactoryClassName)
+								.to(dataSource::setConnectionFactoryClassName);
 
-						dataSource.setFastFailValidation(config.getFastFailValidation());
-						dataSource.setLogExpiredConnections(config.getLogExpiredConnections());
+						propertyMapper.from(config::getFastFailValidation).to(dataSource::setFastFailValidation);
+						propertyMapper.from(config::getLogExpiredConnections).to(dataSource::setLogExpiredConnections);
 
-						dataSource.setAutoCommitOnReturn(config.getAutoCommitOnReturn());
-						dataSource.setRollbackOnReturn(config.getRollbackOnReturn());
+						propertyMapper.from(config::getAutoCommitOnReturn).to(dataSource::setAutoCommitOnReturn);
+						propertyMapper.from(config::getRollbackOnReturn).to(dataSource::setRollbackOnReturn);
 
-						dataSource.setCacheState(config.getCacheState());
-						dataSource.setDefaultAutoCommit(config.getDefaultAutoCommit());
+						propertyMapper.from(config::getCacheState).to(dataSource::setCacheState);
+						propertyMapper.from(config::getDefaultAutoCommit).to(dataSource::setDefaultAutoCommit);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					});
+					}, (dataSource, config)->dataSource);
 		}
 
 		private static void poolConfig(final Dbcp2PoolConfiguration poolConfiguration,
-									   final Dbcp2Config dataSourceConfig) {
-			poolConfiguration.setMaxConnLifetime(dataSourceConfig.getMaxConnLifetime());
+		                               final Dbcp2Config dataSourceConfig) {
+			propertyMapper.from(dataSourceConfig::getMaxConnLifetime).to(poolConfiguration::setMaxConnLifetime);
 
-			poolConfiguration.setPoolPreparedStatements(dataSourceConfig.getPoolPreparedStatements());
-			poolConfiguration.setMaxOpenPreparedStatements(dataSourceConfig.getMaxOpenPreparedStatements());
-			poolConfiguration.setMaxOpenPreparedStatements(dataSourceConfig.getMaxOpenPreparedStatements());
-			poolConfiguration.setClearStatementPoolOnReturn(dataSourceConfig.getClearStatementPoolOnReturn());
+			propertyMapper.from(dataSourceConfig::getPoolPreparedStatements)
+					.to(poolConfiguration::setPoolPreparedStatements);
+			propertyMapper.from(dataSourceConfig::getMaxOpenPreparedStatements)
+					.to(poolConfiguration::setMaxOpenPreparedStatements);
+			propertyMapper.from(dataSourceConfig::getClearStatementPoolOnReturn)
+					.to(poolConfiguration::setClearStatementPoolOnReturn);
 
-			poolConfiguration.setRemoveAbandonedOnBorrow(dataSourceConfig.getRemoveAbandonedOnBorrow());
-			poolConfiguration.setRemoveAbandonedOnMaintenance(dataSourceConfig.getRemoveAbandonedOnMaintenance());
-			poolConfiguration.setAbandonedUsageTracking(dataSourceConfig.getAbandonedUsageTracking());
+			propertyMapper.from(dataSourceConfig::getRemoveAbandonedOnBorrow)
+					.to(poolConfiguration::setRemoveAbandonedOnBorrow);
+			propertyMapper.from(dataSourceConfig::getRemoveAbandonedOnMaintenance)
+					.to(poolConfiguration::setRemoveAbandonedOnMaintenance);
+			propertyMapper.from(dataSourceConfig::getAbandonedUsageTracking)
+					.to(poolConfiguration::setAbandonedUsageTracking);
 
-			poolConfiguration.setSoftMinEvictableIdle(dataSourceConfig.getSoftMinEvictableIdle());
+			propertyMapper.from(dataSourceConfig::getSoftMinEvictableIdle)
+					.to(poolConfiguration::setSoftMinEvictableIdle);
 
-			poolConfiguration.setEvictionPolicyClassName(dataSourceConfig.getEvictionPolicyClassName());
+			propertyMapper.from(dataSourceConfig::getEvictionPolicyClassName)
+					.to(poolConfiguration::setEvictionPolicyClassName);
 
-			poolConfiguration.setLifo(dataSourceConfig.getLifo());
+			propertyMapper.from(dataSourceConfig::getLifo).to(poolConfiguration::setLifo);
 		}
 
 	}
@@ -144,8 +145,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(DruidDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DRUID,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.DRUID, matchIfMissing = true)
 	static class Druid extends DataSourceConfiguration {
 
 		public Druid(DataSourceProperties properties) {
@@ -154,92 +154,110 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".druid")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(DruidDataSource.class, properties, properties.getDruid(),
-					new DruidPoolConfiguration(), (dataSource, config)->{
-						dataSource.setUserCallbackClassName(config.getUserCallbackClassName());
-						dataSource.setPasswordCallbackClassName(config.getPasswordCallbackClassName());
+					new DruidPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
+						propertyMapper.from(config::getUserCallbackClassName).to(dataSource::setUserCallbackClassName);
+						propertyMapper.from(config::getPasswordCallbackClassName)
+								.to(dataSource::setPasswordCallbackClassName);
 
-						dataSource.setConnectTimeout(config.getConnectTimeout());
-						dataSource.setSocketTimeout(config.getSocketTimeout());
+						propertyMapper.from(config::getConnectTimeout).to(dataSource::setConnectTimeout);
+						propertyMapper.from(config::getSocketTimeout).to(dataSource::setSocketTimeout);
 
-						dataSource.setTimeBetweenConnectError(config.getTimeBetweenConnectError());
-						dataSource.setKillWhenSocketReadTimeout(config.getKillWhenSocketReadTimeout());
+						propertyMapper.from(config::getTimeBetweenConnectError)
+								.to(dataSource::setTimeBetweenConnectError);
+						propertyMapper.from(config::getKillWhenSocketReadTimeout)
+								.to(dataSource::setKillWhenSocketReadTimeout);
 
-						dataSource.setPhyTimeout(config.getPhyTimeout());
-						dataSource.setPhyMaxUseCount(config.getPhyMaxUseCount());
+						propertyMapper.from(config::getPhyTimeout).to(dataSource::setPhyTimeout);
+						propertyMapper.from(config::getPhyMaxUseCount).to(dataSource::setPhyMaxUseCount);
 
-						dataSource.setAsyncInit(config.getAsyncInit());
+						propertyMapper.from(config::getAsyncInit).to(dataSource::setAsyncInit);
 
-						dataSource.setInitVariants(config.getInitVariants());
-						dataSource.setInitGlobalVariants(config.getInitGlobalVariants());
+						propertyMapper.from(config::getInitVariants).to(dataSource::setInitVariants);
+						propertyMapper.from(config::getInitGlobalVariants).to(dataSource::setInitGlobalVariants);
 
-						dataSource.setValidConnectionCheckerClassName(config.getValidConnectionCheckerClassName());
-						dataSource.setConnectionErrorRetryAttempts(config.getConnectionErrorRetryAttempts());
+						propertyMapper.from(config::getValidConnectionCheckerClassName)
+								.to(dataSource::setValidConnectionCheckerClassName);
+						propertyMapper.from(config::getConnectionErrorRetryAttempts)
+								.to(dataSource::setConnectionErrorRetryAttempts);
 
-						dataSource.setInitExceptionThrow(config.getInitExceptionThrow());
-						dataSource.setExceptionSorterClassName(config.getExceptionSorterClassName());
+						propertyMapper.from(config::getInitExceptionThrow).to(dataSource::setInitExceptionThrow);
+						propertyMapper.from(config::getExceptionSorterClassName)
+								.to(dataSource::setExceptionSorterClassName);
 
-						dataSource.setUseOracleImplicitCache(config.getUseOracleImplicitCache());
-						dataSource.setAsyncCloseConnectionEnable(config.getAsyncCloseConnectionEnable());
+						propertyMapper.from(config::getUseOracleImplicitCache)
+								.to(dataSource::setUseOracleImplicitCache);
+						propertyMapper.from(config::getAsyncCloseConnectionEnable)
+								.to(dataSource::setAsyncCloseConnectionEnable);
 
-						dataSource.setTransactionQueryTimeout(config.getTransactionQueryTimeout());
-						dataSource.setTransactionThreshold(config.getTransactionThreshold());
+						propertyMapper.from(config::getTransactionQueryTimeout)
+								.to(dataSource::setTransactionQueryTimeout);
+						propertyMapper.from(config::getTransactionThreshold).to(dataSource::setTransactionThreshold);
 
-						dataSource.setFairLock(config.getFairLock());
+						propertyMapper.from(config::getFairLock).to(dataSource::setFairLock);
 
-						dataSource.setFailFast(config.getFailFast());
+						propertyMapper.from(config::getFailFast).to(dataSource::setFailFast);
 
-						dataSource.setCheckExecuteTime(config.getCheckExecuteTime());
+						propertyMapper.from(config::getCheckExecuteTime).to(dataSource::setCheckExecuteTime);
 
-						dataSource.setUseGlobalDataSourceStat(config.getUseGlobalDataSourceStat());
-						dataSource.setStatLoggerClassName(config.getStatLoggerClassName());
+						propertyMapper.from(config::getUseGlobalDataSourceStat)
+								.to(dataSource::setUseGlobalDataSourceStat);
+						propertyMapper.from(config::getStatLoggerClassName).to(dataSource::setStatLoggerClassName);
 
-						dataSource.setMaxSqlSize(config.getMaxSqlSize());
-						dataSource.setResetStatEnable(config.getResetStatEnable());
+						propertyMapper.from(config::getMaxSqlSize).to(dataSource::setMaxSqlSize);
+						propertyMapper.from(config::getResetStatEnable).to(dataSource::setResetStatEnable);
 
-						dataSource.setFilters(config.getFilters());
-						dataSource.setLoadSpifilterSkip(config.getLoadSpifilterSkip());
-						dataSource.setClearFiltersEnable(config.getClearFiltersEnable());
+						propertyMapper.from(config::getFilters).to(dataSource::setFilters);
+						propertyMapper.from(config::getLoadSpifilterSkip).to(dataSource::setLoadSpifilterSkip);
+						propertyMapper.from(config::getClearFiltersEnable).to(dataSource::setClearFiltersEnable);
 
-						dataSource.setEnable(config.getEnable());
+						propertyMapper.from(config::getEnable).to(dataSource::setEnable);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					});
+					}, (dataSource, config)->dataSource);
 		}
 
 		private static void poolConfig(final DruidPoolConfiguration poolConfiguration,
-									   final DruidConfig dataSourceConfig) {
-			poolConfiguration.setMaxActive(dataSourceConfig.getMaxActive());
+		                               final DruidConfig dataSourceConfig) {
+			propertyMapper.from(dataSourceConfig::getMaxActive).to(poolConfiguration::setMaxActive);
 
-			poolConfiguration.setKeepAlive(dataSourceConfig.getKeepAlive());
-			poolConfiguration.setKeepAliveBetweenTime(dataSourceConfig.getKeepAliveBetweenTime());
+			propertyMapper.from(dataSourceConfig::getKeepAlive).to(poolConfiguration::setKeepAlive);
+			propertyMapper.from(dataSourceConfig::getKeepAliveBetweenTime)
+					.to(poolConfiguration::setKeepAliveBetweenTime);
 
-			poolConfiguration.setUsePingMethod(dataSourceConfig.getUsePingMethod());
-			poolConfiguration.setKeepConnectionUnderlyingTransactionIsolation(
-					dataSourceConfig.getKeepConnectionUnderlyingTransactionIsolation());
+			propertyMapper.from(dataSourceConfig::getUsePingMethod).to(poolConfiguration::setUsePingMethod);
+			propertyMapper.from(dataSourceConfig::getKeepConnectionUnderlyingTransactionIsolation)
+					.to(poolConfiguration::setKeepConnectionUnderlyingTransactionIsolation);
 
-			poolConfiguration.setMaxCreateTaskCount(dataSourceConfig.getMaxCreateTaskCount());
-			poolConfiguration.setMaxWaitThreadCount(dataSourceConfig.getMaxWaitThreadCount());
+			propertyMapper.from(dataSourceConfig::getMaxCreateTaskCount).to(poolConfiguration::setMaxCreateTaskCount);
+			propertyMapper.from(dataSourceConfig::getMaxWaitThreadCount).to(poolConfiguration::setMaxWaitThreadCount);
 
-			poolConfiguration.setOnFatalErrorMaxActive(dataSourceConfig.getOnFatalErrorMaxActive());
-			poolConfiguration.setBreakAfterAcquireFailure(dataSourceConfig.getBreakAfterAcquireFailure());
+			propertyMapper.from(dataSourceConfig::getOnFatalErrorMaxActive)
+					.to(poolConfiguration::setOnFatalErrorMaxActive);
+			propertyMapper.from(dataSourceConfig::getBreakAfterAcquireFailure)
+					.to(poolConfiguration::setBreakAfterAcquireFailure);
 
-			poolConfiguration.setNotFullTimeoutRetryCount(dataSourceConfig.getNotFullTimeoutRetryCount());
+			propertyMapper.from(dataSourceConfig::getNotFullTimeoutRetryCount)
+					.to(poolConfiguration::setNotFullTimeoutRetryCount);
 
-			poolConfiguration.setUseLocalSessionState(dataSourceConfig.getUseLocalSessionState());
-			poolConfiguration.setPoolPreparedStatements(dataSourceConfig.getPoolPreparedStatements());
-			poolConfiguration.setSharePreparedStatements(dataSourceConfig.getSharePreparedStatements());
-			poolConfiguration.setMaxPoolPreparedStatementPerConnectionSize(
-					dataSourceConfig.getMaxPoolPreparedStatementPerConnectionSize());
-			poolConfiguration.setMaxOpenPreparedStatements(dataSourceConfig.getMaxOpenPreparedStatements());
+			propertyMapper.from(dataSourceConfig::getUseLocalSessionState)
+					.to(poolConfiguration::setUseLocalSessionState);
+			propertyMapper.from(dataSourceConfig::getPoolPreparedStatements)
+					.to(poolConfiguration::setPoolPreparedStatements);
+			propertyMapper.from(dataSourceConfig::getSharePreparedStatements)
+					.to(poolConfiguration::setSharePreparedStatements);
+			propertyMapper.from(dataSourceConfig::getMaxPoolPreparedStatementPerConnectionSize)
+					.to(poolConfiguration::setMaxPoolPreparedStatementPerConnectionSize);
+			propertyMapper.from(dataSourceConfig::getMaxOpenPreparedStatements)
+					.to(poolConfiguration::setMaxOpenPreparedStatements);
 
-			poolConfiguration.setRemoveAbandoned(dataSourceConfig.getRemoveAbandoned());
+			propertyMapper.from(dataSourceConfig::getRemoveAbandoned).to(poolConfiguration::setRemoveAbandoned);
 
-			poolConfiguration.setTimeBetweenLogStats(dataSourceConfig.getTimeBetweenLogStats());
+			propertyMapper.from(dataSourceConfig::getTimeBetweenLogStats).to(poolConfiguration::setTimeBetweenLogStats);
 
-			poolConfiguration.setDupCloseLogEnable(dataSourceConfig.getDupCloseLogEnable());
-			poolConfiguration.setLogDifferentThread(dataSourceConfig.getLogDifferentThread());
+			propertyMapper.from(dataSourceConfig::getDupCloseLogEnable).to(poolConfiguration::setDupCloseLogEnable);
+			propertyMapper.from(dataSourceConfig::getLogDifferentThread).to(poolConfiguration::setLogDifferentThread);
 		}
 
 	}
@@ -253,8 +271,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.HIKARI,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.HIKARI, matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
 
 		public Hikari(DataSourceProperties properties) {
@@ -263,40 +280,47 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".hikari")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(HikariDataSource.class, properties, properties.getHikari(),
-					new HikariPoolConfiguration(), (dataSource, config)->{
-						dataSource.setJndiName(config.getJndiName());
+					new HikariPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
+						propertyMapper.from(config::getJndiName).to(dataSource::setJndiName);
 
-						dataSource.setConnectionTimeout(config.getConnectionTimeout());
+						propertyMapper.from(config::getConnectionTimeout).to(dataSource::setConnectionTimeout);
 
-						dataSource.setIsolateInternalQueries(config.getIsolateInternalQueries());
+						propertyMapper.from(config::getIsolateInternalQueries)
+								.to(dataSource::setIsolateInternalQueries);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					});
+					}, (dataSource, config)->dataSource);
 		}
 
 		private static void poolConfig(final HikariPoolConfiguration poolConfiguration,
-									   final HikariConfig dataSourceConfig) {
-			poolConfiguration.setInitializationFailTimeout(dataSourceConfig.getInitializationFailTimeout());
+		                               final HikariConfig dataSourceConfig) {
+			propertyMapper.from(dataSourceConfig::getInitializationFailTimeout)
+					.to(poolConfiguration::setInitializationFailTimeout);
 
-			poolConfiguration.setMaxPoolSize(dataSourceConfig.getMaxPoolSize());
+			propertyMapper.from(dataSourceConfig::getMaxPoolSize).to(poolConfiguration::setMaxPoolSize);
 
-			poolConfiguration.setConnectionTestQuery(dataSourceConfig.getConnectionTestQuery());
-			poolConfiguration.setValidationTimeout(dataSourceConfig.getValidationTimeout());
+			propertyMapper.from(dataSourceConfig::getConnectionTestQuery).to(poolConfiguration::setConnectionTestQuery);
+			propertyMapper.from(dataSourceConfig::getValidationTimeout).to(poolConfiguration::setValidationTimeout);
 
-			poolConfiguration.setIdleTimeout(dataSourceConfig.getIdleTimeout());
-			poolConfiguration.setMaxLifetime(dataSourceConfig.getMaxLifetime());
-			poolConfiguration.setKeepaliveTime(dataSourceConfig.getKeepaliveTime());
+			propertyMapper.from(dataSourceConfig::getIdleTimeout).to(poolConfiguration::setIdleTimeout);
+			propertyMapper.from(dataSourceConfig::getMaxLifetime).to(poolConfiguration::setMaxLifetime);
+			propertyMapper.from(dataSourceConfig::getKeepaliveTime).to(poolConfiguration::setKeepaliveTime);
 
-			poolConfiguration.setLeakDetectionThreshold(dataSourceConfig.getLeakDetectionThreshold());
-			poolConfiguration.setAllowPoolSuspension(dataSourceConfig.getAllowPoolSuspension());
+			propertyMapper.from(dataSourceConfig::getLeakDetectionThreshold)
+					.to(poolConfiguration::setLeakDetectionThreshold);
+			propertyMapper.from(dataSourceConfig::getAllowPoolSuspension).to(poolConfiguration::setAllowPoolSuspension);
 
-			poolConfiguration.setMetricsTrackerFactoryClassName(dataSourceConfig.getMetricsTrackerFactoryClassName());
-			poolConfiguration.setMetricRegistryClassName(dataSourceConfig.getMetricRegistryClassName());
+			propertyMapper.from(dataSourceConfig::getMetricsTrackerFactoryClassName)
+					.to(poolConfiguration::setMetricsTrackerFactoryClassName);
+			propertyMapper.from(dataSourceConfig::getMetricRegistryClassName)
+					.to(poolConfiguration::setMetricRegistryClassName);
 
-			poolConfiguration.setHealthCheckRegistryClassName(dataSourceConfig.getHealthCheckRegistryClassName());
-			poolConfiguration.setHealthCheckProperties(dataSourceConfig.getHealthCheckProperties());
+			propertyMapper.from(dataSourceConfig::getHealthCheckRegistryClassName)
+					.to(poolConfiguration::setHealthCheckRegistryClassName);
+			propertyMapper.from(dataSourceConfig::getHealthCheckProperties)
+					.to(poolConfiguration::setHealthCheckProperties);
 		}
 
 	}
@@ -310,8 +334,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(PoolDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.ORACLE,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.ORACLE, matchIfMissing = true)
 	static class Oracle extends DataSourceConfiguration {
 
 		public Oracle(DataSourceProperties properties) {
@@ -320,60 +343,74 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".oracle")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(OracleDataSource.class, properties, properties.getOracle(),
-					new OraclePoolConfiguration(), (dataSource, config)->{
-						dataSource.setNetworkProtocol(config.getNetworkProtocol());
-						dataSource.setServerName(config.getServerName());
-						dataSource.setPortNumber(config.getPortNumber());
-						dataSource.setServiceName(config.getServiceName());
-						dataSource.setDataSourceName(config.getDataSourceName());
-						dataSource.setDataSourceDescription(config.getDataSourceDescription());
-						dataSource.setDatabaseName(config.getDatabaseName());
+					new OraclePoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
+						propertyMapper.from(config::getNetworkProtocol).to(dataSource::setNetworkProtocol);
+						propertyMapper.from(config::getServerName).to(dataSource::setServerName);
+						propertyMapper.from(config::getPortNumber).to(dataSource::setPortNumber);
+						propertyMapper.from(config::getServiceName).to(dataSource::setServiceName);
+						propertyMapper.from(config::getDataSourceName).to(dataSource::setDataSourceName);
+						propertyMapper.from(config::getDataSourceDescription).to(dataSource::setDataSourceDescription);
+						propertyMapper.from(config::getDatabaseName).to(dataSource::setDatabaseName);
 
-						dataSource.setRoleName(config.getRoleName());
-						dataSource.setPdbRoles(config.getPdbRoles());
+						propertyMapper.from(config::getRoleName).to(dataSource::setRoleName);
+						propertyMapper.from(config::getPdbRoles).to(dataSource::setPdbRoles);
 
-						dataSource.setConnectionFactoryClassName(config.getConnectionFactoryClassName());
-						dataSource.setFastConnectionFailoverEnabled(config.getFastConnectionFailoverEnabled());
+						propertyMapper.from(config::getConnectionFactoryClassName)
+								.to(dataSource::setConnectionFactoryClassName);
+						propertyMapper.from(config::getFastConnectionFailoverEnabled)
+								.to(dataSource::setFastConnectionFailoverEnabled);
 
-						dataSource.setOnsConfiguration(config.getOnsConfiguration());
+						propertyMapper.from(config::getOnsConfiguration).to(dataSource::setOnsConfiguration);
 
-						dataSource.setShardingMode(config.getShardingMode());
-						dataSource.setMaxConnectionsPerShard(config.getMaxConnectionsPerShard());
+						propertyMapper.from(config::getShardingMode).to(dataSource::setShardingMode);
+						propertyMapper.from(config::getMaxConnectionsPerShard)
+								.to(dataSource::setMaxConnectionsPerShard);
 
-						dataSource.setMaxConnectionsPerService(config.getMaxConnectionsPerService());
+						propertyMapper.from(config::getMaxConnectionsPerService)
+								.to(dataSource::setMaxConnectionsPerService);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					});
+					}, (dataSource, config)->dataSource);
 		}
 
 		private static void poolConfig(final OraclePoolConfiguration poolConfiguration,
-									   final OracleConfig dataSourceConfig) {
-			poolConfiguration.setMinPoolSize(dataSourceConfig.getMinPoolSize());
-			poolConfiguration.setMaxPoolSize(dataSourceConfig.getMaxPoolSize());
+		                               final OracleConfig dataSourceConfig) {
+			propertyMapper.from(dataSourceConfig::getMinPoolSize).to(poolConfiguration::setMinPoolSize);
+			propertyMapper.from(dataSourceConfig::getMaxPoolSize).to(poolConfiguration::setMaxPoolSize);
 
-			poolConfiguration.setMaxIdleTime(dataSourceConfig.getMaxIdleTime());
-			poolConfiguration.setTimeToLiveConnectionTimeout(dataSourceConfig.getTimeToLiveConnectionTimeout());
+			propertyMapper.from(dataSourceConfig::getMaxIdleTime).to(poolConfiguration::setMaxIdleTime);
+			propertyMapper.from(dataSourceConfig::getTimeToLiveConnectionTimeout)
+					.to(poolConfiguration::setTimeToLiveConnectionTimeout);
 
-			poolConfiguration.setTrustIdleConnection(dataSourceConfig.getTrustIdleConnection());
-			poolConfiguration.setMaxConnectionReuseTime(dataSourceConfig.getMaxConnectionReuseTime());
-			poolConfiguration.setMaxConnectionReuseCount(dataSourceConfig.getMaxConnectionReuseCount());
+			propertyMapper.from(dataSourceConfig::getTrustIdleConnection).to(poolConfiguration::setTrustIdleConnection);
+			propertyMapper.from(dataSourceConfig::getMaxConnectionReuseTime)
+					.to(poolConfiguration::setMaxConnectionReuseTime);
+			propertyMapper.from(dataSourceConfig::getMaxConnectionReuseCount)
+					.to(poolConfiguration::setMaxConnectionReuseCount);
 
-			poolConfiguration.setConnectionLabelingHighCost(dataSourceConfig.getConnectionLabelingHighCost());
-			poolConfiguration.setHighCostConnectionReuseThreshold(
-					dataSourceConfig.getHighCostConnectionReuseThreshold());
-			poolConfiguration.setConnectionRepurposeThreshold(dataSourceConfig.getConnectionRepurposeThreshold());
+			propertyMapper.from(dataSourceConfig::getConnectionLabelingHighCost)
+					.to(poolConfiguration::setConnectionLabelingHighCost);
+			propertyMapper.from(dataSourceConfig::getHighCostConnectionReuseThreshold)
+					.to(poolConfiguration::setHighCostConnectionReuseThreshold);
+			propertyMapper.from(dataSourceConfig::getConnectionRepurposeThreshold)
+					.to(poolConfiguration::setConnectionRepurposeThreshold);
 
-			poolConfiguration.setTimeoutCheckInterval(dataSourceConfig.getTimeoutCheckInterval());
+			propertyMapper.from(dataSourceConfig::getTimeoutCheckInterval)
+					.to(poolConfiguration::setTimeoutCheckInterval);
 
-			poolConfiguration.setMaxStatements(dataSourceConfig.getMaxStatements());
+			propertyMapper.from(dataSourceConfig::getMaxStatements).to(poolConfiguration::setMaxStatements);
 
-			poolConfiguration.setConnectionHarvestTriggerCount(dataSourceConfig.getConnectionHarvestTriggerCount());
-			poolConfiguration.setConnectionHarvestMaxCount(dataSourceConfig.getConnectionHarvestMaxCount());
+			propertyMapper.from(dataSourceConfig::getConnectionHarvestTriggerCount)
+					.to(poolConfiguration::setConnectionHarvestTriggerCount);
+			propertyMapper.from(dataSourceConfig::getConnectionHarvestMaxCount)
+					.to(poolConfiguration::setConnectionHarvestMaxCount);
 
-			poolConfiguration.setReadOnlyInstanceAllowed(dataSourceConfig.getReadOnlyInstanceAllowed());
-			poolConfiguration.setCreateConnectionInBorrowThread(dataSourceConfig.getCreateConnectionInBorrowThread());
+			propertyMapper.from(dataSourceConfig::getReadOnlyInstanceAllowed)
+					.to(poolConfiguration::setReadOnlyInstanceAllowed);
+			propertyMapper.from(dataSourceConfig::getCreateConnectionInBorrowThread)
+					.to(poolConfiguration::setCreateConnectionInBorrowThread);
 		}
 
 	}
@@ -387,8 +424,7 @@ public class DataSourceConfiguration {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
-	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.TOMCAT,
-			matchIfMissing = true)
+	@ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "type", havingValue = DataSourceType.TOMCAT, matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
 
 		public Tomcat(DataSourceProperties properties) {
@@ -397,25 +433,24 @@ public class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX + ".tomcat")
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(TomcatDataSource.class, properties, properties.getTomcat(),
-					new TomcatPoolConfiguration(),
-					(dataSource, config)->{
-						dataSource.setJndiName(config.getJndiName());
+					new TomcatPoolConfiguration(), dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
+						propertyMapper.from(config::getJndiName).to(dataSource::setJndiName);
 
-						dataSource.setAlternateUsernameAllowed(config.getAlternateUsernameAllowed());
+						propertyMapper.from(config::getAlternateUsernameAllowed)
+								.to(dataSource::setAlternateUsernameAllowed);
 
-						dataSource.setCommitOnReturn(config.getCommitOnReturn());
-						dataSource.setRollbackOnReturn(config.getRollbackOnReturn());
+						propertyMapper.from(config::getCommitOnReturn).to(dataSource::setCommitOnReturn);
+						propertyMapper.from(config::getRollbackOnReturn).to(dataSource::setRollbackOnReturn);
 
-						dataSource.setValidatorClassName(config.getValidatorClassName());
-						dataSource.setValidationInterval(config.getValidationInterval());
+						propertyMapper.from(config::getValidatorClassName).to(dataSource::setValidatorClassName);
+						propertyMapper.from(config::getValidationInterval).to(dataSource::setValidationInterval);
 
-						dataSource.setJdbcInterceptors(config.getJdbcInterceptors());
+						propertyMapper.from(config::getJdbcInterceptors).to(dataSource::setJdbcInterceptors);
 
 						poolConfig(dataSource.getPoolConfiguration(), config);
-					},
-					(dataSource, properties)->{
+					}, (dataSource, properties)->{
 						DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(dataSource.getUrl());
 						String validationQuery = databaseDriver.getValidationQuery();
 
@@ -429,27 +464,31 @@ public class DataSourceConfiguration {
 		}
 
 		private static void poolConfig(final TomcatPoolConfiguration poolConfiguration,
-									   final TomcatConfig dataSourceConfig) {
-			poolConfiguration.setMaxActive(dataSourceConfig.getMaxActive());
-			poolConfiguration.setMaxAge(dataSourceConfig.getMaxAge());
+		                               final TomcatConfig dataSourceConfig) {
+			propertyMapper.from(dataSourceConfig::getMaxActive).to(poolConfiguration::setMaxActive);
+			propertyMapper.from(dataSourceConfig::getMaxAge).to(poolConfiguration::setMaxAge);
 
-			poolConfiguration.setTestOnConnect(dataSourceConfig.getTestOnConnect());
+			propertyMapper.from(dataSourceConfig::getTestOnConnect).to(poolConfiguration::setTestOnConnect);
 
-			poolConfiguration.setUseDisposableConnectionFacade(dataSourceConfig.getUseDisposableConnectionFacade());
-			poolConfiguration.setIgnoreExceptionOnPreLoad(dataSourceConfig.getIgnoreExceptionOnPreLoad());
+			propertyMapper.from(dataSourceConfig::getUseDisposableConnectionFacade)
+					.to(poolConfiguration::setUseDisposableConnectionFacade);
+			propertyMapper.from(dataSourceConfig::getIgnoreExceptionOnPreLoad)
+					.to(poolConfiguration::setIgnoreExceptionOnPreLoad);
 
-			poolConfiguration.setFairQueue(dataSourceConfig.getFairQueue());
-			poolConfiguration.setUseStatementFacade(dataSourceConfig.getUseStatementFacade());
+			propertyMapper.from(dataSourceConfig::getFairQueue).to(poolConfiguration::setFairQueue);
+			propertyMapper.from(dataSourceConfig::getUseStatementFacade).to(poolConfiguration::setUseStatementFacade);
 
-			poolConfiguration.setRemoveAbandoned(dataSourceConfig.getRemoveAbandoned());
-			poolConfiguration.setSuspectTimeout(dataSourceConfig.getSuspectTimeout());
-			poolConfiguration.setAbandonWhenPercentageFull(dataSourceConfig.getAbandonWhenPercentageFull());
+			propertyMapper.from(dataSourceConfig::getRemoveAbandoned).to(poolConfiguration::setRemoveAbandoned);
+			propertyMapper.from(dataSourceConfig::getSuspectTimeout).to(poolConfiguration::setSuspectTimeout);
+			propertyMapper.from(dataSourceConfig::getAbandonWhenPercentageFull)
+					.to(poolConfiguration::setAbandonWhenPercentageFull);
 
-			poolConfiguration.setPropagateInterruptState(dataSourceConfig.getPropagateInterruptState());
-			poolConfiguration.setLogValidationErrors(dataSourceConfig.getLogValidationErrors());
+			propertyMapper.from(dataSourceConfig::getPropagateInterruptState)
+					.to(poolConfiguration::setPropagateInterruptState);
+			propertyMapper.from(dataSourceConfig::getLogValidationErrors).to(poolConfiguration::setLogValidationErrors);
 
-			poolConfiguration.setUseLock(dataSourceConfig.getUseLock());
-			poolConfiguration.setUseEquals(dataSourceConfig.getUseEquals());
+			propertyMapper.from(dataSourceConfig::getUseLock).to(poolConfiguration::setUseLock);
+			propertyMapper.from(dataSourceConfig::getUseEquals).to(poolConfiguration::setUseEquals);
 		}
 
 	}
@@ -470,11 +509,11 @@ public class DataSourceConfiguration {
 		}
 
 		@Bean
-		public DataSource dataSource() {
+		public DataSource dataSource(ObjectProvider<DynamicUrlBuilder> dynamicUrlBuilder) {
 			return createDataSource(GenericDataSource.class, properties, properties.getGeneric(), null,
-					(dataSource, config)->{
+					dynamicUrlBuilder.getIfAvailable(), (dataSource, config)->{
 
-					});
+					}, (dataSource, config)->dataSource);
 		}
 
 	}

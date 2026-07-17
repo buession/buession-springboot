@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.cache.redis.autoconfigure;
@@ -27,8 +27,10 @@ package com.buession.springboot.cache.redis.autoconfigure;
 import com.buession.redis.RedisTemplate;
 import com.buession.redis.client.connection.datasource.DataSource;
 import com.buession.redis.core.Options;
+import com.buession.redis.serializer.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -58,19 +60,16 @@ public class RedisConfiguration {
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnMissingBean
 	public RedisTemplate redisTemplate(DataSource dataSource) {
-		final RedisTemplate template = new RedisTemplate(dataSource);
-		final Options.Builder builder = Options.Builder.getInstance()
-				.prefix(properties.getKeyPrefix())
-				.serializer(properties.getSerializer())
-				.enableTransactionSupport(properties.isEnableTransactionSupport());
-
-		template.setOptions(builder.build());
+		final Serializer serializer =
+				properties.getSerializer() == null ? null : BeanUtils.instantiateClass(properties.getSerializer());
+		final Options.Builder builder = Options.Builder.getInstance().prefix(properties.getKeyPrefix())
+				.serializer(serializer).enableTransactionSupport(properties.isEnableTransactionSupport());
 
 		if(logger.isTraceEnabled()){
 			logger.trace("RedisTemplate bean initialized success.");
 		}
 
-		return template;
+		return new RedisTemplate(dataSource, builder.build());
 	}
 
 }

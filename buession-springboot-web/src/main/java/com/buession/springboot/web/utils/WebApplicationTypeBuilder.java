@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.utils;
@@ -42,6 +42,7 @@ public class WebApplicationTypeBuilder {
 		TYPE_MAP.put("org.springframework.web.reactive.config.WebFluxConfigurationSupport",
 				WebApplicationType.REACTIVE);
 		TYPE_MAP.put("javax.servlet.Servlet", WebApplicationType.SERVLET);
+		TYPE_MAP.put("jakarta.servlet.Servlet", WebApplicationType.SERVLET);
 	}
 
 	public static WebApplicationType findType() {

@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.mybatis.autoconfigure;
@@ -93,14 +93,14 @@ public class MybatisLanguageDriverConfiguration {
 	 * Configuration class for mybatis-velocity 2.0 or under.
 	 */
 	@AutoConfiguration
-	@ConditionalOnClass(org.mybatis.scripting.velocity.Driver.class)
+	@ConditionalOnClass(org.mybatis.scripting.velocity.VelocityLanguageDriver.class)
 	@ConditionalOnMissingClass("org.mybatis.scripting.velocity.VelocityLanguageDriverConfig")
 	public static class LegacyVelocityConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public org.mybatis.scripting.velocity.Driver velocityLanguageDriver() {
-			return new org.mybatis.scripting.velocity.Driver();
+		public org.mybatis.scripting.velocity.VelocityLanguageDriver velocityLanguageDriver() {
+			return new org.mybatis.scripting.velocity.VelocityLanguageDriver();
 		}
 
 	}

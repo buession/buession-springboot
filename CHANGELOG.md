@@ -1,6 +1,49 @@
  Buession SpringBoot Changelog
 ===========================
 
+## [4.0.0](https://github.com/buession/buessionframework/releases/tag/v4.0.0) (2026-07-17)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v4.0.0)
+
+
+### ⭐ 新特性
+
+- Application 支持设置父级上下文
+- Application 方法 customize、applicationStartedHook 支持接收命令行参数
+- 支持动态构建 JDBC URL
+- Pac4j Configuration 支持 Kerberos
+- Pac4j Configuration 支持 OIDC
+- Pac4j Configuration 支持 SAML
+- Pac4j 支持配置 isAlwaysUse401ForUnauthenticated
+- Pac4j Config bean 增加定制器
+
+
+### 🔔 变化
+
+- Pac4j JWT 认证不再依赖 HTTP Client 配置，使用独立的 HeaderClient 或 ParameterClient
+- Pac4j OAuth 独立指定 key 和 secret
+- 不再生成 pac4j JwtGenerator bean
+
+
+### ⏪ 优化
+
+- **buession-springboot-pac4j：** com.buession.springboot.shiro.core.ShiroFilter
+- 删除模块 buession-springboot-velocity
+- Pac4j 中 Customizer&lt;Client&gt; 优先级提至最高
+- Pac4j Client AutoConfiguration 优化
+
+
+### 🐞 Bug 修复
+
+- Pac4j JWT 中不恰当的配置
+- Pac4j Client internalInit 中有对配置属性进行赋值的，放到 super.internalInit() 后，导致赋值未起作用的 BUG
+- 修复 RedisTemplate 序列化/反序列化配置错误的问题
+
+
+---
+
 
 ## [3.0.1](https://github.com/buession/buession-springboot/releases/tag/v3.0.1) (2025-05-20)
 

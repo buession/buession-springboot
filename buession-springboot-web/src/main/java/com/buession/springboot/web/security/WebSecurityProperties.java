@@ -21,23 +21,15 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2022 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.security;
 
-import com.buession.security.web.config.ContentSecurityPolicy;
-import com.buession.security.web.config.Cors;
-import com.buession.security.web.config.Csrf;
-import com.buession.security.web.config.FormLogin;
-import com.buession.security.web.config.FrameOptions;
-import com.buession.security.web.config.Hpkp;
-import com.buession.security.web.config.Hsts;
-import com.buession.security.web.config.HttpBasic;
-import com.buession.security.web.config.ReferrerPolicy;
-import com.buession.security.web.config.Xss;
+import com.buession.security.web.config.Configurer;
+import com.buession.security.web.xss.Options;
+import com.buession.web.http.XssProtection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Configuration properties for Spring Security.
@@ -46,7 +38,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = WebSecurityProperties.PREFIX)
-public class WebSecurityProperties {
+public class WebSecurityProperties extends Configurer {
 
 	public final static String PREFIX = "spring.security";
 
@@ -56,73 +48,11 @@ public class WebSecurityProperties {
 	private boolean disableDefaults;
 
 	/**
-	 * Http Basic 配置
-	 */
-	@NestedConfigurationProperty
-	private HttpBasic httpBasic = new HttpBasic();
-
-	/**
-	 * Csrf 配置
-	 */
-	@NestedConfigurationProperty
-	private Csrf csrf = new Csrf();
-
-	/**
-	 * Frame Options 配置
-	 */
-	@NestedConfigurationProperty
-	private FrameOptions frameOptions = new FrameOptions();
-
-	/**
-	 * Hsts 配置
-	 */
-	@NestedConfigurationProperty
-	private Hsts hsts = new Hsts();
-
-	/**
-	 * Hpkp 配置
-	 */
-	@NestedConfigurationProperty
-	private Hpkp hpkp = new Hpkp();
-
-	/**
-	 * Content Security Policy 配置
-	 */
-	@NestedConfigurationProperty
-	private ContentSecurityPolicy contentSecurityPolicy = new ContentSecurityPolicy();
-
-	/**
-	 * Referrer Policy 配置
-	 */
-	@NestedConfigurationProperty
-	private ReferrerPolicy referrerPolicy = new ReferrerPolicy();
-
-	/**
-	 * XSS 配置
-	 */
-	@NestedConfigurationProperty
-	private Xss xss = new Xss();
-
-	/**
-	 * CORS 配置
-	 *
-	 * @since 2.0.0
-	 */
-	@NestedConfigurationProperty
-	private Cors cors = new Cors();
-
-	/**
-	 * 登录表单配置
-	 */
-	@NestedConfigurationProperty
-	private FormLogin formLogin = new FormLogin();
-
-	/**
 	 * 返回是否禁用默认配置
 	 *
 	 * @return 是否禁用默认配置
 	 */
-	public boolean isDisableDefaults(){
+	public boolean isDisableDefaults() {
 		return disableDefaults;
 	}
 
@@ -132,198 +62,125 @@ public class WebSecurityProperties {
 	 * @param disableDefaults
 	 * 		是否禁用默认配置
 	 */
-	public void setDisableDefaults(boolean disableDefaults){
+	public void setDisableDefaults(boolean disableDefaults) {
 		this.disableDefaults = disableDefaults;
 	}
 
-	/**
-	 * 返回 Http Basic 配置
-	 *
-	 * @return Http Basic 配置
-	 */
-	public HttpBasic getHttpBasic(){
-		return httpBasic;
+	public void setXss(Xss xss) {
+		super.setXss(xss);
 	}
 
-	/**
-	 * 设置 Http Basic 配置
-	 *
-	 * @param httpBasic
-	 * 		Http Basic 配置
-	 */
-	public void setHttpBasic(HttpBasic httpBasic){
-		this.httpBasic = httpBasic;
-	}
+	public final static class Xss extends com.buession.security.web.config.Xss {
 
-	/**
-	 * 返回 Csrf 配置
-	 *
-	 * @return Csrf 配置
-	 */
-	public Csrf getCsrf(){
-		return csrf;
-	}
+		/**
+		 * 策略
+		 */
+		private Options.Policy mode = Options.Policy.ESCAPE;
 
-	/**
-	 * 设置 Csrf 配置
-	 *
-	 * @param csrf
-	 * 		Csrf 配置
-	 */
-	public void setCsrf(Csrf csrf){
-		this.csrf = csrf;
-	}
+		/**
+		 * HTML 转义模式选项
+		 */
+		private Options.Escape escape;
 
-	/**
-	 * 返回 Frame Options 配置
-	 *
-	 * @return Frame Options 配置
-	 */
-	public FrameOptions getFrameOptions(){
-		return frameOptions;
-	}
+		/**
+		 * HTML 清理模式选项
+		 */
+		private Options.Clean clean;
 
-	/**
-	 * 设置 Frame Options 配置
-	 *
-	 * @param frameOptions
-	 * 		Frame Options 配置
-	 */
-	public void setFrameOptions(FrameOptions frameOptions){
-		this.frameOptions = frameOptions;
-	}
+		/**
+		 * 策略配置文件
+		 */
+		private String policyConfigLocation;
 
-	/**
-	 * 返回 Hsts 配置
-	 *
-	 * @return Hsts 配置
-	 */
-	public Hsts getHsts(){
-		return hsts;
-	}
+		public Xss() {
+			super();
+			setPolicy(XssProtection.ENABLED);
+		}
 
-	/**
-	 * 设置 Hsts 配置
-	 *
-	 * @param hsts
-	 * 		Hsts 配置
-	 */
-	public void setHsts(Hsts hsts){
-		this.hsts = hsts;
-	}
+		/**
+		 * 返回策略模式
+		 *
+		 * @return 策略模式
+		 */
+		public XssProtection getProtection() {
+			return getPolicy();
+		}
 
-	/**
-	 * 返回 Hpkp 配置
-	 *
-	 * @return Hpkp 配置
-	 */
-	public Hpkp getHpkp(){
-		return hpkp;
-	}
+		/**
+		 * 设置策略模式
+		 *
+		 * @param protection
+		 * 		策略模式
+		 */
+		public void setProtection(XssProtection protection) {
+			setPolicy(protection);
+		}
 
-	/**
-	 * 设置 Hpkp 配置
-	 *
-	 * @param hpkp
-	 * 		Hpkp 配置
-	 */
-	public void setHpkp(Hpkp hpkp){
-		this.hpkp = hpkp;
-	}
+		public Options.Policy getMode() {
+			return mode;
+		}
 
-	/**
-	 * 返回 Content Security Policy 配置
-	 *
-	 * @return Content Security Policy 配置
-	 */
-	public ContentSecurityPolicy getContentSecurityPolicy(){
-		return contentSecurityPolicy;
-	}
+		public void setMode(Options.Policy mode) {
+			this.mode = mode;
+		}
 
-	/**
-	 * 设置 Content Security Policy 配置
-	 *
-	 * @param contentSecurityPolicy
-	 * 		Content Security Policy 配置
-	 */
-	public void setContentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy){
-		this.contentSecurityPolicy = contentSecurityPolicy;
-	}
+		/**
+		 * 返回策略配置文件
+		 *
+		 * @return 策略配置文件
+		 */
+		public String getPolicyConfigLocation() {
+			return policyConfigLocation;
+		}
 
-	/**
-	 * 返回 Referrer Policy 配置
-	 *
-	 * @return Referrer Policy 配置
-	 */
-	public ReferrerPolicy getReferrerPolicy(){
-		return referrerPolicy;
-	}
+		/**
+		 * 设置策略配置文件
+		 *
+		 * @param policyConfigLocation
+		 * 		策略配置文件
+		 */
+		public void setPolicyConfigLocation(String policyConfigLocation) {
+			this.policyConfigLocation = policyConfigLocation;
+		}
 
-	/**
-	 * 设置 Referrer Policy 配置
-	 *
-	 * @param referrerPolicy
-	 * 		Referrer Policy 配置
-	 */
-	public void setReferrerPolicy(ReferrerPolicy referrerPolicy){
-		this.referrerPolicy = referrerPolicy;
-	}
+		/**
+		 * 返回 HTML 转义模式选项
+		 *
+		 * @return HTML 转义模式选项
+		 */
+		public Options.Escape getEscape() {
+			return escape;
+		}
 
-	/**
-	 * 返回 XSS 配置
-	 *
-	 * @return XSS 配置
-	 */
-	public Xss getXss(){
-		return xss;
-	}
+		/**
+		 * 设置 HTML 转义模式选项
+		 *
+		 * @param escape
+		 * 		HTML 转义模式选项
+		 */
+		public void setEscape(Options.Escape escape) {
+			this.escape = escape;
+		}
 
-	/**
-	 * 设置 XSS 配置
-	 *
-	 * @param xss
-	 * 		XSS 配置
-	 */
-	public void setXss(Xss xss){
-		this.xss = xss;
-	}
+		/**
+		 * 返回 HTML 清理模式选项
+		 *
+		 * @return HTML 清理模式选项
+		 */
+		public Options.Clean getClean() {
+			return clean;
+		}
 
-	/**
-	 * 返回 CORS 配置
-	 *
-	 * @return CORS 配置
-	 */
-	public Cors getCors(){
-		return cors;
-	}
+		/**
+		 * 设置 HTML 清理模式选项
+		 *
+		 * @param clean
+		 * 		HTML 清理模式选项
+		 */
+		public void setClean(Options.Clean clean) {
+			this.clean = clean;
+		}
 
-	/**
-	 * 设置 CORS 配置
-	 *
-	 * @param cors
-	 * 		CORS 配置
-	 */
-	public void setCors(Cors cors){
-		this.cors = cors;
-	}
-
-	/**
-	 * 返回登录表单配置
-	 *
-	 * @return 登录表单配置
-	 */
-	public FormLogin getFormLogin(){
-		return formLogin;
-	}
-
-	/**
-	 * 设置登录表单配置
-	 *
-	 * @param formLogin
-	 * 		登录表单配置
-	 */
-	public void setFormLogin(FormLogin formLogin){
-		this.formLogin = formLogin;
 	}
 
 }

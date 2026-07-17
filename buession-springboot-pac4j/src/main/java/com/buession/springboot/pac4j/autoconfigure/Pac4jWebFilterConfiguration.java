@@ -19,31 +19,25 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
-import com.buession.core.Customizer;
 import com.buession.core.utils.StringUtils;
+import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
-import com.buession.springboot.pac4j.filter.Pac4jFilter;
-import io.buji.pac4j.filter.CallbackFilter;
-import io.buji.pac4j.filter.LogoutFilter;
-import io.buji.pac4j.filter.SecurityFilter;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.util.Pac4jConstants;
-import org.springframework.beans.factory.ObjectProvider;
+import org.pac4j.springframework.web.SecurityFilter;
+import org.pac4j.springframework.web.SecurityInterceptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-
-import javax.servlet.Filter;
-import java.util.Map;
 
 /**
  * @author Yong.Teng
@@ -51,85 +45,103 @@ import java.util.Map;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(Pac4jProperties.class)
-@ConditionalOnProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled", havingValue = "true",
+@ConditionalOnBooleanProperty(prefix = Pac4jProperties.PREFIX + ".filter", name = "enabled",
 		matchIfMissing = true)
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Import({Pac4jConfiguration.class})
 public class Pac4jWebFilterConfiguration {
 
 	private final Pac4jProperties properties;
 
-	private final Config config;
-
-	public Pac4jWebFilterConfiguration(Pac4jProperties properties, Config config) {
+	public Pac4jWebFilterConfiguration(Pac4jProperties properties) {
 		this.properties = properties;
-		this.config = config;
+
+		callbackConfig(properties.getFilter().getCallback());
+		logoutConfig(properties.getFilter().getLogout());
 	}
 
-	@Bean(name = "pac4jFilter")
-	@ConditionalOnMissingBean
-	public Pac4jFilter pac4jFilter(ObjectProvider<Customizer<Pac4jFilter>> filterCustomizer) {
-		final Pac4jFilter pac4jFilter = new Pac4jFilter();
 
-		final Pac4jProperties.Filter.Security securityConfig = properties.getFilter().getSecurity();
-		pac4jFilter.addFilter(securityConfig.getName(), securityFilter(securityConfig));
-
-		final Pac4jProperties.Filter.Callback callbackConfig = properties.getFilter().getCallback();
-		pac4jFilter.addFilter(callbackConfig.getName(), callbackFilter(callbackConfig));
-
-		final Pac4jProperties.Filter.Logout logoutConfig = properties.getFilter().getLogout();
-		pac4jFilter.addFilter(logoutConfig.getName(), logoutFilter(logoutConfig));
-
-		filterCustomizer.ifAvailable((filters)->filters.customize(pac4jFilter));
-
-		return pac4jFilter;
+	/**
+	 * 登录成功回调配置
+	 *
+	 * @param callbackConfig
+	 * 		登录成功回调配置
+	 */
+	private void callbackConfig(final Pac4jProperties.Filter.Callback callbackConfig) {
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.path", callbackConfig.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.defaultUrl", callbackConfig.getDefaultUrl());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.renewSession", callbackConfig.getRenewSession());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.callback.defaultClient", properties.getDefaultClient());
 	}
 
-	private SecurityFilter securityFilter(final Pac4jProperties.Filter.Security securityConfig) {
-		final SecurityFilter securityFilter = new SecurityFilter();
+	/**
+	 * 退出登录配置
+	 *
+	 * @param logoutConfig
+	 * 		退出登录配置
+	 */
+	private void logoutConfig(final Pac4jProperties.Filter.Logout logoutConfig) {
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.path", logoutConfig.getPath());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.defaultUrl", logoutConfig.getDefaultUrl());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.logoutUrlPattern", logoutConfig.getLogoutUrlPattern());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.localLogout", logoutConfig.isLocalLogout());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.centralLogout", logoutConfig.isCentralLogout());
+		SystemPropertyUtils.setPropertyIfPresent("pac4j.logout.destroySession", logoutConfig.isDestroySession());
+	}
 
-		securityFilter.setConfig(config);
-		securityFilter.setMultiProfile(properties.isMultiProfile());
+	static class Base {
 
-		if(properties.getClients() != null){
-			securityFilter.setClients(StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR));
+		protected final Config config;
+
+		protected final String clients;
+
+		protected final String authorizers;
+
+		protected final String matchers;
+
+		public Base(Pac4jProperties properties, Config config) {
+			this.config = config;
+
+			Pac4jProperties.Filter.Security security = properties.getFilter().getSecurity();
+			clients = properties.getClients() != null ?
+					StringUtils.join(properties.getClients(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			authorizers = Validate.isNotEmpty(security.getAuthorizers()) ?
+					StringUtils.join(security.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
+			matchers = Validate.isNotEmpty(security.getMatchers()) ?
+					StringUtils.join(security.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR) : null;
 		}
 
-		if(Validate.isNotEmpty(securityConfig.getAuthorizers())){
-			securityFilter.setAuthorizers(
-					StringUtils.join(securityConfig.getAuthorizers(), Pac4jConstants.ELEMENT_SEPARATOR));
-		}
-
-		if(Validate.isNotEmpty(securityConfig.getMatchers())){
-			securityFilter.setMatchers(
-					StringUtils.join(securityConfig.getMatchers(), Pac4jConstants.ELEMENT_SEPARATOR));
-		}
-
-		return securityFilter;
 	}
 
-	private CallbackFilter callbackFilter(final Pac4jProperties.Filter.Callback callbackConfig) {
-		final CallbackFilter callbackFilter = new CallbackFilter();
+	@AutoConfiguration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+	@ConditionalOnClass({SecurityInterceptor.class})
+	static class Servlet extends Base {
 
-		callbackFilter.setConfig(config);
-		callbackFilter.setDefaultUrl(callbackConfig.getDefaultUrl());
-		callbackFilter.setMultiProfile(properties.isMultiProfile());
-		callbackFilter.setDefaultClient(properties.getDefaultClient());
-		callbackFilter.setSaveInSession(properties.isSaveInSession());
+		public Servlet(Pac4jProperties properties, Config config) {
+			super(properties, config);
+		}
 
-		return callbackFilter;
+		@Bean
+		public SecurityInterceptor securityInterceptor() {
+			return new SecurityInterceptor(config, clients, authorizers, matchers);
+		}
+
 	}
 
-	private LogoutFilter logoutFilter(final Pac4jProperties.Filter.Logout logoutConfig) {
-		final LogoutFilter logoutFilter = new LogoutFilter();
+	@AutoConfiguration
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnClass({SecurityFilter.class})
+	static class WebFlux extends Base {
 
-		logoutFilter.setConfig(config);
-		logoutFilter.setDefaultUrl(logoutConfig.getDefaultUrl());
-		logoutFilter.setLogoutUrlPattern(logoutConfig.getLogoutUrlPattern());
-		logoutFilter.setLocalLogout(logoutConfig.isLocalLogout());
-		logoutFilter.setCentralLogout(logoutConfig.isCentralLogout());
+		public WebFlux(Pac4jProperties properties, Config config) {
+			super(properties, config);
+		}
 
-		return logoutFilter;
+		@Bean
+		public SecurityFilter securityFilter() {
+			return new SecurityFilter(config, clients, authorizers, matchers);
+		}
+
 	}
 
 }

@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-    com.buession.springboot.mybatis.autoconfigure.MybatisConfiguration, \
-    com.buession.springboot.mybatis.autoconfigure.MybatisLanguageDriverConfiguration

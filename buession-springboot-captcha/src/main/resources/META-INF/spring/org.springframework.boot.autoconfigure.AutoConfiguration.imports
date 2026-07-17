@@ -1,0 +1,2 @@
+com.buession.springboot.captcha.autoconfigure.CaptchaConfiguration
+com.buession.springboot.captcha.autoconfigure.CaptchaWebConfiguration

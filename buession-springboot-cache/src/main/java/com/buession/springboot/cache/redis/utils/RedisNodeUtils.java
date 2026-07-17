@@ -26,12 +26,12 @@ package com.buession.springboot.cache.redis.utils;
 
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
-import com.buession.redis.core.RedisNode;
+import com.buession.redis.client.connection.RedisNode;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Yong.Teng
@@ -59,8 +59,8 @@ public class RedisNodeUtils {
 		throw new ParseException("Illegal redis host and port: " + str + ".", -1);
 	}
 
-	public static List<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException {
-		List<RedisNode> nodes = new ArrayList<>(str.size());
+	public static Set<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException {
+		Set<RedisNode> nodes = new HashSet<>(str.size());
 
 		for(String s : str){
 			nodes.add(parse(s, defaultPort));

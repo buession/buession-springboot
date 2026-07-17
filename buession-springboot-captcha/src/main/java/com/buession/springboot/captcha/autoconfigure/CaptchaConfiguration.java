@@ -31,7 +31,7 @@ import com.buession.security.captcha.geetest.GeetestCaptchaClient;
 import com.buession.security.captcha.tencent.TencentCaptchaClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -59,7 +59,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({CaptchaClient.class})
-	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "aliyun.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = CaptchaProperties.PREFIX, name = "aliyun.enabled")
 	public AliYunCaptchaClient aliYunCaptchaClient() {
 		final AliYunCaptchaClient client = new AliYunCaptchaClient(properties.getAliyun().getAccessKeyId(),
 				properties.getAliyun().getAccessKeySecret(), properties.getAliyun().getAppKey(),
@@ -72,7 +72,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({CaptchaClient.class})
-	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "geetest.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = CaptchaProperties.PREFIX, name = "geetest.enabled")
 	public GeetestCaptchaClient geetestCaptchaClient() {
 		final GeetestCaptchaClient client = new GeetestCaptchaClient(properties.getGeetest().getAppId(),
 				properties.getGeetest().getSecretKey(), properties.getGeetest().getVersion(), httpClient);
@@ -84,7 +84,7 @@ public class CaptchaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({CaptchaClient.class})
-	@ConditionalOnProperty(prefix = CaptchaProperties.PREFIX, name = "tencent.enabled", havingValue = "true")
+	@ConditionalOnBooleanProperty(prefix = CaptchaProperties.PREFIX, name = "tencent.enabled")
 	public TencentCaptchaClient tencentCaptchaClient() {
 		final TencentCaptchaClient client = new TencentCaptchaClient(properties.getTencent().getAppId(),
 				properties.getTencent().getSecretKey(), httpClient);

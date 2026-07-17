@@ -19,33 +19,40 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2024 Buession.com Inc.														       |
+ * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.pac4j.autoconfigure;
 
 import com.buession.core.Customizer;
 import com.buession.core.converter.mapper.PropertyMapper;
-import com.buession.core.validator.Validate;
-import com.buession.springboot.pac4j.config.BaseConfig;
+import com.buession.springboot.pac4j.config.BaseClientConfig;
+import com.buession.springboot.pac4j.config.DirectClientConfig;
+import com.buession.springboot.pac4j.config.IndirectClientConfig;
 import org.pac4j.core.client.BaseClient;
-import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.client.DirectClient;
+import org.pac4j.core.client.IndirectClient;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
-
-import java.util.Optional;
 
 /**
  * @author Yong.Teng
  * @since 2.0.0
  */
-public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
+public abstract class AbstractPac4jClientConfiguration<C extends BaseClientConfig> {
 
-	protected final static PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+	protected final static PropertyMapper nonNullpropertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 
-	protected final static PropertyMapper hasTextpropertyMapper = propertyMapper.alwaysApplyingWhenHasText();
+	protected final static PropertyMapper hasTextpropertyMapper = PropertyMapper.get().alwaysApplyingWhenHasText();
 
+	/**
+	 * Pac4j 配置
+	 */
 	protected final Pac4jProperties properties;
 
+	/**
+	 * Client 配置信息
+	 */
 	protected final C config;
 
 	public AbstractPac4jClientConfiguration(Pac4jProperties properties, C config) {
@@ -53,18 +60,35 @@ public abstract class AbstractPac4jClientConfiguration<C extends BaseConfig> {
 		this.config = config;
 	}
 
-	protected <CONF extends BaseConfig, CLIENTCONF extends BaseConfig.BaseClientConfig,
-			CLIENT extends BaseClient<? extends Credentials>> void afterClientInitialized(
-			final CLIENT client, final CONF config, final CLIENTCONF clientConfig) {
-		client.setName(
-				Validate.hasText(clientConfig.getName()) ? clientConfig.getName() : clientConfig.getDefaultName());
-
-		Optional.ofNullable(config.getCustomProperties()).ifPresent(client::setCustomProperties);
+	protected <CF extends BaseClientConfig, BCF extends BaseClientConfig, CLIENT extends BaseClient> void initialized(
+			final CLIENT client, final CF config, final BCF clientConfig) {
+		client.setName(clientConfig.getName());
+		client.setMultiProfile(clientConfig.isMultiProfile());
+		client.setSaveProfileInSession(clientConfig.getSaveProfileInSession());
+		nonNullpropertyMapper.from(config::getCustomProperties).to(client::setCustomProperties);
 	}
 
-	protected <CLIENT extends BaseClient<? extends Credentials>> void customizer(final CLIENT client,
-																				 final ObjectProvider<Customizer<CLIENT>> customizers) {
+	protected <CF extends BaseClientConfig, ICF extends IndirectClientConfig, CLIENT extends IndirectClient> CLIENT indirectClientInitialized(
+			final CLIENT client, final CF config, final ICF clientConfig,
+			final ObjectProvider<Customizer<CLIENT>> customizers) {
+		initialized(client, config, clientConfig);
+		hasTextpropertyMapper.from(clientConfig::getCallbackUrl).to(client::setCallbackUrl);
+		nonNullpropertyMapper.from(clientConfig::getCheckAuthenticationAttempt)
+				.to(client::setCheckAuthenticationAttempt);
+		nonNullpropertyMapper.from(clientConfig::getAjaxRequestResolver).as(BeanUtils::instantiateClass)
+				.to(client::setAjaxRequestResolver);
 		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
+
+		return client;
+	}
+
+	protected <CF extends BaseClientConfig, DCF extends DirectClientConfig, CLIENT extends DirectClient> CLIENT directClientInitialized(
+			final CLIENT client, final CF config, final DCF clientConfig,
+			final ObjectProvider<Customizer<CLIENT>> customizers) {
+		initialized(client, config, clientConfig);
+		customizers.orderedStream().forEach((customizer)->customizer.customize(client));
+
+		return client;
 	}
 
 }
