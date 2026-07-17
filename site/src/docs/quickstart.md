@@ -4,7 +4,7 @@
 > **TIP**
 >> 官方指南假设您已了解"JAVA"、以及 spring、springboot 方面的相关知识。
 
-Buession SpringBoot 是基于 Spring Boot 2 的扩展，以及对 [buessionframework](https://www.buession.com/)、[buession-security](https://security.buession.com/) springboot 化，同时我们将 springboot 中引入的三方包的版本进行了统一，规避了在 springboot 中每个模块引入的同一个三方包的版本不一致的情况（强迫症）。
+Buession SpringBoot 是基于 Spring Boot 3 的扩展，以及对 [buessionframework](https://www.buession.com/)、[buession-security](https://security.buession.com/) springboot 化，同时我们将 springboot 中引入的三方包的版本进行了统一，规避了在 springboot 中每个模块引入的同一个三方包的版本不一致的情况（强迫症）。
 
 
 您可以根据本文档中的示例，快速熟悉 Buession SpringBoot 的使用方法。
