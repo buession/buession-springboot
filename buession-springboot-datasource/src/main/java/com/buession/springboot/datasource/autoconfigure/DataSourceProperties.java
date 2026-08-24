@@ -28,7 +28,6 @@ import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import com.buession.jdbc.config.*;
 import com.buession.lang.Constants;
-import com.buession.springboot.datasource.core.DynamicUrlBuilder;
 import com.buession.springboot.datasource.exception.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -187,13 +186,6 @@ public class DataSourceProperties {
 	private TomcatConfig tomcat;
 
 	/**
-	 * Generic 数据源配置
-	 *
-	 * @since 1.3.2
-	 */
-	private GenericConfig generic;
-
-	/**
 	 * 构造函数
 	 */
 	public DataSourceProperties() {
@@ -257,14 +249,11 @@ public class DataSourceProperties {
 	/**
 	 * Determine the url to use based on this configuration and the environment.
 	 *
-	 * @param builder
-	 * 		DynamicUrlBuilder
-	 *
 	 * @return The url to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determineUrl(DynamicUrlBuilder builder) {
+	public String determineUrl() {
 		if(Validate.hasText(determineUrl)){
 			return determineUrl;
 		}
@@ -272,13 +261,6 @@ public class DataSourceProperties {
 		if(Validate.hasText(url)){
 			determineUrl = url;
 			return determineUrl;
-		}
-
-		if(builder != null){
-			determineUrl = builder.build();
-			if(Validate.hasText(determineUrl)){
-				return determineUrl;
-			}
 		}
 
 		String databaseName = getName();
@@ -347,14 +329,11 @@ public class DataSourceProperties {
 	/**
 	 * Determine the username to use based on this configuration and the environment.
 	 *
-	 * @param builder
-	 * 		DynamicUrlBuilder
-	 *
 	 * @return The username to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determineUsername(DynamicUrlBuilder builder) {
+	public String determineUsername() {
 		if(Validate.hasText(determineUsername)){
 			return determineUsername;
 		}
@@ -363,7 +342,7 @@ public class DataSourceProperties {
 			determineUsername = username;
 		}else{
 			determineUsername = EmbeddedDatabaseConnection.isEmbedded(
-					determineDriverClassName(), determineUrl(builder)) ? DEFAULT_USERNAME : null;
+					determineDriverClassName(), determineUrl()) ? DEFAULT_USERNAME : null;
 		}
 
 		return determineUsername;
@@ -395,14 +374,11 @@ public class DataSourceProperties {
 	/**
 	 * Determine the password to use based on this configuration and the environment.
 	 *
-	 * @param builder
-	 * 		DynamicUrlBuilder
-	 *
 	 * @return The password to use
 	 *
 	 * @since 3.0.0
 	 */
-	public String determinePassword(DynamicUrlBuilder builder) {
+	public String determinePassword() {
 		if(Validate.hasText(determinePassword)){
 			return determinePassword;
 		}
@@ -411,8 +387,7 @@ public class DataSourceProperties {
 			determinePassword = password;
 		}else{
 			determinePassword = EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(),
-					determineUrl(builder)) ?
-					Constants.EMPTY_STRING : null;
+					determineUrl()) ? Constants.EMPTY_STRING : null;
 		}
 
 		return determinePassword;
@@ -657,25 +632,6 @@ public class DataSourceProperties {
 	 */
 	public void setTomcat(TomcatConfig tomcat) {
 		this.tomcat = tomcat;
-	}
-
-	/**
-	 * 返回 Generic 数据源配置
-	 *
-	 * @return Generic 数据源配置
-	 */
-	public GenericConfig getGeneric() {
-		return generic;
-	}
-
-	/**
-	 * 设置 Generic 数据源配置
-	 *
-	 * @param generic
-	 * 		Generic 数据源配置
-	 */
-	public void setGeneric(GenericConfig generic) {
-		this.generic = generic;
 	}
 
 	private boolean driverClassIsLoadable() {

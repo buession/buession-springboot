@@ -22,17 +22,17 @@
  * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.datasource.core;
+package com.buession.springboot.datasource.autoconfigure;
+
+import java.util.function.Consumer;
 
 /**
  *
  *
  * @author Yong.Teng
- * @since 4.0.0
+ * @since 5.0.0
  */
 @FunctionalInterface
-public interface DynamicUrlBuilder {
-
-	String build();
+public interface DataSourceConsumer extends Consumer<DataSourceProperties> {
 
 }

@@ -29,7 +29,6 @@ import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.jdbc.config.BaseConfig;
 import com.buession.jdbc.core.Callback;
 import com.buession.jdbc.datasource.pool.PoolConfiguration;
-import com.buession.springboot.datasource.core.DynamicUrlBuilder;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 
@@ -66,7 +65,7 @@ class DataSourceInitializer<C extends BaseConfig, P extends PoolConfiguration, O
 	private final Callback<ODS, DataSourceProperties> callback;
 
 	DataSourceInitializer(final Class<DS> type, final DataSourceProperties properties, final C dataSourceConfig,
-	                      final P poolConfiguration, final Configurer<DS, C> configurer, final Callback<ODS,
+						  final P poolConfiguration, final Configurer<DS, C> configurer, final Callback<ODS,
 					DataSourceProperties> callback) {
 		this.type = type;
 		this.properties = properties;
@@ -76,14 +75,13 @@ class DataSourceInitializer<C extends BaseConfig, P extends PoolConfiguration, O
 		this.callback = callback;
 	}
 
-	public ODS createDataSource(final DynamicUrlBuilder dynamicUrlBuilder) {
+	public ODS createDataSource() {
 		try{
 			final Constructor<DS> constructor = type.getConstructor(String.class, String.class, String.class,
 					String.class);
 			final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			final DS instance = BeanUtils.instantiateClass(constructor, properties.determineDriverClassName(),
-					properties.determineUrl(dynamicUrlBuilder), properties.determineUsername(dynamicUrlBuilder),
-					properties.determinePassword(dynamicUrlBuilder));
+					properties.determineUrl(), properties.determineUsername(), properties.determinePassword());
 
 			/*                     数据源基本配置开始                     */
 			propertyMapper.from(properties.getConnectionProperties()).to(instance::setConnectionProperties);
