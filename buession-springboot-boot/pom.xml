@@ -7,7 +7,7 @@
 		<groupId>com.buession.springboot</groupId>
 		<artifactId>buession-springboot-parent</artifactId>
 		<relativePath>../buession-springboot-parent</relativePath>
-		<version>4.0.0</version>
+		<version>5.0.0</version>
 	</parent>
 	<artifactId>buession-springboot-boot</artifactId>
 	<url>https://springboot.buession.com/</url>
@@ -150,6 +150,11 @@
 		<!-- springframework boot end -->
 
 		<dependency>
+			<groupId>jakarta.activation</groupId>
+			<artifactId>jakarta.activation-api</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
@@ -213,10 +218,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

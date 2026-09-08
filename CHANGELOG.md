@@ -1,6 +1,23 @@
  Buession SpringBoot Changelog
 ===========================
 
+
+## [5.0.0](https://github.com/buession/buessionframework/releases/tag/v5.0.0) (2026-09-08)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v5.0.0)
+
+
+### 🔔 变化
+
+- DataSourceConfiguration 删除 GenericDataSource 初始化
+- 新增 DataSourceConsumer 在 DataSource bean 初始化时，可定制 DataSourceProperties
+
+
+---
+
+
 ## [4.0.0](https://github.com/buession/buessionframework/releases/tag/v4.0.0) (2026-07-17)
 
 ### 🔨依赖升级

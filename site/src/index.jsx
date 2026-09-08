@@ -1,11 +1,11 @@
 ---
 banner:
-  name: '基于 Spring Boot 2 的扩展'
-  desc: '基于 Spring Boot 2 的便捷使用扩展，Buession Framework、Buession Security 类库的自动配置。并简化 SpringApplication 启动类。'
+  name: '基于 Spring Boot 3 的扩展'
+  desc: '基于 Spring Boot 3 的便捷使用扩展，Buession Framework、Buession Security 类库的自动配置。并简化 SpringApplication 启动类。'
   btns: 
     - { name: '开 始', href: '/docs/quickstart.html', primary: true }
     - { name: 'Github >', href: 'https://github.com/buession/buession-springboot' }
-  caption: '当前版本: v4.0.0'
+  caption: '当前版本: v5.0.0'
 features: 
   - { name: '优雅', desc: '经过精雕细琢，我们带给大家一个精心设计的、标准的、高内聚低耦合的通用类库' }
   - { name: '灵活', desc: '非重复造车轮，我们是整合市面上开源的类库，以标准的接口暴露给上层用户，用户可替换或自行封装同类组件。在此基础上，封装了大量的常用的类库。' }
@@ -24,9 +24,7 @@ footer:
       - { name: 'Buession Framework', href: 'https://www.buession.com/' }
       - { name: 'Buession Security', href: 'https://security.buession.com/' }
       - { name: 'Buession Logging', href: 'https://logging.buession.com/' }
-      - { name: 'Buession Canal', href: 'https://canal.buession.com/' }
       - { name: 'Buession SpringBoot', href: 'https://springboot.buession.com/' }
-      - { name: 'Buession SpringCloud', href: 'https://springcloud.buession.com/' }
       - { name: 'Buession Cas', href: 'https://cas.buession.com/' }
 
 ---

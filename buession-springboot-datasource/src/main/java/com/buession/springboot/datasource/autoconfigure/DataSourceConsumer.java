@@ -22,55 +22,17 @@
  * | Copyright @ 2013-2026 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.cache.redis.utils;
+package com.buession.springboot.datasource.autoconfigure;
 
-import com.buession.core.utils.StringUtils;
-import com.buession.core.validator.Validate;
-import com.buession.redis.client.connection.RedisNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.function.Consumer;
 
 /**
+ *
+ *
  * @author Yong.Teng
- * @since 2.0.0
+ * @since 5.0.0
  */
-public class RedisNodeUtils {
-
-	private final static Logger logger = LoggerFactory.getLogger(RedisNodeUtils.class);
-
-	public static RedisNode parse(final String str, final int defaultPort) throws ParseException {
-		String[] hostAndPort = StringUtils.split(str, ':');
-
-		if(hostAndPort.length == 1){
-			return new RedisNode(hostAndPort[0], defaultPort);
-		}else if(hostAndPort.length == 2){
-			try{
-				int port = Integer.parseInt(hostAndPort[1]);
-
-				if(Validate.isPort(port)){
-					return new RedisNode(hostAndPort[0], port);
-				}
-			}catch(Exception e){
-				logger.warn(e.getMessage());
-			}
-		}
-
-		throw new ParseException("Illegal redis host and port: " + str + ".", -1);
-	}
-
-	public static Set<RedisNode> parse(final Collection<String> str, final int defaultPort) throws ParseException {
-		Set<RedisNode> nodes = new HashSet<>(str.size());
-
-		for(String s : str){
-			nodes.add(parse(s, defaultPort));
-		}
-
-		return nodes;
-	}
+@FunctionalInterface
+public interface DataSourceConsumer extends Consumer<DataSourceProperties> {
 
 }

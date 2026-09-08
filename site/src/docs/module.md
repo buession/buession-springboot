@@ -33,14 +33,8 @@
 ### buession-springboot-pac4j
 * pac4j && buession-security-pac4j 自动配置类
 
-### buession-springboot-session
-* buession-session 自动配置类
-
 ### buession-springboot-shiro
 * apache shiro && buession-security-shiro 自动配置类
-
-### buession-springboot-velocity
-* apache velocity && buession-velocity 自动配置类
 
 ### buession-springboot-web
 * buession-web 自动配置类
