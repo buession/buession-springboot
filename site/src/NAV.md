@@ -11,7 +11,6 @@
   * [Buession Logging](https://logging.buession.com/)
   * [Buession Canal](https://canal.buession.com/)
   * [Buession SpringBoot](https://springboot.buession.com/)
-  * [Buession SpringCloud](https://springcloud.buession.com/)
   * [Buession Cas](https://cas.buession.com/)
   * [Buession Prototype](https://prototype.buession.com/)
   * [Buession Shirojs](https://shirojs.buession.com/)

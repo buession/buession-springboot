@@ -2,7 +2,7 @@
 ===========================
 
 
-## [5.0.0](https://github.com/buession/buessionframework/releases/tag/v5.0.0) (2026-07-xx)
+## [5.0.0](https://github.com/buession/buessionframework/releases/tag/v5.0.0) (2026-09-08)
 
 ### 🔨依赖升级
 
