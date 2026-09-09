@@ -21,7 +21,7 @@
  * +------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										|
  * | Author: Yong.Teng <webmaster@buession.com> 													|
- * | Copyright @ 2013-2023 Buession.com Inc.														|
+ * | Copyright @ 2013-2026 Buession.com Inc.														|
  * +------------------------------------------------------------------------------------------------+
  */
 package com.buession.springboot.web.application;
@@ -31,6 +31,8 @@ import com.buession.springboot.boot.application.Application;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Optional;
 
 /**
  * Web 应用抽象类
@@ -71,14 +73,9 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 * @param banner
 	 *        {@link Banner} 类
 	 *
-	 * @throws InstantiationException
-	 * 		反射异常
-	 * @throws IllegalAccessException
-	 * 		没有访问权限的异常
 	 * @since 1.3.1
 	 */
-	protected AbstractWebApplication(final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException {
+	protected AbstractWebApplication(final Class<? extends Banner> banner) {
 		super(banner);
 	}
 
@@ -90,16 +87,11 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	 * @param banner
 	 *        {@link Banner} 类
 	 *
-	 * @throws InstantiationException
-	 * 		反射异常
-	 * @throws IllegalAccessException
-	 * 		没有访问权限的异常
 	 * @see WebApplicationType
 	 * @since 1.3.1
 	 */
 	protected AbstractWebApplication(final WebApplicationType webApplicationType,
-									 final Class<? extends Banner> banner) throws InstantiationException,
-			IllegalAccessException {
+									 final Class<? extends Banner> banner) {
 		super(banner);
 		if(webApplicationType != null){
 			this.webApplicationType = webApplicationType;
@@ -145,9 +137,7 @@ public abstract class AbstractWebApplication extends AbstractApplication impleme
 	protected SpringApplicationBuilder springApplicationBuilder(final Class<? extends Application> clazz) {
 		final SpringApplicationBuilder springApplicationBuilder = super.springApplicationBuilder(clazz);
 
-		if(getWebApplicationType() != null){
-			springApplicationBuilder.web(getWebApplicationType());
-		}
+		Optional.ofNullable(getWebApplicationType()).ifPresent(springApplicationBuilder::web);
 
 		return springApplicationBuilder;
 	}

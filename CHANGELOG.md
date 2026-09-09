@@ -9,10 +9,9 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v5.0.1)
 
 
-### 🔔 变化
+### ⏪ 优化
 
-- DataSourceConfiguration 删除 GenericDataSource 初始化
-- 新增 DataSourceConsumer 在 DataSource bean 初始化时，可定制 DataSourceProperties
+- 其它优化
 
 
 ---

@@ -26,7 +26,6 @@
  */
 package com.buession.springboot.shiro.web.autoconfigure;
 
-import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.SystemPropertyUtils;
 import com.buession.core.validator.Validate;
 import com.buession.security.shiro.Cookie;
@@ -62,6 +61,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Shiro Web 自动配置
@@ -216,9 +216,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie sessionCookieTemplate() {
 		org.apache.shiro.web.servlet.Cookie cookie = super.sessionCookieTemplate();
 
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-		propertyMapper.from(properties.getSession().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
+		Optional.ofNullable(properties.getSession().getCookie().getHttpOnly()).ifPresent(cookie::setHttpOnly);
 
 		return cookie;
 	}
@@ -236,9 +234,7 @@ public class ShiroWebConfiguration extends AbstractShiroWebConfiguration {
 	protected org.apache.shiro.web.servlet.Cookie rememberMeCookieTemplate() {
 		org.apache.shiro.web.servlet.Cookie cookie = super.rememberMeCookieTemplate();
 
-		final PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-
-		propertyMapper.from(properties.getRememberMe().getCookie().getHttpOnly()).to(cookie::setHttpOnly);
+		Optional.ofNullable(properties.getRememberMe().getCookie().getHttpOnly()).ifPresent(cookie::setHttpOnly);
 
 		return cookie;
 	}
