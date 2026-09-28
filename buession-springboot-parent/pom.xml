@@ -69,8 +69,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>5.0.0</buession.version>
-		<buession.security.version>5.0.0</buession.security.version>
+		<buession.version>5.0.1</buession.version>
+		<buession.security.version>5.0.1</buession.security.version>
 	</properties>
 
 	<dependencyManagement>
